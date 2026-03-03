@@ -164,7 +164,7 @@ jobs:
     needs: [lint-backend, sast-scan, secrets-scan, clamav-scan, license-check]
     runs-on: ubuntu-latest
     outputs:
-      image-ref: ${{ env.BACKEND_IMAGE }}:${{ github.ref_name }}
+      image-ref: ghcr.io/${{ github.repository }}/keystone-backend:${{ github.ref_name }}
       digest: ${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
@@ -200,7 +200,7 @@ jobs:
     needs: [lint-frontend, sast-scan, secrets-scan, clamav-scan, license-check]
     runs-on: ubuntu-latest
     outputs:
-      image-ref: ${{ env.FRONTEND_IMAGE }}:${{ github.ref_name }}
+      image-ref: ghcr.io/${{ github.repository }}/keystone-frontend:${{ github.ref_name }}
       digest: ${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
@@ -472,7 +472,7 @@ jobs:
   sign-and-attest:
     name: "Sign & Attest Images"
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    needs: [scan-backend, scan-frontend, test-backend, test-frontend, dast-scan]
+    needs: [build-backend, build-frontend, scan-backend, scan-frontend, test-backend, test-frontend, dast-scan]
     runs-on: ubuntu-latest
     permissions:
       contents: read
