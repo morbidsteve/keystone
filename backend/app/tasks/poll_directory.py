@@ -5,6 +5,7 @@ import hashlib
 import logging
 import os
 from datetime import datetime, timezone
+from typing import Any
 
 from sqlalchemy import create_engine, select, update
 from sqlalchemy.orm import Session
@@ -108,7 +109,7 @@ def poll_directory_source(self, source_id: int):
                 logger.info(f"Data source '{source.name}' is disabled, skipping poll")
                 return {"status": "skipped", "reason": "disabled"}
 
-            config = source.config or {}
+            config: Any = source.config or {}
             directory_path = config.get("directory_path", "")
             file_pattern = config.get("file_pattern", "*.log")
 
@@ -222,8 +223,8 @@ def poll_directory_source(self, source_id: int):
             for file_path in new_files:
                 try:
                     # Read file contents
-                    with open(file_path, "r", errors="replace") as f:
-                        content = f.read()
+                    with open(file_path, "r", errors="replace") as fh:
+                        content = fh.read()
 
                     file_hash = _compute_file_hash(file_path)
                     file_name = os.path.basename(file_path)

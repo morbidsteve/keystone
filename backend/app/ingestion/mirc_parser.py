@@ -192,7 +192,8 @@ def _nlp_extract(text: str) -> Optional[Dict]:
 
         if entities:
             result["entities"] = entities
-            result["confidence"] = min(result["confidence"] + 0.1, 0.8)
+            confidence_val: float = result["confidence"]  # type: ignore[assignment]
+            result["confidence"] = min(confidence_val + 0.1, 0.8)
             result["extraction_method"] = "spacy_nlp"
 
     except (ImportError, OSError):

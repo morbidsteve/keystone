@@ -467,12 +467,15 @@ class TAKConnector:
         """
         messages = []
 
+        items: list[Any]
         if isinstance(json_data, list):
             items = json_data
         elif isinstance(json_data, dict):
-            items = json_data.get("data", json_data.get("events", []))
-            if not isinstance(items, list):
-                items = [items]
+            items_raw = json_data.get("data", json_data.get("events", []))
+            if not isinstance(items_raw, list):
+                items = [items_raw]
+            else:
+                items = items_raw
         else:
             return []
 
