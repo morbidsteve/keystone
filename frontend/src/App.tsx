@@ -7,8 +7,10 @@ import SupplyPage from '@/pages/SupplyPage';
 import EquipmentPage from '@/pages/EquipmentPage';
 import TransportationPage from '@/pages/TransportationPage';
 import IngestionPage from '@/pages/IngestionPage';
+import DataSourcesPage from '@/pages/DataSourcesPage';
 import ReportsPage from '@/pages/ReportsPage';
 import AlertsPage from '@/pages/AlertsPage';
+import MapPage from '@/pages/MapPage';
 import AdminPage from '@/pages/AdminPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -36,10 +38,12 @@ export default function App() {
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="map" element={<MapPage />} />
         <Route path="supply" element={<SupplyPage />} />
         <Route path="equipment" element={<EquipmentPage />} />
         <Route path="transportation" element={<TransportationPage />} />
         <Route path="ingestion" element={<IngestionPage />} />
+        <Route path="data-sources" element={<DataSourcesPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="alerts" element={<AlertsPage />} />
         <Route path="admin" element={<AdminPage />} />

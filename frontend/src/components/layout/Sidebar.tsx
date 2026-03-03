@@ -5,8 +5,10 @@ import {
   Wrench,
   Truck,
   Upload,
+  Database,
   FileText,
   AlertTriangle,
+  MapPin,
   Settings,
   Shield,
   ChevronDown,
@@ -18,10 +20,12 @@ import { useState } from 'react';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'DASHBOARD' },
+  { to: '/map', icon: MapPin, label: 'MAP' },
   { to: '/supply', icon: Package, label: 'SUPPLY' },
   { to: '/equipment', icon: Wrench, label: 'EQUIPMENT' },
   { to: '/transportation', icon: Truck, label: 'TRANSPORTATION' },
   { to: '/ingestion', icon: Upload, label: 'INGESTION' },
+  { to: '/data-sources', icon: Database, label: 'DATA SOURCES' },
   { to: '/reports', icon: FileText, label: 'REPORTS' },
   { to: '/alerts', icon: AlertTriangle, label: 'ALERTS' },
   { to: '/admin', icon: Settings, label: 'ADMIN' },

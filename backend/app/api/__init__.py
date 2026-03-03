@@ -14,6 +14,8 @@ from app.api.units import router as units_router
 from app.api.schema_mapping import router as schema_mapping_router
 from app.api.tak import router as tak_router
 from app.api.settings import router as settings_router
+from app.api.data_sources import router as data_sources_router
+from app.api.map import router as map_router
 
 api_router = APIRouter()
 
@@ -33,3 +35,5 @@ api_router.include_router(
 )
 api_router.include_router(tak_router, prefix="/tak", tags=["TAK Integration"])
 api_router.include_router(settings_router, prefix="/settings", tags=["Settings"])
+api_router.include_router(data_sources_router, prefix="/data-sources", tags=["Data Sources"])
+api_router.include_router(map_router, prefix="/map", tags=["Map"])

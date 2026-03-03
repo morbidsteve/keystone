@@ -47,6 +47,8 @@ class Settings(BaseSettings):
 
     ALLOW_PRIVATE_TAK_HOSTS: bool = True
 
+    ALLOWED_DATA_DIRS: List[str] = ["/data", "/uploads", "/import"]
+
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def parse_cors_origins(cls, v: str | list) -> list:

@@ -13,12 +13,16 @@
   "dependencies": {
     "@tanstack/react-query": "^5.17.9",
     "@tanstack/react-table": "^8.11.6",
+    "@types/leaflet": "1.9.21",
     "axios": "^1.6.5",
     "clsx": "^2.1.0",
     "date-fns": "^3.3.1",
+    "leaflet": "1.9.4",
     "lucide-react": "^0.311.0",
+    "milsymbol": "3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-leaflet": "4.2.1",
     "react-router-dom": "^6.21.3",
     "recharts": "^2.10.4",
     "zustand": "^4.5.0"

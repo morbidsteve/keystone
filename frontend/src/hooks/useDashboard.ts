@@ -6,32 +6,32 @@ export function useDashboard() {
   const { selectedUnitId, timeRange } = useDashboardStore();
 
   const summaryQuery = useQuery({
-    queryKey: ['dashboard', 'summary', selectedUnitId],
-    queryFn: () => dashboardApi.getDashboardSummary(selectedUnitId ?? undefined),
+    queryKey: ['dashboard', 'summary', selectedUnitId, timeRange],
+    queryFn: () => dashboardApi.getDashboardSummary(selectedUnitId ?? undefined, timeRange),
     refetchInterval: 60_000,
   });
 
   const supplyQuery = useQuery({
-    queryKey: ['dashboard', 'supply', selectedUnitId],
-    queryFn: () => dashboardApi.getSupplyOverview(selectedUnitId ?? undefined),
+    queryKey: ['dashboard', 'supply', selectedUnitId, timeRange],
+    queryFn: () => dashboardApi.getSupplyOverview(selectedUnitId ?? undefined, timeRange),
     refetchInterval: 60_000,
   });
 
   const readinessQuery = useQuery({
-    queryKey: ['dashboard', 'readiness', selectedUnitId],
-    queryFn: () => dashboardApi.getReadinessOverview(selectedUnitId ?? undefined),
+    queryKey: ['dashboard', 'readiness', selectedUnitId, timeRange],
+    queryFn: () => dashboardApi.getReadinessOverview(selectedUnitId ?? undefined, timeRange),
     refetchInterval: 60_000,
   });
 
   const sustainabilityQuery = useQuery({
-    queryKey: ['dashboard', 'sustainability', selectedUnitId],
-    queryFn: () => dashboardApi.getSustainability(selectedUnitId ?? undefined),
+    queryKey: ['dashboard', 'sustainability', selectedUnitId, timeRange],
+    queryFn: () => dashboardApi.getSustainability(selectedUnitId ?? undefined, timeRange),
     refetchInterval: 60_000,
   });
 
   const alertsQuery = useQuery({
-    queryKey: ['dashboard', 'alerts', selectedUnitId],
-    queryFn: () => dashboardApi.getAlerts(selectedUnitId ?? undefined),
+    queryKey: ['dashboard', 'alerts', selectedUnitId, timeRange],
+    queryFn: () => dashboardApi.getAlerts(selectedUnitId ?? undefined, timeRange),
     refetchInterval: 30_000,
   });
 

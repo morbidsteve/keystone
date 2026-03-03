@@ -520,17 +520,17 @@ export const DEMO_SUSTAINABILITY: SustainabilityProjection[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Consumption Rate Trends — 30 data points per supply class
+// Consumption Rate Trends — 90 data points per supply class
 // ---------------------------------------------------------------------------
 
 function generateTrend(
   baseRate: number,
   variance: number,
-  count = 30,
+  count = 90,
 ): ConsumptionDataPoint[] {
   return Array.from({ length: count }, (_, i) => {
     const jitter = (Math.random() - 0.5) * 2 * variance;
-    const trend = i > 20 ? baseRate * 1.05 : baseRate; // slight uptick last 10 days
+    const trend = i > 60 ? baseRate * 1.05 : baseRate; // slight uptick last 30 days
     return {
       date: dateStr(count - 1 - i),
       rate: Math.round((trend + jitter) * 10) / 10,
@@ -548,16 +548,16 @@ export const DEMO_CONSUMPTION_TRENDS: Record<string, ConsumptionDataPoint[]> = {
 };
 
 // ---------------------------------------------------------------------------
-// Readiness Trends — 30 data points
+// Readiness Trends — 90 data points
 // ---------------------------------------------------------------------------
 
 export const DEMO_READINESS_TRENDS: ConsumptionDataPoint[] = Array.from(
-  { length: 30 },
+  { length: 90 },
   (_, i) => {
-    const base = i < 10 ? 91 : i < 20 ? 89 : 87;
+    const base = i < 30 ? 91 : i < 60 ? 89 : 87;
     const jitter = (Math.random() - 0.5) * 3;
     return {
-      date: dateStr(29 - i),
+      date: dateStr(89 - i),
       rate: Math.round((base + jitter) * 10) / 10,
     };
   },

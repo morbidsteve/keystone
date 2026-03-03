@@ -67,6 +67,20 @@ let demoAlerts = [...DEMO_ALERTS];
 let demoReviewQueue = [...DEMO_REVIEW_QUEUE];
 
 // ---------------------------------------------------------------------------
+// Helper: convert time range string to number of days
+// ---------------------------------------------------------------------------
+
+function timeRangeToDays(range?: string): number {
+  switch (range) {
+    case '24h': return 1;
+    case '7d': return 7;
+    case '30d': return 30;
+    case '90d': return 90;
+    default: return 7;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Mock API — mirrors the real API surface
 // ---------------------------------------------------------------------------
 
@@ -108,31 +122,34 @@ export const mockApi = {
   // Dashboard
   // -------------------------------------------------------------------------
 
-  async getDashboardSummary(_unitId?: string): Promise<DashboardSummary> {
+  async getDashboardSummary(_unitId?: string, _timeRange?: string): Promise<DashboardSummary> {
     await mockDelay();
     return DEMO_DASHBOARD_SUMMARY;
   },
 
-  async getSupplyOverview(_unitId?: string): Promise<SupplyClassSummary[]> {
+  async getSupplyOverview(_unitId?: string, _timeRange?: string): Promise<SupplyClassSummary[]> {
     await mockDelay();
     return DEMO_DASHBOARD_SUMMARY.supplyStatus;
   },
 
-  async getReadinessOverview(_unitId?: string): Promise<ReadinessSummary> {
+  async getReadinessOverview(_unitId?: string, _timeRange?: string): Promise<ReadinessSummary> {
     await mockDelay();
     return DEMO_DASHBOARD_SUMMARY.equipmentReadiness;
   },
 
   async getSustainability(
     _unitId?: string,
+    _timeRange?: string,
   ): Promise<SustainabilityProjection[]> {
     await mockDelay();
     return DEMO_SUSTAINABILITY;
   },
 
-  async getDashboardAlerts(_unitId?: string): Promise<Alert[]> {
+  async getDashboardAlerts(_unitId?: string, _timeRange?: string): Promise<Alert[]> {
     await mockDelay();
-    return demoAlerts.filter((a) => !a.acknowledged).slice(0, 5);
+    const days = timeRangeToDays(_timeRange);
+    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    return demoAlerts.filter((a) => !a.acknowledged && new Date(a.createdAt) >= cutoff).slice(0, 5);
   },
 
   // -------------------------------------------------------------------------
@@ -199,15 +216,19 @@ export const mockApi = {
 
   async getConsumptionRates(
     _unitId: string,
+    timeRange?: string,
   ): Promise<ConsumptionDataPoint[]> {
     await mockDelay();
-    // Return Class I trends as default
-    return DEMO_CONSUMPTION_TRENDS['I'] || [];
+    const days = timeRangeToDays(timeRange);
+    const trends = DEMO_CONSUMPTION_TRENDS['I'] || [];
+    return trends.slice(-days);
   },
 
-  async getSupplyTrends(_unitId: string): Promise<ConsumptionDataPoint[]> {
+  async getSupplyTrends(_unitId: string, timeRange?: string): Promise<ConsumptionDataPoint[]> {
     await mockDelay();
-    return DEMO_CONSUMPTION_TRENDS['III'] || [];
+    const days = timeRangeToDays(timeRange);
+    const trends = DEMO_CONSUMPTION_TRENDS['III'] || [];
+    return trends.slice(-days);
   },
 
   // -------------------------------------------------------------------------
@@ -276,9 +297,11 @@ export const mockApi = {
 
   async getReadinessTrends(
     _unitId: string,
+    timeRange?: string,
   ): Promise<ConsumptionDataPoint[]> {
     await mockDelay();
-    return DEMO_READINESS_TRENDS;
+    const days = timeRangeToDays(timeRange);
+    return DEMO_READINESS_TRENDS.slice(-days);
   },
 
   // -------------------------------------------------------------------------
