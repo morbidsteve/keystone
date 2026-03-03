@@ -67,6 +67,7 @@ class RouteType(str, enum.Enum):
 
 class Location(Base):
     """Tracks the last known position of any entity."""
+
     __tablename__ = "locations"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -80,11 +81,14 @@ class Location(Base):
     speed_kph = Column(Float, nullable=True)
     position_source = Column(SQLEnum(PositionSource), default=PositionSource.CONFIGURED)
     position_accuracy_m = Column(Float, nullable=True)
-    last_updated = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    last_updated = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
 
 class SupplyPoint(Base):
     """Fixed logistics node (supply point, FARP, LZ, etc.)."""
+
     __tablename__ = "supply_points"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -104,6 +108,7 @@ class SupplyPoint(Base):
 
 class Route(Base):
     """Main Supply Route (MSR) or Alternate Supply Route (ASR)."""
+
     __tablename__ = "routes"
 
     id = Column(Integer, primary_key=True, index=True)

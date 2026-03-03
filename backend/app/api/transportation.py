@@ -47,9 +47,7 @@ async def get_movement(
     current_user: User = Depends(get_current_user),
 ):
     """Get a single movement record."""
-    result = await db.execute(
-        select(Movement).where(Movement.id == record_id)
-    )
+    result = await db.execute(select(Movement).where(Movement.id == record_id))
     record = result.scalar_one_or_none()
     if not record:
         raise NotFoundError("Movement", record_id)
@@ -82,9 +80,7 @@ async def update_movement(
     current_user: User = Depends(get_current_user),
 ):
     """Update a movement record."""
-    result = await db.execute(
-        select(Movement).where(Movement.id == record_id)
-    )
+    result = await db.execute(select(Movement).where(Movement.id == record_id))
     record = result.scalar_one_or_none()
     if not record:
         raise NotFoundError("Movement", record_id)

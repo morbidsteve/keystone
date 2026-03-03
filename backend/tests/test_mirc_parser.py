@@ -1,7 +1,5 @@
 """Tests for mIRC log parsing patterns and parser."""
 
-import pytest
-
 from app.ingestion.mirc_patterns import (
     parse_convoy_update,
     parse_equipment_status,
@@ -149,7 +147,12 @@ class TestFullParser:
 
         # All regex-matched records should have confidence 1.0
         for record in records:
-            if record["type"] in ("LOGSTAT_HEADER", "SUPPLY", "EQUIPMENT", "TRANSPORTATION"):
+            if record["type"] in (
+                "LOGSTAT_HEADER",
+                "SUPPLY",
+                "EQUIPMENT",
+                "TRANSPORTATION",
+            ):
                 assert record["confidence"] == 1.0
 
     def test_parse_empty_log(self):
@@ -163,6 +166,11 @@ class TestFullParser:
 """
         records = parse_mirc_log(log_content)
         # The ammo/fuel line should be picked up by NLP with lower confidence
-        nlp_records = [r for r in records if r.get("confidence", 0) < 1.0]
+        _nlp_records = [r for r in records if r.get("confidence", 0) < 1.0]
         # At least the ammo/fuel line should match
-        assert any(r for r in records if "ammo" in r.get("raw_text", "").lower() or "fuel" in r.get("raw_text", "").lower())
+        assert any(
+            r
+            for r in records
+            if "ammo" in r.get("raw_text", "").lower()
+            or "fuel" in r.get("raw_text", "").lower()
+        )

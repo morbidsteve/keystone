@@ -1,8 +1,8 @@
 """Unit hierarchy management endpoints."""
 
-from typing import List, Optional
+from typing import List
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -26,8 +26,13 @@ async def list_units(
     """List all units as a tree structure (returns top-level units with children)."""
     result = await db.execute(
         select(Unit)
-        .where(Unit.parent_id == None)
-        .options(selectinload(Unit.children).selectinload(Unit.children).selectinload(Unit.children).selectinload(Unit.children))
+        .where(Unit.parent_id == None)  # noqa: E711
+        .options(
+            selectinload(Unit.children)
+            .selectinload(Unit.children)
+            .selectinload(Unit.children)
+            .selectinload(Unit.children)
+        )
     )
     units = result.scalars().all()
     return units
@@ -41,9 +46,7 @@ async def get_unit(
 ):
     """Get a single unit with its children."""
     result = await db.execute(
-        select(Unit)
-        .where(Unit.id == unit_id)
-        .options(selectinload(Unit.children))
+        select(Unit).where(Unit.id == unit_id).options(selectinload(Unit.children))
     )
     unit = result.scalar_one_or_none()
     if not unit:
@@ -72,17 +75,13 @@ async def get_unit_hierarchy(
     current_user: User = Depends(get_current_user),
 ):
     """Get the full unit hierarchy below this unit."""
-    result = await db.execute(
-        select(Unit).where(Unit.id == unit_id)
-    )
+    result = await db.execute(select(Unit).where(Unit.id == unit_id))
     root = result.scalar_one_or_none()
     if not root:
         raise NotFoundError("Unit", unit_id)
 
     async def build_tree(unit_id: int) -> dict:
-        result = await db.execute(
-            select(Unit).where(Unit.id == unit_id)
-        )
+        result = await db.execute(select(Unit).where(Unit.id == unit_id))
         unit = result.scalar_one_or_none()
         if not unit:
             return {}

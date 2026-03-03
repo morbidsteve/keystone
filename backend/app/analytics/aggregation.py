@@ -18,9 +18,7 @@ async def _get_subordinate_ids(db: AsyncSession, unit_id: int) -> List[int]:
     while queue:
         current_id = queue.pop(0)
         all_ids.append(current_id)
-        result = await db.execute(
-            select(Unit.id).where(Unit.parent_id == current_id)
-        )
+        result = await db.execute(select(Unit.id).where(Unit.parent_id == current_id))
         children = [row[0] for row in result.all()]
         queue.extend(children)
 
@@ -60,7 +58,9 @@ async def aggregate_for_unit(db: AsyncSession, unit_id: int) -> Dict:
             supply_agg[sc.value] = {
                 "total_on_hand": round(on_hand, 1),
                 "total_required": round(required, 1),
-                "fill_rate_pct": round(on_hand / required * 100, 1) if required > 0 else 0.0,
+                "fill_rate_pct": round(on_hand / required * 100, 1)
+                if required > 0
+                else 0.0,
                 "avg_dos": round(avg_dos, 1),
                 "avg_consumption_rate": round(avg_rate, 2),
                 "record_count": count,
@@ -88,7 +88,9 @@ async def aggregate_for_unit(db: AsyncSession, unit_id: int) -> Dict:
         "total_mission_capable": total_mc,
         "total_nmcm": total_nmcm,
         "total_nmcs": total_nmcs,
-        "overall_readiness_pct": round(total_mc / total_poss * 100, 1) if total_poss > 0 else 0.0,
+        "overall_readiness_pct": round(total_mc / total_poss * 100, 1)
+        if total_poss > 0
+        else 0.0,
         "equipment_lines": equip_count,
     }
 

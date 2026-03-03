@@ -117,11 +117,13 @@ async def get_map_convoys(
     result = await db.execute(
         select(Movement)
         .where(
-            Movement.status.in_([
-                MovementStatus.EN_ROUTE,
-                MovementStatus.PLANNED,
-                MovementStatus.DELAYED,
-            ]),
+            Movement.status.in_(
+                [
+                    MovementStatus.EN_ROUTE,
+                    MovementStatus.PLANNED,
+                    MovementStatus.DELAYED,
+                ]
+            ),
             Movement.unit_id.in_(accessible_ids),
         )
         .limit(200)
@@ -141,7 +143,9 @@ async def get_map_convoys(
             MapConvoyResponse(
                 convoy_id=m.id,
                 name=m.convoy_id or f"Movement-{m.id}",
-                origin=ConvoyEndpoint(name=m.origin, lat=m.origin_lat, lon=m.origin_lon),
+                origin=ConvoyEndpoint(
+                    name=m.origin, lat=m.origin_lat, lon=m.origin_lon
+                ),
                 destination=ConvoyEndpoint(
                     name=m.destination, lat=m.dest_lat, lon=m.dest_lon
                 ),
@@ -238,7 +242,7 @@ async def get_map_alerts(
         select(Alert)
         .options(selectinload(Alert.unit))
         .where(
-            Alert.acknowledged == False,
+            Alert.acknowledged == False,  # noqa: E712
             Alert.unit_id.in_(accessible_ids),
         )
         .order_by(Alert.created_at.desc())

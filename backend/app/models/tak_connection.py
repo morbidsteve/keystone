@@ -47,14 +47,14 @@ class TAKConnection(Base):
     name = Column(String(100), nullable=False)  # e.g., "1st Marines TAK Server"
     host = Column(String(255), nullable=False)  # TAK server hostname/IP
     port = Column(Integer, default=8089)  # Default TAK server port
-    protocol = Column(
-        SQLEnum(TAKProtocol), default=TAKProtocol.TCP
-    )  # tcp, ssl, http
+    protocol = Column(SQLEnum(TAKProtocol), default=TAKProtocol.TCP)  # tcp, ssl, http
     api_port = Column(Integer, default=8443)  # REST API port
 
     # Authentication
     use_tls = Column(Boolean, default=True)
-    verify_tls = Column(Boolean, default=True)  # verify TLS certificates (disable only for self-signed)
+    verify_tls = Column(
+        Boolean, default=True
+    )  # verify TLS certificates (disable only for self-signed)
     cert_file = Column(String(255), nullable=True)  # path to client cert
     api_token = Column(
         String(255), nullable=True
@@ -67,9 +67,7 @@ class TAKConnection(Base):
     cot_types_filter = Column(
         JSON, nullable=True
     )  # List of CoT types to ingest (e.g., ["b-r-.*", "a-f-G-.*"])
-    channel_filter = Column(
-        String(255), nullable=True
-    )  # TAK channel name filter
+    channel_filter = Column(String(255), nullable=True)  # TAK channel name filter
 
     # Status
     is_active = Column(Boolean, default=True)

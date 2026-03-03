@@ -77,8 +77,7 @@ def identify_template(headers: List[str]) -> Optional[Tuple[str, Dict]]:
     for template_name, template_config in LOGSTAT_TEMPLATES.items():
         required = template_config["required_headers"]
         matches = sum(
-            1 for req in required
-            if any(req in header for header in normalized_headers)
+            1 for req in required if any(req in header for header in normalized_headers)
         )
 
         score = matches / len(required)

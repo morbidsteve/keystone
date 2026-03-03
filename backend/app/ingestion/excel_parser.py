@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-def _match_db_template(headers: List[str], db_templates: List[Any]) -> Optional[Tuple[Any, float]]:
+def _match_db_template(
+    headers: List[str], db_templates: List[Any]
+) -> Optional[Tuple[Any, float]]:
     """Try to match headers against DataTemplate records from the database.
 
     Args:
@@ -35,9 +37,7 @@ def _match_db_template(headers: List[str], db_templates: List[Any]) -> Optional[
         if not patterns:
             continue
 
-        matches = sum(
-            1 for p in patterns if any(p in hdr for hdr in normalized)
-        )
+        matches = sum(1 for p in patterns if any(p in hdr for hdr in normalized))
         score = matches / len(patterns)
         if score > best_score and score >= 0.4:
             best_score = score
@@ -48,7 +48,9 @@ def _match_db_template(headers: List[str], db_templates: List[Any]) -> Optional[
     return None
 
 
-def _apply_db_template(row_data: Dict[str, Any], field_mappings: Dict[str, Dict]) -> Dict[str, Any]:
+def _apply_db_template(
+    row_data: Dict[str, Any], field_mappings: Dict[str, Dict]
+) -> Dict[str, Any]:
     """Apply a DataTemplate's field_mappings to a single row dict.
 
     field_mappings format:
@@ -144,7 +146,9 @@ def parse_excel(
 
     try:
         if isinstance(file_path_or_bytes, bytes):
-            wb = load_workbook(io.BytesIO(file_path_or_bytes), read_only=True, data_only=True)
+            wb = load_workbook(
+                io.BytesIO(file_path_or_bytes), read_only=True, data_only=True
+            )
         else:
             wb = load_workbook(file_path_or_bytes, read_only=True, data_only=True)
     except Exception as e:
@@ -184,7 +188,7 @@ def parse_excel(
             entity = _detect_entity_from_template(template_obj.field_mappings)
             record_type = _entity_to_record_type(entity)
 
-            for row in rows[header_row_idx + 1:]:
+            for row in rows[header_row_idx + 1 :]:
                 row_data = {}
                 for col_idx, cell in enumerate(row):
                     if col_idx < len(headers) and headers[col_idx]:
@@ -193,15 +197,17 @@ def parse_excel(
                     continue
 
                 mapped_data = _apply_db_template(row_data, template_obj.field_mappings)
-                records.append({
-                    "type": record_type,
-                    "data": mapped_data,
-                    "confidence": round(confidence, 2),
-                    "template": template_obj.name,
-                    "template_id": template_obj.id,
-                    "source_sheet": sheet_name,
-                    "file_name": file_name,
-                })
+                records.append(
+                    {
+                        "type": record_type,
+                        "data": mapped_data,
+                        "confidence": round(confidence, 2),
+                        "template": template_obj.name,
+                        "template_id": template_obj.id,
+                        "source_sheet": sheet_name,
+                        "file_name": file_name,
+                    }
+                )
 
             logger.info(
                 f"Matched DB template '{template_obj.name}' "
@@ -216,26 +222,28 @@ def parse_excel(
         template_match = identify_template(headers)
         if not template_match:
             # Unknown template — extract raw data
-            for row in rows[header_row_idx + 1:]:
+            for row in rows[header_row_idx + 1 :]:
                 row_data = {}
                 for col_idx, cell in enumerate(row):
                     if col_idx < len(headers) and headers[col_idx]:
                         row_data[headers[col_idx]] = cell
                 if any(v is not None for v in row_data.values()):
-                    records.append({
-                        "type": "UNKNOWN",
-                        "data": row_data,
-                        "confidence": 0.3,
-                        "source_sheet": sheet_name,
-                        "file_name": file_name,
-                    })
+                    records.append(
+                        {
+                            "type": "UNKNOWN",
+                            "data": row_data,
+                            "confidence": 0.3,
+                            "source_sheet": sheet_name,
+                            "file_name": file_name,
+                        }
+                    )
             continue
 
         template_name, template_config = template_match
         col_mapping = map_columns(headers, template_config)
 
         # Extract data rows
-        for row in rows[header_row_idx + 1:]:
+        for row in rows[header_row_idx + 1 :]:
             row_data = {}
             for col_idx, field_name in col_mapping.items():
                 if col_idx < len(row):
@@ -257,14 +265,16 @@ def parse_excel(
             else:
                 record_type = "UNKNOWN"
 
-            records.append({
-                "type": record_type,
-                "data": row_data,
-                "confidence": 0.9,
-                "template": template_name,
-                "source_sheet": sheet_name,
-                "file_name": file_name,
-            })
+            records.append(
+                {
+                    "type": record_type,
+                    "data": row_data,
+                    "confidence": 0.9,
+                    "template": template_name,
+                    "source_sheet": sheet_name,
+                    "file_name": file_name,
+                }
+            )
 
     wb.close()
     return records

@@ -1,6 +1,5 @@
 """LOGSTAT report generation."""
 
-import json
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -8,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.military import SUPPLY_CLASS_NAMES, determine_supply_status_by_dos
-from app.models.supply import SupplyClass, SupplyStatusRecord
+from app.models.supply import SupplyStatusRecord
 from app.models.unit import Unit
 
 
@@ -33,9 +32,7 @@ async def generate_logstat(
     report_dtg = now.strftime("%d%H%MZ%b%y").upper()
 
     # Query supply records
-    query = select(SupplyStatusRecord).where(
-        SupplyStatusRecord.unit_id == unit_id
-    )
+    query = select(SupplyStatusRecord).where(SupplyStatusRecord.unit_id == unit_id)
     if period_start:
         query = query.where(SupplyStatusRecord.reported_at >= period_start)
     if period_end:
@@ -66,14 +63,16 @@ async def generate_logstat(
                 "overall_status": None,
             }
 
-        supply_sections[sc]["items"].append({
-            "item": record.item_description,
-            "on_hand": record.on_hand_qty,
-            "required": record.required_qty,
-            "dos": record.dos,
-            "consumption_rate": record.consumption_rate,
-            "status": record.status.value,
-        })
+        supply_sections[sc]["items"].append(
+            {
+                "item": record.item_description,
+                "on_hand": record.on_hand_qty,
+                "required": record.required_qty,
+                "dos": record.dos,
+                "consumption_rate": record.consumption_rate,
+                "status": record.status.value,
+            }
+        )
 
     # Determine overall status per class
     for sc, section in supply_sections.items():

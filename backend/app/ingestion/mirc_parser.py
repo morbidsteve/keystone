@@ -47,28 +47,34 @@ def parse_mirc_log(content: str) -> List[Dict]:
             if result:
                 if pattern_name == "LOGSTAT_HEADER":
                     current_logstat_context = result
-                    records.append({
-                        "type": "LOGSTAT_HEADER",
-                        "data": result,
-                        "confidence": 1.0,
-                        "raw_text": line,
-                        "sender": sender or result.get("sender"),
-                        "timestamp": timestamp,
-                    })
+                    records.append(
+                        {
+                            "type": "LOGSTAT_HEADER",
+                            "data": result,
+                            "confidence": 1.0,
+                            "raw_text": line,
+                            "sender": sender or result.get("sender"),
+                            "timestamp": timestamp,
+                        }
+                    )
                 else:
                     record_data = result.copy()
                     if current_logstat_context:
-                        record_data["logstat_unit"] = current_logstat_context.get("unit")
+                        record_data["logstat_unit"] = current_logstat_context.get(
+                            "unit"
+                        )
                         record_data["logstat_dtg"] = current_logstat_context.get("dtg")
 
-                    records.append({
-                        "type": result.get("type", pattern_name),
-                        "data": record_data,
-                        "confidence": 1.0,
-                        "raw_text": line,
-                        "sender": sender,
-                        "timestamp": timestamp,
-                    })
+                    records.append(
+                        {
+                            "type": result.get("type", pattern_name),
+                            "data": record_data,
+                            "confidence": 1.0,
+                            "raw_text": line,
+                            "sender": sender,
+                            "timestamp": timestamp,
+                        }
+                    )
                 matched = True
                 break
 
@@ -76,14 +82,16 @@ def parse_mirc_log(content: str) -> List[Dict]:
         if not matched and message and len(message) > 10:
             nlp_result = _nlp_extract(message)
             if nlp_result:
-                records.append({
-                    "type": nlp_result.get("type", "GENERAL"),
-                    "data": nlp_result,
-                    "confidence": nlp_result.get("confidence", 0.5),
-                    "raw_text": line,
-                    "sender": sender,
-                    "timestamp": timestamp,
-                })
+                records.append(
+                    {
+                        "type": nlp_result.get("type", "GENERAL"),
+                        "data": nlp_result,
+                        "confidence": nlp_result.get("confidence", 0.5),
+                        "raw_text": line,
+                        "sender": sender,
+                        "timestamp": timestamp,
+                    }
+                )
 
     return records
 
@@ -97,18 +105,46 @@ def _nlp_extract(text: str) -> Optional[Dict]:
 
     # Keyword-based classification with confidence scores
     supply_keywords = [
-        "ammo", "ammunition", "fuel", "water", "rations", "meals",
-        "supply", "class", "resupply", "requisition", "shortage",
-        "on hand", "dos", "days of supply",
+        "ammo",
+        "ammunition",
+        "fuel",
+        "water",
+        "rations",
+        "meals",
+        "supply",
+        "class",
+        "resupply",
+        "requisition",
+        "shortage",
+        "on hand",
+        "dos",
+        "days of supply",
     ]
     equip_keywords = [
-        "vehicle", "hmmwv", "mtvr", "lav", "aav", "tank",
-        "readiness", "deadline", "nmcm", "nmcs", "mission capable",
-        "maintenance", "equipment",
+        "vehicle",
+        "hmmwv",
+        "mtvr",
+        "lav",
+        "aav",
+        "tank",
+        "readiness",
+        "deadline",
+        "nmcm",
+        "nmcs",
+        "mission capable",
+        "maintenance",
+        "equipment",
     ]
     transport_keywords = [
-        "convoy", "movement", "en route", "departure", "arrival",
-        "destination", "msr", "route", "transport",
+        "convoy",
+        "movement",
+        "en route",
+        "departure",
+        "arrival",
+        "destination",
+        "msr",
+        "route",
+        "transport",
     ]
 
     supply_score = sum(1 for kw in supply_keywords if kw in text_lower)

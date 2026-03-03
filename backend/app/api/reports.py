@@ -84,9 +84,7 @@ async def get_report(
     current_user: User = Depends(get_current_user),
 ):
     """Get a single report."""
-    result = await db.execute(
-        select(Report).where(Report.id == report_id)
-    )
+    result = await db.execute(select(Report).where(Report.id == report_id))
     report = result.scalar_one_or_none()
     if not report:
         raise NotFoundError("Report", report_id)
@@ -102,9 +100,7 @@ async def finalize_report(
     current_user: User = Depends(get_current_user),
 ):
     """Mark a report as final."""
-    result = await db.execute(
-        select(Report).where(Report.id == report_id)
-    )
+    result = await db.execute(select(Report).where(Report.id == report_id))
     report = result.scalar_one_or_none()
     if not report:
         raise NotFoundError("Report", report_id)

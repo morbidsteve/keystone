@@ -19,11 +19,15 @@ class CanonicalField(Base):
     entity_name = Column(String(50), nullable=False, index=True)
     field_name = Column(String(50), nullable=False)
     display_name = Column(String(100), nullable=False)
-    data_type = Column(String(20), nullable=False)  # string, integer, float, datetime, enum
+    data_type = Column(
+        String(20), nullable=False
+    )  # string, integer, float, datetime, enum
     is_required = Column(Boolean, default=False)
     enum_values = Column(JSON, nullable=True)
     description = Column(Text, nullable=True)
-    entity_group = Column(String(50), nullable=True)  # For UI grouping: "Supply", "Equipment", etc.
+    entity_group = Column(
+        String(50), nullable=True
+    )  # For UI grouping: "Supply", "Equipment", etc.
 
     def __repr__(self) -> str:
         return f"<CanonicalField {self.entity_name}.{self.field_name}>"

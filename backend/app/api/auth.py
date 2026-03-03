@@ -18,11 +18,8 @@ from app.database import get_db
 from app.models.user import Role, User
 from app.schemas.auth import (
     LoginRequest,
-    LoginResponse,
-    TokenResponse,
     UserCreate,
     UserResponse,
-    UserUpdate,
 )
 
 router = APIRouter()
@@ -85,9 +82,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     # Check rate limit before processing
     _check_rate_limit(request.username)
 
-    result = await db.execute(
-        select(User).where(User.username == request.username)
-    )
+    result = await db.execute(select(User).where(User.username == request.username))
     user = result.scalar_one_or_none()
 
     if user is None or not verify_password(request.password, user.hashed_password):
@@ -107,9 +102,7 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     _clear_failures(request.username)
 
     # Only include 'sub' in JWT payload
-    access_token = create_access_token(
-        data={"sub": user.username}
-    )
+    access_token = create_access_token(data={"sub": user.username})
 
     return {
         "token": access_token,
@@ -117,7 +110,9 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     }
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 async def register(
     user_data: UserCreate,
     db: AsyncSession = Depends(get_db),
@@ -125,9 +120,7 @@ async def register(
 ):
     """Create a new user (admin only)."""
     # Check for existing username
-    result = await db.execute(
-        select(User).where(User.username == user_data.username)
-    )
+    result = await db.execute(select(User).where(User.username == user_data.username))
     if result.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -135,9 +128,7 @@ async def register(
         )
 
     # Check for existing email
-    result = await db.execute(
-        select(User).where(User.email == user_data.email)
-    )
+    result = await db.execute(select(User).where(User.email == user_data.email))
     if result.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

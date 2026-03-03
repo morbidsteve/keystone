@@ -7,12 +7,12 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
-from app.core.military import determine_readiness_status, determine_supply_status_by_dos
+from app.core.military import determine_supply_status_by_dos
 from app.core.permissions import get_accessible_units
 from app.database import get_db
 from app.models.alert import Alert, AlertSeverity
 from app.models.equipment import EquipmentStatus
-from app.models.supply import SupplyClass, SupplyStatus, SupplyStatusRecord
+from app.models.supply import SupplyClass, SupplyStatusRecord
 from app.models.transportation import Movement, MovementStatus
 from app.models.unit import Unit
 from app.models.user import User
@@ -38,8 +38,6 @@ async def get_dashboard_summary(
 
     if unit_id and unit_id in accessible:
         # Re-calculate accessible from the specified unit down
-        from app.core.permissions import get_accessible_units as _get_units
-
         target_user = User(unit_id=unit_id, role=current_user.role)
         target_user.unit_id = unit_id
         unit_ids = []
@@ -47,9 +45,7 @@ async def get_dashboard_summary(
         while queue:
             cid = queue.pop(0)
             unit_ids.append(cid)
-            result = await db.execute(
-                select(Unit.id).where(Unit.parent_id == cid)
-            )
+            result = await db.execute(select(Unit.id).where(Unit.parent_id == cid))
             queue.extend([r[0] for r in result.all()])
     else:
         unit_ids = accessible
@@ -92,7 +88,7 @@ async def get_dashboard_summary(
         select(func.count(Alert.id)).where(
             Alert.unit_id.in_(unit_ids),
             Alert.severity == AlertSeverity.CRITICAL,
-            Alert.acknowledged == False,
+            Alert.acknowledged == False,  # noqa: E712
         )
     )
     critical_alerts = critical_result.scalar() or 0
@@ -100,7 +96,7 @@ async def get_dashboard_summary(
     total_alert_result = await db.execute(
         select(func.count(Alert.id)).where(
             Alert.unit_id.in_(unit_ids),
-            Alert.acknowledged == False,
+            Alert.acknowledged == False,  # noqa: E712
         )
     )
     total_alerts = total_alert_result.scalar() or 0
@@ -108,7 +104,7 @@ async def get_dashboard_summary(
     # Recent alerts
     alerts_result = await db.execute(
         select(Alert)
-        .where(Alert.unit_id.in_(unit_ids), Alert.acknowledged == False)
+        .where(Alert.unit_id.in_(unit_ids), Alert.acknowledged == False)  # noqa: E712
         .order_by(Alert.created_at.desc())
         .limit(20)
     )

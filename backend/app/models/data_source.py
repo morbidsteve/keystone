@@ -82,7 +82,5 @@ class ProcessedFile(Base):
     data_source = relationship("DataSource", back_populates="processed_files")
 
     __table_args__ = (
-        UniqueConstraint(
-            "data_source_id", "file_path", name="uq_datasource_filepath"
-        ),
+        UniqueConstraint("data_source_id", "file_path", name="uq_datasource_filepath"),
     )

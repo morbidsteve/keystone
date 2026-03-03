@@ -8,7 +8,6 @@ import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.config import settings
 from app.core.auth import create_access_token, hash_password
 from app.database import Base, get_db
 from app.main import app
@@ -141,7 +140,11 @@ async def operator_user(db_session: AsyncSession, test_unit: Unit) -> User:
 def admin_token(admin_user: User) -> str:
     """Generate a JWT token for the admin user."""
     return create_access_token(
-        data={"sub": admin_user.username, "role": admin_user.role.value, "unit_id": admin_user.unit_id}
+        data={
+            "sub": admin_user.username,
+            "role": admin_user.role.value,
+            "unit_id": admin_user.unit_id,
+        }
     )
 
 
@@ -149,5 +152,9 @@ def admin_token(admin_user: User) -> str:
 def operator_token(operator_user: User) -> str:
     """Generate a JWT token for the operator user."""
     return create_access_token(
-        data={"sub": operator_user.username, "role": operator_user.role.value, "unit_id": operator_user.unit_id}
+        data={
+            "sub": operator_user.username,
+            "role": operator_user.role.value,
+            "unit_id": operator_user.unit_id,
+        }
     )

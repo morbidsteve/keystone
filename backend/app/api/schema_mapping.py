@@ -5,7 +5,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
@@ -45,7 +45,9 @@ async def list_canonical_fields(
     """List all canonical fields grouped by entity."""
     result = await db.execute(
         select(CanonicalField).order_by(
-            CanonicalField.entity_group, CanonicalField.entity_name, CanonicalField.field_name
+            CanonicalField.entity_group,
+            CanonicalField.entity_name,
+            CanonicalField.field_name,
         )
     )
     fields = result.scalars().all()
@@ -127,8 +129,16 @@ async def create_template(
     current_user: User = Depends(get_current_user),
 ):
     """Create a new data template."""
-    if current_user.role not in (Role.ADMIN, Role.OPERATOR, Role.S4, Role.S3, Role.COMMANDER):
-        raise ForbiddenError("Only admin/operator/S4/S3/commander roles can create templates")
+    if current_user.role not in (
+        Role.ADMIN,
+        Role.OPERATOR,
+        Role.S4,
+        Role.S3,
+        Role.COMMANDER,
+    ):
+        raise ForbiddenError(
+            "Only admin/operator/S4/S3/commander roles can create templates"
+        )
 
     template = DataTemplate(
         name=payload.name,
@@ -154,8 +164,16 @@ async def update_template(
     current_user: User = Depends(get_current_user),
 ):
     """Update an existing template (increments version)."""
-    if current_user.role not in (Role.ADMIN, Role.OPERATOR, Role.S4, Role.S3, Role.COMMANDER):
-        raise ForbiddenError("Only admin/operator/S4/S3/commander roles can update templates")
+    if current_user.role not in (
+        Role.ADMIN,
+        Role.OPERATOR,
+        Role.S4,
+        Role.S3,
+        Role.COMMANDER,
+    ):
+        raise ForbiddenError(
+            "Only admin/operator/S4/S3/commander roles can update templates"
+        )
 
     result = await db.execute(
         select(DataTemplate).where(DataTemplate.id == template_id)
@@ -181,8 +199,16 @@ async def delete_template(
     current_user: User = Depends(get_current_user),
 ):
     """Soft-delete (deactivate) a template."""
-    if current_user.role not in (Role.ADMIN, Role.OPERATOR, Role.S4, Role.S3, Role.COMMANDER):
-        raise ForbiddenError("Only admin/operator/S4/S3/commander roles can delete templates")
+    if current_user.role not in (
+        Role.ADMIN,
+        Role.OPERATOR,
+        Role.S4,
+        Role.S3,
+        Role.COMMANDER,
+    ):
+        raise ForbiddenError(
+            "Only admin/operator/S4/S3/commander roles can delete templates"
+        )
 
     result = await db.execute(
         select(DataTemplate).where(DataTemplate.id == template_id)
@@ -202,7 +228,9 @@ async def delete_template(
 # ---------------------------------------------------------------------------
 
 
-def _apply_transform(value: Any, transform: Optional[str], params: Optional[Dict] = None) -> Any:
+def _apply_transform(
+    value: Any, transform: Optional[str], params: Optional[Dict] = None
+) -> Any:
     """Apply a transform to a single value."""
     if value is None:
         return None
@@ -218,13 +246,16 @@ def _apply_transform(value: Any, transform: Optional[str], params: Optional[Dict
             return float(str(value).replace(",", ""))
         elif transform == "datetime":
             from dateutil import parser as dt_parser
+
             fmt = params.get("format") if params else None
             if fmt:
                 from datetime import datetime
+
                 return datetime.strptime(str(value), fmt).isoformat()
             return dt_parser.parse(str(value)).isoformat()
         elif transform == "regex":
             import re
+
             pattern = params.get("pattern", "(.*)") if params else "(.*)"
             match = re.search(pattern, str(value))
             if match:
@@ -268,7 +299,9 @@ async def preview_mapping(
 
             try:
                 transformed = _apply_transform(raw_value, transform, transform_params)
-                mapped_key = f"{target_entity}.{target_field}" if target_entity else target_field
+                mapped_key = (
+                    f"{target_entity}.{target_field}" if target_entity else target_field
+                )
                 mapped[mapped_key] = transformed
             except Exception as e:
                 errors.append(f"Transform error on '{source_col}': {str(e)}")
@@ -441,7 +474,7 @@ def _parse_excel_preview(content: bytes) -> tuple:
 
     # Build sample rows (up to 10)
     sample_rows = []
-    for row in rows[header_row_idx + 1: header_row_idx + 11]:
+    for row in rows[header_row_idx + 1 : header_row_idx + 11]:
         row_dict = {}
         for col_idx, cell in enumerate(row):
             if col_idx < len(headers) and headers[col_idx]:

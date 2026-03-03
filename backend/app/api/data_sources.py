@@ -70,9 +70,7 @@ def _validate_irc_host(host: str) -> None:
     """
     # Always block cloud metadata endpoints
     if host.lower() in _BLOCKED_HOSTS:
-        raise BadRequestError(
-            f"Host '{host}' is a blocked cloud metadata endpoint."
-        )
+        raise BadRequestError(f"Host '{host}' is a blocked cloud metadata endpoint.")
 
     # If private hosts are allowed (dev mode), skip further checks
     if settings.ALLOW_PRIVATE_TAK_HOSTS:
@@ -132,9 +130,7 @@ def _validate_directory_path(path: str) -> None:
             in_allowed = True
             break
     if not in_allowed:
-        raise BadRequestError(
-            "Directory path is not within allowed data directories."
-        )
+        raise BadRequestError("Directory path is not within allowed data directories.")
 
 
 def _validate_config(source_type: DataSourceType, config: dict) -> None:
@@ -226,9 +222,7 @@ async def update_data_source(
 
     Requires ADMIN role.
     """
-    result = await db.execute(
-        select(DataSource).where(DataSource.id == source_id)
-    )
+    result = await db.execute(select(DataSource).where(DataSource.id == source_id))
     source = result.scalar_one_or_none()
     if not source:
         raise NotFoundError("DataSource", source_id)
@@ -262,9 +256,7 @@ async def delete_data_source(
 
     Requires ADMIN role.
     """
-    result = await db.execute(
-        select(DataSource).where(DataSource.id == source_id)
-    )
+    result = await db.execute(select(DataSource).where(DataSource.id == source_id))
     source = result.scalar_one_or_none()
     if not source:
         raise NotFoundError("DataSource", source_id)
@@ -289,9 +281,7 @@ async def start_data_source(
     Requires ADMIN role. For directory sources, enqueues a poll task.
     For IRC sources, enqueues a connection task.
     """
-    result = await db.execute(
-        select(DataSource).where(DataSource.id == source_id)
-    )
+    result = await db.execute(select(DataSource).where(DataSource.id == source_id))
     source = result.scalar_one_or_none()
     if not source:
         raise NotFoundError("DataSource", source_id)
@@ -335,9 +325,7 @@ async def stop_data_source(
 
     Requires ADMIN role.
     """
-    result = await db.execute(
-        select(DataSource).where(DataSource.id == source_id)
-    )
+    result = await db.execute(select(DataSource).where(DataSource.id == source_id))
     source = result.scalar_one_or_none()
     if not source:
         raise NotFoundError("DataSource", source_id)
@@ -366,9 +354,7 @@ async def test_data_source(
     For IRC sources, tests TCP connectivity to the server.
     Requires ADMIN role.
     """
-    result = await db.execute(
-        select(DataSource).where(DataSource.id == source_id)
-    )
+    result = await db.execute(select(DataSource).where(DataSource.id == source_id))
     source = result.scalar_one_or_none()
     if not source:
         raise NotFoundError("DataSource", source_id)

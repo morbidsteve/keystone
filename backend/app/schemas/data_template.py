@@ -8,11 +8,17 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # --- Field Mapping ---
 
+
 class FieldMapping(BaseModel):
     """A single source-to-target column mapping."""
+
     source_column: str = Field(..., description="Column name in the source data")
-    target_entity: str = Field(..., description="Target canonical entity (e.g. supply_status)")
-    target_field: str = Field(..., description="Target canonical field (e.g. on_hand_qty)")
+    target_entity: str = Field(
+        ..., description="Target canonical entity (e.g. supply_status)"
+    )
+    target_field: str = Field(
+        ..., description="Target canonical field (e.g. on_hand_qty)"
+    )
     transform_type: Optional[str] = Field(
         None,
         description="Transform to apply: string, integer, float, datetime, regex, enum",
@@ -24,6 +30,7 @@ class FieldMapping(BaseModel):
 
 
 # --- Canonical Field ---
+
 
 class CanonicalFieldResponse(BaseModel):
     id: int
@@ -41,12 +48,14 @@ class CanonicalFieldResponse(BaseModel):
 
 class CanonicalFieldGrouped(BaseModel):
     """Canonical fields grouped by entity for the UI."""
+
     entity_name: str
     entity_group: Optional[str] = None
     fields: List[CanonicalFieldResponse]
 
 
 # --- Data Template ---
+
 
 class DataTemplateCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
@@ -103,8 +112,10 @@ class DataTemplateListItem(BaseModel):
 
 # --- Preview ---
 
+
 class MappingPreviewRequest(BaseModel):
     """Request to preview how data would be mapped."""
+
     field_mappings: Dict[str, Dict[str, Any]]
     sample_data: List[Dict[str, Any]] = Field(
         ..., description="List of row dicts from the uploaded file"
@@ -113,6 +124,7 @@ class MappingPreviewRequest(BaseModel):
 
 class MappingPreviewRow(BaseModel):
     """A single row of mapped output."""
+
     source: Dict[str, Any]
     mapped: Dict[str, Any]
     errors: List[str] = Field(default_factory=list)
@@ -120,6 +132,7 @@ class MappingPreviewRow(BaseModel):
 
 class MappingPreviewResponse(BaseModel):
     """Preview response with mapped output rows."""
+
     rows: List[MappingPreviewRow]
     total_rows: int
     successful_rows: int
@@ -128,14 +141,17 @@ class MappingPreviewResponse(BaseModel):
 
 # --- Auto-Detect ---
 
+
 class AutoDetectRequest(BaseModel):
     """Request body for auto-detect (headers extracted from uploaded file)."""
+
     headers: List[str]
     sample_rows: Optional[List[Dict[str, Any]]] = None
 
 
 class AutoDetectResponse(BaseModel):
     """Result of auto-detection."""
+
     matched: bool
     template: Optional[DataTemplateResponse] = None
     confidence: float = 0.0

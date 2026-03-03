@@ -1,6 +1,6 @@
 """Alert management endpoints."""
 
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
@@ -68,9 +68,7 @@ async def acknowledge_alert(
     current_user: User = Depends(get_current_user),
 ):
     """Acknowledge an alert."""
-    result = await db.execute(
-        select(Alert).where(Alert.id == alert_id)
-    )
+    result = await db.execute(select(Alert).where(Alert.id == alert_id))
     alert = result.scalar_one_or_none()
     if not alert:
         raise NotFoundError("Alert", alert_id)

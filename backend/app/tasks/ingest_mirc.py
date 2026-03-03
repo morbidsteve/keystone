@@ -1,6 +1,5 @@
 """Celery task for processing uploaded mIRC log files."""
 
-import json
 import logging
 
 from sqlalchemy import create_engine, select
@@ -55,7 +54,9 @@ def process_mirc_upload(self, raw_data_id: int):
                 normalized.append(norm)
                 total_confidence += record.get("confidence", 0.0)
 
-            avg_confidence = total_confidence / len(parsed_records) if parsed_records else 0.0
+            avg_confidence = (
+                total_confidence / len(parsed_records) if parsed_records else 0.0
+            )
 
             # Update raw data record
             raw.parse_status = ParseStatus.PARSED

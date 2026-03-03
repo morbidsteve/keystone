@@ -7,7 +7,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
-from app.database import get_db
 from app.models.unit import Unit
 from app.models.user import Role, User
 
@@ -46,18 +45,14 @@ async def get_accessible_units(db: AsyncSession, user: User) -> List[int]:
     while queue:
         current_id = queue.pop(0)
         accessible.append(current_id)
-        result = await db.execute(
-            select(Unit.id).where(Unit.parent_id == current_id)
-        )
+        result = await db.execute(select(Unit.id).where(Unit.parent_id == current_id))
         children = [row[0] for row in result.all()]
         queue.extend(children)
 
     return accessible
 
 
-async def check_unit_access(
-    user: User, unit_id: int, db: AsyncSession
-) -> bool:
+async def check_unit_access(user: User, unit_id: int, db: AsyncSession) -> bool:
     """Verify the user can access data for the given unit."""
     if user.role == Role.ADMIN:
         return True

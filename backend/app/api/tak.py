@@ -5,12 +5,12 @@ import socket
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.core.auth import get_current_user
-from app.core.exceptions import BadRequestError, ForbiddenError, NotFoundError
+from app.core.exceptions import BadRequestError, NotFoundError
 from app.core.permissions import require_role
 from app.database import get_db
 from app.ingestion.tak_connector import tak_connector
@@ -59,9 +59,7 @@ def _validate_tak_host(host: str) -> None:
     """
     # Always block cloud metadata endpoints
     if host.lower() in _BLOCKED_HOSTS:
-        raise BadRequestError(
-            f"Host '{host}' is a blocked cloud metadata endpoint."
-        )
+        raise BadRequestError(f"Host '{host}' is a blocked cloud metadata endpoint.")
 
     # If private hosts are allowed (dev mode), skip further checks
     if settings.ALLOW_PRIVATE_TAK_HOSTS:
@@ -102,18 +100,14 @@ async def list_tak_connections(
     result = await db.execute(query)
     connections = result.scalars().all()
 
-    return [
-        TAKConnectionResponse.model_validate(conn) for conn in connections
-    ]
+    return [TAKConnectionResponse.model_validate(conn) for conn in connections]
 
 
 @router.post("/connections", response_model=TAKConnectionResponse)
 async def create_tak_connection(
     data: TAKConnectionCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        require_role([Role.ADMIN, Role.COMMANDER, Role.S4])
-    ),
+    current_user: User = Depends(require_role([Role.ADMIN, Role.COMMANDER, Role.S4])),
 ):
     """Create a new TAK server connection.
 
@@ -151,9 +145,7 @@ async def update_tak_connection(
     connection_id: int,
     data: TAKConnectionUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        require_role([Role.ADMIN, Role.COMMANDER, Role.S4])
-    ),
+    current_user: User = Depends(require_role([Role.ADMIN, Role.COMMANDER, Role.S4])),
 ):
     """Update an existing TAK server connection.
 
@@ -236,9 +228,7 @@ async def test_tak_connection(
 async def start_tak_polling(
     connection_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        require_role([Role.ADMIN, Role.COMMANDER, Role.S4])
-    ),
+    current_user: User = Depends(require_role([Role.ADMIN, Role.COMMANDER, Role.S4])),
 ):
     """Start polling a TAK server for CoT messages.
 
@@ -294,9 +284,7 @@ async def start_tak_polling(
 async def stop_tak_polling(
     connection_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        require_role([Role.ADMIN, Role.COMMANDER, Role.S4])
-    ),
+    current_user: User = Depends(require_role([Role.ADMIN, Role.COMMANDER, Role.S4])),
 ):
     """Stop polling a TAK server.
 
@@ -380,7 +368,7 @@ async def get_tak_messages(
     messages_result = await db.execute(
         select(RawData)
         .where(
-            RawData.file_name.like(f"tak_cot_%"),
+            RawData.file_name.like("tak_cot_%"),
             RawData.channel_name == connection.channel_filter
             if connection.channel_filter
             else True,
@@ -401,9 +389,7 @@ async def get_tak_messages(
             ),
             "confidence": msg.confidence_score,
             "status": msg.parse_status.value,
-            "received_at": (
-                msg.ingested_at.isoformat() if msg.ingested_at else None
-            ),
+            "received_at": (msg.ingested_at.isoformat() if msg.ingested_at else None),
         }
         for msg in messages
     ]

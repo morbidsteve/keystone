@@ -31,7 +31,9 @@ class MaintenanceWorkOrder(Base):
     equipment_id = Column(Integer, ForeignKey("equipment_statuses.id"), nullable=True)
     work_order_number = Column(String(50), nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(SQLEnum(WorkOrderStatus), nullable=False, default=WorkOrderStatus.OPEN)
+    status = Column(
+        SQLEnum(WorkOrderStatus), nullable=False, default=WorkOrderStatus.OPEN
+    )
     priority = Column(Integer, nullable=False, default=3)
     parts_required = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

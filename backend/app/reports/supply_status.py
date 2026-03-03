@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.military import SUPPLY_CLASS_NAMES, determine_supply_status_by_dos
@@ -49,33 +49,39 @@ async def generate_supply_status(
         total_on_hand = sum(r.on_hand_qty for r in records)
         total_required = sum(r.required_qty for r in records)
         avg_dos = sum(r.dos for r in records) / len(records) if records else 0
-        avg_rate = sum(r.consumption_rate for r in records) / len(records) if records else 0
+        avg_rate = (
+            sum(r.consumption_rate for r in records) / len(records) if records else 0
+        )
 
         red_items = [r for r in records if r.status == SupplyStatus.RED]
         amber_items = [r for r in records if r.status == SupplyStatus.AMBER]
 
-        class_summaries.append({
-            "supply_class": sc.value,
-            "class_name": SUPPLY_CLASS_NAMES.get(sc, sc.value),
-            "total_on_hand": round(total_on_hand, 1),
-            "total_required": round(total_required, 1),
-            "fill_rate_pct": round(total_on_hand / total_required * 100, 1) if total_required > 0 else 0.0,
-            "avg_dos": round(avg_dos, 1),
-            "avg_consumption_rate": round(avg_rate, 2),
-            "item_count": len(records),
-            "red_items": len(red_items),
-            "amber_items": len(amber_items),
-            "status": determine_supply_status_by_dos(avg_dos).value,
-            "critical_items": [
-                {
-                    "item": r.item_description,
-                    "on_hand": r.on_hand_qty,
-                    "required": r.required_qty,
-                    "dos": r.dos,
-                }
-                for r in red_items[:5]
-            ],
-        })
+        class_summaries.append(
+            {
+                "supply_class": sc.value,
+                "class_name": SUPPLY_CLASS_NAMES.get(sc, sc.value),
+                "total_on_hand": round(total_on_hand, 1),
+                "total_required": round(total_required, 1),
+                "fill_rate_pct": round(total_on_hand / total_required * 100, 1)
+                if total_required > 0
+                else 0.0,
+                "avg_dos": round(avg_dos, 1),
+                "avg_consumption_rate": round(avg_rate, 2),
+                "item_count": len(records),
+                "red_items": len(red_items),
+                "amber_items": len(amber_items),
+                "status": determine_supply_status_by_dos(avg_dos).value,
+                "critical_items": [
+                    {
+                        "item": r.item_description,
+                        "on_hand": r.on_hand_qty,
+                        "required": r.required_qty,
+                        "dos": r.dos,
+                    }
+                    for r in red_items[:5]
+                ],
+            }
+        )
 
     # Overall supply health
     total_classes = len(class_summaries)
@@ -92,7 +98,9 @@ async def generate_supply_status(
         "generated_at": now.isoformat(),
         "period_start": period_start.isoformat() if period_start else None,
         "period_end": period_end.isoformat() if period_end else None,
-        "overall_health": "RED" if red_classes > 0 else ("AMBER" if amber_classes > 0 else "GREEN"),
+        "overall_health": "RED"
+        if red_classes > 0
+        else ("AMBER" if amber_classes > 0 else "GREEN"),
         "total_classes_tracked": total_classes,
         "red_classes": red_classes,
         "amber_classes": amber_classes,

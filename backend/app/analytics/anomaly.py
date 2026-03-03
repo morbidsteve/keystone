@@ -1,8 +1,7 @@
 """Statistical anomaly detection for logistics metrics."""
 
-import math
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -82,18 +81,22 @@ async def detect_anomalies(
 
             z_score = (value - mean) / stddev
             if abs(z_score) > z_threshold:
-                anomalies.append({
-                    "record_id": record.id,
-                    "unit_id": record.unit_id,
-                    "supply_class": record.supply_class.value,
-                    "metric": metric,
-                    "value": value,
-                    "mean": round(mean, 2),
-                    "stddev": round(stddev, 2),
-                    "z_score": round(z_score, 2),
-                    "reported_at": record.reported_at.isoformat() if record.reported_at else None,
-                    "severity": "critical" if abs(z_score) > 3 else "warning",
-                })
+                anomalies.append(
+                    {
+                        "record_id": record.id,
+                        "unit_id": record.unit_id,
+                        "supply_class": record.supply_class.value,
+                        "metric": metric,
+                        "value": value,
+                        "mean": round(mean, 2),
+                        "stddev": round(stddev, 2),
+                        "z_score": round(z_score, 2),
+                        "reported_at": record.reported_at.isoformat()
+                        if record.reported_at
+                        else None,
+                        "severity": "critical" if abs(z_score) > 3 else "warning",
+                    }
+                )
 
         return anomalies
 
@@ -130,19 +133,23 @@ async def detect_anomalies(
         for record in records:
             z_score = (record.readiness_pct - mean) / stddev
             if abs(z_score) > z_threshold:
-                anomalies.append({
-                    "record_id": record.id,
-                    "unit_id": record.unit_id,
-                    "tamcn": record.tamcn,
-                    "nomenclature": record.nomenclature,
-                    "metric": metric,
-                    "value": record.readiness_pct,
-                    "mean": round(mean, 2),
-                    "stddev": round(stddev, 2),
-                    "z_score": round(z_score, 2),
-                    "reported_at": record.reported_at.isoformat() if record.reported_at else None,
-                    "severity": "critical" if abs(z_score) > 3 else "warning",
-                })
+                anomalies.append(
+                    {
+                        "record_id": record.id,
+                        "unit_id": record.unit_id,
+                        "tamcn": record.tamcn,
+                        "nomenclature": record.nomenclature,
+                        "metric": metric,
+                        "value": record.readiness_pct,
+                        "mean": round(mean, 2),
+                        "stddev": round(stddev, 2),
+                        "z_score": round(z_score, 2),
+                        "reported_at": record.reported_at.isoformat()
+                        if record.reported_at
+                        else None,
+                        "severity": "critical" if abs(z_score) > 3 else "warning",
+                    }
+                )
 
         return anomalies
 

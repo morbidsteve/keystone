@@ -91,7 +91,7 @@ class TAKConnector:
             await client.aclose()
             return False
 
-        except httpx.ConnectError as exc:
+        except httpx.ConnectError:
             error_msg = f"Connection refused: {connection.host}:{connection.api_port}"
             logger.warning(f"TAK connect failed for {connection.name}: {error_msg}")
             _connection_states[connection_id] = {
@@ -141,12 +141,10 @@ class TAKConnector:
             "status": "disconnected",
             "last_error": None,
             "connected_at": None,
-            "messages_received": _connection_states.get(
-                connection_id, {}
-            ).get("messages_received", 0),
-            "last_poll": _connection_states.get(connection_id, {}).get(
-                "last_poll"
+            "messages_received": _connection_states.get(connection_id, {}).get(
+                "messages_received", 0
             ),
+            "last_poll": _connection_states.get(connection_id, {}).get("last_poll"),
         }
         logger.info(f"Disconnected from TAK server (connection_id={connection_id})")
 
@@ -173,8 +171,7 @@ class TAKConnector:
 
         if not client:
             logger.warning(
-                f"No active client for connection {connection_id}, "
-                "attempting reconnect"
+                f"No active client for connection {connection_id}, attempting reconnect"
             )
             connected = await self.connect(connection)
             if not connected:
@@ -185,13 +182,9 @@ class TAKConnector:
 
         # Default to last 5 minutes
         if since is None:
-            since = datetime.now(timezone.utc).replace(
-                second=0, microsecond=0
-            )
+            since = datetime.now(timezone.utc).replace(second=0, microsecond=0)
             # Subtract 5 minutes manually to avoid timedelta import
-            since = since.replace(
-                minute=max(0, since.minute - 5)
-            )
+            since = since.replace(minute=max(0, since.minute - 5))
 
         params: Dict[str, str] = {
             "start": since.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -204,9 +197,7 @@ class TAKConnector:
             params["type"] = ",".join(connection.cot_types_filter)
 
         try:
-            response = await client.get(
-                "/Marti/api/cot/search", params=params
-            )
+            response = await client.get("/Marti/api/cot/search", params=params)
 
             if response.status_code != 200:
                 logger.warning(
@@ -220,34 +211,26 @@ class TAKConnector:
 
             messages = []
             if "xml" in content_type or response.text.strip().startswith("<"):
-                messages = self._parse_xml_response(
-                    response.text, connection
-                )
+                messages = self._parse_xml_response(response.text, connection)
             else:
                 # Attempt JSON parsing
-                messages = self._parse_json_response(
-                    response.json(), connection
-                )
+                messages = self._parse_json_response(response.json(), connection)
 
             # Update state
             state = _connection_states.get(connection_id, {})
             state["last_poll"] = datetime.now(timezone.utc).isoformat()
-            state["messages_received"] = state.get(
-                "messages_received", 0
-            ) + len(messages)
+            state["messages_received"] = state.get("messages_received", 0) + len(
+                messages
+            )
             state["status"] = "connected"
             _connection_states[connection_id] = state
 
-            logger.info(
-                f"Polled {len(messages)} messages from {connection.name}"
-            )
+            logger.info(f"Polled {len(messages)} messages from {connection.name}")
             return messages
 
         except httpx.TimeoutException:
             logger.warning(f"TAK poll timeout for {connection.name}")
-            self._update_state_error(
-                connection_id, "Poll request timed out"
-            )
+            self._update_state_error(connection_id, "Poll request timed out")
             return []
 
         except Exception as exc:
@@ -279,9 +262,7 @@ class TAKConnector:
             ) as client:
                 response = await client.get("/Marti/api/version")
 
-            elapsed = (
-                datetime.now(timezone.utc) - start_time
-            ).total_seconds()
+            elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
 
             if response.status_code == 200:
                 return {
@@ -440,9 +421,7 @@ class TAKConnector:
 
         return ctx
 
-    def _parse_xml_response(
-        self, xml_text: str, connection
-    ) -> List[Dict[str, Any]]:
+    def _parse_xml_response(self, xml_text: str, connection) -> List[Dict[str, Any]]:
         """Parse an XML response containing multiple CoT events."""
         messages = []
 
@@ -458,9 +437,7 @@ class TAKConnector:
 
                 root = ET.fromstring(xml_text)
                 for event_elem in root.findall("event"):
-                    event_xml = ET.tostring(
-                        event_elem, encoding="unicode"
-                    )
+                    event_xml = ET.tostring(event_elem, encoding="unicode")
                     parsed = parse_cot_message(event_xml)
                     if parsed and self._passes_filters(parsed, connection):
                         messages.append(parsed)
@@ -483,9 +460,7 @@ class TAKConnector:
 
         return messages
 
-    def _parse_json_response(
-        self, json_data: Any, connection
-    ) -> List[Dict[str, Any]]:
+    def _parse_json_response(self, json_data: Any, connection) -> List[Dict[str, Any]]:
         """Parse a JSON response from TAK server.
 
         Some TAK server versions support JSON output for CoT data.
@@ -512,17 +487,13 @@ class TAKConnector:
 
         return messages
 
-    def _passes_filters(
-        self, parsed_message: Dict[str, Any], connection
-    ) -> bool:
+    def _passes_filters(self, parsed_message: Dict[str, Any], connection) -> bool:
         """Check if a parsed message passes the connection's filters."""
         cot_type = parsed_message.get("cot_type", "")
 
         # Apply CoT type filter
         if connection.cot_types_filter:
-            if not matches_cot_filter(
-                cot_type, connection.cot_types_filter
-            ):
+            if not matches_cot_filter(cot_type, connection.cot_types_filter):
                 return False
 
         # Apply channel filter
@@ -530,16 +501,13 @@ class TAKConnector:
             group_name = parsed_message.get("group_name", "")
             if (
                 group_name
-                and connection.channel_filter.lower()
-                not in group_name.lower()
+                and connection.channel_filter.lower() not in group_name.lower()
             ):
                 return False
 
         return True
 
-    def _update_state_error(
-        self, connection_id: int, error_msg: str
-    ) -> None:
+    def _update_state_error(self, connection_id: int, error_msg: str) -> None:
         """Update connection state with an error."""
         state = _connection_states.get(connection_id, {})
         state["status"] = "error"

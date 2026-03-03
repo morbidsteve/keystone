@@ -56,11 +56,6 @@ def generate_report_task(self, report_id: int):
 
 def _generate_sync(db: Session, report: Report) -> dict:
     """Synchronous report content generation for Celery."""
-    from sqlalchemy import func
-
-    from app.core.military import SUPPLY_CLASS_NAMES, determine_supply_status_by_dos
-    from app.models.equipment import EquipmentStatus
-    from app.models.supply import SupplyClass, SupplyStatusRecord
     from app.models.unit import Unit
 
     unit = db.execute(
@@ -137,7 +132,9 @@ def _build_readiness_sync(db: Session, unit, report: Report) -> dict:
     return {
         "report_type": "READINESS",
         "unit_name": unit.name,
-        "overall_readiness_pct": round(total_mc / total_poss * 100, 1) if total_poss else 0,
+        "overall_readiness_pct": round(total_mc / total_poss * 100, 1)
+        if total_poss
+        else 0,
         "equipment": [
             {
                 "tamcn": r.tamcn,
@@ -160,9 +157,7 @@ def _build_rollup_sync(db: Session, unit, report: Report) -> dict:
     """Build rollup data synchronously."""
     from app.models.unit import Unit
 
-    children = db.execute(
-        select(Unit).where(Unit.parent_id == unit.id)
-    ).scalars().all()
+    children = db.execute(select(Unit).where(Unit.parent_id == unit.id)).scalars().all()
 
     return {
         "report_type": "ROLLUP",

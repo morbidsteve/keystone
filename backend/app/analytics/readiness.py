@@ -69,11 +69,13 @@ async def readiness_trend(
         total = row[2] or 0
         pct = round(mc / total * 100, 1) if total > 0 else 0.0
 
-        data_points.append({
-            "date": row[0].isoformat() if row[0] else None,
-            "readiness_pct": pct,
-            "total_mission_capable": mc,
-            "total_possessed": total,
-        })
+        data_points.append(
+            {
+                "date": row[0].isoformat() if row[0] else None,
+                "readiness_pct": pct,
+                "total_mission_capable": mc,
+                "total_possessed": total,
+            }
+        )
 
     return data_points

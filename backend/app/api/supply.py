@@ -32,9 +32,7 @@ async def list_supply_records(
 ):
     """List supply records with filters."""
     accessible = await get_accessible_units(db, current_user)
-    query = select(SupplyStatusRecord).where(
-        SupplyStatusRecord.unit_id.in_(accessible)
-    )
+    query = select(SupplyStatusRecord).where(SupplyStatusRecord.unit_id.in_(accessible))
 
     if unit_id and unit_id in accessible:
         query = query.where(SupplyStatusRecord.unit_id == unit_id)
@@ -47,7 +45,11 @@ async def list_supply_records(
     if date_to:
         query = query.where(SupplyStatusRecord.reported_at <= date_to)
 
-    query = query.order_by(SupplyStatusRecord.reported_at.desc()).offset(offset).limit(limit)
+    query = (
+        query.order_by(SupplyStatusRecord.reported_at.desc())
+        .offset(offset)
+        .limit(limit)
+    )
     result = await db.execute(query)
     return result.scalars().all()
 

@@ -40,7 +40,16 @@ try:
         ws = wb.active
         ws.title = "Equipment"
 
-        headers = ["UNIT", "TAMCN", "NOMENCLATURE", "POSS", "MC", "NMCM", "NMCS", "READINESS %"]
+        headers = [
+            "UNIT",
+            "TAMCN",
+            "NOMENCLATURE",
+            "POSS",
+            "MC",
+            "NMCM",
+            "NMCS",
+            "READINESS %",
+        ]
         ws.append(headers)
 
         data = [

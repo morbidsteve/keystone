@@ -1,7 +1,6 @@
 """Tests for dashboard API endpoints."""
 
 import pytest
-import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,14 +9,11 @@ from app.models.equipment import EquipmentStatus
 from app.models.supply import SupplyClass, SupplyStatus, SupplyStatusRecord
 from app.models.transportation import Movement, MovementStatus
 from app.models.unit import Unit
-from app.models.user import User
 
 
 @pytest.mark.asyncio
 class TestDashboardEndpoints:
-    async def _seed_dashboard_data(
-        self, db_session: AsyncSession, unit: Unit
-    ):
+    async def _seed_dashboard_data(self, db_session: AsyncSession, unit: Unit):
         """Helper to seed data needed for dashboard tests."""
         # Supply data
         for sc in [SupplyClass.I, SupplyClass.III, SupplyClass.V]:

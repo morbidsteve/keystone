@@ -18,7 +18,7 @@ from app.database import Base
 
 
 class SupplyClass(str, enum.Enum):
-    I = "I"
+    I = "I"  # noqa: E741
     II = "II"
     III = "III"
     IV = "IV"
