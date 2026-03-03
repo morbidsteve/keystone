@@ -1,0 +1,44 @@
+# Container hardening policy per DoD Container Hardening Guide v1.2
+
+requirements:
+  non_root_user:
+    enabled: true
+    min_uid: 1000
+    description: "All containers must run as non-root (UID >= 1000)"
+
+  read_only_rootfs:
+    enabled: true
+    description: "Root filesystem must be read-only"
+
+  no_new_privileges:
+    enabled: true
+    description: "no-new-privileges security option required"
+
+  drop_all_capabilities:
+    enabled: true
+    description: "All Linux capabilities must be dropped"
+
+  no_package_manager:
+    warn: true
+    description: "Package managers should not be in final image"
+
+  no_shell:
+    warn: true
+    description: "Shell should not be in final image (distroless preferred)"
+
+  healthcheck:
+    enabled: true
+    description: "HEALTHCHECK instruction required in Dockerfile"
+
+  no_latest_tag:
+    enabled: true
+    description: "Images must use specific version tags, not :latest"
+
+  signed:
+    enabled: true
+    description: "All images must be signed with Cosign"
+
+  sbom:
+    enabled: true
+    format: "spdx-json"
+    description: "SPDX 2.3 SBOM must be generated and attested"

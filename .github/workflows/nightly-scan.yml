@@ -1,0 +1,252 @@
+name: KEYSTONE Nightly Vulnerability Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 0600 UTC daily
+  workflow_dispatch:
+    inputs:
+      fail-on-severity:
+        description: 'Minimum severity to fail on (negligible, low, medium, high, critical)'
+        required: false
+        default: 'critical'
+        type: choice
+        options:
+          - negligible
+          - low
+          - medium
+          - high
+          - critical
+
+permissions:
+  contents: read
+  packages: read
+  issues: write
+  security-events: write
+
+env:
+  REGISTRY: ghcr.io
+  FAIL_ON_SEVERITY: ${{ github.event.inputs.fail-on-severity || 'critical' }}
+
+jobs:
+  rescan-images:
+    name: "Rescan: ${{ matrix.image-name }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image-name: keystone-backend
+            image-ref: ghcr.io/${{ github.repository }}/keystone-backend:main
+            sbom-artifact: backend-sbom
+            sbom-file: backend-sbom.spdx.json
+          - image-name: keystone-frontend
+            image-ref: ghcr.io/${{ github.repository }}/keystone-frontend:main
+            sbom-artifact: frontend-sbom
+            sbom-file: frontend-sbom.spdx.json
+    outputs:
+      backend-result: ${{ steps.grype-scan.outcome }}
+      frontend-result: ${{ steps.grype-scan.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install security tools
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Update Grype vulnerability database
+        run: grype db update
+
+      - name: Pull latest image
+        run: docker pull ${{ matrix.image-ref }}
+
+      - name: Generate fresh SBOM
+        run: |
+          syft ${{ matrix.image-ref }} \
+            -o spdx-json=${{ matrix.sbom-file }} \
+            -o cyclonedx-json=${{ matrix.image-name }}-sbom.cyclonedx.json
+
+      - name: Grype scan against updated CVE database
+        id: grype-scan
+        continue-on-error: true
+        run: |
+          grype sbom:${{ matrix.sbom-file }} \
+            --fail-on ${{ env.FAIL_ON_SEVERITY }} \
+            --output json --file grype-${{ matrix.image-name }}-report.json
+          grype sbom:${{ matrix.sbom-file }} \
+            --output table --file grype-${{ matrix.image-name }}-table.txt
+
+      - name: Trivy rescan
+        id: trivy-scan
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ matrix.image-ref }}
+          format: 'sarif'
+          output: 'trivy-${{ matrix.image-name }}.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.image-name }}.sarif
+          category: nightly-trivy-${{ matrix.image-name }}
+        continue-on-error: true
+
+      - name: Upload scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-scan-${{ matrix.image-name }}
+          path: |
+            grype-${{ matrix.image-name }}-report.json
+            grype-${{ matrix.image-name }}-table.txt
+            ${{ matrix.sbom-file }}
+            ${{ matrix.image-name }}-sbom.cyclonedx.json
+          retention-days: 90
+
+      - name: Parse vulnerability counts
+        if: always()
+        id: vuln-counts
+        run: |
+          if [ -f "grype-${{ matrix.image-name }}-report.json" ]; then
+            CRITICAL=$(python3 -c "
+          import json
+          data = json.load(open('grype-${{ matrix.image-name }}-report.json'))
+          matches = data.get('matches', [])
+          count = sum(1 for m in matches if m.get('vulnerability', {}).get('severity', '').lower() == 'critical')
+          print(count)
+          " 2>/dev/null || echo "0")
+            HIGH=$(python3 -c "
+          import json
+          data = json.load(open('grype-${{ matrix.image-name }}-report.json'))
+          matches = data.get('matches', [])
+          count = sum(1 for m in matches if m.get('vulnerability', {}).get('severity', '').lower() == 'high')
+          print(count)
+          " 2>/dev/null || echo "0")
+            MEDIUM=$(python3 -c "
+          import json
+          data = json.load(open('grype-${{ matrix.image-name }}-report.json'))
+          matches = data.get('matches', [])
+          count = sum(1 for m in matches if m.get('vulnerability', {}).get('severity', '').lower() == 'medium')
+          print(count)
+          " 2>/dev/null || echo "0")
+          else
+            CRITICAL=0
+            HIGH=0
+            MEDIUM=0
+          fi
+          echo "critical=$CRITICAL" >> "$GITHUB_OUTPUT"
+          echo "high=$HIGH" >> "$GITHUB_OUTPUT"
+          echo "medium=$MEDIUM" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Issue on failure
+        if: failure() || steps.grype-scan.outcome == 'failure' || steps.trivy-scan.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const critical = '${{ steps.vuln-counts.outputs.critical }}';
+            const high = '${{ steps.vuln-counts.outputs.high }}';
+            const medium = '${{ steps.vuln-counts.outputs.medium }}';
+            const imageName = '${{ matrix.image-name }}';
+            const imageRef = '${{ matrix.image-ref }}';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const now = new Date().toISOString();
+
+            const title = `[SECURITY] Vulnerabilities detected in ${imageName} — ${now.split('T')[0]}`;
+            const body = `## Nightly Vulnerability Scan Alert
+
+            **Image:** \`${imageRef}\`
+            **Scan Date:** ${now}
+            **Pipeline Run:** [View Details](${runUrl})
+
+            ### Vulnerability Summary
+
+            | Severity | Count |
+            |----------|-------|
+            | Critical | ${critical} |
+            | High | ${high} |
+            | Medium | ${medium} |
+
+            ### Required Actions
+
+            1. Review the [scan artifacts](${runUrl}) for full vulnerability details
+            2. Assess each critical/high CVE for exploitability in our context
+            3. Update base images and dependencies to patch known vulnerabilities
+            4. If a CVE cannot be patched, document the risk acceptance
+
+            ### References
+
+            - [Grype Report](${runUrl}) (download \`nightly-scan-${imageName}\` artifact)
+            - [Trivy SARIF](${runUrl}) (uploaded to Security tab)
+
+            ---
+            *This issue was automatically created by the KEYSTONE nightly vulnerability scan.*`;
+
+            // Check for existing open issues to avoid duplicates
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'security,vulnerability,automated',
+              per_page: 100
+            });
+
+            const duplicatePrefix = `[SECURITY] Vulnerabilities detected in ${imageName}`;
+            const hasDuplicate = existingIssues.data.some(issue =>
+              issue.title.startsWith(duplicatePrefix)
+            );
+
+            if (hasDuplicate) {
+              console.log(`Open issue already exists for ${imageName}, skipping creation`);
+              // Add a comment to the existing issue instead
+              const existing = existingIssues.data.find(issue =>
+                issue.title.startsWith(duplicatePrefix)
+              );
+              if (existing) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: `### Rescan Update — ${now}\n\nVulnerabilities still present:\n- Critical: ${critical}\n- High: ${high}\n- Medium: ${medium}\n\n[Pipeline Run](${runUrl})`
+                });
+              }
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'vulnerability', 'automated']
+              });
+            }
+
+  rescan-summary:
+    name: "Nightly Scan Summary"
+    needs: rescan-images
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarize results
+        run: |
+          echo "======================================"
+          echo "  KEYSTONE NIGHTLY SCAN SUMMARY"
+          echo "======================================"
+          echo "Scan Date: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          echo "Fail Threshold: ${{ env.FAIL_ON_SEVERITY }}"
+          echo ""
+          echo "Backend Result: ${{ needs.rescan-images.result }}"
+          echo "Frontend Result: ${{ needs.rescan-images.result }}"
+          echo "======================================"
+          if [ "${{ needs.rescan-images.result }}" != "success" ]; then
+            echo "WARNING: Vulnerabilities detected — check GitHub Issues for details"
+            exit 1
+          fi
+          echo "All images passed nightly vulnerability scan"

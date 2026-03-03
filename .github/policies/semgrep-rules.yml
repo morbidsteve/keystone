@@ -1,0 +1,53 @@
+rules:
+  - id: keystone-raw-sql-injection
+    patterns:
+      - pattern: $DB.execute(f"..." % ...)
+      - pattern: $DB.execute("..." + $INPUT)
+      - pattern: text($USER_INPUT)
+    message: "Potential SQL injection - use parameterized queries"
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: CWE-89
+      owasp: A03:2021
+
+  - id: keystone-hardcoded-secret
+    patterns:
+      - pattern: $VAR = "..."
+        metavariable-regex:
+          metavariable: $VAR
+          regex: '.*(password|secret|api_key|token|credential).*'
+    message: "Hardcoded credential detected - use environment variables or secrets manager"
+    languages: [python, typescript, javascript]
+    severity: ERROR
+    metadata:
+      cwe: CWE-798
+
+  - id: keystone-log-sensitive
+    patterns:
+      - pattern: logger.$METHOD(..., password=..., ...)
+      - pattern: logger.$METHOD(..., token=..., ...)
+      - pattern: logger.$METHOD(..., secret=..., ...)
+    message: "Sensitive data in log output - mask before logging"
+    languages: [python]
+    severity: WARNING
+    metadata:
+      cwe: CWE-532
+
+  - id: keystone-pickle-usage
+    pattern: pickle.loads(...)
+    message: "pickle.loads is unsafe - use JSON or a safe serializer"
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: CWE-502
+
+  - id: keystone-ssrf-request
+    patterns:
+      - pattern: requests.get($URL, ...)
+      - pattern: httpx.get($URL, ...)
+    message: "Validate URL before making external requests (SSRF risk)"
+    languages: [python]
+    severity: WARNING
+    metadata:
+      cwe: CWE-918
