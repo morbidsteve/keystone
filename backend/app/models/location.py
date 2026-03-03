@@ -3,6 +3,7 @@
 import enum
 
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Enum as SQLEnum,
@@ -63,6 +64,8 @@ class RouteType(str, enum.Enum):
     MSR = "MSR"
     ASR = "ASR"
     SUPPLY_ROUTE = "SUPPLY_ROUTE"
+    CONVOY_ROUTE = "CONVOY_ROUTE"
+    AIR_CORRIDOR = "AIR_CORRIDOR"
 
 
 class Location(Base):
@@ -79,11 +82,16 @@ class Location(Base):
     altitude = Column(Float, nullable=True)
     heading = Column(Float, nullable=True)
     speed_kph = Column(Float, nullable=True)
+    mgrs = Column(String(20), nullable=True)
     position_source = Column(SQLEnum(PositionSource), default=PositionSource.CONFIGURED)
     position_accuracy_m = Column(Float, nullable=True)
+    position_override = Column(Boolean, default=False)
+    placed_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     last_updated = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+
+    placed_by = relationship("User", foreign_keys=[placed_by_id])
 
 
 class SupplyPoint(Base):
@@ -96,6 +104,7 @@ class SupplyPoint(Base):
     point_type = Column(SQLEnum(SupplyPointType), nullable=False)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+    mgrs = Column(String(20), nullable=True)
     parent_unit_id = Column(Integer, ForeignKey("units.id"), nullable=True)
     status = Column(SQLEnum(SupplyPointStatus), default=SupplyPointStatus.ACTIVE)
     capacity_notes = Column(Text, nullable=True)
@@ -117,4 +126,12 @@ class Route(Base):
     status = Column(SQLEnum(RouteStatus), default=RouteStatus.OPEN)
     waypoints = Column(JSON, nullable=False, default=list)
     description = Column(Text, nullable=True)
+    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    updated_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    created_by = relationship("User", foreign_keys=[created_by_id])
+    updated_by = relationship("User", foreign_keys=[updated_by_id])

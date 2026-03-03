@@ -34,6 +34,7 @@ export interface MapUnit {
   echelon: string;
   latitude: number;
   longitude: number;
+  mgrs?: string;
   supply_status: string;
   readiness_pct: number;
   worst_supply_class: string;
@@ -50,6 +51,7 @@ export interface ConvoyEndpoint {
   name: string;
   lat: number;
   lon: number;
+  mgrs?: string;
 }
 
 export interface MapConvoy {
@@ -57,7 +59,7 @@ export interface MapConvoy {
   name: string;
   origin: ConvoyEndpoint;
   destination: ConvoyEndpoint;
-  current_position: { lat: number; lon: number } | null;
+  current_position: { lat: number; lon: number; mgrs?: string } | null;
   route_geometry: [number, number][];
   status: string;
   vehicle_count: number;
@@ -74,9 +76,17 @@ export interface MapSupplyPoint {
   point_type: string;
   latitude: number;
   longitude: number;
+  mgrs?: string;
   status: string;
   parent_unit_name: string;
   capacity_notes: string;
+}
+
+export interface RouteWaypoint {
+  lat: number;
+  lon: number;
+  mgrs?: string;
+  label?: string;
 }
 
 export interface MapRoute {
@@ -84,7 +94,7 @@ export interface MapRoute {
   name: string;
   route_type: string;
   status: string;
-  waypoints: [number, number][];
+  waypoints: RouteWaypoint[];
   description: string;
 }
 
@@ -96,6 +106,7 @@ export interface MapAlert {
   unit_name: string;
   latitude: number;
   longitude: number;
+  mgrs?: string;
 }
 
 export interface MapData {
@@ -117,6 +128,7 @@ const mockMapData: MapData = {
       echelon: 'MEF',
       latitude: 33.3,
       longitude: -117.35,
+      mgrs: '11SMS6741584600',
       supply_status: 'GREEN',
       readiness_pct: 92,
       worst_supply_class: 'V',
@@ -153,6 +165,7 @@ const mockMapData: MapData = {
       echelon: 'DIVISION',
       latitude: 33.31,
       longitude: -117.32,
+      mgrs: '11SMS7021185700',
       supply_status: 'AMBER',
       readiness_pct: 85,
       worst_supply_class: 'V',
@@ -178,6 +191,7 @@ const mockMapData: MapData = {
       echelon: 'REGIMENT',
       latitude: 33.28,
       longitude: -117.37,
+      mgrs: '11SMS6554582389',
       supply_status: 'GREEN',
       readiness_pct: 91,
       worst_supply_class: 'IX',
@@ -193,6 +207,7 @@ const mockMapData: MapData = {
       echelon: 'BATTALION',
       latitude: 33.27,
       longitude: -117.34,
+      mgrs: '11SMS6833581271',
       supply_status: 'RED',
       readiness_pct: 68,
       worst_supply_class: 'V',
@@ -228,6 +243,7 @@ const mockMapData: MapData = {
       echelon: 'BATTALION',
       latitude: 33.26,
       longitude: -117.39,
+      mgrs: '11SMS6367480178',
       supply_status: 'AMBER',
       readiness_pct: 79,
       worst_supply_class: 'III',
@@ -241,9 +257,9 @@ const mockMapData: MapData = {
     {
       convoy_id: 'cv1',
       name: 'SUPPLY RUN ALPHA',
-      origin: { name: 'LOG BASE CHARLIE', lat: 33.35, lon: -117.30 },
-      destination: { name: 'I MEF HQ', lat: 33.30, lon: -117.35 },
-      current_position: { lat: 33.33, lon: -117.32 },
+      origin: { name: 'LOG BASE CHARLIE', lat: 33.35, lon: -117.30, mgrs: '11SMS7208690129' },
+      destination: { name: 'I MEF HQ', lat: 33.30, lon: -117.35, mgrs: '11SMS6741584600' },
+      current_position: { lat: 33.33, lon: -117.32, mgrs: '11SMS7021887917' },
       route_geometry: [
         [33.35, -117.30],
         [33.34, -117.31],
@@ -263,9 +279,9 @@ const mockMapData: MapData = {
     {
       convoy_id: 'cv2',
       name: 'EMERGENCY RESUPPLY',
-      origin: { name: 'ASP BRAVO', lat: 33.32, lon: -117.28 },
-      destination: { name: '1/1 BN CP', lat: 33.27, lon: -117.34 },
-      current_position: { lat: 33.30, lon: -117.30 },
+      origin: { name: 'ASP BRAVO', lat: 33.32, lon: -117.28, mgrs: '11SMS7393886798' },
+      destination: { name: '1/1 BN CP', lat: 33.27, lon: -117.34, mgrs: '11SMS6833581271' },
+      current_position: { lat: 33.30, lon: -117.30, mgrs: '11SMS7207084585' },
       route_geometry: [
         [33.32, -117.28],
         [33.31, -117.29],
@@ -285,8 +301,8 @@ const mockMapData: MapData = {
     {
       convoy_id: 'cv3',
       name: 'ROUTINE SUPPLY BRAVO',
-      origin: { name: 'DEPOT ALPHA', lat: 33.36, lon: -117.25 },
-      destination: { name: '2/1 BN CP', lat: 33.26, lon: -117.39 },
+      origin: { name: 'DEPOT ALPHA', lat: 33.36, lon: -117.25, mgrs: '11SMS7673691244' },
+      destination: { name: '2/1 BN CP', lat: 33.26, lon: -117.39, mgrs: '11SMS6367480178' },
       current_position: null,
       route_geometry: [
         [33.36, -117.25],
@@ -311,6 +327,7 @@ const mockMapData: MapData = {
       point_type: 'LOG_BASE',
       latitude: 33.35,
       longitude: -117.30,
+      mgrs: '11SMS7208690129',
       status: 'ACTIVE',
       parent_unit_name: 'CLR-1',
       capacity_notes: 'Full capacity, 3-day surge stock',
@@ -321,6 +338,7 @@ const mockMapData: MapData = {
       point_type: 'AMMO_SUPPLY_POINT',
       latitude: 33.32,
       longitude: -117.28,
+      mgrs: '11SMS7393886798',
       status: 'ACTIVE',
       parent_unit_name: '1st EOD Co',
       capacity_notes: 'CL V primary distribution',
@@ -331,6 +349,7 @@ const mockMapData: MapData = {
       point_type: 'FARP',
       latitude: 33.29,
       longitude: -117.40,
+      mgrs: '11SMS6275683508',
       status: 'ACTIVE',
       parent_unit_name: 'HMLA-367',
       capacity_notes: 'JP-5, 10K gal capacity',
@@ -341,6 +360,7 @@ const mockMapData: MapData = {
       point_type: 'LZ',
       latitude: 33.25,
       longitude: -117.36,
+      mgrs: '11SMS6646579060',
       status: 'PLANNED',
       parent_unit_name: '1/1 BN',
       capacity_notes: 'Emergency resupply LZ, CH-53 capable',
@@ -351,6 +371,7 @@ const mockMapData: MapData = {
       point_type: 'WATER_POINT',
       latitude: 33.28,
       longitude: -117.33,
+      mgrs: '11SMS6927082377',
       status: 'ACTIVE',
       parent_unit_name: '7th ESB',
       capacity_notes: 'ROWPU operational, 20K gal/day',
@@ -363,12 +384,12 @@ const mockMapData: MapData = {
       route_type: 'MSR',
       status: 'OPEN',
       waypoints: [
-        [33.36, -117.25],
-        [33.34, -117.28],
-        [33.32, -117.31],
-        [33.30, -117.34],
-        [33.28, -117.37],
-        [33.26, -117.40],
+        { lat: 33.36, lon: -117.25, mgrs: '11SMS7673691244', label: 'DEPOT ALPHA' },
+        { lat: 33.34, lon: -117.28 },
+        { lat: 33.32, lon: -117.31 },
+        { lat: 33.30, lon: -117.34 },
+        { lat: 33.28, lon: -117.37 },
+        { lat: 33.26, lon: -117.40, mgrs: '11SMS6275680400', label: 'FARP DELTA' },
       ],
       description: 'Main supply route, Camp Pendleton N-S axis',
     },
@@ -378,12 +399,12 @@ const mockMapData: MapData = {
       route_type: 'ASR',
       status: 'OPEN',
       waypoints: [
-        [33.30, -117.25],
-        [33.30, -117.28],
-        [33.30, -117.31],
-        [33.30, -117.34],
-        [33.30, -117.37],
-        [33.30, -117.40],
+        { lat: 33.30, lon: -117.25, label: 'ASR LION START' },
+        { lat: 33.30, lon: -117.28 },
+        { lat: 33.30, lon: -117.31 },
+        { lat: 33.30, lon: -117.34 },
+        { lat: 33.30, lon: -117.37 },
+        { lat: 33.30, lon: -117.40, label: 'ASR LION END' },
       ],
       description: 'Alternate E-W supply route',
     },
@@ -393,11 +414,11 @@ const mockMapData: MapData = {
       route_type: 'ASR',
       status: 'RESTRICTED',
       waypoints: [
-        [33.35, -117.35],
-        [33.33, -117.35],
-        [33.31, -117.36],
-        [33.29, -117.37],
-        [33.27, -117.38],
+        { lat: 33.35, lon: -117.35 },
+        { lat: 33.33, lon: -117.35 },
+        { lat: 33.31, lon: -117.36, mgrs: '11SMS6648885712', label: 'RESTRICTION ZONE' },
+        { lat: 33.29, lon: -117.37 },
+        { lat: 33.27, lon: -117.38 },
       ],
       description: 'Secondary route, restricted due to construction',
     },
@@ -411,6 +432,7 @@ const mockMapData: MapData = {
       unit_name: '1/1',
       latitude: 33.27,
       longitude: -117.34,
+      mgrs: '11SMS6833581271',
     },
     {
       id: 'a2',
@@ -420,6 +442,7 @@ const mockMapData: MapData = {
       unit_name: '1 MARDIV',
       latitude: 33.31,
       longitude: -117.32,
+      mgrs: '11SMS7021185700',
     },
     {
       id: 'a3',
@@ -429,6 +452,7 @@ const mockMapData: MapData = {
       unit_name: '',
       latitude: 33.31,
       longitude: -117.36,
+      mgrs: '11SMS6648885712',
     },
   ],
 };
@@ -468,5 +492,187 @@ export async function getMapRoutes(): Promise<MapRoute[]> {
 export async function getMapAlerts(): Promise<MapAlert[]> {
   if (isDemoMode) return mockMapData.alerts;
   const response = await apiClient.get<ApiResponse<MapAlert[]>>('/map/alerts');
+  return response.data.data;
+}
+
+// ── Position Update ───────────────────────────────────────────────────
+
+export async function updateUnitPosition(
+  unitId: string,
+  data: { latitude?: number; longitude?: number; mgrs?: string },
+): Promise<MapUnit> {
+  if (isDemoMode) {
+    const unit = mockMapData.units.find((u) => u.unit_id === unitId);
+    if (!unit) throw new Error(`Unit ${unitId} not found`);
+    if (data.latitude !== undefined) unit.latitude = data.latitude;
+    if (data.longitude !== undefined) unit.longitude = data.longitude;
+    if (data.mgrs !== undefined) unit.mgrs = data.mgrs;
+    unit.last_updated = new Date().toISOString();
+    return { ...unit };
+  }
+  const response = await apiClient.post<ApiResponse<MapUnit>>(
+    `/map/units/${unitId}/position`,
+    data,
+  );
+  return response.data.data;
+}
+
+// ── Supply Points CRUD ────────────────────────────────────────────────
+
+export async function createSupplyPoint(
+  data: Partial<MapSupplyPoint>,
+): Promise<MapSupplyPoint> {
+  if (isDemoMode) {
+    const newPoint: MapSupplyPoint = {
+      id: 'sp-new-' + Date.now(),
+      name: data.name || 'New Supply Point',
+      point_type: data.point_type || 'LOG_BASE',
+      latitude: data.latitude || 0,
+      longitude: data.longitude || 0,
+      mgrs: data.mgrs,
+      status: data.status || 'PLANNED',
+      parent_unit_name: data.parent_unit_name || '',
+      capacity_notes: data.capacity_notes || '',
+    };
+    mockMapData.supplyPoints.push(newPoint);
+    return { ...newPoint };
+  }
+  const response = await apiClient.post<ApiResponse<MapSupplyPoint>>(
+    '/map/supply-points',
+    data,
+  );
+  return response.data.data;
+}
+
+export async function updateSupplyPoint(
+  id: string,
+  data: Partial<MapSupplyPoint>,
+): Promise<MapSupplyPoint> {
+  if (isDemoMode) {
+    const idx = mockMapData.supplyPoints.findIndex((sp) => sp.id === id);
+    if (idx === -1) throw new Error(`Supply point ${id} not found`);
+    mockMapData.supplyPoints[idx] = { ...mockMapData.supplyPoints[idx], ...data };
+    return { ...mockMapData.supplyPoints[idx] };
+  }
+  const response = await apiClient.put<ApiResponse<MapSupplyPoint>>(
+    `/map/supply-points/${id}`,
+    data,
+  );
+  return response.data.data;
+}
+
+export async function updateSupplyPointPosition(
+  id: string,
+  data: { latitude?: number; longitude?: number; mgrs?: string },
+): Promise<MapSupplyPoint> {
+  if (isDemoMode) {
+    const sp = mockMapData.supplyPoints.find((s) => s.id === id);
+    if (!sp) throw new Error(`Supply point ${id} not found`);
+    if (data.latitude !== undefined) sp.latitude = data.latitude;
+    if (data.longitude !== undefined) sp.longitude = data.longitude;
+    if (data.mgrs !== undefined) sp.mgrs = data.mgrs;
+    return { ...sp };
+  }
+  const response = await apiClient.put<ApiResponse<MapSupplyPoint>>(
+    `/map/supply-points/${id}/position`,
+    data,
+  );
+  return response.data.data;
+}
+
+export async function deleteSupplyPoint(id: string): Promise<void> {
+  if (isDemoMode) {
+    const idx = mockMapData.supplyPoints.findIndex((sp) => sp.id === id);
+    if (idx !== -1) mockMapData.supplyPoints.splice(idx, 1);
+    return;
+  }
+  await apiClient.delete(`/map/supply-points/${id}`);
+}
+
+// ── Routes CRUD ───────────────────────────────────────────────────────
+
+export async function createRoute(
+  data: Partial<MapRoute>,
+): Promise<MapRoute> {
+  if (isDemoMode) {
+    const newRoute: MapRoute = {
+      id: 'r-new-' + Date.now(),
+      name: data.name || 'New Route',
+      route_type: data.route_type || 'ASR',
+      status: data.status || 'OPEN',
+      waypoints: data.waypoints || [],
+      description: data.description || '',
+    };
+    mockMapData.routes.push(newRoute);
+    return { ...newRoute };
+  }
+  const response = await apiClient.post<ApiResponse<MapRoute>>(
+    '/map/routes',
+    data,
+  );
+  return response.data.data;
+}
+
+export async function updateRoute(
+  id: string,
+  data: Partial<MapRoute>,
+): Promise<MapRoute> {
+  if (isDemoMode) {
+    const idx = mockMapData.routes.findIndex((r) => r.id === id);
+    if (idx === -1) throw new Error(`Route ${id} not found`);
+    mockMapData.routes[idx] = { ...mockMapData.routes[idx], ...data };
+    return { ...mockMapData.routes[idx] };
+  }
+  const response = await apiClient.put<ApiResponse<MapRoute>>(
+    `/map/routes/${id}`,
+    data,
+  );
+  return response.data.data;
+}
+
+// ── Nearby Query ──────────────────────────────────────────────────────
+
+export interface NearbyResult {
+  units: MapUnit[];
+  supplyPoints: MapSupplyPoint[];
+  alerts: MapAlert[];
+}
+
+export async function getNearby(params: {
+  lat?: number;
+  lon?: number;
+  mgrs?: string;
+  radius_km?: number;
+}): Promise<NearbyResult> {
+  if (isDemoMode) {
+    const radiusKm = params.radius_km ?? 10;
+    const centerLat = params.lat ?? 33.3;
+    const centerLon = params.lon ?? -117.35;
+
+    // Approximate distance filter (1 degree lat ~ 111km)
+    const degThreshold = radiusKm / 111;
+
+    const units = mockMapData.units.filter(
+      (u) =>
+        Math.abs(u.latitude - centerLat) <= degThreshold &&
+        Math.abs(u.longitude - centerLon) <= degThreshold,
+    );
+    const supplyPoints = mockMapData.supplyPoints.filter(
+      (sp) =>
+        Math.abs(sp.latitude - centerLat) <= degThreshold &&
+        Math.abs(sp.longitude - centerLon) <= degThreshold,
+    );
+    const alerts = mockMapData.alerts.filter(
+      (a) =>
+        Math.abs(a.latitude - centerLat) <= degThreshold &&
+        Math.abs(a.longitude - centerLon) <= degThreshold,
+    );
+
+    return { units, supplyPoints, alerts };
+  }
+  const response = await apiClient.get<ApiResponse<NearbyResult>>(
+    '/map/nearby',
+    { params },
+  );
   return response.data.data;
 }

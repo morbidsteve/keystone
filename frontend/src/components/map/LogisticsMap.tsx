@@ -2,13 +2,19 @@ import { useState, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { MapData } from '@/api/map';
+import { useMapStore } from '@/stores/mapStore';
 import MapControls from './MapControls';
 import MapLegend from './MapLegend';
+import { DetailPanel } from './detail/DetailPanel';
 import UnitLayer from './layers/UnitLayer';
 import ConvoyLayer from './layers/ConvoyLayer';
 import SupplyPointLayer from './layers/SupplyPointLayer';
 import RouteLayer from './layers/RouteLayer';
 import AlertLayer from './layers/AlertLayer';
+import MapContextMenu from './MapContextMenu';
+import CursorCoordinateDisplay from './CursorCoordinateDisplay';
+import MeasurementOverlay from './MeasurementOverlay';
+import PlaceEntityModal from './placement/PlaceEntityModal';
 
 interface LayerState {
   units: boolean;
@@ -51,6 +57,8 @@ const TILE_ATTRIBUTIONS: Record<string, string> = {
 };
 
 export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProps) {
+  const detailPanelOpen = useMapStore((s) => s.detailPanelOpen);
+
   const [layers, setLayers] = useState<LayerState>({
     units: true,
     supplyOverlay: true,
@@ -77,48 +85,67 @@ export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProp
   return (
     <div style={{ height, width: '100%', position: 'relative' }}>
       {/* Map */}
-      <MapContainer
-        center={CAMP_PENDLETON_CENTER}
-        zoom={DEFAULT_ZOOM}
-        style={{ height: '100%', width: '100%' }}
-        zoomControl={true}
+      <div
+        style={{
+          height: '100%',
+          width: detailPanelOpen ? 'calc(100% - 400px)' : '100%',
+          transition: 'width 0.3s ease',
+        }}
       >
-        <TileLayer
-          key={baseMap}
-          url={tileUrl}
-          attribution={tileAttribution}
-          maxZoom={19}
+        <MapContainer
+          center={CAMP_PENDLETON_CENTER}
+          zoom={DEFAULT_ZOOM}
+          style={{ height: '100%', width: '100%' }}
+          zoomControl={true}
+        >
+          <TileLayer
+            key={baseMap}
+            url={tileUrl}
+            attribution={tileAttribution}
+            maxZoom={19}
+          />
+
+          {layers.routes && <RouteLayer routes={data.routes} />}
+
+          {layers.convoys && (
+            <ConvoyLayer convoys={data.convoys} showRoutes={layers.convoyRoutes} />
+          )}
+
+          {layers.supplyPoints && (
+            <SupplyPointLayer supplyPoints={data.supplyPoints} />
+          )}
+
+          {layers.units && (
+            <UnitLayer units={data.units} showSupplyOverlay={layers.supplyOverlay} />
+          )}
+
+          {layers.alerts && <AlertLayer alerts={data.alerts} />}
+
+          {/* Interactive map overlays (inside MapContainer for useMapEvents) */}
+          <MapContextMenu />
+          <CursorCoordinateDisplay />
+          <MeasurementOverlay />
+        </MapContainer>
+
+        {/* Controls overlay */}
+        <MapControls
+          layers={layers}
+          onToggleLayer={handleToggleLayer}
+          baseMap={baseMap}
+          onChangeBaseMap={setBaseMap}
+          collapsed={controlsCollapsed}
+          onToggleCollapsed={() => setControlsCollapsed(!controlsCollapsed)}
         />
 
-        {layers.routes && <RouteLayer routes={data.routes} />}
+        {/* Legend overlay */}
+        <MapLegend layers={layers} />
+      </div>
 
-        {layers.convoys && (
-          <ConvoyLayer convoys={data.convoys} showRoutes={layers.convoyRoutes} />
-        )}
+      {/* Detail slide-out panel (outside MapContainer) */}
+      <DetailPanel />
 
-        {layers.supplyPoints && (
-          <SupplyPointLayer supplyPoints={data.supplyPoints} />
-        )}
-
-        {layers.units && (
-          <UnitLayer units={data.units} showSupplyOverlay={layers.supplyOverlay} />
-        )}
-
-        {layers.alerts && <AlertLayer alerts={data.alerts} />}
-      </MapContainer>
-
-      {/* Controls overlay */}
-      <MapControls
-        layers={layers}
-        onToggleLayer={handleToggleLayer}
-        baseMap={baseMap}
-        onChangeBaseMap={setBaseMap}
-        collapsed={controlsCollapsed}
-        onToggleCollapsed={() => setControlsCollapsed(!controlsCollapsed)}
-      />
-
-      {/* Legend overlay */}
-      <MapLegend layers={layers} />
+      {/* Placement modal (outside MapContainer) */}
+      <PlaceEntityModal />
 
       {/* Alert pulse animation + popup styles */}
       <style>{`

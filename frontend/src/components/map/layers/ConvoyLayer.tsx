@@ -1,8 +1,8 @@
-import { Marker, Polyline, Popup, Tooltip, CircleMarker } from 'react-leaflet';
+import { Marker, Polyline, Tooltip, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 import { useMemo } from 'react';
 import type { MapConvoy } from '@/api/map';
-import ConvoyPopup from '../popups/ConvoyPopup';
+import { useMapStore } from '@/stores/mapStore';
 
 interface ConvoyLayerProps {
   convoys: MapConvoy[];
@@ -59,6 +59,7 @@ function createTruckIcon(status: string): L.DivIcon {
 }
 
 function ConvoyMarker({ convoy }: { convoy: MapConvoy }) {
+  const selectEntity = useMapStore((s) => s.selectEntity);
   const truckIcon = useMemo(
     () => createTruckIcon(convoy.status),
     [convoy.status],
@@ -70,6 +71,9 @@ function ConvoyMarker({ convoy }: { convoy: MapConvoy }) {
     <Marker
       position={[convoy.current_position.lat, convoy.current_position.lon]}
       icon={truckIcon}
+      eventHandlers={{
+        click: () => selectEntity('convoy', convoy.convoy_id, convoy),
+      }}
     >
       <Tooltip direction="top" offset={[0, -14]} opacity={0.95}>
         <div
@@ -85,9 +89,6 @@ function ConvoyMarker({ convoy }: { convoy: MapConvoy }) {
           {convoy.name}
         </div>
       </Tooltip>
-      <Popup maxWidth={300} minWidth={240} closeButton={true} className="keystone-popup">
-        <ConvoyPopup convoy={convoy} />
-      </Popup>
     </Marker>
   );
 }

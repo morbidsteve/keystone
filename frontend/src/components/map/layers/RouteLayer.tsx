@@ -1,5 +1,6 @@
 import { Polyline, Tooltip } from 'react-leaflet';
 import type { MapRoute } from '@/api/map';
+import { useMapStore } from '@/stores/mapStore';
 
 interface RouteLayerProps {
   routes: MapRoute[];
@@ -39,12 +40,14 @@ function getRouteStyle(routeType: string, status: string): {
 }
 
 export default function RouteLayer({ routes }: RouteLayerProps) {
+  const selectEntity = useMapStore((s) => s.selectEntity);
+
   return (
     <>
       {routes.map((route) => {
         const style = getRouteStyle(route.route_type, route.status);
         const positions = route.waypoints.map(
-          (wp) => [wp[0], wp[1]] as [number, number],
+          (wp) => [wp.lat, wp.lon] as [number, number],
         );
 
         if (positions.length < 2) return null;
@@ -58,6 +61,9 @@ export default function RouteLayer({ routes }: RouteLayerProps) {
               weight: style.weight,
               dashArray: style.dashArray,
               opacity: style.opacity,
+            }}
+            eventHandlers={{
+              click: () => selectEntity('route', route.id, route),
             }}
           >
             <Tooltip sticky opacity={0.9}>
