@@ -520,8 +520,10 @@ jobs:
           COSIGN_EXPERIMENTAL: "1"
         run: |
           cosign verify --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity-regexp "https://github.com/morbidsteve/keystone/.github/workflows/ci.yml@refs/(heads/main|tags/v.*)" \
             ${{ needs.build-backend.outputs.image-ref }}@${{ needs.build-backend.outputs.digest }}
           cosign verify --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity-regexp "https://github.com/morbidsteve/keystone/.github/workflows/ci.yml@refs/(heads/main|tags/v.*)" \
             ${{ needs.build-frontend.outputs.image-ref }}@${{ needs.build-frontend.outputs.digest }}
 
   # ============================================================
