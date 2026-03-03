@@ -111,120 +111,139 @@ async def seed_sample_data_from_session(db: AsyncSession):
     alert_count = 0
 
     for unit in units:
-            for day_offset in range(30):
-                report_date = now - timedelta(days=day_offset)
+        for day_offset in range(30):
+            report_date = now - timedelta(days=day_offset)
 
-                # Supply records (more items for BN, fewer for CO)
-                classes_to_use = list(SUPPLY_ITEMS.keys())
-                if unit.echelon == Echelon.CO:
-                    classes_to_use = random.sample(classes_to_use, min(4, len(classes_to_use)))
+            # Supply records (more items for BN, fewer for CO)
+            classes_to_use = list(SUPPLY_ITEMS.keys())
+            if unit.echelon == Echelon.CO:
+                classes_to_use = random.sample(
+                    classes_to_use, min(4, len(classes_to_use))
+                )
 
-                for sc in classes_to_use:
-                    items = SUPPLY_ITEMS[sc]
-                    for item_name, base_required, daily_rate in items:
-                        # Add randomness for realism
-                        scale = 0.3 if unit.echelon == Echelon.CO else 1.0
-                        required = base_required * scale
-                        # Simulate consumption over time
-                        consumed = daily_rate * scale * day_offset * random.uniform(0.8, 1.2)
-                        on_hand = max(0, required * random.uniform(0.5, 1.1) - consumed * 0.1)
-                        dos = on_hand / (daily_rate * scale) if daily_rate * scale > 0 else 99
-                        dos = min(dos, 30)
+            for sc in classes_to_use:
+                items = SUPPLY_ITEMS[sc]
+                for item_name, base_required, daily_rate in items:
+                    # Add randomness for realism
+                    scale = 0.3 if unit.echelon == Echelon.CO else 1.0
+                    required = base_required * scale
+                    # Simulate consumption over time
+                    consumed = (
+                        daily_rate * scale * day_offset * random.uniform(0.8, 1.2)
+                    )
+                    on_hand = max(
+                        0, required * random.uniform(0.5, 1.1) - consumed * 0.1
+                    )
+                    dos = (
+                        on_hand / (daily_rate * scale) if daily_rate * scale > 0 else 99
+                    )
+                    dos = min(dos, 30)
 
-                        status = _determine_status(dos)
+                    status = _determine_status(dos)
 
-                        record = SupplyStatusRecord(
-                            unit_id=unit.id,
-                            supply_class=sc,
-                            item_description=item_name,
-                            on_hand_qty=round(on_hand, 1),
-                            required_qty=round(required, 1),
-                            dos=round(dos, 1),
-                            consumption_rate=round(daily_rate * scale * random.uniform(0.8, 1.2), 2),
-                            status=status,
-                            reported_at=report_date,
-                            source="SEED_DATA",
-                        )
-                        db.add(record)
-                        supply_count += 1
-
-                # Equipment records (weekly for COs, daily for BNs)
-                if day_offset % (7 if unit.echelon == Echelon.CO else 1) == 0:
-                    for tamcn, nomen, base_count in EQUIPMENT_TYPES:
-                        count = max(1, int(base_count * (0.3 if unit.echelon == Echelon.CO else 1.0)))
-                        mc = max(0, count - random.randint(0, max(1, count // 4)))
-                        nmcm = random.randint(0, count - mc)
-                        nmcs = count - mc - nmcm
-                        readiness = round(mc / count * 100, 1) if count > 0 else 0
-
-                        equip = EquipmentStatus(
-                            unit_id=unit.id,
-                            tamcn=tamcn,
-                            nomenclature=nomen,
-                            total_possessed=count,
-                            mission_capable=mc,
-                            not_mission_capable_maintenance=nmcm,
-                            not_mission_capable_supply=nmcs,
-                            readiness_pct=readiness,
-                            reported_at=report_date,
-                            source="SEED_DATA",
-                        )
-                        db.add(equip)
-                        equip_count += 1
-
-                # Movements (occasional)
-                if random.random() < 0.15 and unit.echelon == Echelon.BN:
-                    origin, dest = random.sample(LOCATIONS, 2)
-                    dep_time = report_date - timedelta(hours=random.randint(1, 12))
-                    eta = dep_time + timedelta(hours=random.randint(4, 48))
-                    statuses = [MovementStatus.PLANNED, MovementStatus.EN_ROUTE,
-                                MovementStatus.COMPLETE, MovementStatus.DELAYED]
-                    weights = [0.2, 0.3, 0.4, 0.1]
-
-                    move = Movement(
+                    record = SupplyStatusRecord(
                         unit_id=unit.id,
-                        convoy_id=f"C-{random.randint(100, 999)}",
-                        origin=origin,
-                        destination=dest,
-                        departure_time=dep_time,
-                        eta=eta,
-                        actual_arrival=eta + timedelta(hours=random.randint(-2, 4)) if random.random() > 0.3 else None,
-                        vehicle_count=random.randint(3, 20),
-                        cargo_description=f"Resupply convoy - CL {random.choice(['I', 'III', 'V', 'IX'])}",
-                        status=random.choices(statuses, weights=weights)[0],
+                        supply_class=sc,
+                        item_description=item_name,
+                        on_hand_qty=round(on_hand, 1),
+                        required_qty=round(required, 1),
+                        dos=round(dos, 1),
+                        consumption_rate=round(
+                            daily_rate * scale * random.uniform(0.8, 1.2), 2
+                        ),
+                        status=status,
                         reported_at=report_date,
                         source="SEED_DATA",
                     )
-                    db.add(move)
-                    movement_count += 1
+                    db.add(record)
+                    supply_count += 1
 
-            # Alerts for this unit (based on current state)
-            # Low DOS alerts
-            if random.random() < 0.3:
-                alert = Alert(
-                    unit_id=unit.id,
-                    alert_type=AlertType.LOW_DOS,
-                    severity=random.choice([AlertSeverity.WARNING, AlertSeverity.CRITICAL]),
-                    message=f"CL {random.choice(['I', 'III', 'V'])} below minimum DOS threshold",
-                    threshold_value=3.0,
-                    actual_value=round(random.uniform(0.5, 2.9), 1),
-                    acknowledged=random.random() < 0.4,
-                )
-                db.add(alert)
-                alert_count += 1
+            # Equipment records (weekly for COs, daily for BNs)
+            if day_offset % (7 if unit.echelon == Echelon.CO else 1) == 0:
+                for tamcn, nomen, base_count in EQUIPMENT_TYPES:
+                    count = max(
+                        1,
+                        int(base_count * (0.3 if unit.echelon == Echelon.CO else 1.0)),
+                    )
+                    mc = max(0, count - random.randint(0, max(1, count // 4)))
+                    nmcm = random.randint(0, count - mc)
+                    nmcs = count - mc - nmcm
+                    readiness = round(mc / count * 100, 1) if count > 0 else 0
 
-            if random.random() < 0.2:
-                alert = Alert(
+                    equip = EquipmentStatus(
+                        unit_id=unit.id,
+                        tamcn=tamcn,
+                        nomenclature=nomen,
+                        total_possessed=count,
+                        mission_capable=mc,
+                        not_mission_capable_maintenance=nmcm,
+                        not_mission_capable_supply=nmcs,
+                        readiness_pct=readiness,
+                        reported_at=report_date,
+                        source="SEED_DATA",
+                    )
+                    db.add(equip)
+                    equip_count += 1
+
+            # Movements (occasional)
+            if random.random() < 0.15 and unit.echelon == Echelon.BN:
+                origin, dest = random.sample(LOCATIONS, 2)
+                dep_time = report_date - timedelta(hours=random.randint(1, 12))
+                eta = dep_time + timedelta(hours=random.randint(4, 48))
+                statuses = [
+                    MovementStatus.PLANNED,
+                    MovementStatus.EN_ROUTE,
+                    MovementStatus.COMPLETE,
+                    MovementStatus.DELAYED,
+                ]
+                weights = [0.2, 0.3, 0.4, 0.1]
+
+                move = Movement(
                     unit_id=unit.id,
-                    alert_type=AlertType.LOW_READINESS,
-                    severity=AlertSeverity.WARNING,
-                    message=f"Equipment readiness below 75% threshold",
-                    threshold_value=75.0,
-                    actual_value=round(random.uniform(55.0, 74.9), 1),
-                    acknowledged=False,
+                    convoy_id=f"C-{random.randint(100, 999)}",
+                    origin=origin,
+                    destination=dest,
+                    departure_time=dep_time,
+                    eta=eta,
+                    actual_arrival=eta + timedelta(hours=random.randint(-2, 4))
+                    if random.random() > 0.3
+                    else None,
+                    vehicle_count=random.randint(3, 20),
+                    cargo_description=f"Resupply convoy - CL {random.choice(['I', 'III', 'V', 'IX'])}",
+                    status=random.choices(statuses, weights=weights)[0],
+                    reported_at=report_date,
+                    source="SEED_DATA",
                 )
-                db.add(alert)
-                alert_count += 1
+                db.add(move)
+                movement_count += 1
+
+        # Alerts for this unit (based on current state)
+        # Low DOS alerts
+        if random.random() < 0.3:
+            alert = Alert(
+                unit_id=unit.id,
+                alert_type=AlertType.LOW_DOS,
+                severity=random.choice([AlertSeverity.WARNING, AlertSeverity.CRITICAL]),
+                message=f"CL {random.choice(['I', 'III', 'V'])} below minimum DOS threshold",
+                threshold_value=3.0,
+                actual_value=round(random.uniform(0.5, 2.9), 1),
+                acknowledged=random.random() < 0.4,
+            )
+            db.add(alert)
+            alert_count += 1
+
+        if random.random() < 0.2:
+            alert = Alert(
+                unit_id=unit.id,
+                alert_type=AlertType.LOW_READINESS,
+                severity=AlertSeverity.WARNING,
+                message="Equipment readiness below 75% threshold",
+                threshold_value=75.0,
+                actual_value=round(random.uniform(55.0, 74.9), 1),
+                acknowledged=False,
+            )
+            db.add(alert)
+            alert_count += 1
 
     print(
         f"Seeded sample data:\n"

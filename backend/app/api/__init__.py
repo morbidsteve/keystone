@@ -35,5 +35,7 @@ api_router.include_router(
 )
 api_router.include_router(tak_router, prefix="/tak", tags=["TAK Integration"])
 api_router.include_router(settings_router, prefix="/settings", tags=["Settings"])
-api_router.include_router(data_sources_router, prefix="/data-sources", tags=["Data Sources"])
+api_router.include_router(
+    data_sources_router, prefix="/data-sources", tags=["Data Sources"]
+)
 api_router.include_router(map_router, prefix="/map", tags=["Map"])

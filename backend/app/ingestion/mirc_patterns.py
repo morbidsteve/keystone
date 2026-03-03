@@ -1,7 +1,7 @@
 """Regex patterns for parsing mIRC logistics messages."""
 
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional
 
 # LOGSTAT header line: [HH:MM:SS] <sender> LOGSTAT AS OF 012345ZJAN26 // Unit Name
 LOGSTAT_HEADER = re.compile(

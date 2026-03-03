@@ -45,13 +45,21 @@ _UNIT_ABBREV_MAP = {
 }
 
 # DTG (Date-Time Group) parsing pattern
-_DTG_PATTERN = re.compile(
-    r"(\d{2})(\d{2})(\d{2})Z(\w{3})(\d{2})"
-)
+_DTG_PATTERN = re.compile(r"(\d{2})(\d{2})(\d{2})Z(\w{3})(\d{2})")
 
 _MONTH_MAP = {
-    "JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6,
-    "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12,
+    "JAN": 1,
+    "FEB": 2,
+    "MAR": 3,
+    "APR": 4,
+    "MAY": 5,
+    "JUN": 6,
+    "JUL": 7,
+    "AUG": 8,
+    "SEP": 9,
+    "OCT": 10,
+    "NOV": 11,
+    "DEC": 12,
 }
 
 
@@ -131,15 +139,17 @@ def normalize_record(raw_record: Dict, source_type: SourceType) -> Dict:
         required = normalize_quantity(data.get("required_qty", 0))
         dos = normalize_quantity(data.get("dos", 0))
 
-        normalized.update({
-            "supply_class": normalize_supply_class(data.get("supply_class")),
-            "item_description": str(data.get("item_description", "")).strip(),
-            "on_hand_qty": on_hand,
-            "required_qty": required,
-            "dos": dos,
-            "consumption_rate": normalize_quantity(data.get("consumption_rate", 0)),
-            "status": determine_status(on_hand, required, dos).value,
-        })
+        normalized.update(
+            {
+                "supply_class": normalize_supply_class(data.get("supply_class")),
+                "item_description": str(data.get("item_description", "")).strip(),
+                "on_hand_qty": on_hand,
+                "required_qty": required,
+                "dos": dos,
+                "consumption_rate": normalize_quantity(data.get("consumption_rate", 0)),
+                "status": determine_status(on_hand, required, dos).value,
+            }
+        )
 
         if "logstat_unit" in data:
             normalized["unit_name"] = normalize_unit_name(data["logstat_unit"])
@@ -150,28 +160,32 @@ def normalize_record(raw_record: Dict, source_type: SourceType) -> Dict:
         mc = normalize_quantity(data.get("mission_capable", 0))
         total = normalize_quantity(data.get("total_possessed", 0))
 
-        normalized.update({
-            "tamcn": str(data.get("tamcn", "")).strip(),
-            "nomenclature": str(data.get("nomenclature", "")).strip(),
-            "total_possessed": int(total),
-            "mission_capable": int(mc),
-            "not_mission_capable_maintenance": int(
-                normalize_quantity(data.get("nmcm", 0))
-            ),
-            "not_mission_capable_supply": int(
-                normalize_quantity(data.get("nmcs", 0))
-            ),
-            "readiness_pct": normalize_quantity(data.get("readiness_pct", 0)),
-        })
+        normalized.update(
+            {
+                "tamcn": str(data.get("tamcn", "")).strip(),
+                "nomenclature": str(data.get("nomenclature", "")).strip(),
+                "total_possessed": int(total),
+                "mission_capable": int(mc),
+                "not_mission_capable_maintenance": int(
+                    normalize_quantity(data.get("nmcm", 0))
+                ),
+                "not_mission_capable_supply": int(
+                    normalize_quantity(data.get("nmcs", 0))
+                ),
+                "readiness_pct": normalize_quantity(data.get("readiness_pct", 0)),
+            }
+        )
 
     elif record_type == "TRANSPORTATION":
-        normalized.update({
-            "convoy_id": str(data.get("convoy_id", "")).strip(),
-            "origin": str(data.get("origin", "")).strip(),
-            "destination": str(data.get("destination", "")).strip(),
-            "vehicle_count": int(normalize_quantity(data.get("vehicle_count", 0))),
-            "eta": data.get("eta"),
-        })
+        normalized.update(
+            {
+                "convoy_id": str(data.get("convoy_id", "")).strip(),
+                "origin": str(data.get("origin", "")).strip(),
+                "destination": str(data.get("destination", "")).strip(),
+                "vehicle_count": int(normalize_quantity(data.get("vehicle_count", 0))),
+                "eta": data.get("eta"),
+            }
+        )
 
     elif record_type == "LOGSTAT_HEADER":
         if "dtg" in data:

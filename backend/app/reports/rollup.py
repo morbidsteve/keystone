@@ -29,22 +29,22 @@ async def generate_rollup(
     agg = await aggregate_for_unit(db, unit_id)
 
     # Get subordinate unit details
-    children_result = await db.execute(
-        select(Unit).where(Unit.parent_id == unit_id)
-    )
+    children_result = await db.execute(select(Unit).where(Unit.parent_id == unit_id))
     children = children_result.scalars().all()
 
     subordinate_summaries = []
     for child in children:
         child_agg = await aggregate_for_unit(db, child.id)
-        subordinate_summaries.append({
-            "unit_id": child.id,
-            "name": child.name,
-            "abbreviation": child.abbreviation,
-            "echelon": child.echelon.value,
-            "supply": child_agg.get("supply", {}),
-            "equipment": child_agg.get("equipment", {}),
-        })
+        subordinate_summaries.append(
+            {
+                "unit_id": child.id,
+                "name": child.name,
+                "abbreviation": child.abbreviation,
+                "echelon": child.echelon.value,
+                "supply": child_agg.get("supply", {}),
+                "equipment": child_agg.get("equipment", {}),
+            }
+        )
 
     report = {
         "report_type": "ROLLUP",

@@ -28,14 +28,14 @@ async def list_equipment(
 ):
     """List equipment status records."""
     accessible = await get_accessible_units(db, current_user)
-    query = select(EquipmentStatus).where(
-        EquipmentStatus.unit_id.in_(accessible)
-    )
+    query = select(EquipmentStatus).where(EquipmentStatus.unit_id.in_(accessible))
 
     if unit_id and unit_id in accessible:
         query = query.where(EquipmentStatus.unit_id == unit_id)
 
-    query = query.order_by(EquipmentStatus.reported_at.desc()).offset(offset).limit(limit)
+    query = (
+        query.order_by(EquipmentStatus.reported_at.desc()).offset(offset).limit(limit)
+    )
     result = await db.execute(query)
     return result.scalars().all()
 

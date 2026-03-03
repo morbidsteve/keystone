@@ -14,7 +14,6 @@ from sqlalchemy import create_engine
 
 from app.config import settings
 from app.ingestion.tak_connector import tak_connector
-from app.ingestion.tak_parser import parse_cot_message
 from app.models.raw_data import ParseStatus, RawData, SourceType
 from app.models.tak_connection import ConnectionStatus, TAKConnection
 from app.tasks import celery_app
@@ -41,15 +40,11 @@ def poll_tak_server(self, connection_id: int):
     try:
         with Session(sync_engine) as db:
             connection = db.execute(
-                select(TAKConnection).where(
-                    TAKConnection.id == connection_id
-                )
+                select(TAKConnection).where(TAKConnection.id == connection_id)
             ).scalar_one_or_none()
 
             if not connection:
-                logger.error(
-                    f"TAK connection {connection_id} not found"
-                )
+                logger.error(f"TAK connection {connection_id} not found")
                 return {"error": "Connection not found"}
 
             if not connection.is_active:
@@ -105,8 +100,7 @@ def poll_tak_server(self, connection_id: int):
 
                 except Exception as exc:
                     logger.warning(
-                        f"Error processing CoT message "
-                        f"{msg_data.get('uid')}: {exc}"
+                        f"Error processing CoT message {msg_data.get('uid')}: {exc}"
                     )
                     error_count += 1
 
@@ -135,9 +129,7 @@ def poll_tak_server(self, connection_id: int):
             }
 
     except Exception as exc:
-        logger.exception(
-            f"Failed to poll TAK server (connection_id={connection_id})"
-        )
+        logger.exception(f"Failed to poll TAK server (connection_id={connection_id})")
 
         # Update connection status to error
         try:
@@ -173,9 +165,7 @@ def poll_all_tak_servers():
             )
             connection_ids = [row[0] for row in result.all()]
 
-        logger.info(
-            f"Enqueuing TAK polls for {len(connection_ids)} active connections"
-        )
+        logger.info(f"Enqueuing TAK polls for {len(connection_ids)} active connections")
 
         for conn_id in connection_ids:
             poll_tak_server.delay(conn_id)

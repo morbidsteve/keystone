@@ -1,12 +1,11 @@
 """Sustainability and days-of-supply projection analytics."""
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.analytics.consumption import calculate_consumption_rate
-from app.models.supply import SupplyClass, SupplyStatus, SupplyStatusRecord
+from app.models.supply import SupplyClass, SupplyStatusRecord
 from app.core.military import determine_supply_status_by_dos
 
 
@@ -17,8 +16,7 @@ async def days_of_supply(
 ) -> float:
     """Calculate current days-of-supply for a specific supply class and unit."""
     result = await db.execute(
-        select(func.avg(SupplyStatusRecord.dos))
-        .where(
+        select(func.avg(SupplyStatusRecord.dos)).where(
             SupplyStatusRecord.unit_id == unit_id,
             SupplyStatusRecord.supply_class == supply_class,
         )
@@ -62,21 +60,25 @@ async def sustainability_projection(
         days_to_critical = None
         if avg_rate > 0 and avg_dos > 3:
             # How many days at current rate until DOS drops to 3?
-            days_to_critical = round((avg_dos - 3.0) * (total_on_hand / avg_rate) / max(avg_dos, 1), 1)
+            days_to_critical = round(
+                (avg_dos - 3.0) * (total_on_hand / avg_rate) / max(avg_dos, 1), 1
+            )
 
         # Calculate days until exhaustion
         days_to_exhaustion = None
         if avg_rate > 0:
             days_to_exhaustion = round(total_on_hand / avg_rate, 1)
 
-        projections.append({
-            "supply_class": sc.value,
-            "current_dos": round(avg_dos, 1),
-            "consumption_rate": round(avg_rate, 2),
-            "total_on_hand": round(total_on_hand, 1),
-            "days_to_critical": days_to_critical,
-            "days_to_exhaustion": days_to_exhaustion,
-            "status": determine_supply_status_by_dos(avg_dos).value,
-        })
+        projections.append(
+            {
+                "supply_class": sc.value,
+                "current_dos": round(avg_dos, 1),
+                "consumption_rate": round(avg_rate, 2),
+                "total_on_hand": round(total_on_hand, 1),
+                "days_to_critical": days_to_critical,
+                "days_to_exhaustion": days_to_exhaustion,
+                "status": determine_supply_status_by_dos(avg_dos).value,
+            }
+        )
 
     return projections

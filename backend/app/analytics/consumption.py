@@ -23,9 +23,7 @@ async def calculate_consumption_rate(
     cutoff = datetime.now(timezone.utc) - timedelta(days=days)
 
     result = await db.execute(
-        select(
-            func.avg(SupplyStatusRecord.consumption_rate)
-        ).where(
+        select(func.avg(SupplyStatusRecord.consumption_rate)).where(
             SupplyStatusRecord.unit_id == unit_id,
             SupplyStatusRecord.supply_class == supply_class,
             SupplyStatusRecord.reported_at >= cutoff,

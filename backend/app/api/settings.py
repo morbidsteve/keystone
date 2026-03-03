@@ -4,7 +4,7 @@ import json
 from enum import Enum
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,6 +17,7 @@ from app.models.user import Role, User
 router = APIRouter()
 
 # --- Classification level definitions ---
+
 
 class ClassificationLevel(str, Enum):
     UNCLASSIFIED = "UNCLASSIFIED"

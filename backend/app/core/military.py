@@ -18,23 +18,23 @@ SUPPLY_CLASS_NAMES: dict[SupplyClass, str] = {
 
 # Status thresholds based on percentage of authorized quantity
 STATUS_THRESHOLDS = {
-    SupplyStatus.GREEN: 0.70,   # > 70% of auth qty
-    SupplyStatus.AMBER: 0.40,   # 40-70% of auth qty
-    SupplyStatus.RED: 0.0,      # < 40% of auth qty
+    SupplyStatus.GREEN: 0.70,  # > 70% of auth qty
+    SupplyStatus.AMBER: 0.40,  # 40-70% of auth qty
+    SupplyStatus.RED: 0.0,  # < 40% of auth qty
 }
 
 # Days-of-supply thresholds
 DOS_THRESHOLDS = {
-    SupplyStatus.GREEN: 5.0,    # > 5 days
-    SupplyStatus.AMBER: 3.0,    # 3-5 days
-    SupplyStatus.RED: 0.0,      # < 3 days
+    SupplyStatus.GREEN: 5.0,  # > 5 days
+    SupplyStatus.AMBER: 3.0,  # 3-5 days
+    SupplyStatus.RED: 0.0,  # < 3 days
 }
 
 # Equipment readiness thresholds
 READINESS_THRESHOLDS = {
-    SupplyStatus.GREEN: 90.0,   # > 90%
-    SupplyStatus.AMBER: 75.0,   # 75-90%
-    SupplyStatus.RED: 0.0,      # < 75%
+    SupplyStatus.GREEN: 90.0,  # > 90%
+    SupplyStatus.AMBER: 75.0,  # 75-90%
+    SupplyStatus.RED: 0.0,  # < 75%
 }
 
 

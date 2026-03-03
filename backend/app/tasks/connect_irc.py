@@ -191,9 +191,7 @@ def connect_irc_source(self, source_id: int):
 
                     # Check if we should still be running
                     result = db.execute(
-                        select(DataSource.is_enabled).where(
-                            DataSource.id == source_id
-                        )
+                        select(DataSource.is_enabled).where(DataSource.id == source_id)
                     )
                     is_enabled = result.scalar_one_or_none()
                     db.commit()
@@ -210,9 +208,7 @@ def connect_irc_source(self, source_id: int):
             try:
                 data = sock.recv(4096).decode("utf-8", errors="replace")
                 if not data:
-                    logger.warning(
-                        f"IRC server {host}:{port} closed connection"
-                    )
+                    logger.warning(f"IRC server {host}:{port} closed connection")
                     break
 
                 recv_buffer += data
@@ -301,9 +297,7 @@ def connect_irc_source(self, source_id: int):
         }
 
     except Exception as exc:
-        logger.exception(
-            f"Failed IRC connection for source {source_id}: {exc}"
-        )
+        logger.exception(f"Failed IRC connection for source {source_id}: {exc}")
 
         # Update source status to error
         try:

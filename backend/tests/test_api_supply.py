@@ -1,13 +1,11 @@
 """Tests for supply API endpoints."""
 
 import pytest
-import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.supply import SupplyClass, SupplyStatus, SupplyStatusRecord
 from app.models.unit import Unit
-from app.models.user import User
 
 
 @pytest.mark.asyncio
@@ -169,9 +167,7 @@ class TestSupplyEndpoints:
         data = response.json()
         assert all(r["supply_class"] == "V" for r in data)
 
-    async def test_get_nonexistent_record(
-        self, client: AsyncClient, admin_token: str
-    ):
+    async def test_get_nonexistent_record(self, client: AsyncClient, admin_token: str):
         """Test getting a non-existent supply record."""
         response = await client.get(
             "/api/v1/supply/99999",

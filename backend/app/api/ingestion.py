@@ -1,6 +1,6 @@
 """Data ingestion endpoints for mIRC logs and Excel files."""
 
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 from sqlalchemy import select
@@ -10,13 +10,13 @@ from app.core.auth import get_current_user
 from app.core.exceptions import BadRequestError, NotFoundError
 from app.database import get_db
 from app.models.raw_data import ParseStatus, RawData, SourceType
-from app.models.user import Role, User
+from app.models.user import User
 
 router = APIRouter()
 
 # File size limits
-_MAX_MIRC_SIZE = 10 * 1024 * 1024   # 10 MB
-_MAX_EXCEL_SIZE = 50 * 1024 * 1024   # 50 MB
+_MAX_MIRC_SIZE = 10 * 1024 * 1024  # 10 MB
+_MAX_EXCEL_SIZE = 50 * 1024 * 1024  # 50 MB
 
 
 @router.post("/mirc")
@@ -82,8 +82,7 @@ async def upload_excel(
     content = await file.read(_MAX_EXCEL_SIZE + 1)
     if len(content) > _MAX_EXCEL_SIZE:
         raise BadRequestError(
-            f"Excel file exceeds maximum size of "
-            f"{_MAX_EXCEL_SIZE // (1024 * 1024)} MB."
+            f"Excel file exceeds maximum size of {_MAX_EXCEL_SIZE // (1024 * 1024)} MB."
         )
 
     raw = RawData(
@@ -191,9 +190,7 @@ async def review_record(
     current_user: User = Depends(get_current_user),
 ):
     """Approve or reject a parsed record after human review."""
-    result = await db.execute(
-        select(RawData).where(RawData.id == record_id)
-    )
+    result = await db.execute(select(RawData).where(RawData.id == record_id))
     record = result.scalar_one_or_none()
     if not record:
         raise NotFoundError("Raw data record", record_id)

@@ -66,7 +66,9 @@ def process_excel_upload(self, raw_data_id: int, file_bytes: bytes = None):
                 normalized.append(norm)
                 total_confidence += record.get("confidence", 0.0)
 
-            avg_confidence = total_confidence / len(parsed_records) if parsed_records else 0.0
+            avg_confidence = (
+                total_confidence / len(parsed_records) if parsed_records else 0.0
+            )
 
             raw.parse_status = ParseStatus.PARSED
             raw.confidence_score = round(avg_confidence, 2)

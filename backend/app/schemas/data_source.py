@@ -21,9 +21,7 @@ _IRC_CHANNEL_PATTERN = re.compile(r"^#[a-zA-Z0-9_\-]{1,49}$")
 def _validate_file_pattern(v: str) -> str:
     """Validate that a file_pattern does not contain directory traversal."""
     if "/" in v or "\\" in v:
-        raise ValueError(
-            "file_pattern must not contain path separators ('/' or '\\')."
-        )
+        raise ValueError("file_pattern must not contain path separators ('/' or '\\').")
     if ".." in v:
         raise ValueError(
             "file_pattern must not contain '..' (path traversal is not allowed)."

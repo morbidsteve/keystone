@@ -51,9 +51,7 @@ def _validate_directory_path(path: str) -> str:
     # Block system directories
     for sys_dir in _BLOCKED_SYSTEM_DIRS:
         if real_path == sys_dir or real_path.startswith(sys_dir + "/"):
-            raise ValueError(
-                f"Directory path resolves to a blocked system directory."
-            )
+            raise ValueError("Directory path resolves to a blocked system directory.")
 
     # Check against allowed data directories
     allowed = settings.ALLOWED_DATA_DIRS
@@ -69,9 +67,7 @@ def _validate_directory_path(path: str) -> str:
             in_allowed = True
             break
     if not in_allowed:
-        raise ValueError(
-            "Directory path is not within allowed data directories."
-        )
+        raise ValueError("Directory path is not within allowed data directories.")
 
     return real_path
 
@@ -109,9 +105,7 @@ def poll_directory_source(self, source_id: int):
                 return {"error": "Data source not found"}
 
             if not source.is_enabled:
-                logger.info(
-                    f"Data source '{source.name}' is disabled, skipping poll"
-                )
+                logger.info(f"Data source '{source.name}' is disabled, skipping poll")
                 return {"status": "skipped", "reason": "disabled"}
 
             config = source.config or {}
@@ -184,7 +178,10 @@ def poll_directory_source(self, source_id: int):
             safe_files = []
             for f in all_files:
                 real_file = os.path.realpath(f)
-                if real_file.startswith(resolved_dir + "/") or real_file == resolved_dir:
+                if (
+                    real_file.startswith(resolved_dir + "/")
+                    or real_file == resolved_dir
+                ):
                     safe_files.append(f)
                 else:
                     logger.warning(
@@ -270,9 +267,7 @@ def poll_directory_source(self, source_id: int):
                     total_records += 1
 
                 except Exception as file_exc:
-                    logger.warning(
-                        f"Error processing file {file_path}: {file_exc}"
-                    )
+                    logger.warning(f"Error processing file {file_path}: {file_exc}")
                     continue
 
             # Update source stats
@@ -302,9 +297,7 @@ def poll_directory_source(self, source_id: int):
             }
 
     except Exception as exc:
-        logger.exception(
-            f"Failed to poll directory source (source_id={source_id})"
-        )
+        logger.exception(f"Failed to poll directory source (source_id={source_id})")
 
         # Update source status to error
         try:

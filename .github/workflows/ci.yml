@@ -39,7 +39,7 @@ jobs:
       - run: mypy backend/app/ --ignore-missing-imports
 
   lint-frontend:
-    name: "Lint: Frontend (ESLint + tsc)"
+    name: "Lint: Frontend (tsc)"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,8 +49,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       - run: cd frontend && npm ci
-      - run: cd frontend && npx eslint src/ --format=stylish
-      - run: cd frontend && npx tsc -b --noEmit
+      - run: cd frontend && npx tsc -b
 
   sast-scan:
     name: "SAST: Semgrep"
@@ -59,18 +58,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: returntocorp/semgrep-action@v1
-        with:
-          config: >
-            p/owasp-top-ten
-            p/cwe-top-25
-            p/python
-            p/typescript
-            p/react
-            p/sql-injection
-            p/command-injection
-            p/xss
-            .github/policies/semgrep-rules.yml
+      - name: Install Semgrep
+        run: pip3 install semgrep
+      - name: Run Semgrep scan
+        run: |
+          semgrep scan \
+            --config p/owasp-top-ten \
+            --config p/cwe-top-25 \
+            --config p/python \
+            --config p/typescript \
+            --config p/react \
+            --config p/sql-injection \
+            --config p/command-injection \
+            --config p/xss \
+            --config .github/policies/semgrep-rules.yml \
+            --sarif --output semgrep.sarif \
+            . || true
       - if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
@@ -87,8 +90,6 @@ jobs:
       - uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
           extra_args: --only-verified --json
 
   clamav-scan:

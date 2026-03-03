@@ -17,6 +17,7 @@ def _default_database_url() -> str:
     """Return the default DATABASE_URL, falling back to SQLite if asyncpg is unavailable."""
     try:
         import asyncpg  # noqa: F401
+
         return "postgresql+asyncpg://keystone:keystone_dev@localhost:5432/keystone"
     except ImportError:
         return "sqlite+aiosqlite:///./keystone.db"
@@ -25,6 +26,7 @@ def _default_database_url() -> str:
 def _default_sync_database_url() -> str:
     try:
         import psycopg2  # noqa: F401
+
         return "postgresql://keystone:keystone_dev@localhost:5432/keystone"
     except ImportError:
         return "sqlite:///./keystone.db"

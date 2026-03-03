@@ -46,7 +46,9 @@ class Movement(Base):
     current_lon = Column(Float, nullable=True)
     heading = Column(Float, nullable=True)
     speed_kph = Column(Float, nullable=True)
-    status = Column(SQLEnum(MovementStatus), nullable=False, default=MovementStatus.PLANNED)
+    status = Column(
+        SQLEnum(MovementStatus), nullable=False, default=MovementStatus.PLANNED
+    )
     reported_at = Column(DateTime(timezone=True), server_default=func.now())
     source = Column(String(50), nullable=True)
     raw_data_id = Column(Integer, ForeignKey("raw_data.id"), nullable=True)

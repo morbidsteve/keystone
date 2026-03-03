@@ -39,9 +39,7 @@ def poll_all_enabled_sources():
             )
             source_ids = [row[0] for row in result.all()]
 
-        logger.info(
-            f"Enqueuing directory polls for {len(source_ids)} enabled sources"
-        )
+        logger.info(f"Enqueuing directory polls for {len(source_ids)} enabled sources")
 
         from app.tasks.poll_directory import poll_directory_source
 

@@ -39,18 +39,24 @@ async def lifespan(app: FastAPI):
     try:
         from sqlalchemy import select
         from app.models.system_settings import SystemSetting
+
         async with async_session() as session:
             existing = await session.execute(
                 select(SystemSetting).where(SystemSetting.key == "classification")
             )
             if not existing.scalars().first():
                 import json
-                default_classification = json.dumps({
-                    "level": "UNCLASSIFIED",
-                    "banner_text": "UNCLASSIFIED",
-                    "color": "green",
-                })
-                session.add(SystemSetting(key="classification", value=default_classification))
+
+                default_classification = json.dumps(
+                    {
+                        "level": "UNCLASSIFIED",
+                        "banner_text": "UNCLASSIFIED",
+                        "color": "green",
+                    }
+                )
+                session.add(
+                    SystemSetting(key="classification", value=default_classification)
+                )
                 await session.commit()
                 logger.info("Default classification setting seeded.")
     except Exception as e:
@@ -89,7 +95,7 @@ async def _run_dev_seeds():
 
     # 2. Seed users
     try:
-        from seed.seed_users import seed_users_from_session, SEED_USERS
+        from seed.seed_users import seed_users_from_session
 
         async with async_session() as db:
             existing = await db.execute(select(func.count(User.id)))

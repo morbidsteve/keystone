@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.military import determine_readiness_status
@@ -36,7 +36,9 @@ async def generate_readiness_report(
     if period_end:
         query = query.where(EquipmentStatus.reported_at <= period_end)
 
-    query = query.order_by(EquipmentStatus.nomenclature, EquipmentStatus.reported_at.desc())
+    query = query.order_by(
+        EquipmentStatus.nomenclature, EquipmentStatus.reported_at.desc()
+    )
     result = await db.execute(query)
     records = result.scalars().all()
 
