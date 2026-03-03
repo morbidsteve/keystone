@@ -1,27 +1,31 @@
 # =============================================================================
-# KEYSTONE — Docker Compose (Development / Production baseline)
-# Hardened per DoD Container Hardening Guide
+# KEYSTONE — CI / DAST Ephemeral Compose
+# Uses pre-built images via environment variables.
+# Hardened per DoD Container Hardening Guide.
 # =============================================================================
+#
+# Usage:
+#   BACKEND_IMAGE=ghcr.io/keystone/backend:sha-abc123 \
+#   FRONTEND_IMAGE=ghcr.io/keystone/frontend:sha-abc123 \
+#   docker compose -f docker-compose.ci.yml up -d
+#
 
 services:
   # ---------------------------------------------------------------------------
-  # PostgreSQL with PostGIS
+  # PostgreSQL with PostGIS (test instance)
   # ---------------------------------------------------------------------------
   db:
     image: postgis/postgis:15-3.4
     environment:
-      POSTGRES_DB: keystone
-      POSTGRES_USER: keystone
-      POSTGRES_PASSWORD: keystone_dev
-    ports: ["5432:5432"]
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      POSTGRES_DB: keystone_test
+      POSTGRES_USER: keystone_test
+      POSTGRES_PASSWORD: keystone_ci_password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keystone"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U keystone_test"]
+      interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 15s
+      retries: 10
+      start_period: 10s
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -36,21 +40,18 @@ services:
     tmpfs:
       - /tmp
       - /run/postgresql
-    restart: unless-stopped
+      - /var/lib/postgresql/data
 
   # ---------------------------------------------------------------------------
-  # Redis
+  # Redis (test instance)
   # ---------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
-    ports: ["6379:6379"]
-    volumes:
-      - redisdata:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -58,31 +59,28 @@ services:
     read_only: true
     tmpfs:
       - /tmp
-    restart: unless-stopped
 
   # ---------------------------------------------------------------------------
-  # Backend API (FastAPI / Uvicorn)
+  # Backend API (pre-built image)
   # ---------------------------------------------------------------------------
   backend:
-    build:
-      context: ./backend
-      target: production
+    image: ${BACKEND_IMAGE:?BACKEND_IMAGE must be set}
     user: "1001:1001"
     ports: ["8000:8000"]
     environment:
-      DATABASE_URL: postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone
-      DATABASE_URL_SYNC: postgresql://keystone:keystone_dev@db:5432/keystone
+      DATABASE_URL: postgresql+asyncpg://keystone_test:keystone_ci_password@db:5432/keystone_test
+      DATABASE_URL_SYNC: postgresql://keystone_test:keystone_ci_password@db:5432/keystone_test
       REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: dev-secret-key-change-in-production
-      CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://localhost:8080"]'
+      SECRET_KEY: ci-ephemeral-secret-not-for-production
+      CORS_ORIGINS: '["http://localhost:8080"]'
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 15s
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 15
       start_period: 20s
     security_opt:
       - no-new-privileges:true
@@ -91,21 +89,18 @@ services:
     read_only: true
     tmpfs:
       - /tmp
-    restart: unless-stopped
 
   # ---------------------------------------------------------------------------
-  # Celery Worker (background tasks)
+  # Celery Worker (pre-built image)
   # ---------------------------------------------------------------------------
   celery_worker:
-    build:
-      context: ./backend
-      target: production
+    image: ${BACKEND_IMAGE:?BACKEND_IMAGE must be set}
     user: "1001:1001"
     environment:
-      DATABASE_URL: postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone
-      DATABASE_URL_SYNC: postgresql://keystone:keystone_dev@db:5432/keystone
+      DATABASE_URL: postgresql+asyncpg://keystone_test:keystone_ci_password@db:5432/keystone_test
+      DATABASE_URL_SYNC: postgresql://keystone_test:keystone_ci_password@db:5432/keystone_test
       REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: dev-secret-key-change-in-production
+      SECRET_KEY: ci-ephemeral-secret-not-for-production
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -123,23 +118,20 @@ services:
     read_only: true
     tmpfs:
       - /tmp
-    restart: unless-stopped
 
   # ---------------------------------------------------------------------------
-  # Frontend (nginx serving built SPA)
+  # Frontend (pre-built image)
   # ---------------------------------------------------------------------------
   frontend:
-    build:
-      context: ./frontend
-      target: production
+    image: ${FRONTEND_IMAGE:?FRONTEND_IMAGE must be set}
     ports: ["8080:8080"]
     depends_on:
       backend: { condition: service_healthy }
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
-      interval: 15s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
       start_period: 10s
     security_opt:
       - no-new-privileges:true
@@ -150,8 +142,3 @@ services:
       - /tmp
       - /var/cache/nginx
       - /run
-    restart: unless-stopped
-
-volumes:
-  pgdata:
-  redisdata:

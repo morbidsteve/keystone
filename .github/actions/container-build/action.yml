@@ -1,0 +1,134 @@
+name: 'Container Build'
+description: 'Multi-stage Docker build with metadata, GHCR login, and GHA cache for KEYSTONE services'
+
+inputs:
+  image-name:
+    description: 'Full image name (e.g., ghcr.io/org/repo/service-name)'
+    required: true
+  context:
+    description: 'Docker build context path'
+    required: true
+  dockerfile:
+    description: 'Path to Dockerfile (relative to context)'
+    required: false
+    default: 'Dockerfile'
+  registry:
+    description: 'Container registry'
+    required: false
+    default: 'ghcr.io'
+  registry-username:
+    description: 'Registry username (typically github.actor)'
+    required: true
+  registry-password:
+    description: 'Registry password (typically secrets.GITHUB_TOKEN)'
+    required: true
+  push:
+    description: 'Push image to registry'
+    required: false
+    default: 'true'
+  build-args:
+    description: 'Docker build args (newline-separated KEY=VALUE)'
+    required: false
+    default: ''
+  target:
+    description: 'Docker build target stage'
+    required: false
+    default: ''
+  platforms:
+    description: 'Target platforms (e.g., linux/amd64,linux/arm64)'
+    required: false
+    default: ''
+  tags-custom:
+    description: 'Additional custom tags (newline-separated)'
+    required: false
+    default: ''
+
+outputs:
+  image-ref:
+    description: 'Full image reference with tag'
+    value: ${{ steps.meta.outputs.tags }}
+  digest:
+    description: 'Image digest (sha256)'
+    value: ${{ steps.build.outputs.digest }}
+  metadata:
+    description: 'Image metadata JSON'
+    value: ${{ steps.build.outputs.metadata }}
+  labels:
+    description: 'Generated OCI labels'
+    value: ${{ steps.meta.outputs.labels }}
+  version:
+    description: 'Generated version string'
+    value: ${{ steps.meta.outputs.version }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Set up QEMU (multi-platform)
+      if: inputs.platforms != ''
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: ${{ inputs.platforms }}
+
+    - name: Generate image metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ inputs.image-name }}
+        tags: |
+          type=sha,prefix=
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          ${{ inputs.tags-custom }}
+        labels: |
+          org.opencontainers.image.title=${{ inputs.image-name }}
+          org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          org.opencontainers.image.revision=${{ github.sha }}
+          org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
+          io.keystone.pipeline.run-id=${{ github.run_id }}
+          io.keystone.pipeline.run-number=${{ github.run_number }}
+
+    - name: Login to container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.registry-username }}
+        password: ${{ inputs.registry-password }}
+
+    - name: Build and push image
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.context }}
+        file: ${{ inputs.context }}/${{ inputs.dockerfile }}
+        push: ${{ inputs.push }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=${{ inputs.image-name }}
+        cache-to: type=gha,scope=${{ inputs.image-name }},mode=max
+        build-args: |
+          BUILD_DATE=${{ github.event.head_commit.timestamp }}
+          VCS_REF=${{ github.sha }}
+          VERSION=${{ steps.meta.outputs.version }}
+          ${{ inputs.build-args }}
+        target: ${{ inputs.target }}
+        platforms: ${{ inputs.platforms }}
+        provenance: true
+        sbom: true
+
+    - name: Output build summary
+      shell: bash
+      run: |
+        echo "### Container Build Summary" >> "$GITHUB_STEP_SUMMARY"
+        echo "" >> "$GITHUB_STEP_SUMMARY"
+        echo "| Property | Value |" >> "$GITHUB_STEP_SUMMARY"
+        echo "|----------|-------|" >> "$GITHUB_STEP_SUMMARY"
+        echo "| **Image** | \`${{ inputs.image-name }}\` |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| **Tags** | \`${{ steps.meta.outputs.tags }}\` |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| **Digest** | \`${{ steps.build.outputs.digest }}\` |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| **Context** | \`${{ inputs.context }}\` |" >> "$GITHUB_STEP_SUMMARY"
+        echo "| **Pushed** | ${{ inputs.push }} |" >> "$GITHUB_STEP_SUMMARY"

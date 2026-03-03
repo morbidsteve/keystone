@@ -1,0 +1,157 @@
+name: 'Setup Security Tools'
+description: 'Installs Syft, Grype, Cosign, Trivy CLI, and ClamAV for KEYSTONE security scanning'
+
+inputs:
+  install-syft:
+    description: 'Install Syft SBOM generator'
+    required: false
+    default: 'true'
+  install-grype:
+    description: 'Install Grype vulnerability scanner'
+    required: false
+    default: 'true'
+  install-cosign:
+    description: 'Install Cosign for image signing'
+    required: false
+    default: 'true'
+  install-trivy:
+    description: 'Install Trivy vulnerability scanner CLI'
+    required: false
+    default: 'true'
+  install-clamav:
+    description: 'Install ClamAV malware scanner'
+    required: false
+    default: 'false'
+  syft-version:
+    description: 'Syft version (empty for latest)'
+    required: false
+    default: ''
+  grype-version:
+    description: 'Grype version (empty for latest)'
+    required: false
+    default: ''
+  cosign-version:
+    description: 'Cosign version (empty for latest)'
+    required: false
+    default: 'latest'
+  trivy-version:
+    description: 'Trivy version (empty for latest)'
+    required: false
+    default: 'latest'
+
+outputs:
+  syft-path:
+    description: 'Path to Syft binary'
+    value: ${{ steps.install-syft.outputs.path }}
+  grype-path:
+    description: 'Path to Grype binary'
+    value: ${{ steps.install-grype.outputs.path }}
+  cosign-path:
+    description: 'Path to Cosign binary'
+    value: ${{ steps.install-cosign.outputs.path }}
+  trivy-path:
+    description: 'Path to Trivy binary'
+    value: ${{ steps.install-trivy.outputs.path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Syft
+      id: install-syft
+      if: inputs.install-syft == 'true'
+      shell: bash
+      run: |
+        echo "::group::Installing Syft"
+        INSTALL_DIR="/usr/local/bin"
+        if [ -n "${{ inputs.syft-version }}" ]; then
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b "$INSTALL_DIR" "v${{ inputs.syft-version }}"
+        else
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b "$INSTALL_DIR"
+        fi
+        echo "path=$INSTALL_DIR/syft" >> "$GITHUB_OUTPUT"
+        syft version
+        echo "::endgroup::"
+
+    - name: Install Grype
+      id: install-grype
+      if: inputs.install-grype == 'true'
+      shell: bash
+      run: |
+        echo "::group::Installing Grype"
+        INSTALL_DIR="/usr/local/bin"
+        if [ -n "${{ inputs.grype-version }}" ]; then
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b "$INSTALL_DIR" "v${{ inputs.grype-version }}"
+        else
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b "$INSTALL_DIR"
+        fi
+        echo "path=$INSTALL_DIR/grype" >> "$GITHUB_OUTPUT"
+        grype version
+        grype db update
+        echo "::endgroup::"
+
+    - name: Install Cosign
+      id: install-cosign
+      if: inputs.install-cosign == 'true'
+      shell: bash
+      run: |
+        echo "::group::Installing Cosign"
+        INSTALL_DIR="/usr/local/bin"
+        if [ "${{ inputs.cosign-version }}" = "latest" ]; then
+          COSIGN_URL="https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
+        else
+          COSIGN_URL="https://github.com/sigstore/cosign/releases/download/v${{ inputs.cosign-version }}/cosign-linux-amd64"
+        fi
+        curl -Lo "$INSTALL_DIR/cosign" "$COSIGN_URL"
+        chmod +x "$INSTALL_DIR/cosign"
+        echo "path=$INSTALL_DIR/cosign" >> "$GITHUB_OUTPUT"
+        cosign version
+        echo "::endgroup::"
+
+    - name: Install Trivy CLI
+      id: install-trivy
+      if: inputs.install-trivy == 'true'
+      shell: bash
+      run: |
+        echo "::group::Installing Trivy"
+        INSTALL_DIR="/usr/local/bin"
+        if [ "${{ inputs.trivy-version }}" = "latest" ]; then
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b "$INSTALL_DIR"
+        else
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b "$INSTALL_DIR" "v${{ inputs.trivy-version }}"
+        fi
+        echo "path=$INSTALL_DIR/trivy" >> "$GITHUB_OUTPUT"
+        trivy version
+        echo "::endgroup::"
+
+    - name: Install ClamAV
+      id: install-clamav
+      if: inputs.install-clamav == 'true'
+      shell: bash
+      run: |
+        echo "::group::Installing ClamAV"
+        sudo apt-get update && sudo apt-get install -y clamav clamav-daemon
+        sudo systemctl stop clamav-freshclam || true
+        sudo freshclam || true
+        clamscan --version
+        echo "::endgroup::"
+
+    - name: Verify installations
+      shell: bash
+      run: |
+        echo "=== KEYSTONE Security Tools ==="
+        if [ "${{ inputs.install-syft }}" = "true" ]; then
+          echo "Syft:   $(syft version 2>&1 | head -1)"
+        fi
+        if [ "${{ inputs.install-grype }}" = "true" ]; then
+          echo "Grype:  $(grype version 2>&1 | head -1)"
+        fi
+        if [ "${{ inputs.install-cosign }}" = "true" ]; then
+          echo "Cosign: $(cosign version 2>&1 | head -1)"
+        fi
+        if [ "${{ inputs.install-trivy }}" = "true" ]; then
+          echo "Trivy:  $(trivy version 2>&1 | head -1)"
+        fi
+        if [ "${{ inputs.install-clamav }}" = "true" ]; then
+          echo "ClamAV: $(clamscan --version 2>&1 | head -1)"
+        fi
+        echo "==============================="

@@ -1,0 +1,212 @@
+name: 'Compliance Report'
+description: 'Generates a compliance evidence markdown report from KEYSTONE scan results'
+
+inputs:
+  sast-result:
+    description: 'SAST scan job result (success/failure/skipped/cancelled)'
+    required: true
+  secrets-result:
+    description: 'Secrets scan job result'
+    required: true
+  malware-result:
+    description: 'Malware scan job result'
+    required: true
+  license-result:
+    description: 'License check job result'
+    required: true
+  backend-scan-result:
+    description: 'Backend image scan job result'
+    required: true
+  frontend-scan-result:
+    description: 'Frontend image scan job result'
+    required: true
+  backend-test-result:
+    description: 'Backend test job result'
+    required: true
+  frontend-test-result:
+    description: 'Frontend test job result'
+    required: true
+  dast-result:
+    description: 'DAST scan job result'
+    required: true
+  output-path:
+    description: 'Path to write the compliance evidence report'
+    required: false
+    default: 'scan-results/COMPLIANCE_EVIDENCE.md'
+  commit-sha:
+    description: 'Git commit SHA'
+    required: false
+    default: ${{ github.sha }}
+  branch-name:
+    description: 'Git branch name'
+    required: false
+    default: ${{ github.ref_name }}
+  pipeline-run-id:
+    description: 'Pipeline run ID'
+    required: false
+    default: ${{ github.run_id }}
+
+outputs:
+  report-path:
+    description: 'Path to the generated compliance report'
+    value: ${{ inputs.output-path }}
+  all-passed:
+    description: 'Whether all compliance checks passed (true/false)'
+    value: ${{ steps.evaluate.outputs.all-passed }}
+  failed-checks:
+    description: 'Comma-separated list of failed check names'
+    value: ${{ steps.evaluate.outputs.failed-checks }}
+  total-checks:
+    description: 'Total number of checks evaluated'
+    value: '9'
+  passed-checks:
+    description: 'Number of checks that passed'
+    value: ${{ steps.evaluate.outputs.passed-count }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create output directory
+      shell: bash
+      run: mkdir -p "$(dirname "${{ inputs.output-path }}")"
+
+    - name: Generate compliance evidence report
+      shell: bash
+      run: |
+        TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        REPORT_PATH="${{ inputs.output-path }}"
+
+        status_icon() {
+          case "$1" in
+            success)  echo "PASS" ;;
+            failure)  echo "FAIL" ;;
+            skipped)  echo "SKIP" ;;
+            cancelled) echo "CANCELLED" ;;
+            *)        echo "UNKNOWN ($1)" ;;
+          esac
+        }
+
+        cat > "$REPORT_PATH" << REPORT_EOF
+        # KEYSTONE Compliance Evidence Report
+
+        **Generated:** ${TIMESTAMP}
+        **Commit:** ${{ inputs.commit-sha }}
+        **Branch:** ${{ inputs.branch-name }}
+        **Pipeline Run:** ${{ inputs.pipeline-run-id }}
+        **Repository:** ${{ github.repository }}
+
+        ---
+
+        ## Security Scan Results
+
+        | # | Check | Status | Tool | Category |
+        |---|-------|--------|------|----------|
+        | 1 | Static Application Security Testing | $(status_icon "${{ inputs.sast-result }}") | Semgrep | SAST |
+        | 2 | Secret Detection | $(status_icon "${{ inputs.secrets-result }}") | TruffleHog | Secrets |
+        | 3 | Malware Scanning | $(status_icon "${{ inputs.malware-result }}") | ClamAV | Malware |
+        | 4 | License Compliance | $(status_icon "${{ inputs.license-result }}") | Syft | License |
+        | 5 | Backend Image Vulnerability Scan | $(status_icon "${{ inputs.backend-scan-result }}") | Grype + Trivy | Container Security |
+        | 6 | Frontend Image Vulnerability Scan | $(status_icon "${{ inputs.frontend-scan-result }}") | Grype + Trivy | Container Security |
+        | 7 | Backend Unit/Integration Tests | $(status_icon "${{ inputs.backend-test-result }}") | pytest | Testing |
+        | 8 | Frontend Unit Tests | $(status_icon "${{ inputs.frontend-test-result }}") | Vitest | Testing |
+        | 9 | Dynamic Application Security Testing | $(status_icon "${{ inputs.dast-result }}") | OWASP ZAP | DAST |
+
+        ## Compliance Framework Mapping
+
+        | Framework | Control | Covered By |
+        |-----------|---------|------------|
+        | NIST SP 800-53 | SA-11 (Developer Testing) | Backend Tests, Frontend Tests |
+        | NIST SP 800-53 | RA-5 (Vulnerability Monitoring) | Grype, Trivy, OWASP ZAP |
+        | NIST SP 800-53 | SI-7 (Software Integrity) | Cosign Signing, SBOM Attestation |
+        | NIST SP 800-53 | CM-14 (Signed Components) | License Check, SBOM |
+        | OWASP ASVS | V1.14 (Configuration) | SAST (Semgrep) |
+        | OWASP ASVS | V2 (Authentication) | DAST (ZAP) |
+        | OWASP ASVS | V5 (Validation) | SAST + DAST |
+        | CIS Benchmark | 4.1 (Image Vulnerabilities) | Grype + Trivy |
+        | CIS Benchmark | 4.6 (HEALTHCHECK) | Container Hardening |
+        | SLSA Level 2 | Build Provenance | GitHub Actions + Cosign |
+        | SLSA Level 2 | SBOM | Syft (SPDX + CycloneDX) |
+
+        ## Artifacts
+
+        All scan artifacts are stored as GitHub Actions artifacts attached to pipeline run **${{ inputs.pipeline-run-id }}**.
+
+        - Backend SBOM (SPDX 2.3 + CycloneDX)
+        - Frontend SBOM (SPDX 2.3 + CycloneDX)
+        - Grype vulnerability reports (JSON)
+        - Trivy SARIF reports (uploaded to GitHub Security tab)
+        - ClamAV scan report
+        - OWASP ZAP scan results
+        - Coverage reports (pytest + Vitest)
+
+        ---
+
+        *This report was automatically generated by the KEYSTONE CI/CD pipeline.*
+        *Retain for audit purposes per organizational data retention policy.*
+        REPORT_EOF
+
+        echo "Compliance report written to: $REPORT_PATH"
+
+    - name: Evaluate gate results
+      id: evaluate
+      shell: bash
+      run: |
+        FAILED=""
+        PASSED=0
+        TOTAL=9
+
+        check() {
+          local name="$1"
+          local result="$2"
+          if [ "$result" = "success" ]; then
+            PASSED=$((PASSED + 1))
+          else
+            if [ -n "$FAILED" ]; then
+              FAILED="${FAILED},${name}"
+            else
+              FAILED="${name}"
+            fi
+          fi
+        }
+
+        check "SAST" "${{ inputs.sast-result }}"
+        check "Secrets" "${{ inputs.secrets-result }}"
+        check "Malware" "${{ inputs.malware-result }}"
+        check "License" "${{ inputs.license-result }}"
+        check "Backend-Scan" "${{ inputs.backend-scan-result }}"
+        check "Frontend-Scan" "${{ inputs.frontend-scan-result }}"
+        check "Backend-Tests" "${{ inputs.backend-test-result }}"
+        check "Frontend-Tests" "${{ inputs.frontend-test-result }}"
+        check "DAST" "${{ inputs.dast-result }}"
+
+        if [ -z "$FAILED" ]; then
+          echo "all-passed=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "all-passed=false" >> "$GITHUB_OUTPUT"
+        fi
+        echo "failed-checks=$FAILED" >> "$GITHUB_OUTPUT"
+        echo "passed-count=$PASSED" >> "$GITHUB_OUTPUT"
+
+        echo "======================================"
+        echo "  KEYSTONE COMPLIANCE GATE RESULTS"
+        echo "======================================"
+        echo "  Passed: $PASSED / $TOTAL"
+        if [ -n "$FAILED" ]; then
+          echo "  Failed: $FAILED"
+          echo "======================================"
+          echo "PIPELINE BLOCKED - Fix failures above before merge"
+        else
+          echo "======================================"
+          echo "ALL GATES PASSED - Safe to merge/deploy"
+        fi
+
+    - name: Add to job summary
+      shell: bash
+      run: |
+        echo "### Compliance Gate: ${{ steps.evaluate.outputs.passed-count }}/9 passed" >> "$GITHUB_STEP_SUMMARY"
+        echo "" >> "$GITHUB_STEP_SUMMARY"
+        if [ "${{ steps.evaluate.outputs.all-passed }}" = "true" ]; then
+          echo "**Result: ALL GATES PASSED**" >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "**Result: BLOCKED** — Failed checks: ${{ steps.evaluate.outputs.failed-checks }}" >> "$GITHUB_STEP_SUMMARY"
+        fi

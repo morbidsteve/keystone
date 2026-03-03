@@ -1,0 +1,34 @@
+grype:
+  fail_on: critical
+  warn_on: high
+
+trivy:
+  fail_on: CRITICAL,HIGH
+  ignore_unfixed: false
+
+semgrep:
+  fail_on: ERROR
+  warn_on: WARNING
+
+clamav:
+  fail_on: any_infection
+
+trufflehog:
+  fail_on: any_verified
+
+license:
+  blocked:
+    - GPL-2.0-only
+    - GPL-3.0-only
+    - AGPL-3.0-only
+    - AGPL-3.0-or-later
+    - SSPL-1.0
+    - EUPL-1.1
+  warn:
+    - LGPL-2.1-only
+    - LGPL-3.0-only
+    - MPL-2.0
+
+coverage:
+  backend_minimum: 80
+  frontend_minimum: 80
