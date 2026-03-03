@@ -377,7 +377,7 @@ jobs:
           pip install pytest pytest-cov pytest-asyncio httpx
       - name: Run tests with coverage
         env:
-          DATABASE_URL: postgresql://keystone_test:test_password@localhost:5432/keystone_test
+          DATABASE_URL: postgresql+asyncpg://keystone_test:test_password@localhost:5432/keystone_test
           REDIS_URL: redis://localhost:6379
           TESTING: "true"
         run: cd backend && pytest tests/ -v --cov=app --cov-report=xml --cov-report=term
@@ -407,8 +407,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Start application stack
+        env:
+          BACKEND_IMAGE: ${{ needs.build-backend.outputs.image-ref }}
+          FRONTEND_IMAGE: ${{ needs.build-frontend.outputs.image-ref }}
         run: docker compose -f docker-compose.ci.yml up -d
       - name: Wait for healthy
+        env:
+          BACKEND_IMAGE: ${{ needs.build-backend.outputs.image-ref }}
+          FRONTEND_IMAGE: ${{ needs.build-frontend.outputs.image-ref }}
         run: |
           for i in $(seq 1 60); do
             if curl -sf http://localhost:8000/api/v1/health > /dev/null 2>&1; then
@@ -418,7 +424,7 @@ jobs:
             sleep 1
           done
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:3000 > /dev/null 2>&1; then
+            if curl -sf http://localhost:8080 > /dev/null 2>&1; then
               echo "Frontend healthy after ${i}s"
               break
             fi
@@ -432,10 +438,13 @@ jobs:
           allow_issue_writing: false
       - uses: zaproxy/action-full-scan@v0.7.0
         with:
-          target: 'http://localhost:3000'
+          target: 'http://localhost:8080'
           cmd_options: '-a'
           allow_issue_writing: false
       - if: always()
+        env:
+          BACKEND_IMAGE: ${{ needs.build-backend.outputs.image-ref }}
+          FRONTEND_IMAGE: ${{ needs.build-frontend.outputs.image-ref }}
         run: docker compose -f docker-compose.ci.yml down -v
 
   # ============================================================

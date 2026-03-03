@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # STAGE 2: Production (nginx-unprivileged, non-root)
-FROM nginxinc/nginx-unprivileged:1.25-alpine AS production
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS production
 
 LABEL org.opencontainers.image.source="https://github.com/KEYSTONE"
 LABEL org.opencontainers.image.description="KEYSTONE Frontend"
