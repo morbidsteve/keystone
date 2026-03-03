@@ -1,13 +1,21 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Shield, Loader } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { isDemoMode } from '@/api/mockClient';
+import ClassificationBanner from '@/components/ui/ClassificationBanner';
+import { useClassificationStore } from '@/stores/classificationStore';
 
 export default function LoginPage() {
   const { isAuthenticated, login, isLoading, error, clearError } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const fetchClassification = useClassificationStore((s) => s.fetchClassification);
+
+  useEffect(() => {
+    fetchClassification();
+  }, [fetchClassification]);
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
@@ -62,32 +70,7 @@ export default function LoginPage() {
       />
 
       {/* Classification Banner */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 24,
-          backgroundColor: 'var(--color-success)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 20,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 700,
-            color: '#000',
-            letterSpacing: '3px',
-          }}
-        >
-          UNCLASSIFIED
-        </span>
-      </div>
+      <ClassificationBanner position="top" />
 
       {/* Login Form */}
       <div
@@ -316,32 +299,7 @@ export default function LoginPage() {
       </div>
 
       {/* Bottom Classification Banner */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 24,
-          backgroundColor: 'var(--color-success)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 20,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 700,
-            color: '#000',
-            letterSpacing: '3px',
-          }}
-        >
-          UNCLASSIFIED
-        </span>
-      </div>
+      <ClassificationBanner position="bottom" />
     </div>
   );
 }

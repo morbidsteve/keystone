@@ -13,6 +13,7 @@ from app.api.alerts import router as alerts_router
 from app.api.units import router as units_router
 from app.api.schema_mapping import router as schema_mapping_router
 from app.api.tak import router as tak_router
+from app.api.settings import router as settings_router
 
 api_router = APIRouter()
 
@@ -31,3 +32,4 @@ api_router.include_router(
     schema_mapping_router, prefix="/schema-mapping", tags=["Schema Mapping"]
 )
 api_router.include_router(tak_router, prefix="/tak", tags=["TAK Integration"])
+api_router.include_router(settings_router, prefix="/settings", tags=["Settings"])

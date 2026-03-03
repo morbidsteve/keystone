@@ -12,6 +12,7 @@ from app.models.alert import Alert, AlertType, AlertSeverity
 from app.models.canonical_schema import CanonicalField
 from app.models.data_template import DataTemplate
 from app.models.tak_connection import TAKConnection, ConnectionStatus, TAKProtocol
+from app.models.system_settings import SystemSetting
 
 __all__ = [
     "User",
@@ -40,4 +41,5 @@ __all__ = [
     "TAKConnection",
     "ConnectionStatus",
     "TAKProtocol",
+    "SystemSetting",
 ]

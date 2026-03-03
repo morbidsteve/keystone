@@ -35,6 +35,27 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Canonical field seeding skipped: {e}")
 
+    # Seed default classification setting
+    try:
+        from sqlalchemy import select
+        from app.models.system_settings import SystemSetting
+        async with async_session() as session:
+            existing = await session.execute(
+                select(SystemSetting).where(SystemSetting.key == "classification")
+            )
+            if not existing.scalars().first():
+                import json
+                default_classification = json.dumps({
+                    "level": "UNCLASSIFIED",
+                    "banner_text": "UNCLASSIFIED",
+                    "color": "green",
+                })
+                session.add(SystemSetting(key="classification", value=default_classification))
+                await session.commit()
+                logger.info("Default classification setting seeded.")
+    except Exception as e:
+        logger.warning(f"Classification setting seed skipped: {e}")
+
     # Auto-seed units, users, and sample data in development mode
     if settings.ENV_MODE == "development":
         await _run_dev_seeds()
