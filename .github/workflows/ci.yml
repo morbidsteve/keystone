@@ -164,7 +164,7 @@ jobs:
     needs: [lint-backend, sast-scan, secrets-scan, clamav-scan, license-check]
     runs-on: ubuntu-latest
     outputs:
-      image-ref: ghcr.io/${{ github.repository }}/keystone-backend:${{ github.ref_name }}
+      image-ref: ghcr.io/${{ github.repository }}/keystone-backend:sha-${{ github.sha }}
       digest: ${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
@@ -174,8 +174,9 @@ jobs:
         with:
           images: ${{ env.BACKEND_IMAGE }}
           tags: |
-            type=sha,prefix=
+            type=sha,prefix=sha-,format=long
             type=ref,event=branch
+            type=ref,event=pr
             type=semver,pattern={{version}}
       - uses: docker/login-action@v3
         with:
@@ -200,7 +201,7 @@ jobs:
     needs: [lint-frontend, sast-scan, secrets-scan, clamav-scan, license-check]
     runs-on: ubuntu-latest
     outputs:
-      image-ref: ghcr.io/${{ github.repository }}/keystone-frontend:${{ github.ref_name }}
+      image-ref: ghcr.io/${{ github.repository }}/keystone-frontend:sha-${{ github.sha }}
       digest: ${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
@@ -210,8 +211,9 @@ jobs:
         with:
           images: ${{ env.FRONTEND_IMAGE }}
           tags: |
-            type=sha,prefix=
+            type=sha,prefix=sha-,format=long
             type=ref,event=branch
+            type=ref,event=pr
             type=semver,pattern={{version}}
       - uses: docker/login-action@v3
         with:
