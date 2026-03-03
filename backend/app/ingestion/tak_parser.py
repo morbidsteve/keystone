@@ -205,17 +205,20 @@ def extract_logistics_data(detail_element: Element) -> Optional[Dict[str, List]]
 
     # Parse <equipment> elements
     for equip in logistics_elem.findall("equipment"):
+        mc_count = _safe_int(equip.get("mc"))
+        total_count = _safe_int(equip.get("total"))
+        nmc_count = _safe_int(equip.get("nmc"))
         item = {
             "tamcn": equip.get("tamcn", ""),
             "nomenclature": equip.get("nomen", equip.get("tamcn", "")),
-            "mission_capable": _safe_int(equip.get("mc")),
-            "total": _safe_int(equip.get("total")),
-            "not_mission_capable": _safe_int(equip.get("nmc")),
+            "mission_capable": mc_count,
+            "total": total_count,
+            "not_mission_capable": nmc_count,
         }
         # Calculate readiness if we have the data
-        if item["total"] > 0:
+        if total_count > 0:
             item["readiness_pct"] = round(
-                (item["mission_capable"] / item["total"]) * 100, 1
+                (mc_count / total_count) * 100, 1
             )
         else:
             item["readiness_pct"] = 0.0

@@ -245,7 +245,7 @@ def _apply_transform(
         elif transform == "float":
             return float(str(value).replace(",", ""))
         elif transform == "datetime":
-            from dateutil import parser as dt_parser
+            from dateutil import parser as dt_parser  # type: ignore[import-untyped]
 
             fmt = params.get("format") if params else None
             if fmt:

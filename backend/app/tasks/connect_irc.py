@@ -5,6 +5,7 @@ import socket
 import ssl
 import time
 from datetime import datetime, timezone
+from typing import Any
 
 from sqlalchemy import create_engine, select, update
 from sqlalchemy.orm import Session
@@ -77,7 +78,7 @@ def connect_irc_source(self, source_id: int):
     Args:
         source_id: ID of the DataSource (IRC_SERVER type) to connect.
     """
-    sock = None
+    sock: socket.socket | ssl.SSLSocket | None = None
     try:
         with Session(sync_engine) as db:
             source = db.execute(
@@ -94,7 +95,7 @@ def connect_irc_source(self, source_id: int):
                 )
                 return {"status": "skipped", "reason": "disabled"}
 
-            config = source.config or {}
+            config: Any = source.config or {}
             host = config.get("host", "")
             port = config.get("port", 6667)
             use_ssl = config.get("use_ssl", True)
@@ -131,6 +132,7 @@ def connect_irc_source(self, source_id: int):
         else:
             sock = raw_sock
 
+        assert sock is not None
         sock.settimeout(5.0)  # Non-blocking reads with timeout
 
         # Register with IRC server
@@ -165,7 +167,7 @@ def connect_irc_source(self, source_id: int):
         )
 
         # Message receive loop
-        message_buffer = []
+        message_buffer: list[str] = []
         last_flush = time.time()
         total_records = 0
         recv_buffer = ""
@@ -206,6 +208,7 @@ def connect_irc_source(self, source_id: int):
 
             # Read data from socket
             try:
+                assert sock is not None
                 data = sock.recv(4096).decode("utf-8", errors="replace")
                 if not data:
                     logger.warning(f"IRC server {host}:{port} closed connection")
@@ -231,6 +234,7 @@ def connect_irc_source(self, source_id: int):
                     # Respond to PING to stay connected
                     if line.startswith("PING"):
                         pong_param = line.split(" ", 1)[1] if " " in line else ""
+                        assert sock is not None
                         _send_irc(sock, f"PONG {pong_param}")
                         continue
 

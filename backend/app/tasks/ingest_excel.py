@@ -17,7 +17,7 @@ sync_engine = create_engine(settings.DATABASE_URL_SYNC)
 
 
 @celery_app.task(name="process_excel_upload", bind=True, max_retries=3)
-def process_excel_upload(self, raw_data_id: int, file_bytes: bytes = None):
+def process_excel_upload(self, raw_data_id: int, file_bytes: bytes | None = None):
     """Process an uploaded Excel file.
 
     1. Fetch raw data record

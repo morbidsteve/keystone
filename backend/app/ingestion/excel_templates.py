@@ -72,7 +72,7 @@ def identify_template(headers: List[str]) -> Optional[Tuple[str, Dict]]:
     normalized_headers = [h.strip().upper() for h in headers if h]
 
     best_match = None
-    best_score = 0
+    best_score: float = 0
 
     for template_name, template_config in LOGSTAT_TEMPLATES.items():
         required = template_config["required_headers"]
