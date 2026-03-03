@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: keystone
+      POSTGRES_USER: keystone
+      POSTGRES_PASSWORD: keystone_dev
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keystone"]
+      interval: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone
+      DATABASE_URL_SYNC: postgresql://keystone:keystone_dev@db:5432/keystone
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: dev-secret-key-change-in-production
+      CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000"]'
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    volumes: ["./backend:/app"]
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health\")'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  celery_worker:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone
+      DATABASE_URL_SYNC: postgresql://keystone:keystone_dev@db:5432/keystone
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: dev-secret-key-change-in-production
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    volumes: ["./backend:/app"]
+    command: celery -A app.tasks worker --loglevel=info
+
+  frontend:
+    build: ./frontend
+    ports: ["5173:5173"]
+    environment:
+      NODE_OPTIONS: "--dns-result-order=ipv4first"
+    volumes: ["./frontend:/app", "/app/node_modules"]
+    depends_on:
+      backend: { condition: service_healthy }
+
+volumes:
+  pgdata:

@@ -1,0 +1,290 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Overpass:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #0a0e14;
+  --color-bg-elevated: #111720;
+  --color-bg-surface: #161d28;
+  --color-bg-hover: #1c2535;
+  --color-border: #1e2a3a;
+  --color-border-strong: #2a3a4e;
+  --color-text: #c5cdd8;
+  --color-text-muted: #5c6b7f;
+  --color-text-bright: #e8ecf1;
+  --color-accent: #4dabf7;
+  --color-success: #40c057;
+  --color-warning: #fab005;
+  --color-danger: #ff6b6b;
+  --color-info: #339af0;
+  --color-muted: #495867;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-body: 'Overpass', -apple-system, sans-serif;
+  --radius: 3px;
+  --transition: 150ms ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  position: relative;
+}
+
+#root::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(77, 171, 247, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 171, 247, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease forwards;
+}
+
+.animate-blink {
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* CRT Scanline Effect for Login */
+.crt-scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+.crt-scanlines::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    transparent 0%,
+    rgba(77, 171, 247, 0.03) 50%,
+    transparent 100%
+  );
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 11;
+}
+
+/* Status Colors */
+.status-green {
+  color: var(--color-success);
+}
+
+.status-amber {
+  color: var(--color-warning);
+}
+
+.status-red {
+  color: var(--color-danger);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot-green {
+  background-color: var(--color-success);
+}
+
+.status-dot-amber {
+  background-color: var(--color-warning);
+}
+
+.status-dot-red {
+  background-color: var(--color-danger);
+}
+
+/* Status Badges */
+.status-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-badge-green {
+  color: var(--color-success);
+  border-color: var(--color-success);
+  background-color: rgba(64, 192, 87, 0.1);
+}
+
+.status-badge-amber {
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+  background-color: rgba(250, 176, 5, 0.1);
+}
+
+.status-badge-red {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+/* Section Headers */
+.section-header {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-text-muted);
+}
+
+/* Mono Label */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-surface) 25%,
+    var(--color-bg-hover) 50%,
+    var(--color-bg-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Focus styles */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-accent) !important;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(77, 171, 247, 0.3);
+  color: var(--color-text-bright);
+}

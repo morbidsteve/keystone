@@ -1,0 +1,43 @@
+"""Report model for generated logistics reports."""
+
+import enum
+
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Enum as SQLEnum,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
+from sqlalchemy.sql import func
+
+from app.database import Base
+
+
+class ReportType(str, enum.Enum):
+    LOGSTAT = "LOGSTAT"
+    READINESS = "READINESS"
+    SUPPLY_STATUS = "SUPPLY_STATUS"
+    ROLLUP = "ROLLUP"
+
+
+class ReportStatus(str, enum.Enum):
+    DRAFT = "DRAFT"
+    FINAL = "FINAL"
+
+
+class Report(Base):
+    __tablename__ = "reports"
+
+    id = Column(Integer, primary_key=True, index=True)
+    unit_id = Column(Integer, ForeignKey("units.id"), nullable=False, index=True)
+    report_type = Column(SQLEnum(ReportType), nullable=False)
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=True)
+    generated_at = Column(DateTime(timezone=True), server_default=func.now())
+    status = Column(SQLEnum(ReportStatus), nullable=False, default=ReportStatus.DRAFT)
+    generated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    period_start = Column(DateTime(timezone=True), nullable=True)
+    period_end = Column(DateTime(timezone=True), nullable=True)
