@@ -6,6 +6,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Enum as SQLEnum,
+    Float,
     ForeignKey,
     Integer,
     String,
@@ -33,6 +34,8 @@ class Unit(Base):
     echelon = Column(SQLEnum(Echelon), nullable=False)
     parent_id = Column(Integer, ForeignKey("units.id"), nullable=True)
     uic = Column(String(10), unique=True, nullable=True)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     parent = relationship("Unit", remote_side="Unit.id", back_populates="children")

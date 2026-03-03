@@ -6,6 +6,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Enum as SQLEnum,
+    Float,
     ForeignKey,
     Integer,
     String,
@@ -37,6 +38,14 @@ class Movement(Base):
     actual_arrival = Column(DateTime(timezone=True), nullable=True)
     vehicle_count = Column(Integer, nullable=False, default=0)
     cargo_description = Column(Text, nullable=True)
+    origin_lat = Column(Float, nullable=True)
+    origin_lon = Column(Float, nullable=True)
+    dest_lat = Column(Float, nullable=True)
+    dest_lon = Column(Float, nullable=True)
+    current_lat = Column(Float, nullable=True)
+    current_lon = Column(Float, nullable=True)
+    heading = Column(Float, nullable=True)
+    speed_kph = Column(Float, nullable=True)
     status = Column(SQLEnum(MovementStatus), nullable=False, default=MovementStatus.PLANNED)
     reported_at = Column(DateTime(timezone=True), server_default=func.now())
     source = Column(String(50), nullable=True)

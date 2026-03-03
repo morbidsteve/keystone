@@ -9,10 +9,12 @@ import { TIME_RANGES } from '@/lib/constants';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'DASHBOARD',
+  '/map': 'MAP VIEW',
   '/supply': 'SUPPLY STATUS',
   '/equipment': 'EQUIPMENT READINESS',
   '/transportation': 'TRANSPORTATION',
   '/ingestion': 'DATA INGESTION',
+  '/data-sources': 'DATA SOURCES',
   '/reports': 'REPORTS',
   '/alerts': 'ALERTS',
   '/admin': 'ADMINISTRATION',
