@@ -152,7 +152,11 @@ async def get_map_convoys(
                 current_position=current_pos,
                 route_geometry=[
                     [float(m.origin_lat), float(m.origin_lon)],
-                    *([[float(m.current_lat), float(m.current_lon)]] if m.current_lat else []),
+                    *(
+                        [[float(m.current_lat), float(m.current_lon)]]
+                        if m.current_lat
+                        else []
+                    ),
                     [float(m.dest_lat), float(m.dest_lon)],
                 ],
                 status=m.status.value,

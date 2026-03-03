@@ -349,7 +349,9 @@ async def auto_detect_template(
         if not template.header_patterns:
             continue
 
-        pattern_headers = [p.strip().upper() for p in list(template.header_patterns) if p]
+        pattern_headers = [
+            p.strip().upper() for p in list(template.header_patterns) if p
+        ]
         if not pattern_headers:
             continue
 

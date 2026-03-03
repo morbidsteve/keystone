@@ -160,7 +160,9 @@ UNIT_HIERARCHY = {
 }
 
 
-async def create_unit_tree(db: AsyncSession, tree: dict, parent_id: int | None = None) -> dict:
+async def create_unit_tree(
+    db: AsyncSession, tree: dict, parent_id: int | None = None
+) -> dict:
     """Recursively create units from the hierarchy definition.
 
     Returns a mapping of unit name -> unit id for use by other seed scripts.

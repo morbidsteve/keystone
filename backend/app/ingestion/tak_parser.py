@@ -217,9 +217,7 @@ def extract_logistics_data(detail_element: Element) -> Optional[Dict[str, List]]
         }
         # Calculate readiness if we have the data
         if total_count > 0:
-            item["readiness_pct"] = round(
-                (mc_count / total_count) * 100, 1
-            )
+            item["readiness_pct"] = round((mc_count / total_count) * 100, 1)
         else:
             item["readiness_pct"] = 0.0
         equipment_items.append(item)
