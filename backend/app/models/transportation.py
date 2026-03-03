@@ -40,10 +40,13 @@ class Movement(Base):
     cargo_description = Column(Text, nullable=True)
     origin_lat = Column(Float, nullable=True)
     origin_lon = Column(Float, nullable=True)
+    origin_mgrs = Column(String(20), nullable=True)
     dest_lat = Column(Float, nullable=True)
     dest_lon = Column(Float, nullable=True)
+    dest_mgrs = Column(String(20), nullable=True)
     current_lat = Column(Float, nullable=True)
     current_lon = Column(Float, nullable=True)
+    current_mgrs = Column(String(20), nullable=True)
     heading = Column(Float, nullable=True)
     speed_kph = Column(Float, nullable=True)
     status = Column(

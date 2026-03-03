@@ -1,8 +1,8 @@
-import { Marker, Popup, Tooltip } from 'react-leaflet';
+import { Marker, Tooltip } from 'react-leaflet';
 import type { MapUnit } from '@/api/map';
 import { useMilSymbolIcon } from '../symbols/MilSymbol';
 import { getStatusColor } from '../symbols/symbolConfig';
-import UnitPopup from '../popups/UnitPopup';
+import { useMapStore } from '@/stores/mapStore';
 
 interface UnitLayerProps {
   units: MapUnit[];
@@ -16,6 +16,7 @@ function UnitMarker({
   unit: MapUnit;
   showSupplyOverlay: boolean;
 }) {
+  const selectEntity = useMapStore((s) => s.selectEntity);
   const statusColor = showSupplyOverlay
     ? getStatusColor(unit.supply_status)
     : undefined;
@@ -25,6 +26,9 @@ function UnitMarker({
     <Marker
       position={[unit.latitude, unit.longitude]}
       icon={icon}
+      eventHandlers={{
+        click: () => selectEntity('unit', unit.unit_id, unit),
+      }}
     >
       <Tooltip
         direction="top"
@@ -44,14 +48,6 @@ function UnitMarker({
           {unit.abbreviation}
         </div>
       </Tooltip>
-      <Popup
-        maxWidth={320}
-        minWidth={260}
-        closeButton={true}
-        className="keystone-popup"
-      >
-        <UnitPopup unit={unit} />
-      </Popup>
     </Marker>
   );
 }

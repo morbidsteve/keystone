@@ -36,6 +36,7 @@ class Unit(Base):
     uic = Column(String(10), unique=True, nullable=True)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    mgrs = Column(String(20), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     parent = relationship("Unit", remote_side="Unit.id", back_populates="children")

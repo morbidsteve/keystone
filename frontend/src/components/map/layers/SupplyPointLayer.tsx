@@ -1,8 +1,8 @@
-import { Marker, Popup, Tooltip } from 'react-leaflet';
+import { Marker, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import { useMemo } from 'react';
 import type { MapSupplyPoint } from '@/api/map';
-import SupplyPointPopup from '../popups/SupplyPointPopup';
+import { useMapStore } from '@/stores/mapStore';
 
 interface SupplyPointLayerProps {
   supplyPoints: MapSupplyPoint[];
@@ -73,13 +73,20 @@ function createSupplyPointIcon(pointType: string, status: string): L.DivIcon {
 }
 
 function SupplyPointMarker({ sp }: { sp: MapSupplyPoint }) {
+  const selectEntity = useMapStore((s) => s.selectEntity);
   const icon = useMemo(
     () => createSupplyPointIcon(sp.point_type, sp.status),
     [sp.point_type, sp.status],
   );
 
   return (
-    <Marker position={[sp.latitude, sp.longitude]} icon={icon}>
+    <Marker
+      position={[sp.latitude, sp.longitude]}
+      icon={icon}
+      eventHandlers={{
+        click: () => selectEntity('supplyPoint', sp.id, sp),
+      }}
+    >
       <Tooltip direction="top" offset={[0, -12]} opacity={0.95}>
         <div
           style={{
@@ -94,9 +101,6 @@ function SupplyPointMarker({ sp }: { sp: MapSupplyPoint }) {
           {sp.name}
         </div>
       </Tooltip>
-      <Popup maxWidth={280} minWidth={200} closeButton={true} className="keystone-popup">
-        <SupplyPointPopup supplyPoint={sp} />
-      </Popup>
     </Marker>
   );
 }

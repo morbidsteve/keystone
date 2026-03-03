@@ -1,5 +1,6 @@
-import { CircleMarker, Popup } from 'react-leaflet';
+import { CircleMarker, Tooltip } from 'react-leaflet';
 import type { MapAlert } from '@/api/map';
+import { useMapStore } from '@/stores/mapStore';
 
 interface AlertLayerProps {
   alerts: MapAlert[];
@@ -32,6 +33,8 @@ function getAlertIcon(severity: string): string {
 }
 
 export default function AlertLayer({ alerts }: AlertLayerProps) {
+  const selectEntity = useMapStore((s) => s.selectEntity);
+
   return (
     <>
       {alerts.map((alert) => {
@@ -50,100 +53,23 @@ export default function AlertLayer({ alerts }: AlertLayerProps) {
               weight: 2,
               className: isCritical ? 'alert-pulse' : undefined,
             }}
+            eventHandlers={{
+              click: () => selectEntity('alert', alert.id, alert),
+            }}
           >
-            <Popup
-              maxWidth={260}
-              minWidth={200}
-              closeButton={true}
-              className="keystone-popup"
-            >
+            <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>
               <div
                 style={{
-                  minWidth: 200,
                   fontFamily: 'var(--font-mono)',
-                  backgroundColor: 'var(--color-bg-elevated)',
-                  color: 'var(--color-text)',
-                  padding: 12,
-                  borderRadius: 'var(--radius)',
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: '#111',
+                  padding: '2px 4px',
                 }}
               >
-                {/* Header */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 16,
-                      color: color,
-                    }}
-                  >
-                    {getAlertIcon(alert.severity)}
-                  </span>
-                  <div>
-                    <div
-                      style={{
-                        fontSize: 10,
-                        fontWeight: 700,
-                        color: color,
-                        letterSpacing: '1px',
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {alert.severity}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 9,
-                        color: 'var(--color-text-muted)',
-                        letterSpacing: '1px',
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {alert.alert_type.replace(/_/g, ' ')}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Message */}
-                <div
-                  style={{
-                    fontSize: 10,
-                    color: 'var(--color-text-bright)',
-                    lineHeight: 1.4,
-                    padding: '6px 0',
-                    borderTop: '1px solid var(--color-border)',
-                  }}
-                >
-                  {alert.message}
-                </div>
-
-                {/* Unit */}
-                {alert.unit_name && (
-                  <div
-                    style={{
-                      fontSize: 9,
-                      color: 'var(--color-text-muted)',
-                      marginTop: 4,
-                    }}
-                  >
-                    UNIT:{' '}
-                    <span
-                      style={{
-                        color: 'var(--color-text-bright)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {alert.unit_name}
-                    </span>
-                  </div>
-                )}
+                {getAlertIcon(alert.severity)} {alert.severity} - {alert.alert_type.replace(/_/g, ' ')}
               </div>
-            </Popup>
+            </Tooltip>
           </CircleMarker>
         );
       })}
