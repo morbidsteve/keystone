@@ -15,10 +15,26 @@ const queryClient = new QueryClient({
   },
 });
 
+// Handle GitHub Pages SPA redirect
+function handleRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const redirect = params.get('redirect');
+  if (redirect) {
+    params.delete('redirect');
+    const remaining = params.toString();
+    const newUrl = redirect + (remaining ? '?' + remaining : '');
+    window.history.replaceState(null, '', newUrl);
+  }
+}
+handleRedirect();
+
+// Derive basename from <base> tag or VITE_BASE_PATH for GitHub Pages
+const basename = import.meta.env.BASE_URL?.replace(/\/$/, '') || '';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </QueryClientProvider>

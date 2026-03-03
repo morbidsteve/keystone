@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
+import { isDemoMode } from '@/api/mockClient';
 import { useState } from 'react';
 
 const navItems = [
@@ -78,6 +79,24 @@ export default function Sidebar() {
         >
           KEYSTONE
         </span>
+        {isDemoMode && (
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 8,
+              fontWeight: 700,
+              letterSpacing: '1.5px',
+              color: 'var(--color-accent)',
+              backgroundColor: 'rgba(77, 171, 247, 0.12)',
+              border: '1px solid rgba(77, 171, 247, 0.3)',
+              borderRadius: 'var(--radius)',
+              padding: '2px 6px',
+              marginLeft: 'auto',
+            }}
+          >
+            DEMO
+          </span>
+        )}
       </div>
 
       {/* Unit Selector */}

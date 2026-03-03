@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Shield, Loader } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { isDemoMode } from '@/api/mockClient';
 
 export default function LoginPage() {
   const { isAuthenticated, login, isLoading, error, clearError } = useAuth();
@@ -138,6 +139,25 @@ export default function LoginPage() {
           >
             LOGISTICS COMMON OPERATING PICTURE
           </p>
+          {isDemoMode && (
+            <div
+              style={{
+                marginTop: 10,
+                padding: '4px 12px',
+                backgroundColor: 'rgba(77, 171, 247, 0.12)',
+                border: '1px solid var(--color-accent)',
+                borderRadius: 'var(--radius)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: 9,
+                fontWeight: 600,
+                letterSpacing: '2px',
+                color: 'var(--color-accent)',
+                textTransform: 'uppercase',
+              }}
+            >
+              DEMO MODE
+            </div>
+          )}
         </div>
 
         {/* Form */}
@@ -225,12 +245,12 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={isLoading || !username || !password}
+            disabled={isLoading || !username || (!isDemoMode && !password)}
             style={{
               width: '100%',
               padding: '12px',
               backgroundColor:
-                isLoading || !username || !password
+                isLoading || !username || (!isDemoMode && !password)
                   ? 'var(--color-muted)'
                   : 'var(--color-accent)',
               border: 'none',
@@ -241,7 +261,7 @@ export default function LoginPage() {
               fontWeight: 700,
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              cursor: isLoading || !username || !password ? 'not-allowed' : 'pointer',
+              cursor: isLoading || !username || (!isDemoMode && !password) ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -259,6 +279,25 @@ export default function LoginPage() {
               'LOGIN'
             )}
           </button>
+
+          {isDemoMode && (
+            <div
+              style={{
+                marginTop: 10,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 9,
+                color: 'var(--color-text-muted)',
+                textAlign: 'center',
+                letterSpacing: '0.5px',
+                lineHeight: 1.6,
+              }}
+            >
+              Try: <span style={{ color: 'var(--color-accent)' }}>admin</span>,{' '}
+              <span style={{ color: 'var(--color-accent)' }}>commander</span>,{' '}
+              <span style={{ color: 'var(--color-accent)' }}>s4officer</span>,{' '}
+              or any username. Password optional.
+            </div>
+          )}
         </form>
 
         {/* Footer */}

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { useAlertStore } from '@/stores/alertStore';
+import { isDemoMode } from '@/api/mockClient';
 import { TIME_RANGES } from '@/lib/constants';
 
 const pageTitles: Record<string, string> = {
@@ -50,19 +51,38 @@ export default function Header() {
       }}
     >
       {/* Page Title */}
-      <h1
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 13,
-          fontWeight: 600,
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          color: 'var(--color-text-bright)',
-          margin: 0,
-        }}
-      >
-        {pageTitle}
-      </h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <h1
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 13,
+            fontWeight: 600,
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            color: 'var(--color-text-bright)',
+            margin: 0,
+          }}
+        >
+          {pageTitle}
+        </h1>
+        {isDemoMode && (
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 9,
+              fontWeight: 600,
+              letterSpacing: '1.5px',
+              color: 'var(--color-warning)',
+              backgroundColor: 'rgba(250, 176, 5, 0.1)',
+              border: '1px solid rgba(250, 176, 5, 0.3)',
+              borderRadius: 'var(--radius)',
+              padding: '2px 8px',
+            }}
+          >
+            DEMO DATA
+          </span>
+        )}
+      </div>
 
       {/* Right Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
