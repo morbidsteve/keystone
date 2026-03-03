@@ -1,17 +1,17 @@
-import mgrs from 'mgrs';
+import { forward, toPoint } from 'mgrs';
 
 export function latLonToMGRS(lat: number, lon: number): string {
-  return mgrs.forward([lon, lat], 5);
+  return forward([lon, lat], 5);
 }
 
 export function mgrsToLatLon(mgrsStr: string): { lat: number; lon: number } {
-  const [lon, lat] = mgrs.toPoint(mgrsStr.trim().replace(/\s/g, ''));
+  const [lon, lat] = toPoint(mgrsStr.trim().replace(/\s/g, ''));
   return { lat, lon };
 }
 
 export function isValidMGRS(str: string): boolean {
   try {
-    mgrs.toPoint(str.trim().replace(/\s/g, ''));
+    toPoint(str.trim().replace(/\s/g, ''));
     return true;
   } catch {
     return false;

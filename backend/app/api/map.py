@@ -275,27 +275,33 @@ async def get_map_routes(
     responses = []
     for r in routes:
         wp_list = []
-        for wp in (r.waypoints or []):
+        for wp in r.waypoints or []:
             if isinstance(wp, dict):
-                wp_list.append(RouteWaypointResponse(
-                    lat=wp.get("lat", 0.0),
-                    lon=wp.get("lon", 0.0),
-                    mgrs=wp.get("mgrs"),
-                    label=wp.get("label"),
-                ))
+                wp_list.append(
+                    RouteWaypointResponse(
+                        lat=wp.get("lat", 0.0),
+                        lon=wp.get("lon", 0.0),
+                        mgrs=wp.get("mgrs"),
+                        label=wp.get("label"),
+                    )
+                )
             elif isinstance(wp, (list, tuple)) and len(wp) >= 2:
-                wp_list.append(RouteWaypointResponse(
-                    lat=wp[0],
-                    lon=wp[1],
-                ))
-        responses.append(MapRouteResponse(
-            id=r.id,
-            name=r.name,
-            route_type=r.route_type.value,
-            status=r.status.value,
-            waypoints=wp_list,
-            description=r.description,
-        ))
+                wp_list.append(
+                    RouteWaypointResponse(
+                        lat=wp[0],
+                        lon=wp[1],
+                    )
+                )
+        responses.append(
+            MapRouteResponse(
+                id=r.id,
+                name=r.name,
+                route_type=r.route_type.value,
+                status=r.status.value,
+                waypoints=wp_list,
+                description=r.description,
+            )
+        )
     return responses
 
 
@@ -384,7 +390,9 @@ async def update_unit_position(
     unit_id: int,
     request: PositionUpdateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_role([Role.ADMIN, Role.COMMANDER, Role.S3, Role.S4])),
+    current_user: User = Depends(
+        require_role([Role.ADMIN, Role.COMMANDER, Role.S3, Role.S4])
+    ),
 ):
     """Update a unit's position via GPS or MGRS. Requires ADMIN, COMMANDER, S3, or S4 role."""
     # RBAC: verify user can access this unit
@@ -467,7 +475,9 @@ async def update_unit_position(
 async def create_supply_point(
     request: SupplyPointCreateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_role([Role.ADMIN, Role.S4, Role.S3, Role.COMMANDER])),
+    current_user: User = Depends(
+        require_role([Role.ADMIN, Role.S4, Role.S3, Role.COMMANDER])
+    ),
 ):
     """Create a new supply point. Requires ADMIN, S4, S3, or COMMANDER role."""
     # Validate coordinates
@@ -481,7 +491,10 @@ async def create_supply_point(
     # Validate parent_unit_id against user's accessible units
     if request.parent_unit_id is not None:
         accessible_ids = await get_accessible_units(db, current_user)
-        if current_user.role != Role.ADMIN and request.parent_unit_id not in accessible_ids:
+        if (
+            current_user.role != Role.ADMIN
+            and request.parent_unit_id not in accessible_ids
+        ):
             raise HTTPException(status_code=403, detail="Access denied")
 
     # Validate point_type against enum
@@ -547,7 +560,9 @@ async def update_supply_point(
     supply_point_id: int,
     request: SupplyPointUpdateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_role([Role.ADMIN, Role.S4, Role.S3, Role.COMMANDER])),
+    current_user: User = Depends(
+        require_role([Role.ADMIN, Role.S4, Role.S3, Role.COMMANDER])
+    ),
 ):
     """Update an existing supply point. Requires ADMIN, S4, S3, or COMMANDER role."""
     result = await db.execute(
@@ -590,7 +605,10 @@ async def update_supply_point(
     # Validate and update parent_unit_id
     if request.parent_unit_id is not None:
         accessible_ids = await get_accessible_units(db, current_user)
-        if current_user.role != Role.ADMIN and request.parent_unit_id not in accessible_ids:
+        if (
+            current_user.role != Role.ADMIN
+            and request.parent_unit_id not in accessible_ids
+        ):
             raise HTTPException(status_code=403, detail="Access denied")
         supply_point.parent_unit_id = request.parent_unit_id
 
@@ -609,9 +627,7 @@ async def update_supply_point(
             supply_point.longitude = lon
             supply_point.mgrs = mgrs_val
         except ValueError as e:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     # Update capacity notes
     if request.capacity_notes is not None:
@@ -622,7 +638,9 @@ async def update_supply_point(
 
     parent_name = None
     if supply_point.parent_unit:
-        parent_name = supply_point.parent_unit.abbreviation or supply_point.parent_unit.name
+        parent_name = (
+            supply_point.parent_unit.abbreviation or supply_point.parent_unit.name
+        )
 
     return MapSupplyPointResponse(
         id=supply_point.id,
@@ -645,7 +663,9 @@ async def update_supply_point_position(
     supply_point_id: int,
     request: PositionUpdateRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(require_role([Role.ADMIN, Role.S4, Role.S3, Role.COMMANDER])),
+    current_user: User = Depends(
+        require_role([Role.ADMIN, Role.S4, Role.S3, Role.COMMANDER])
+    ),
 ):
     """Quick position-only update for a supply point."""
     result = await db.execute(
@@ -674,7 +694,9 @@ async def update_supply_point_position(
 
     parent_name = None
     if supply_point.parent_unit:
-        parent_name = supply_point.parent_unit.abbreviation or supply_point.parent_unit.name
+        parent_name = (
+            supply_point.parent_unit.abbreviation or supply_point.parent_unit.name
+        )
 
     return MapSupplyPointResponse(
         id=supply_point.id,
@@ -994,9 +1016,7 @@ async def get_nearby(
     nearby_alerts = []
     for a in alert_result.scalars().all():
         if a.unit and a.unit.latitude is not None and a.unit.longitude is not None:
-            dist = _haversine(
-                center_lat, center_lon, a.unit.latitude, a.unit.longitude
-            )
+            dist = _haversine(center_lat, center_lon, a.unit.latitude, a.unit.longitude)
             if dist <= radius_km:
                 mgrs_val = _safe_mgrs(a.unit.latitude, a.unit.longitude)
                 nearby_alerts.append(
