@@ -55,7 +55,7 @@ async def list_canonical_fields(
     # Group by entity_name
     groups: Dict[str, Dict[str, Any]] = {}
     for f in fields:
-        key = f.entity_name
+        key = str(f.entity_name)
         if key not in groups:
             groups[key] = {
                 "entity_name": f.entity_name,
@@ -349,7 +349,7 @@ async def auto_detect_template(
         if not template.header_patterns:
             continue
 
-        pattern_headers = [p.strip().upper() for p in template.header_patterns if p]
+        pattern_headers = [p.strip().upper() for p in list(template.header_patterns) if p]
         if not pattern_headers:
             continue
 

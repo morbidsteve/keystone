@@ -143,11 +143,11 @@ def _validate_config(source_type: DataSourceType, config: dict) -> None:
     """
     try:
         if source_type == DataSourceType.MIRC_DIRECTORY:
-            parsed = MIRCDirectoryConfig(**config)
-            _validate_directory_path(parsed.directory_path)
+            mirc_parsed = MIRCDirectoryConfig(**config)
+            _validate_directory_path(mirc_parsed.directory_path)
         elif source_type == DataSourceType.IRC_SERVER:
-            parsed = IRCServerConfig(**config)
-            _validate_irc_host(parsed.host)
+            irc_parsed = IRCServerConfig(**config)
+            _validate_irc_host(irc_parsed.host)
         elif source_type == DataSourceType.EXCEL_DIRECTORY:
             parsed = ExcelDirectoryConfig(**config)
             _validate_directory_path(parsed.directory_path)
