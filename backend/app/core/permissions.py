@@ -39,14 +39,14 @@ async def get_accessible_units(db: AsyncSession, user: User) -> List[int]:
         return []
 
     # Collect subordinate unit IDs via BFS
-    accessible = []
-    queue = [user.unit_id]
+    accessible: List[int] = []
+    queue: List[int] = [int(user.unit_id)]
 
     while queue:
         current_id = queue.pop(0)
         accessible.append(current_id)
         result = await db.execute(select(Unit.id).where(Unit.parent_id == current_id))
-        children = [row[0] for row in result.all()]
+        children = [int(row[0]) for row in result.all()]
         queue.extend(children)
 
     return accessible

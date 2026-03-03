@@ -36,9 +36,12 @@ jobs:
       - run: pip install ruff mypy
       - run: ruff check backend/ --output-format=github
       - run: ruff format --check backend/
-      - name: mypy (informational — SQLAlchemy types pending)
-        run: mypy backend/app/ --ignore-missing-imports
-        continue-on-error: true
+      - name: mypy type check
+        run: >
+          mypy backend/app/ --ignore-missing-imports
+          --disable-error-code arg-type
+          --disable-error-code assignment
+          --disable-error-code var-annotated
 
   lint-frontend:
     name: "Lint: Frontend (tsc)"
