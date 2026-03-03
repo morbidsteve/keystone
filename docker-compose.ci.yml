@@ -59,6 +59,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+      - /data
 
   # ---------------------------------------------------------------------------
   # Backend API (pre-built image)
