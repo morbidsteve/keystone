@@ -3,6 +3,7 @@ import ConvoyMap from '@/components/transportation/ConvoyMap';
 import MovementTracker from '@/components/transportation/MovementTracker';
 import ThroughputChart from '@/components/transportation/ThroughputChart';
 import RoutePlannerModal from '@/components/transportation/RoutePlannerModal';
+import MovementDetailModal from '@/components/transportation/MovementDetailModal';
 import { mockApi } from '@/api/mockClient';
 import type { Movement } from '@/lib/types';
 import { useDashboardStore } from '@/stores/dashboardStore';
@@ -11,6 +12,7 @@ export default function TransportationPage() {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [selectedConvoyId, setSelectedConvoyId] = useState<string | null>(null);
   const [routePlannerOpen, setRoutePlannerOpen] = useState(false);
+  const [detailMovement, setDetailMovement] = useState<Movement | null>(null);
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
   useEffect(() => {
@@ -32,6 +34,7 @@ export default function TransportationPage() {
         selectedConvoyId={selectedConvoyId}
         onSelectConvoy={setSelectedConvoyId}
         onOpenRoutePlanner={() => setRoutePlannerOpen(true)}
+        onViewDetail={(mov) => setDetailMovement(mov)}
         height="50vh"
       />
 
@@ -41,6 +44,7 @@ export default function TransportationPage() {
           movements={movements}
           selectedConvoyId={selectedConvoyId}
           onSelectConvoy={setSelectedConvoyId}
+          onViewDetail={(mov) => setDetailMovement(mov)}
         />
         <ThroughputChart />
       </div>
@@ -50,6 +54,12 @@ export default function TransportationPage() {
         isOpen={routePlannerOpen}
         onClose={() => setRoutePlannerOpen(false)}
         onSaveRoute={handleSaveRoute}
+      />
+
+      {/* Movement Detail Modal */}
+      <MovementDetailModal
+        movement={detailMovement}
+        onClose={() => setDetailMovement(null)}
       />
     </div>
   );

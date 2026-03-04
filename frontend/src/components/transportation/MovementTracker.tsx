@@ -9,6 +9,7 @@ interface MovementTrackerProps {
   movements?: Movement[];
   selectedConvoyId?: string | null;
   onSelectConvoy?: (id: string) => void;
+  onViewDetail?: (movement: Movement) => void;
 }
 
 const fallbackMovements: Movement[] = [
@@ -41,6 +42,7 @@ export default function MovementTracker({
   movements,
   selectedConvoyId,
   onSelectConvoy,
+  onViewDetail,
 }: MovementTrackerProps) {
   const [expandedManifest, setExpandedManifest] = useState<string | null>(null);
   const displayMovements = movements && movements.length > 0 ? movements : fallbackMovements;
@@ -54,7 +56,10 @@ export default function MovementTracker({
           return (
             <div
               key={mov.id}
-              onClick={() => onSelectConvoy?.(mov.id)}
+              onClick={() => {
+                onSelectConvoy?.(mov.id);
+                onViewDetail?.(mov);
+              }}
               style={{
                 padding: '12px 14px',
                 backgroundColor: isSelected
