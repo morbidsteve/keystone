@@ -23,6 +23,11 @@ class Echelon(str, enum.Enum):
     REGT = "REGT"
     BN = "BN"
     CO = "CO"
+    PLT = "PLT"
+    SQD = "SQD"
+    FT = "FT"
+    INDV = "INDV"
+    CUSTOM = "CUSTOM"
 
 
 class Unit(Base):
@@ -32,6 +37,7 @@ class Unit(Base):
     name = Column(String(100), nullable=False)
     abbreviation = Column(String(30), nullable=False)
     echelon = Column(SQLEnum(Echelon), nullable=False)
+    custom_echelon_name = Column(String(50), nullable=True)
     parent_id = Column(Integer, ForeignKey("units.id"), nullable=True)
     uic = Column(String(10), unique=True, nullable=True)
     latitude = Column(Float, nullable=True)

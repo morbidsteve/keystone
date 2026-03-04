@@ -14,10 +14,20 @@ class UnitBase(BaseModel):
     echelon: Echelon
     parent_id: Optional[int] = None
     uic: Optional[str] = None
+    custom_echelon_name: Optional[str] = Field(None, max_length=50)
 
 
 class UnitCreate(UnitBase):
     pass
+
+
+class UnitUpdate(BaseModel):
+    name: Optional[str] = Field(None, max_length=100)
+    abbreviation: Optional[str] = Field(None, max_length=30)
+    echelon: Optional[Echelon] = None
+    parent_id: Optional[int] = None
+    uic: Optional[str] = None
+    custom_echelon_name: Optional[str] = Field(None, max_length=50)
 
 
 class UnitResponse(UnitBase):

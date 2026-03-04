@@ -17,6 +17,10 @@ export enum Echelon {
   BATTALION = 'BATTALION',
   COMPANY = 'COMPANY',
   PLATOON = 'PLATOON',
+  SQUAD = 'SQUAD',
+  FIRE_TEAM = 'FIRE_TEAM',
+  INDIVIDUAL = 'INDIVIDUAL',
+  CUSTOM = 'CUSTOM',
 }
 
 export enum SupplyClass {
@@ -101,6 +105,8 @@ export interface Unit {
   echelon: Echelon;
   parentId?: string;
   uic: string;
+  abbreviation?: string;
+  customEchelonName?: string;
   children?: Unit[];
 }
 
@@ -150,6 +156,7 @@ export interface Movement {
   vehicles: number;
   personnel: number;
   notes?: string;
+  routeWaypoints?: Array<{ lat: number; lon: number; label?: string }>;
   lastUpdated: string;
 }
 

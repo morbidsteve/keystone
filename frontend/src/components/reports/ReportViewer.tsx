@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FileText, Check, Download, Clock, User } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -57,6 +58,37 @@ CLASSIFICATION: UNCLASSIFIED
     unitName: '1/1 BN',
     dateRange: { start: '2026-03-02', end: '2026-03-02' },
     status: ReportStatus.FINALIZED,
+    content: `READINESS REPORT
+============================
+DTG: 021800Z MAR 2026
+UNIT: 1ST BATTALION, 1ST MARINES
+CLASSIFICATION: UNCLASSIFIED
+
+1. PERSONNEL STRENGTH
+   T/O: 850    Assigned: 812    Available: 784
+   Deployable: 91.2%
+
+2. EQUIPMENT READINESS
+   Overall: 82%
+   HMMWV M1151:  36/42 MC (86%)
+   MTVR MK23:    14/18 MC (78%)
+   LAV-25:       15/16 MC (94%)
+   AAV-7A1:      8/12 MC (67%) ***BELOW THRESHOLD***
+
+3. TRAINING STATUS
+   BN Readiness: T-2 (Mission Capable)
+   Last FEX: 15 FEB 2026
+   Next scheduled: 20 MAR 2026
+
+4. MAINTENANCE ISSUES
+   - 4x AAV awaiting depot-level repair (ETA 10 MAR)
+   - 2x MTVR engine replacement in progress
+   - 1x HMMWV turret mechanism failure (parts on order)
+
+5. COMMANDER ASSESSMENT
+   BN maintains mission-capable status. CL V shortage
+   and AAV readiness degradation are primary concerns.
+   Requesting priority on AAV parts allocation.`,
     generatedBy: 'cpl.smith',
     generatedAt: '2026-03-02T18:00:00Z',
     finalizedAt: '2026-03-02T19:00:00Z',
@@ -87,16 +119,18 @@ function getReportStatusColor(status: ReportStatus) {
 }
 
 export default function ReportViewer({ report }: ReportViewerProps) {
-  const selectedReport = report || demoReports[0];
+  const [reports, setReports] = useState<Report[]>(demoReports);
+  const [selectedReport, setSelectedReport] = useState<Report>(report || demoReports[0]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {/* Report List */}
       <Card title="GENERATED REPORTS">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {demoReports.map((r) => (
+          {reports.map((r) => (
             <div
               key={r.id}
+              onClick={() => setSelectedReport(r)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -159,28 +193,63 @@ export default function ReportViewer({ report }: ReportViewerProps) {
           title={selectedReport.title}
           headerRight={
             <div style={{ display: 'flex', gap: 6 }}>
-              {selectedReport.status === ReportStatus.READY && (
+              {(selectedReport.status === ReportStatus.READY ||
+                selectedReport.status === ReportStatus.FINALIZED) && (
                 <button
+                  disabled={selectedReport.status === ReportStatus.FINALIZED}
+                  onClick={() => {
+                    const updated = reports.map((r) =>
+                      r.id === selectedReport.id
+                        ? { ...r, status: ReportStatus.FINALIZED, finalizedAt: new Date().toISOString(), finalizedBy: 'Demo User' }
+                        : r,
+                    );
+                    setReports(updated);
+                    const updatedReport = updated.find((r) => r.id === selectedReport.id);
+                    if (updatedReport) setSelectedReport(updatedReport);
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 4,
                     padding: '4px 10px',
-                    backgroundColor: 'var(--color-accent)',
-                    border: 'none',
+                    backgroundColor:
+                      selectedReport.status === ReportStatus.FINALIZED
+                        ? 'var(--color-bg-surface)'
+                        : 'var(--color-accent)',
+                    border:
+                      selectedReport.status === ReportStatus.FINALIZED
+                        ? '1px solid var(--color-border)'
+                        : 'none',
                     borderRadius: 'var(--radius)',
-                    color: 'var(--color-bg)',
+                    color:
+                      selectedReport.status === ReportStatus.FINALIZED
+                        ? 'var(--color-text-muted)'
+                        : 'var(--color-bg)',
                     fontFamily: 'var(--font-mono)',
                     fontSize: 9,
                     fontWeight: 600,
                     letterSpacing: '1px',
-                    cursor: 'pointer',
+                    cursor:
+                      selectedReport.status === ReportStatus.FINALIZED ? 'not-allowed' : 'pointer',
+                    opacity: selectedReport.status === ReportStatus.FINALIZED ? 0.5 : 1,
                   }}
                 >
                   <Check size={10} /> FINALIZE
                 </button>
               )}
               <button
+                onClick={() => {
+                  if (!selectedReport.content) return;
+                  const blob = new Blob([selectedReport.content], { type: 'text/plain' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${selectedReport.title.replace(/[^a-zA-Z0-9-_ ]/g, '') || 'report'}.txt`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
