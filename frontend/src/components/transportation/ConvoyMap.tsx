@@ -14,6 +14,7 @@ interface ConvoyMapProps {
   selectedConvoyId?: string | null;
   onSelectConvoy?: (id: string) => void;
   onOpenRoutePlanner?: () => void;
+  onViewDetail?: (movement: Movement) => void;
   height?: string;
 }
 
@@ -150,6 +151,7 @@ export default function ConvoyMap({
   selectedConvoyId,
   onSelectConvoy,
   onOpenRoutePlanner,
+  onViewDetail,
   height = '50vh',
 }: ConvoyMapProps) {
   const movementsWithRoutes = useMemo(
@@ -277,6 +279,32 @@ export default function ConvoyMap({
                     >
                       ETA: {new Date(mov.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
+                  )}
+                  {onViewDetail && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onViewDetail(mov);
+                      }}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        marginTop: 8,
+                        padding: '4px 0',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 9,
+                        fontWeight: 700,
+                        letterSpacing: '1px',
+                        color: 'var(--color-accent)',
+                        backgroundColor: 'rgba(77, 171, 247, 0.1)',
+                        border: '1px solid rgba(77, 171, 247, 0.3)',
+                        borderRadius: 'var(--radius)',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                      }}
+                    >
+                      VIEW DETAILS
+                    </button>
                   )}
                 </div>
               </Popup>
