@@ -1,5 +1,5 @@
 name: 'Container Build'
-description: 'Multi-stage Docker build with metadata, GHCR login, and GHA cache for KEYSTONE services'
+description: 'Multi-stage Docker build with metadata, GHCR login, and GHA cache for containerized services'
 
 inputs:
   image-name:
@@ -42,6 +42,10 @@ inputs:
     description: 'Additional custom tags (newline-separated)'
     required: false
     default: ''
+  label-namespace:
+    description: 'Namespace prefix for custom OCI labels'
+    required: false
+    default: 'io.dsop'
 
 outputs:
   image-ref:
@@ -89,8 +93,8 @@ runs:
           org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
           org.opencontainers.image.revision=${{ github.sha }}
           org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
-          io.keystone.pipeline.run-id=${{ github.run_id }}
-          io.keystone.pipeline.run-number=${{ github.run_number }}
+          ${{ inputs.label-namespace }}.pipeline.run-id=${{ github.run_id }}
+          ${{ inputs.label-namespace }}.pipeline.run-number=${{ github.run_number }}
 
     - name: Login to container registry
       uses: docker/login-action@v3

@@ -11,12 +11,11 @@ import {
   MapPin,
   Settings,
   Shield,
-  ChevronDown,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { isDemoMode } from '@/api/mockClient';
-import { useState } from 'react';
+import UnitSelector from '@/components/common/UnitSelector';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'DASHBOARD' },
@@ -31,21 +30,9 @@ const navItems = [
   { to: '/admin', icon: Settings, label: 'ADMIN' },
 ];
 
-const mockUnits = [
-  { id: 'all', name: 'ALL UNITS' },
-  { id: '1mef', name: 'I MEF' },
-  { id: '1mardiv', name: '1ST MARDIV' },
-  { id: '1mar', name: '1ST MAR' },
-  { id: '1-1', name: '1/1 BN' },
-  { id: '2-1', name: '2/1 BN' },
-];
-
 export default function Sidebar() {
   const user = useAuthStore((s) => s.user);
   const { selectedUnitId, setSelectedUnitId } = useDashboardStore();
-  const [unitDropdownOpen, setUnitDropdownOpen] = useState(false);
-
-  const selectedUnit = mockUnits.find((u) => u.id === selectedUnitId) || mockUnits[0];
 
   return (
     <aside
@@ -119,84 +106,10 @@ export default function Sidebar() {
         >
           ECHELON / UNIT
         </div>
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setUnitDropdownOpen(!unitDropdownOpen)}
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              textAlign: 'left',
-              cursor: 'pointer',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              transition: 'border-color var(--transition)',
-            }}
-          >
-            <span>{selectedUnit.name}</span>
-            <ChevronDown size={14} style={{ color: 'var(--color-text-muted)' }} />
-          </button>
-          {unitDropdownOpen && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                marginTop: 4,
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border-strong)',
-                borderRadius: 'var(--radius)',
-                zIndex: 50,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-              }}
-            >
-              {mockUnits.map((unit) => (
-                <button
-                  key={unit.id}
-                  onClick={() => {
-                    setSelectedUnitId(unit.id === 'all' ? null : unit.id);
-                    setUnitDropdownOpen(false);
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor:
-                      (selectedUnitId === null && unit.id === 'all') ||
-                      selectedUnitId === unit.id
-                        ? 'var(--color-bg-hover)'
-                        : 'transparent',
-                    border: 'none',
-                    color: 'var(--color-text)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    transition: 'background-color var(--transition)',
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor =
-                      (selectedUnitId === null && unit.id === 'all') ||
-                      selectedUnitId === unit.id
-                        ? 'var(--color-bg-hover)'
-                        : 'transparent')
-                  }
-                >
-                  {unit.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <UnitSelector
+          selectedUnitId={selectedUnitId}
+          onSelectUnit={setSelectedUnitId}
+        />
       </div>
 
       {/* Navigation */}

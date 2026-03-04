@@ -1,0 +1,39 @@
+"""All event types the simulation engine can produce and consume."""
+
+from enum import Enum
+
+
+class EventType(str, Enum):
+    """Enumeration of every discrete event in the simulator."""
+
+    # --- Supply ---
+    SUPPLY_CONSUMPTION = "SUPPLY_CONSUMPTION"
+    EMERGENCY_RESUPPLY = "EMERGENCY_RESUPPLY"
+    RESUPPLY_CONVOY = "RESUPPLY_CONVOY"
+    RESUPPLY_DELIVERY = "RESUPPLY_DELIVERY"
+
+    # --- Equipment ---
+    EQUIPMENT_BREAKDOWN = "EQUIPMENT_BREAKDOWN"
+    PARTS_ORDERED = "PARTS_ORDERED"
+    PARTS_RECEIVED = "PARTS_RECEIVED"
+    EQUIPMENT_REPAIRED = "EQUIPMENT_REPAIRED"
+    RECOVERY_OP = "RECOVERY_OP"
+
+    # --- Movement / Convoy ---
+    CONVOY_PLANNED = "CONVOY_PLANNED"
+    CONVOY_SP = "CONVOY_SP"
+    CONVOY_CHECKPOINT = "CONVOY_CHECKPOINT"
+    CONVOY_ARRIVED = "CONVOY_ARRIVED"
+    CONVOY_DELAYED = "CONVOY_DELAYED"
+
+    # --- Operations ---
+    PHASE_CHANGE = "PHASE_CHANGE"
+    UNIT_DISPLACED = "UNIT_DISPLACED"
+    MASS_CASUALTY = "MASS_CASUALTY"
+    INCREASED_TEMPO = "INCREASED_TEMPO"
+    DECREASED_TEMPO = "DECREASED_TEMPO"
+
+    # --- Reporting ---
+    LOGSTAT_DUE = "LOGSTAT_DUE"
+    SITREP_DUE = "SITREP_DUE"
+    READINESS_REPORT_DUE = "READINESS_REPORT_DUE"

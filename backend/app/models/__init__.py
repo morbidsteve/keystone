@@ -3,9 +3,25 @@
 from app.models.user import User, Role
 from app.models.unit import Unit, Echelon
 from app.models.supply import SupplyStatusRecord, SupplyClass, SupplyStatus
-from app.models.equipment import EquipmentStatus
+from app.models.equipment import (
+    EquipmentStatus,
+    Equipment,
+    EquipmentAssetStatus,
+    EquipmentFault,
+    FaultSeverity,
+    EquipmentDriverAssignment,
+)
 from app.models.transportation import Movement, MovementStatus
-from app.models.maintenance import MaintenanceWorkOrder, WorkOrderStatus
+from app.models.maintenance import (
+    MaintenanceWorkOrder,
+    WorkOrderStatus,
+    WorkOrderCategory,
+    MaintenancePart,
+    PartSource,
+    PartStatus,
+    MaintenanceLabor,
+    LaborType,
+)
 from app.models.report import Report, ReportType, ReportStatus
 from app.models.raw_data import RawData, SourceType, ParseStatus
 from app.models.alert import Alert, AlertType, AlertSeverity
@@ -49,10 +65,21 @@ __all__ = [
     "SupplyClass",
     "SupplyStatus",
     "EquipmentStatus",
+    "Equipment",
+    "EquipmentAssetStatus",
+    "EquipmentFault",
+    "FaultSeverity",
+    "EquipmentDriverAssignment",
     "Movement",
     "MovementStatus",
     "MaintenanceWorkOrder",
     "WorkOrderStatus",
+    "WorkOrderCategory",
+    "MaintenancePart",
+    "PartSource",
+    "PartStatus",
+    "MaintenanceLabor",
+    "LaborType",
     "Report",
     "ReportType",
     "ReportStatus",
