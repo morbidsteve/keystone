@@ -1,6 +1,5 @@
 """Convoy manifest endpoints — vehicle & personnel assignment per movement."""
 
-from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import delete, select

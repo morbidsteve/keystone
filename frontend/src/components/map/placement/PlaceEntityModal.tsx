@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useMapStore } from '@/stores/mapStore';
 import type { PlacementType } from '@/stores/mapStore';
 import CoordinateInput from './CoordinateInput';
 import * as mapApi from '@/api/map';
+import { useQueryClient } from '@tanstack/react-query';
 
 const MOCK_UNITS = [
   { id: '1mef', name: 'I MEF', abbreviation: 'I MEF' },
@@ -54,6 +55,7 @@ function getModalTitle(type: PlacementType | null): string {
 export default function PlaceEntityModal() {
   const placement = useMapStore((s) => s.placement);
   const clearPlacement = useMapStore((s) => s.clearPlacement);
+  const queryClient = useQueryClient();
 
   const [lat, setLat] = useState(placement.lat);
   const [lon, setLon] = useState(placement.lon);
@@ -66,12 +68,20 @@ export default function PlaceEntityModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Reset state when placement changes
-  const prevPlacementRef = useState(placement)[0];
-  if (prevPlacementRef !== placement && placement.active) {
-    // This is intentionally in render to sync with store changes
-    // We set state here so the next render picks up the correct coords
-  }
+  // Reset all form state when a new placement starts
+  useEffect(() => {
+    if (placement.active) {
+      setLat(placement.lat);
+      setLon(placement.lon);
+      setSelectedUnit('');
+      setName('');
+      setPointType('');
+      setStatus('PLANNED');
+      setParentUnit('');
+      setCapacityNotes('');
+      setError('');
+    }
+  }, [placement.active, placement.lat, placement.lon]);
 
   const handleCoordChange = useCallback((newLat: number, newLon: number) => {
     setLat(newLat);
@@ -126,6 +136,7 @@ export default function PlaceEntityModal() {
         });
       }
 
+      queryClient.invalidateQueries({ queryKey: ['map', 'data'] });
       clearPlacement();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to place entity');
@@ -143,15 +154,10 @@ export default function PlaceEntityModal() {
     parentUnit,
     capacityNotes,
     clearPlacement,
+    queryClient,
   ]);
 
   if (!placement.active) return null;
-
-  // Initialize coordinates from placement if they differ
-  if (lat === 0 && lon === 0 && placement.lat !== 0) {
-    setLat(placement.lat);
-    setLon(placement.lon);
-  }
 
   const labelStyle: React.CSSProperties = {
     fontSize: 9,

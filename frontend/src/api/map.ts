@@ -457,10 +457,38 @@ const mockMapData: MapData = {
   ],
 };
 
+// ── Demo-mode persistence ─────────────────────────────────────────────
+
+const MAP_STORAGE_KEY = 'keystone_map_data';
+
+function loadPersistedMapData(): void {
+  try {
+    const stored = localStorage.getItem(MAP_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as MapData;
+      mockMapData.units = parsed.units;
+      mockMapData.supplyPoints = parsed.supplyPoints;
+      mockMapData.routes = parsed.routes;
+    }
+  } catch { /* ignore corrupt data */ }
+}
+
+function persistMapData(): void {
+  try {
+    localStorage.setItem(MAP_STORAGE_KEY, JSON.stringify({
+      units: mockMapData.units,
+      supplyPoints: mockMapData.supplyPoints,
+      routes: mockMapData.routes,
+    }));
+  } catch { /* storage full or unavailable */ }
+}
+
+loadPersistedMapData();
+
 // ── API Functions ──────────────────────────────────────────────────────
 
 export async function getMapData(): Promise<MapData> {
-  if (isDemoMode) return mockMapData;
+  if (isDemoMode) return JSON.parse(JSON.stringify(mockMapData)) as MapData;
   const response = await apiClient.get<ApiResponse<MapData>>('/map/data');
   return response.data.data;
 }
@@ -508,6 +536,7 @@ export async function updateUnitPosition(
     if (data.longitude !== undefined) unit.longitude = data.longitude;
     if (data.mgrs !== undefined) unit.mgrs = data.mgrs;
     unit.last_updated = new Date().toISOString();
+    persistMapData();
     return { ...unit };
   }
   const response = await apiClient.post<ApiResponse<MapUnit>>(
@@ -535,6 +564,7 @@ export async function createSupplyPoint(
       capacity_notes: data.capacity_notes || '',
     };
     mockMapData.supplyPoints.push(newPoint);
+    persistMapData();
     return { ...newPoint };
   }
   const response = await apiClient.post<ApiResponse<MapSupplyPoint>>(
@@ -552,6 +582,7 @@ export async function updateSupplyPoint(
     const idx = mockMapData.supplyPoints.findIndex((sp) => sp.id === id);
     if (idx === -1) throw new Error(`Supply point ${id} not found`);
     mockMapData.supplyPoints[idx] = { ...mockMapData.supplyPoints[idx], ...data };
+    persistMapData();
     return { ...mockMapData.supplyPoints[idx] };
   }
   const response = await apiClient.put<ApiResponse<MapSupplyPoint>>(
@@ -571,6 +602,7 @@ export async function updateSupplyPointPosition(
     if (data.latitude !== undefined) sp.latitude = data.latitude;
     if (data.longitude !== undefined) sp.longitude = data.longitude;
     if (data.mgrs !== undefined) sp.mgrs = data.mgrs;
+    persistMapData();
     return { ...sp };
   }
   const response = await apiClient.put<ApiResponse<MapSupplyPoint>>(
@@ -584,6 +616,7 @@ export async function deleteSupplyPoint(id: string): Promise<void> {
   if (isDemoMode) {
     const idx = mockMapData.supplyPoints.findIndex((sp) => sp.id === id);
     if (idx !== -1) mockMapData.supplyPoints.splice(idx, 1);
+    persistMapData();
     return;
   }
   await apiClient.delete(`/map/supply-points/${id}`);
@@ -604,6 +637,7 @@ export async function createRoute(
       description: data.description || '',
     };
     mockMapData.routes.push(newRoute);
+    persistMapData();
     return { ...newRoute };
   }
   const response = await apiClient.post<ApiResponse<MapRoute>>(
@@ -621,12 +655,47 @@ export async function updateRoute(
     const idx = mockMapData.routes.findIndex((r) => r.id === id);
     if (idx === -1) throw new Error(`Route ${id} not found`);
     mockMapData.routes[idx] = { ...mockMapData.routes[idx], ...data };
+    persistMapData();
     return { ...mockMapData.routes[idx] };
   }
   const response = await apiClient.put<ApiResponse<MapRoute>>(
     `/map/routes/${id}`,
     data,
   );
+  return response.data.data;
+}
+
+export async function deleteRoute(id: string): Promise<void> {
+  if (isDemoMode) {
+    const idx = mockMapData.routes.findIndex((r) => r.id === id);
+    if (idx !== -1) mockMapData.routes.splice(idx, 1);
+    persistMapData();
+    return;
+  }
+  await apiClient.delete(`/map/routes/${id}`);
+}
+
+export async function uploadRouteFile(file: File): Promise<{ created_routes: number[]; count: number }> {
+  if (isDemoMode) {
+    // Simulate: add a dummy route
+    const newRoute: MapRoute = {
+      id: 'r-import-' + Date.now(),
+      name: file.name.replace(/\.[^.]+$/, ''),
+      route_type: 'ASR',
+      status: 'OPEN',
+      waypoints: [
+        { lat: 33.30, lon: -117.30 },
+        { lat: 33.32, lon: -117.32 },
+      ],
+      description: `Imported from ${file.name}`,
+    };
+    mockMapData.routes.push(newRoute);
+    persistMapData();
+    return { created_routes: [parseInt(newRoute.id.split('-')[2]) || 0], count: 1 };
+  }
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await apiClient.post<ApiResponse<{ created_routes: number[]; count: number }>>('/ingestion/routes', formData);
   return response.data.data;
 }
 
