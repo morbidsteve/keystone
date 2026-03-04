@@ -20,9 +20,9 @@ LABEL org.opencontainers.image.source="https://github.com/KEYSTONE"
 LABEL org.opencontainers.image.description="KEYSTONE Frontend"
 LABEL org.opencontainers.image.vendor="USMC Project Dynamis"
 
-# Install openssl for TLS cert generation (as root)
+# Install openssl for TLS cert generation + ca-certificates for upstream SSL proxy (as root)
 USER root
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl ca-certificates
 
 # Copy cert generation script and generate self-signed cert
 COPY generate-cert.sh /usr/local/bin/generate-cert.sh
