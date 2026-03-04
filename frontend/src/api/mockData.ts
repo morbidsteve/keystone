@@ -137,6 +137,10 @@ export const DEMO_UNITS: DemoUnit[] = [
   { id: '8', name: 'Bravo Company 1/1', abbreviation: 'B Co 1/1', echelon: 'COMPANY', parentId: '4', uic: 'M01112' },
   { id: '9', name: 'Charlie Company 1/1', abbreviation: 'C Co 1/1', echelon: 'COMPANY', parentId: '4', uic: 'M01113' },
   { id: '10', name: 'Weapons Company 1/1', abbreviation: 'Wpns Co 1/1', echelon: 'COMPANY', parentId: '4', uic: 'M01114' },
+  { id: 'a-1-1', name: 'A CO, 1/1', abbreviation: 'A CO 1/1', echelon: 'COMPANY', parentId: '1-1', uic: 'M11111' },
+  { id: 'b-1-1', name: 'B CO, 1/1', abbreviation: 'B CO 1/1', echelon: 'COMPANY', parentId: '1-1', uic: 'M11112' },
+  { id: 'wpns-1-1', name: 'WPNS CO, 1/1', abbreviation: 'WPNS CO 1/1', echelon: 'COMPANY', parentId: '1-1', uic: 'M11113' },
+  { id: '1plt-a-1-1', name: '1ST PLT, A CO', abbreviation: '1ST PLT', echelon: 'PLATOON', parentId: 'a-1-1', uic: 'M11114' },
   { id: '11', name: '5th Marine Regiment', abbreviation: '5th Marines', echelon: 'REGIMENT', parentId: '2', uic: 'M01500' },
   { id: '12', name: '1st Battalion 5th Marines', abbreviation: '1/5', echelon: 'BATTALION', parentId: '11', uic: 'M01510' },
   { id: '13', name: '2nd Battalion 5th Marines', abbreviation: '2/5', echelon: 'BATTALION', parentId: '11', uic: 'M01520' },
@@ -267,6 +271,7 @@ export const DEMO_MOVEMENTS: Movement[] = [
     personnel: 18,
     notes: 'Primary MSR open. MTVR convoy w/ gun truck escort.',
     lastUpdated: hoursAgo(1),
+    routeWaypoints: [{ lat: 33.35, lon: -117.30, label: 'SP: CLB-1' }, { lat: 33.34, lon: -117.31 }, { lat: 33.33, lon: -117.32 }, { lat: 33.31, lon: -117.33 }, { lat: 33.27, lon: -117.34, label: 'RP: 1/1 BN' }],
   },
   {
     id: 'mov-002',
@@ -282,6 +287,7 @@ export const DEMO_MOVEMENTS: Movement[] = [
     personnel: 8,
     notes: '2x ambulance + 1x escort. Route Purple cleared.',
     lastUpdated: hoursAgo(0.5),
+    routeWaypoints: [{ lat: 33.38, lon: -117.28, label: 'SP: CSSB-1' }, { lat: 33.36, lon: -117.29 }, { lat: 33.34, lon: -117.31 }, { lat: 33.29, lon: -117.36, label: 'RP: 3/1 BN' }],
   },
   {
     id: 'mov-003',

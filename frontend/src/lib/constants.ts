@@ -63,6 +63,10 @@ export const ECHELON_NAMES: Record<string, string> = {
   [Echelon.BATTALION]: 'Battalion',
   [Echelon.COMPANY]: 'Company',
   [Echelon.PLATOON]: 'Platoon',
+  [Echelon.SQUAD]: 'Squad',
+  [Echelon.FIRE_TEAM]: 'Fire Team',
+  [Echelon.INDIVIDUAL]: 'Individual',
+  [Echelon.CUSTOM]: 'Custom',
 };
 
 export const ECHELON_ABBREVIATIONS: Record<string, string> = {
@@ -72,6 +76,36 @@ export const ECHELON_ABBREVIATIONS: Record<string, string> = {
   [Echelon.BATTALION]: 'BN',
   [Echelon.COMPANY]: 'CO',
   [Echelon.PLATOON]: 'PLT',
+  [Echelon.SQUAD]: 'SQD',
+  [Echelon.FIRE_TEAM]: 'FT',
+  [Echelon.INDIVIDUAL]: 'INDV',
+  [Echelon.CUSTOM]: 'CUST',
+};
+
+export const ECHELON_ORDER: Echelon[] = [
+  Echelon.MEF,
+  Echelon.DIVISION,
+  Echelon.REGIMENT,
+  Echelon.BATTALION,
+  Echelon.COMPANY,
+  Echelon.PLATOON,
+  Echelon.SQUAD,
+  Echelon.FIRE_TEAM,
+  Echelon.INDIVIDUAL,
+  Echelon.CUSTOM,
+];
+
+export const ECHELON_ALLOWED_CHILDREN: Record<string, Echelon[]> = {
+  [Echelon.MEF]: [Echelon.DIVISION, Echelon.CUSTOM],
+  [Echelon.DIVISION]: [Echelon.REGIMENT, Echelon.CUSTOM],
+  [Echelon.REGIMENT]: [Echelon.BATTALION, Echelon.CUSTOM],
+  [Echelon.BATTALION]: [Echelon.COMPANY, Echelon.CUSTOM],
+  [Echelon.COMPANY]: [Echelon.PLATOON, Echelon.CUSTOM],
+  [Echelon.PLATOON]: [Echelon.SQUAD, Echelon.CUSTOM],
+  [Echelon.SQUAD]: [Echelon.FIRE_TEAM, Echelon.CUSTOM],
+  [Echelon.FIRE_TEAM]: [Echelon.INDIVIDUAL, Echelon.CUSTOM],
+  [Echelon.INDIVIDUAL]: [],
+  [Echelon.CUSTOM]: [Echelon.MEF, Echelon.DIVISION, Echelon.REGIMENT, Echelon.BATTALION, Echelon.COMPANY, Echelon.PLATOON, Echelon.SQUAD, Echelon.FIRE_TEAM, Echelon.INDIVIDUAL, Echelon.CUSTOM],
 };
 
 export const TIME_RANGES = [

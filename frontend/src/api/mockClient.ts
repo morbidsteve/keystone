@@ -7,6 +7,7 @@
 import type {
   LoginResponse,
   User,
+  Unit,
   DashboardSummary,
   SupplyClassSummary,
   ReadinessSummary,
@@ -26,6 +27,7 @@ import type {
   GenerateReportParams,
   ReportStatus,
   ReportType,
+  MovementStatus,
 } from '@/lib/types';
 
 import {
@@ -65,6 +67,9 @@ const mockDelay = (ms = 200 + Math.random() * 200): Promise<void> =>
 
 let demoAlerts = [...DEMO_ALERTS];
 let demoReviewQueue = [...DEMO_REVIEW_QUEUE];
+let demoUnits = [...DEMO_UNITS];
+let demoReports = [...DEMO_REPORTS];
+let demoMovements = [...DEMO_MOVEMENTS];
 
 // ---------------------------------------------------------------------------
 // Helper: convert time range string to number of days
@@ -312,7 +317,29 @@ export const mockApi = {
     _filters?: Record<string, unknown>,
   ): Promise<Movement[]> {
     await mockDelay();
-    return DEMO_MOVEMENTS;
+    return demoMovements;
+  },
+
+  async createMovement(data: Partial<Movement>): Promise<Movement> {
+    await mockDelay();
+    const newMovement: Movement = {
+      id: 'mov-' + Date.now(),
+      name: data.name || 'NEW CONVOY',
+      originUnit: data.originUnit || 'TBD',
+      destinationUnit: data.destinationUnit || 'TBD',
+      status: data.status || ('PLANNED' as unknown as MovementStatus),
+      cargo: data.cargo || '',
+      priority: data.priority || 'ROUTINE',
+      departureTime: data.departureTime,
+      eta: data.eta,
+      vehicles: data.vehicles || 0,
+      personnel: data.personnel || 0,
+      notes: data.notes,
+      lastUpdated: new Date().toISOString(),
+      routeWaypoints: data.routeWaypoints,
+    };
+    demoMovements = [...demoMovements, newMovement];
+    return newMovement;
   },
 
   // -------------------------------------------------------------------------
@@ -368,7 +395,7 @@ export const mockApi = {
     filters?: ReportFilters,
   ): Promise<PaginatedResponse<Report>> {
     await mockDelay();
-    let reports = [...DEMO_REPORTS];
+    let reports = [...demoReports];
 
     if (filters?.unitId) {
       reports = reports.filter((r) => r.unitId === filters.unitId);
@@ -416,13 +443,12 @@ export const mockApi = {
 
   async finalizeReport(id: string): Promise<Report> {
     await mockDelay();
-    const report = DEMO_REPORTS.find((r) => r.id === id) || DEMO_REPORTS[0];
-    return {
-      ...report,
-      status: 'FINALIZED' as ReportStatus,
-      finalizedAt: new Date().toISOString(),
-      finalizedBy: 'Demo User',
-    };
+    demoReports = demoReports.map((r) =>
+      r.id === id
+        ? { ...r, status: 'FINALIZED' as ReportStatus, finalizedAt: new Date().toISOString(), finalizedBy: 'Demo User' }
+        : r,
+    );
+    return demoReports.find((r) => r.id === id) || demoReports[0];
   },
 
   // -------------------------------------------------------------------------
@@ -492,8 +518,40 @@ export const mockApi = {
   // Units
   // -------------------------------------------------------------------------
 
-  async getUnits() {
+  async getUnits(): Promise<Unit[]> {
     await mockDelay();
-    return DEMO_UNITS;
+    return demoUnits as unknown as Unit[];
+  },
+
+  async createUnit(data: Partial<Unit>): Promise<Unit> {
+    await mockDelay();
+    const newUnit: Unit = {
+      id: 'unit-' + Date.now(),
+      name: data.name || 'New Unit',
+      echelon: data.echelon || ('COMPANY' as never),
+      uic: data.uic || 'U' + Date.now().toString().slice(-5),
+      parentId: data.parentId,
+      abbreviation: data.abbreviation,
+      customEchelonName: data.customEchelonName,
+    };
+    demoUnits = [...demoUnits, newUnit as unknown as typeof demoUnits[0]];
+    return newUnit;
+  },
+
+  async updateUnit(id: string, data: Partial<Unit>): Promise<Unit> {
+    await mockDelay();
+    demoUnits = demoUnits.map((u) =>
+      u.id === id ? { ...u, ...data } : u,
+    );
+    return (demoUnits.find((u) => u.id === id) || demoUnits[0]) as unknown as Unit;
+  },
+
+  async deleteUnit(id: string): Promise<void> {
+    await mockDelay();
+    const hasChildren = demoUnits.some((u) => u.parentId === id);
+    if (hasChildren) {
+      throw new Error('Cannot delete unit with children');
+    }
+    demoUnits = demoUnits.filter((u) => u.id !== id);
   },
 };

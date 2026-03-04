@@ -2,9 +2,15 @@ import { Truck, MapPin, Clock, ArrowRight } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import StatusDot from '@/components/ui/StatusDot';
 import { MovementStatus, type Movement } from '@/lib/types';
-import { formatDateShort, formatRelativeTime } from '@/lib/utils';
+import { formatDateShort } from '@/lib/utils';
 
-const demoMovements: Movement[] = [
+interface MovementTrackerProps {
+  movements?: Movement[];
+  selectedConvoyId?: string | null;
+  onSelectConvoy?: (id: string) => void;
+}
+
+const fallbackMovements: Movement[] = [
   { id: '1', name: 'CONVOY ALPHA', originUnit: 'CLB-1', destinationUnit: '1/1 BN', status: MovementStatus.EN_ROUTE, cargo: 'CL III (8,000 gal JP-8), CL V (5.56mm, 7.62mm)', priority: 'PRIORITY', departureTime: '2026-03-03T06:00:00Z', eta: '2026-03-03T16:00:00Z', vehicles: 8, personnel: 16, lastUpdated: '2026-03-03T08:00:00Z' },
   { id: '2', name: 'CONVOY BRAVO', originUnit: 'CLB-1', destinationUnit: '2/1 BN', status: MovementStatus.PLANNED, cargo: 'CL IX (HMMWV Parts Kits x12)', priority: 'ROUTINE', departureTime: '2026-03-04T06:00:00Z', vehicles: 4, personnel: 8, lastUpdated: '2026-03-03T07:00:00Z' },
   { id: '3', name: 'CONVOY CHARLIE', originUnit: 'CSSB-1', destinationUnit: '3/1 BN', status: MovementStatus.DELAYED, cargo: 'CL I (MRE x200 cases), CL III (4,000 gal)', priority: 'URGENT', departureTime: '2026-03-03T04:00:00Z', eta: '2026-03-03T20:00:00Z', vehicles: 6, personnel: 12, notes: 'Delayed - MSR BRAVO bridge restriction', lastUpdated: '2026-03-03T09:00:00Z' },
@@ -30,29 +36,46 @@ function getMovementDotStatus(status: MovementStatus) {
   }
 }
 
-export default function MovementTracker() {
+export default function MovementTracker({
+  movements,
+  selectedConvoyId,
+  onSelectConvoy,
+}: MovementTrackerProps) {
+  const displayMovements = movements && movements.length > 0 ? movements : fallbackMovements;
+
   return (
     <Card title="ACTIVE MOVEMENTS">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {demoMovements.map((mov) => {
+        {displayMovements.map((mov) => {
           const statusColor = getMovementStatusColor(mov.status);
+          const isSelected = mov.id === selectedConvoyId;
           return (
             <div
               key={mov.id}
+              onClick={() => onSelectConvoy?.(mov.id)}
               style={{
                 padding: '12px 14px',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border)',
+                backgroundColor: isSelected
+                  ? 'rgba(77, 171, 247, 0.05)'
+                  : 'var(--color-bg-surface)',
+                border: isSelected
+                  ? '1px solid var(--color-accent)'
+                  : '1px solid var(--color-border)',
                 borderLeft: `3px solid ${statusColor}`,
                 borderRadius: 'var(--radius)',
                 transition: 'background-color var(--transition)',
+                cursor: 'pointer',
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = 'var(--color-bg-surface)')
-              }
+              onMouseEnter={(e) => {
+                if (!isSelected) {
+                  e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = isSelected
+                  ? 'rgba(77, 171, 247, 0.05)'
+                  : 'var(--color-bg-surface)';
+              }}
             >
               {/* Header */}
               <div
