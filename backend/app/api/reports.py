@@ -1,11 +1,13 @@
-"""Report generation and management endpoints."""
+"""Report generation, management, and export endpoints."""
 
 import json
 import logging
 from datetime import datetime
 from typing import List, Optional
 
+import httpx
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,9 +15,19 @@ from app.core.auth import get_current_user
 from app.core.exceptions import BadRequestError, NotFoundError
 from app.core.permissions import check_unit_access, get_accessible_units, require_role
 from app.database import get_db
-from app.models.report import Report, ReportStatus, ReportType
+from app.models.report import Report, ReportExportDestination, ReportStatus, ReportType
 from app.models.user import Role, User
-from app.schemas.report import ReportCreate, ReportResponse
+from app.schemas.report import (
+    ApiExportRequest,
+    ApiExportResponse,
+    ApiExportResultItem,
+    ExportDestinationCreate,
+    ExportDestinationResponse,
+    ExportDestinationUpdate,
+    ReportCreate,
+    ReportResponse,
+)
+from app.services.pdf_generator import generate_report_pdf
 from app.services.report_generator import generate_and_save_report
 
 logger = logging.getLogger(__name__)
@@ -199,3 +211,237 @@ async def finalize_report(
     await db.flush()
     await db.refresh(report)
     return report
+
+
+# ---------------------------------------------------------------------------
+# PDF Export
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{report_id}/export/pdf")
+async def export_report_pdf(
+    report_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Export a report as a PDF download."""
+    result = await db.execute(select(Report).where(Report.id == report_id))
+    report = result.scalar_one_or_none()
+    if not report:
+        raise NotFoundError("Report", report_id)
+
+    await check_unit_access(current_user, report.unit_id, db)
+
+    if not report.content:
+        raise BadRequestError("Report has no content to export")
+
+    try:
+        content = json.loads(report.content)
+    except (json.JSONDecodeError, TypeError):
+        raise BadRequestError("Report content is not valid JSON")
+
+    report_type = report.report_type.value if report.report_type else "UNKNOWN"
+    pdf_bytes = generate_report_pdf(
+        title=report.title,
+        report_type=report_type,
+        content=content,
+    )
+
+    safe_title = "".join(c for c in report.title if c.isalnum() or c in " -_").strip()
+    filename = f"{safe_title or 'report'}.pdf"
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Export Destinations (CRUD)
+# ---------------------------------------------------------------------------
+
+
+@router.get("/export-destinations", response_model=List[ExportDestinationResponse])
+async def list_export_destinations(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """List all configured export destinations."""
+    result = await db.execute(
+        select(ReportExportDestination).order_by(ReportExportDestination.name)
+    )
+    return result.scalars().all()
+
+
+@router.post(
+    "/export-destinations",
+    response_model=ExportDestinationResponse,
+    status_code=201,
+)
+async def create_export_destination(
+    data: ExportDestinationCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role([Role.ADMIN])),
+):
+    """Create a new export destination. Admin only."""
+    dest = ReportExportDestination(
+        name=data.name,
+        url=data.url,
+        auth_type=data.auth_type,
+        auth_value=data.auth_value,
+        headers=data.headers,
+        is_active=data.is_active,
+    )
+    db.add(dest)
+    await db.flush()
+    await db.refresh(dest)
+    return dest
+
+
+@router.put(
+    "/export-destinations/{destination_id}",
+    response_model=ExportDestinationResponse,
+)
+async def update_export_destination(
+    destination_id: int,
+    data: ExportDestinationUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role([Role.ADMIN])),
+):
+    """Update an export destination. Admin only."""
+    result = await db.execute(
+        select(ReportExportDestination).where(ReportExportDestination.id == destination_id)
+    )
+    dest = result.scalar_one_or_none()
+    if not dest:
+        raise NotFoundError("ExportDestination", destination_id)
+
+    update_data = data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(dest, field, value)
+
+    await db.flush()
+    await db.refresh(dest)
+    return dest
+
+
+@router.delete("/export-destinations/{destination_id}", status_code=204)
+async def delete_export_destination(
+    destination_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role([Role.ADMIN])),
+):
+    """Delete an export destination. Admin only."""
+    result = await db.execute(
+        select(ReportExportDestination).where(ReportExportDestination.id == destination_id)
+    )
+    dest = result.scalar_one_or_none()
+    if not dest:
+        raise NotFoundError("ExportDestination", destination_id)
+
+    await db.delete(dest)
+    await db.flush()
+
+
+# ---------------------------------------------------------------------------
+# API Export (send report to configured destinations)
+# ---------------------------------------------------------------------------
+
+
+@router.post("/{report_id}/export/api", response_model=ApiExportResponse)
+async def export_report_to_api(
+    report_id: int,
+    body: ApiExportRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(WRITE_ROLES)),
+):
+    """Export report JSON to one or more configured API destinations."""
+    # Fetch report
+    result = await db.execute(select(Report).where(Report.id == report_id))
+    report = result.scalar_one_or_none()
+    if not report:
+        raise NotFoundError("Report", report_id)
+
+    await check_unit_access(current_user, report.unit_id, db)
+
+    if not report.content:
+        raise BadRequestError("Report has no content to export")
+
+    try:
+        report_content = json.loads(report.content)
+    except (json.JSONDecodeError, TypeError):
+        raise BadRequestError("Report content is not valid JSON")
+
+    # Fetch requested destinations
+    result = await db.execute(
+        select(ReportExportDestination).where(
+            ReportExportDestination.id.in_(body.destination_ids),
+            ReportExportDestination.is_active.is_(True),
+        )
+    )
+    destinations = result.scalars().all()
+
+    if not destinations:
+        raise BadRequestError("No active destinations found for the provided IDs")
+
+    # Build export payload
+    payload = {
+        "report_id": report.id,
+        "title": report.title,
+        "report_type": report.report_type.value if report.report_type else None,
+        "generated_at": report.generated_at.isoformat() if report.generated_at else None,
+        "status": report.status.value if report.status else None,
+        "content": report_content,
+    }
+
+    results: List[ApiExportResultItem] = []
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        for dest in destinations:
+            try:
+                # Build headers
+                req_headers: dict = {"Content-Type": "application/json"}
+                if dest.headers:
+                    req_headers.update(dest.headers)
+
+                # Apply authentication
+                if dest.auth_type == "bearer" and dest.auth_value:
+                    req_headers["Authorization"] = f"Bearer {dest.auth_value}"
+                elif dest.auth_type == "api_key" and dest.auth_value:
+                    req_headers["X-API-Key"] = dest.auth_value
+                elif dest.auth_type == "basic" and dest.auth_value:
+                    req_headers["Authorization"] = f"Basic {dest.auth_value}"
+
+                resp = await client.post(
+                    dest.url,
+                    json=payload,
+                    headers=req_headers,
+                )
+                results.append(
+                    ApiExportResultItem(
+                        destination_id=dest.id,
+                        destination_name=dest.name,
+                        success=200 <= resp.status_code < 300,
+                        status_code=resp.status_code,
+                    )
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Export to destination %s (%s) failed: %s",
+                    dest.name,
+                    dest.url,
+                    exc,
+                )
+                results.append(
+                    ApiExportResultItem(
+                        destination_id=dest.id,
+                        destination_name=dest.name,
+                        success=False,
+                        error=str(exc)[:200],
+                    )
+                )
+
+    return ApiExportResponse(report_id=report.id, results=results)

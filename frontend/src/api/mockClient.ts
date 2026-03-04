@@ -41,11 +41,16 @@ import type {
   PersonnelSummary,
   ConvoyManifest,
   ConvoyRole,
+  ExportDestination,
+  ExportDestinationCreate,
+  ExportDestinationUpdate,
+  ApiExportResponse,
 } from '@/lib/types';
 
 import {
   ReportType,
   WorkOrderStatus,
+  SupplyStatus,
 } from '@/lib/types';
 
 import {
@@ -94,10 +99,71 @@ let demoUnits = [...DEMO_UNITS];
 let demoReports = [...DEMO_REPORTS];
 let demoMovements = [...DEMO_MOVEMENTS];
 let demoPersonnel = [...DEMO_PERSONNEL];
+
+let demoExportDestinations: ExportDestination[] = [
+  {
+    id: 1,
+    name: 'GCSS-MC API',
+    url: 'https://gcss-mc.example.mil/api/v2/reports/ingest',
+    auth_type: 'bearer',
+    auth_value: 'demo-token-gcss',
+    headers: null,
+    is_active: true,
+    created_at: '2026-01-15T08:00:00Z',
+  },
+  {
+    id: 2,
+    name: 'Higher HQ',
+    url: 'https://higher-hq.example.mil/logistics/reports',
+    auth_type: 'api_key',
+    auth_value: 'demo-api-key-hq',
+    headers: { 'X-Unit-ID': 'IMEF' },
+    is_active: true,
+    created_at: '2026-02-01T12:00:00Z',
+  },
+  {
+    id: 3,
+    name: 'Archive Server',
+    url: 'https://archive.example.mil/reports/store',
+    auth_type: 'none',
+    auth_value: null,
+    headers: null,
+    is_active: false,
+    created_at: '2026-02-10T09:30:00Z',
+  },
+];
 let demoWorkOrders = [...DEMO_WORK_ORDERS];
 let demoIndividualEquipment = [...DEMO_INDIVIDUAL_EQUIPMENT];
 let demoFaults = [...DEMO_EQUIPMENT_FAULTS];
 let demoDriverAssignments = [...DEMO_DRIVER_ASSIGNMENTS];
+
+// ---------------------------------------------------------------------------
+// Helper: hierarchical unit filtering — walks the unit tree to find
+// all descendants of a given unit ID so that selecting a parent unit
+// (e.g. "I MEF") also shows data for all child/grandchild units.
+// ---------------------------------------------------------------------------
+
+function getDescendantUnitIds(unitId: string): string[] {
+  const ids = new Set<string>([unitId]);
+  let added = true;
+  while (added) {
+    added = false;
+    for (const u of DEMO_UNITS) {
+      if (u.parentId && ids.has(u.parentId) && !ids.has(u.id)) {
+        ids.add(u.id);
+        added = true;
+      }
+    }
+  }
+  return Array.from(ids);
+}
+
+function matchesUnitFilter(recordUnitId: string | undefined, filterUnitId?: string): boolean {
+  if (!filterUnitId) return true;
+  if (!recordUnitId) return false;
+  const validIds = getDescendantUnitIds(filterUnitId);
+  return validIds.includes(recordUnitId);
+}
 
 // ---------------------------------------------------------------------------
 // Helper: convert time range string to number of days
@@ -155,34 +221,158 @@ export const mockApi = {
   // Dashboard
   // -------------------------------------------------------------------------
 
-  async getDashboardSummary(_unitId?: string, _timeRange?: string): Promise<DashboardSummary> {
+  async getDashboardSummary(unitId?: string, _timeRange?: string): Promise<DashboardSummary> {
     await mockDelay();
-    return DEMO_DASHBOARD_SUMMARY;
+    if (!unitId) return DEMO_DASHBOARD_SUMMARY;
+
+    // Recompute summary from underlying records for the selected unit hierarchy
+    const supplyRecords = DEMO_SUPPLY_RECORDS.filter((r) => matchesUnitFilter(r.unitId, unitId));
+    const equipmentRecords = DEMO_EQUIPMENT.filter((r) => matchesUnitFilter(r.unitId, unitId));
+    const alerts = demoAlerts.filter((a) => matchesUnitFilter(a.unitId, unitId));
+    const movements = demoMovements.filter((m) => {
+      // Match movements where origin or destination unit name contains a matching unit name
+      const validIds = getDescendantUnitIds(unitId);
+      const unitNames = DEMO_UNITS.filter((u) => validIds.includes(u.id)).map((u) => u.abbreviation);
+      return unitNames.some((n) => m.originUnit.includes(n) || m.destinationUnit.includes(n));
+    });
+
+    // Compute supply status by class
+    const supplyByClass = new Map<string, { onHand: number; authorized: number }>();
+    for (const r of supplyRecords) {
+      const existing = supplyByClass.get(r.supplyClass) || { onHand: 0, authorized: 0 };
+      existing.onHand += r.onHand;
+      existing.authorized += r.authorized;
+      supplyByClass.set(r.supplyClass, existing);
+    }
+    const supplyStatus = DEMO_DASHBOARD_SUMMARY.supplyStatus
+      .map((s) => {
+        const data = supplyByClass.get(s.supplyClass);
+        if (!data) return null;
+        const pct = Math.round((data.onHand / data.authorized) * 100);
+        const status: SupplyStatus = pct >= 80 ? SupplyStatus.GREEN : pct >= 60 ? SupplyStatus.AMBER : SupplyStatus.RED;
+        return { ...s, percentage: pct, onHand: data.onHand, authorized: data.authorized, status } as SupplyClassSummary;
+      })
+      .filter((s): s is SupplyClassSummary => s !== null);
+
+    // Compute equipment readiness
+    const totalAuth = equipmentRecords.reduce((s, e) => s + e.authorized, 0);
+    const totalMC = equipmentRecords.reduce((s, e) => s + e.missionCapable, 0);
+    const overallReadiness = totalAuth > 0 ? Math.round((totalMC / totalAuth) * 1000) / 10 : 0;
+
+    const unitInfo = DEMO_UNITS.find((u) => u.id === unitId);
+
+    return {
+      ...DEMO_DASHBOARD_SUMMARY,
+      unitId: unitId,
+      unitName: unitInfo?.abbreviation || DEMO_DASHBOARD_SUMMARY.unitName,
+      overallReadiness,
+      supplyStatus: supplyStatus.length > 0 ? supplyStatus : DEMO_DASHBOARD_SUMMARY.supplyStatus,
+      equipmentReadiness: {
+        ...DEMO_DASHBOARD_SUMMARY.equipmentReadiness,
+        overall: overallReadiness,
+      },
+      activeMovements: movements.length,
+      criticalAlerts: alerts.filter((a) => a.severity === 'CRITICAL' && !a.acknowledged).length,
+      warningAlerts: alerts.filter((a) => a.severity === 'WARNING' && !a.acknowledged).length,
+    };
   },
 
-  async getSupplyOverview(_unitId?: string, _timeRange?: string): Promise<SupplyClassSummary[]> {
+  async getSupplyOverview(unitId?: string, _timeRange?: string): Promise<SupplyClassSummary[]> {
     await mockDelay();
-    return DEMO_DASHBOARD_SUMMARY.supplyStatus;
+    if (!unitId) return DEMO_DASHBOARD_SUMMARY.supplyStatus;
+
+    const supplyRecords = DEMO_SUPPLY_RECORDS.filter((r) => matchesUnitFilter(r.unitId, unitId));
+    const supplyByClass = new Map<string, { onHand: number; authorized: number }>();
+    for (const r of supplyRecords) {
+      const existing = supplyByClass.get(r.supplyClass) || { onHand: 0, authorized: 0 };
+      existing.onHand += r.onHand;
+      existing.authorized += r.authorized;
+      supplyByClass.set(r.supplyClass, existing);
+    }
+    return DEMO_DASHBOARD_SUMMARY.supplyStatus
+      .map((s) => {
+        const data = supplyByClass.get(s.supplyClass);
+        if (!data) return null;
+        const pct = Math.round((data.onHand / data.authorized) * 100);
+        const status: SupplyStatus = pct >= 80 ? SupplyStatus.GREEN : pct >= 60 ? SupplyStatus.AMBER : SupplyStatus.RED;
+        return { ...s, percentage: pct, onHand: data.onHand, authorized: data.authorized, status } as SupplyClassSummary;
+      })
+      .filter((s): s is SupplyClassSummary => s !== null);
   },
 
-  async getReadinessOverview(_unitId?: string, _timeRange?: string): Promise<ReadinessSummary> {
+  async getReadinessOverview(unitId?: string, _timeRange?: string): Promise<ReadinessSummary> {
     await mockDelay();
-    return DEMO_DASHBOARD_SUMMARY.equipmentReadiness;
+    if (!unitId) return DEMO_DASHBOARD_SUMMARY.equipmentReadiness;
+
+    const equipmentRecords = DEMO_EQUIPMENT.filter((r) => matchesUnitFilter(r.unitId, unitId));
+    const totalAuth = equipmentRecords.reduce((s, e) => s + e.authorized, 0);
+    const totalMC = equipmentRecords.reduce((s, e) => s + e.missionCapable, 0);
+    const overall = totalAuth > 0 ? Math.round((totalMC / totalAuth) * 1000) / 10 : 0;
+
+    // Group by type
+    const byTypeMap = new Map<string, { authorized: number; mc: number }>();
+    for (const e of equipmentRecords) {
+      const existing = byTypeMap.get(e.type) || { authorized: 0, mc: 0 };
+      existing.authorized += e.authorized;
+      existing.mc += e.missionCapable;
+      byTypeMap.set(e.type, existing);
+    }
+    const byType = Array.from(byTypeMap.entries()).map(([type, data]) => {
+      const pct = Math.round((data.mc / data.authorized) * 1000) / 10;
+      const status: SupplyStatus = pct >= 90 ? SupplyStatus.GREEN : pct >= 75 ? SupplyStatus.AMBER : SupplyStatus.RED;
+      return { type, authorized: data.authorized, missionCapable: data.mc, readinessPercent: pct, status };
+    });
+
+    const overallStatus: SupplyStatus = overall >= 90 ? SupplyStatus.GREEN : overall >= 75 ? SupplyStatus.AMBER : SupplyStatus.RED;
+    return {
+      overall,
+      byType,
+      status: overallStatus,
+      trend: DEMO_DASHBOARD_SUMMARY.equipmentReadiness.trend,
+    };
   },
 
   async getSustainability(
-    _unitId?: string,
+    unitId?: string,
     _timeRange?: string,
   ): Promise<SustainabilityProjection[]> {
     await mockDelay();
-    return DEMO_SUSTAINABILITY;
+    if (!unitId) return DEMO_SUSTAINABILITY;
+
+    // Recompute sustainability from supply records for the filtered unit
+    const supplyRecords = DEMO_SUPPLY_RECORDS.filter((r) => matchesUnitFilter(r.unitId, unitId));
+    if (supplyRecords.length === 0) return [];
+
+    const supplyByClass = new Map<string, { onHand: number; authorized: number; rate: number }>();
+    for (const r of supplyRecords) {
+      const existing = supplyByClass.get(r.supplyClass) || { onHand: 0, authorized: 0, rate: 0 };
+      existing.onHand += r.onHand;
+      existing.authorized += r.authorized;
+      existing.rate += r.consumptionRate;
+      supplyByClass.set(r.supplyClass, existing);
+    }
+
+    return DEMO_SUSTAINABILITY
+      .map((s) => {
+        const data = supplyByClass.get(s.supplyClass);
+        if (!data || data.rate === 0) return null;
+        const currentDOS = Math.round((data.onHand / data.rate) * 10) / 10;
+        const projectedDOS = Math.round(currentDOS * 0.7 * 10) / 10;
+        const status: SupplyStatus = currentDOS >= s.criticalThreshold * 2 ? SupplyStatus.GREEN : currentDOS >= s.criticalThreshold ? SupplyStatus.AMBER : SupplyStatus.RED;
+        return { ...s, currentDOS, projectedDOS, status } as SustainabilityProjection;
+      })
+      .filter((s): s is SustainabilityProjection => s !== null);
   },
 
-  async getDashboardAlerts(_unitId?: string, _timeRange?: string): Promise<Alert[]> {
+  async getDashboardAlerts(unitId?: string, _timeRange?: string): Promise<Alert[]> {
     await mockDelay();
     const days = timeRangeToDays(_timeRange);
     const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    return demoAlerts.filter((a) => !a.acknowledged && new Date(a.createdAt) >= cutoff).slice(0, 5);
+    let alerts = demoAlerts.filter((a) => !a.acknowledged && new Date(a.createdAt) >= cutoff);
+    if (unitId) {
+      alerts = alerts.filter((a) => matchesUnitFilter(a.unitId, unitId));
+    }
+    return alerts.slice(0, 5);
   },
 
   // -------------------------------------------------------------------------
@@ -196,7 +386,7 @@ export const mockApi = {
     let records = [...DEMO_SUPPLY_RECORDS];
 
     if (filters?.unitId) {
-      records = records.filter((r) => r.unitId === filters.unitId);
+      records = records.filter((r) => matchesUnitFilter(r.unitId, filters.unitId));
     }
     if (filters?.supplyClass) {
       records = records.filter((r) => r.supplyClass === filters.supplyClass);
@@ -275,7 +465,7 @@ export const mockApi = {
     let records = [...DEMO_EQUIPMENT];
 
     if (filters?.unitId) {
-      records = records.filter((r) => r.unitId === filters.unitId);
+      records = records.filter((r) => matchesUnitFilter(r.unitId, filters.unitId));
     }
     if (filters?.type) {
       records = records.filter((r) =>
@@ -342,10 +532,15 @@ export const mockApi = {
   // -------------------------------------------------------------------------
 
   async getMovements(
-    _filters?: Record<string, unknown>,
+    filters?: { unitId?: string },
   ): Promise<Movement[]> {
     await mockDelay();
-    return demoMovements;
+    if (!filters?.unitId) return demoMovements;
+    const validIds = getDescendantUnitIds(filters.unitId);
+    const unitNames = DEMO_UNITS.filter((u) => validIds.includes(u.id)).map((u) => u.abbreviation);
+    return demoMovements.filter((m) =>
+      unitNames.some((n) => m.originUnit.includes(n) || m.destinationUnit.includes(n)),
+    );
   },
 
   async createMovement(data: Partial<Movement>): Promise<Movement> {
@@ -382,12 +577,12 @@ export const mockApi = {
 
   async getUnitEquipment(unitId: string): Promise<EquipmentRecord[]> {
     await mockDelay();
-    return DEMO_EQUIPMENT.filter((r) => r.unitId === unitId);
+    return DEMO_EQUIPMENT.filter((r) => matchesUnitFilter(r.unitId, unitId));
   },
 
   async getUnitSupply(unitId: string): Promise<SupplyRecord[]> {
     await mockDelay();
-    return DEMO_SUPPLY_RECORDS.filter((r) => r.unitId === unitId);
+    return DEMO_SUPPLY_RECORDS.filter((r) => matchesUnitFilter(r.unitId, unitId));
   },
 
   // -------------------------------------------------------------------------
@@ -403,7 +598,7 @@ export const mockApi = {
     let alerts = [...demoAlerts];
 
     if (params?.unitId) {
-      alerts = alerts.filter((a) => a.unitId === params.unitId);
+      alerts = alerts.filter((a) => matchesUnitFilter(a.unitId, params.unitId));
     }
     if (params?.severity) {
       alerts = alerts.filter((a) => a.severity === params.severity);
@@ -446,7 +641,7 @@ export const mockApi = {
     let reports = [...demoReports];
 
     if (filters?.unitId) {
-      reports = reports.filter((r) => r.unitId === filters.unitId);
+      reports = reports.filter((r) => matchesUnitFilter(r.unitId, filters.unitId));
     }
     if (filters?.type) {
       reports = reports.filter((r) => r.type === filters.type);
@@ -503,6 +698,68 @@ export const mockApi = {
         : r,
     );
     return demoReports.find((r) => r.id === id) || demoReports[0];
+  },
+
+  // -------------------------------------------------------------------------
+  // Report Export (PDF, API destinations)
+  // -------------------------------------------------------------------------
+
+  async exportReportPdf(_reportId: string): Promise<Blob> {
+    await mockDelay(400);
+    // Return a minimal mock blob — in demo mode, the user will see a download trigger
+    const text = 'KEYSTONE Report PDF (Demo Mode)\n\nThis is a placeholder PDF in demo mode.';
+    return new Blob([text], { type: 'application/pdf' });
+  },
+
+  async getExportDestinations(): Promise<ExportDestination[]> {
+    await mockDelay();
+    return [...demoExportDestinations];
+  },
+
+  async createExportDestination(data: ExportDestinationCreate): Promise<ExportDestination> {
+    await mockDelay();
+    const dest: ExportDestination = {
+      id: Date.now(),
+      name: data.name,
+      url: data.url,
+      auth_type: data.auth_type,
+      auth_value: data.auth_value ?? null,
+      headers: data.headers ?? null,
+      is_active: data.is_active ?? true,
+      created_at: new Date().toISOString(),
+    };
+    demoExportDestinations.push(dest);
+    return dest;
+  },
+
+  async updateExportDestination(id: number, data: ExportDestinationUpdate): Promise<ExportDestination> {
+    await mockDelay();
+    demoExportDestinations = demoExportDestinations.map((d) =>
+      d.id === id ? { ...d, ...data } as ExportDestination : d,
+    );
+    return demoExportDestinations.find((d) => d.id === id) || demoExportDestinations[0];
+  },
+
+  async deleteExportDestination(id: number): Promise<void> {
+    await mockDelay();
+    demoExportDestinations = demoExportDestinations.filter((d) => d.id !== id);
+  },
+
+  async exportReportToApi(reportId: string, destinationIds: number[]): Promise<ApiExportResponse> {
+    await mockDelay(600);
+    return {
+      report_id: parseInt(reportId) || 0,
+      results: destinationIds.map((destId) => {
+        const dest = demoExportDestinations.find((d) => d.id === destId);
+        return {
+          destination_id: destId,
+          destination_name: dest?.name || 'Unknown',
+          success: true,
+          status_code: 200,
+          error: null,
+        };
+      }),
+    };
   },
 
   // -------------------------------------------------------------------------
@@ -616,7 +873,10 @@ export const mockApi = {
   async getPersonnel(filters?: { unitId?: string; status?: string; search?: string }): Promise<Personnel[]> {
     await mockDelay(200);
     let results = [...demoPersonnel];
-    if (filters?.unitId) results = results.filter(p => p.unitId === filters.unitId);
+    if (filters?.unitId) {
+      const uid = filters.unitId;
+      results = results.filter(p => matchesUnitFilter(p.unitId, uid));
+    }
     if (filters?.status) results = results.filter(p => p.status === filters.status);
     if (filters?.search) {
       const q = filters.search.toLowerCase();
@@ -682,7 +942,7 @@ export const mockApi = {
   ): Promise<PaginatedResponse<EquipmentItem>> {
     await mockDelay();
     let items = [...demoIndividualEquipment];
-    if (filters?.unitId) items = items.filter((i) => i.unitId === filters.unitId);
+    if (filters?.unitId) items = items.filter((i) => matchesUnitFilter(i.unitId, filters.unitId));
     if (filters?.equipmentType) {
       const t = filters.equipmentType.toLowerCase();
       items = items.filter((i) => i.equipmentType.toLowerCase().includes(t));
@@ -802,7 +1062,7 @@ export const mockApi = {
   ): Promise<PaginatedResponse<MaintenanceWorkOrder>> {
     await mockDelay();
     let orders = [...demoWorkOrders];
-    if (filters?.unitId) orders = orders.filter((o) => o.unitId === filters.unitId);
+    if (filters?.unitId) orders = orders.filter((o) => matchesUnitFilter(o.unitId, filters.unitId));
     if (filters?.equipmentId) orders = orders.filter((o) => o.individualEquipmentId === filters.equipmentId);
     if (filters?.status) orders = orders.filter((o) => o.status === filters.status);
     if (filters?.priority) orders = orders.filter((o) => o.priority === filters.priority);

@@ -1,8 +1,11 @@
+import { useMemo } from 'react';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
 import StatusDot from '@/components/ui/StatusDot';
 import { SupplyStatus } from '@/lib/types';
 import { getStatusColor } from '@/lib/utils';
+import { useDashboardStore } from '@/stores/dashboardStore';
+import { DEMO_UNITS } from '@/api/mockData';
 
 // Demo unit sustainability data
 const unitCards = [
@@ -62,7 +65,41 @@ const movementFeasibility = [
   { name: 'ASR CHARLIE', status: 'RED', detail: 'Closed - IED threat' },
 ];
 
+// Map S3View card IDs to DEMO_UNITS abbreviations for filtering
+const cardUnitMapping: Record<string, string[]> = {
+  '1-1': ['1/1'],
+  '2-1': ['2/1'],
+  '3-1': ['3/1'],
+};
+
+function getDescendantUnitIds(unitId: string): string[] {
+  const ids = new Set<string>([unitId]);
+  let added = true;
+  while (added) {
+    added = false;
+    for (const u of DEMO_UNITS) {
+      if (u.parentId && ids.has(u.parentId) && !ids.has(u.id)) {
+        ids.add(u.id);
+        added = true;
+      }
+    }
+  }
+  return Array.from(ids);
+}
+
 export default function S3View() {
+  const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
+
+  const filteredUnitCards = useMemo(() => {
+    if (!selectedUnitId) return unitCards;
+    const validIds = getDescendantUnitIds(selectedUnitId);
+    const validAbbrevs = DEMO_UNITS.filter((u) => validIds.includes(u.id)).map((u) => u.abbreviation);
+    return unitCards.filter((card) => {
+      const mappedAbbrevs = cardUnitMapping[card.id] || [card.name];
+      return mappedAbbrevs.some((a) => validAbbrevs.some((v) => v.includes(a) || a.includes(v)));
+    });
+  }, [selectedUnitId]);
+
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Unit Sustainability Cards */}
@@ -71,7 +108,7 @@ export default function S3View() {
           UNIT SUSTAINABILITY OVERLAY
         </div>
         <div className="grid-responsive-3col">
-          {unitCards.map((unit) => {
+          {filteredUnitCards.map((unit) => {
             const color = getStatusColor(unit.overallStatus);
             return (
               <div

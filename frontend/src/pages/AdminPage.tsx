@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Users, Settings, Shield, Layers, Plus, Edit3, Save, Check, X, Trash2 } from 'lucide-react';
+import { Users, Settings, Shield, Layers, Plus, Edit3, Save, Check, X, Trash2, Crosshair } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
 import StatusDot from '@/components/ui/StatusDot';
 import UnitTreeView from '@/components/admin/UnitTreeView';
 import TileLayerSettings from '@/components/admin/TileLayerSettings';
+import ScenarioManager from '@/components/admin/ScenarioManager';
 import { Role, Echelon, type User, type Unit } from '@/lib/types';
 import { ECHELON_ORDER, ECHELON_ALLOWED_CHILDREN } from '@/lib/constants';
 import { mockApi } from '@/api/mockClient';
@@ -179,7 +180,7 @@ const addButtonStyle: React.CSSProperties = {
 // ---------------------------------------------------------------------------
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'users' | 'units' | 'classification' | 'tiles'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'units' | 'classification' | 'tiles' | 'scenarios'>('users');
   const { classification, updateClassification } = useClassificationStore();
 
   // ── User management state ──
@@ -379,6 +380,7 @@ export default function AdminPage() {
           { key: 'units' as const, label: 'UNIT CONFIGURATION', icon: Settings },
           { key: 'classification' as const, label: 'CLASSIFICATION', icon: Shield },
           { key: 'tiles' as const, label: 'MAP TILES', icon: Layers },
+          { key: 'scenarios' as const, label: 'SCENARIOS', icon: Crosshair },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -749,6 +751,9 @@ export default function AdminPage() {
 
       {/* ── Map Tiles Tab ── */}
       {activeTab === 'tiles' && <TileLayerSettings />}
+
+      {/* ── Scenarios Tab ── */}
+      {activeTab === 'scenarios' && <ScenarioManager />}
 
       {/* ── User Add/Edit Modal ── */}
       {userModalOpen && (

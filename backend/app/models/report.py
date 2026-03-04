@@ -3,6 +3,7 @@
 import enum
 
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Enum as SQLEnum,
@@ -11,6 +12,7 @@ from sqlalchemy import (
     String,
     Text,
 )
+from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.sql import func
 
 from app.database import Base
@@ -46,3 +48,23 @@ class Report(Base):
     generated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     period_start = Column(DateTime(timezone=True), nullable=True)
     period_end = Column(DateTime(timezone=True), nullable=True)
+
+
+class AuthType(str, enum.Enum):
+    NONE = "none"
+    BEARER = "bearer"
+    API_KEY = "api_key"
+    BASIC = "basic"
+
+
+class ReportExportDestination(Base):
+    __tablename__ = "report_export_destinations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    url = Column(String(500), nullable=False)
+    auth_type = Column(String(20), default="none")
+    auth_value = Column(String(500), nullable=True)
+    headers = Column(JSON, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

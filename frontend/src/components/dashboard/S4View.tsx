@@ -1,30 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { SupplyStatus, SupplyClass, type SupplyRecord, type EquipmentRecord, type Movement, MovementStatus } from '@/lib/types';
 import { formatDateShort, getStatusColor } from '@/lib/utils';
 import { SUPPLY_CLASS_SHORT } from '@/lib/constants';
 import { Filter } from 'lucide-react';
-
-// Demo data
-const demoSupply: SupplyRecord[] = [
-  { id: '1', unitId: '1-1', unitName: '1/1 BN', supplyClass: SupplyClass.I, item: 'MRE Case A', onHand: 2400, authorized: 3000, required: 3000, dueIn: 0, consumptionRate: 300, dos: 8, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T08:00:00Z' },
-  { id: '2', unitId: '1-1', unitName: '1/1 BN', supplyClass: SupplyClass.III, item: 'JP-8', onHand: 12000, authorized: 20000, required: 20000, dueIn: 5000, consumptionRate: 3000, dos: 4, status: SupplyStatus.AMBER, lastUpdated: '2026-03-03T07:30:00Z' },
-  { id: '3', unitId: '2-1', unitName: '2/1 BN', supplyClass: SupplyClass.V, item: '5.56mm Ball', onHand: 45000, authorized: 100000, required: 100000, dueIn: 0, consumptionRate: 22500, dos: 2, status: SupplyStatus.RED, lastUpdated: '2026-03-03T06:00:00Z' },
-  { id: '4', unitId: '1-1', unitName: '1/1 BN', supplyClass: SupplyClass.VIII, item: 'Blood Type O+', onHand: 180, authorized: 200, required: 200, dueIn: 20, consumptionRate: 10, dos: 18, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T08:15:00Z' },
-  { id: '5', unitId: '2-1', unitName: '2/1 BN', supplyClass: SupplyClass.IX, item: 'HMMWV Parts Kit', onHand: 42, authorized: 60, required: 60, dueIn: 12, consumptionRate: 6, dos: 7, status: SupplyStatus.AMBER, lastUpdated: '2026-03-03T05:00:00Z' },
-];
-
-const demoEquipment: EquipmentRecord[] = [
-  { id: '1', unitId: '1-1', unitName: '1/1 BN', type: 'HMMWV', tamcn: 'D1092', authorized: 48, onHand: 46, missionCapable: 40, notMissionCapable: 6, readinessPercent: 87, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T08:00:00Z' },
-  { id: '2', unitId: '2-1', unitName: '2/1 BN', type: 'MTVR', tamcn: 'D0095', authorized: 24, onHand: 24, missionCapable: 18, notMissionCapable: 6, readinessPercent: 75, status: SupplyStatus.AMBER, lastUpdated: '2026-03-03T07:00:00Z' },
-  { id: '3', unitId: '1-1', unitName: '1/1 BN', type: 'AAV', tamcn: 'E0846', authorized: 12, onHand: 12, missionCapable: 8, notMissionCapable: 4, readinessPercent: 67, status: SupplyStatus.RED, lastUpdated: '2026-03-03T06:30:00Z' },
-];
-
-const demoMovements: Movement[] = [
-  { id: '1', name: 'CONVOY ALPHA', originUnit: 'CLB-1', destinationUnit: '1/1 BN', status: MovementStatus.EN_ROUTE, cargo: 'CL III, CL V', priority: 'ROUTINE', eta: '2026-03-03T16:00:00Z', vehicles: 8, personnel: 16, lastUpdated: '2026-03-03T08:00:00Z' },
-  { id: '2', name: 'CONVOY BRAVO', originUnit: 'CLB-1', destinationUnit: '2/1 BN', status: MovementStatus.PLANNED, cargo: 'CL IX', priority: 'PRIORITY', departureTime: '2026-03-04T06:00:00Z', vehicles: 4, personnel: 8, lastUpdated: '2026-03-03T07:00:00Z' },
-];
+import { useDashboardStore } from '@/stores/dashboardStore';
+import { mockApi } from '@/api/mockClient';
 
 const tableHeaderStyle: React.CSSProperties = {
   fontFamily: 'var(--font-mono)',
@@ -49,11 +31,21 @@ const tableCellStyle: React.CSSProperties = {
 
 export default function S4View() {
   const [supplyFilter, setSupplyFilter] = useState<string>('ALL');
+  const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
+  const [supplyData, setSupplyData] = useState<SupplyRecord[]>([]);
+  const [equipmentData, setEquipmentData] = useState<EquipmentRecord[]>([]);
+  const [movementData, setMovementData] = useState<Movement[]>([]);
+
+  useEffect(() => {
+    mockApi.getSupplyRecords({ unitId: selectedUnitId ?? undefined }).then((r) => setSupplyData(r.data));
+    mockApi.getEquipmentRecords({ unitId: selectedUnitId ?? undefined }).then((r) => setEquipmentData(r.data));
+    mockApi.getMovements({ unitId: selectedUnitId ?? undefined }).then(setMovementData);
+  }, [selectedUnitId]);
 
   const filteredSupply =
     supplyFilter === 'ALL'
-      ? demoSupply
-      : demoSupply.filter((s) => s.supplyClass === supplyFilter);
+      ? supplyData
+      : supplyData.filter((s) => s.supplyClass === supplyFilter);
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -168,7 +160,7 @@ export default function S4View() {
                 </tr>
               </thead>
               <tbody>
-                {demoEquipment.map((eq) => (
+                {equipmentData.map((eq) => (
                   <tr
                     key={eq.id}
                     style={{ transition: 'background-color var(--transition)' }}
@@ -212,7 +204,7 @@ export default function S4View() {
         {/* Active Movements */}
         <Card title="ACTIVE MOVEMENTS">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {demoMovements.map((mov) => {
+            {movementData.map((mov) => {
               const movColor =
                 mov.status === MovementStatus.EN_ROUTE
                   ? 'var(--color-accent)'

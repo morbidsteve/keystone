@@ -118,11 +118,12 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 - Convoy personnel assignments with roles
 
 ### Report Generation
-- LOGSTAT reports (automated from current supply data)
-- Readiness reports
-- Supply status summaries
-- Higher HQ roll-up reports
-- Draft/Final workflow
+- 7 report types: LOGSTAT, Readiness, Supply Status, Equipment Status, Maintenance Summary, Movement Summary, Personnel Strength
+- Structured report viewer with type-specific sections, summary statistics, and tabular breakdowns
+- Draft/Final workflow with finalization tracking
+- Export to file (text/JSON) for offline distribution or higher HQ submission
+- Unit-scoped reporting with date range selection
+- Automated data aggregation from current supply, equipment, maintenance, movement, and personnel records
 
 ### Alert System
 - Automatic alerts: low days-of-supply, low readiness, convoy delayed, anomaly detection
@@ -139,10 +140,14 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 
 ### Simulator
 - Event-driven simulation engine with configurable speed multiplier
-- **3 USMC exercise scenarios** with realistic phase progressions:
-  - **Steel Guardian** -- 7-day battalion FEX at 29 Palms (1/1 Marines + CLB-1, 5 phases)
-  - **Pacific Fury** -- 135-day 26th MEU pre-deployment training and embark cycle (6 phases)
-  - **Iron Forge** -- 90-day III MEF garrison steady-state operations in Okinawa (5 phases)
+- **20 USMC exercise scenarios** organized by region and type:
+  - **Pre-Deployment Training (CONUS)**: Steel Guardian (7-day battalion FEX, 29 Palms), ITX (Integrated Training Exercise), Steel Knight (MAGTF combined arms), COMPTUEX (MEU composite training)
+  - **Indo-Pacific**: Cobra Gold, Balikatan, Resolute Dragon, Ssang Yong, Kamandag, Valiant Shield, RIMPAC, Island Sentinel
+  - **Europe / Africa / Middle East**: African Lion, Cold Response, Native Fury
+  - **Americas / Maritime**: UNITAS
+  - **Crisis Response**: Trident Spear
+  - **Reserve Component**: Reserve ITX
+  - **Deployment / Garrison**: Pacific Fury (135-day MEU cycle), Iron Forge (90-day III MEF Okinawa)
 - Simulated events: supply consumption, equipment breakdowns, resupply convoys, LOGSTAT/readiness reports, phase transitions
 - Breakdown probability scaled to operational tempo (LOW 3%, MEDIUM 8%, HIGH 15% per unit/day)
 
@@ -151,6 +156,12 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 - All three MEFs (I, II, III), MARFORRES, MARSOC, Supporting Establishment
 - Echelons from HQMC down to company level (with infantry company details)
 - Unit Identification Codes (UICs), geographic coordinates, MGRS
+
+### Admin Panel
+- **User Management**: Create, edit, activate/deactivate users with role and unit assignment
+- **Unit Hierarchy**: Interactive tree view of the complete USMC organizational structure with unit creation and editing
+- **Classification Settings**: Configure classification level (UNCLASSIFIED through TS//SCI) with live banner preview and color-coded reference
+- **Map Tile Settings**: Configure tile layer sources for OSM, satellite, and topographic layers (supports online and offline tile servers)
 
 ### Access Control
 - 6 roles: ADMIN, COMMANDER, S4, S3, OPERATOR, VIEWER
@@ -163,11 +174,23 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 - Color-coded banners at top and bottom of viewport per IC/DoD standards
 - Admin-configurable via settings API
 
+### Responsive Design
+- Responsive layout optimized for desktop, tablet, and mobile viewports
+- Collapsible sidebar with hamburger menu on small screens
+- Responsive grid layouts that reflow from multi-column to single-column
+- Full-screen map mode for tactical use on tablets
+- Scrollable tables with horizontal overflow on narrow displays
+
 ### Demo Mode
 - Full static site deployment with mock data (no backend required)
 - Auto-deployed to GitHub Pages via CI
 - All pages functional with realistic USMC logistics data
 - Toggle via `VITE_DEMO_MODE=true` build flag
+
+### Future Capabilities (Planned)
+- **GCSS-MC Integration**: Direct data feed from Global Combat Support System -- Marine Corps for automated supply and equipment synchronization
+- **Predictive Analytics**: ML-based consumption forecasting and failure prediction models
+- **Offline-First PWA**: Service worker support for disconnected field operations with background sync
 
 ---
 
@@ -413,7 +436,7 @@ keystone/
 │   ├── simulator/              # Mock data simulator engine
 │   │   ├── cli.py              # CLI interface
 │   │   ├── engine.py           # Simulation loop
-│   │   ├── scenario.py         # Scenario definitions (3 exercises)
+│   │   ├── scenario.py         # Scenario definitions (20 exercises)
 │   │   ├── events/             # Event types, queue, handlers
 │   │   ├── generators/         # Data generators (mIRC, Excel, TAK, manual)
 │   │   └── feeders/            # Data feed adapters
@@ -483,6 +506,25 @@ All endpoints are prefixed with `/api/v1`. Authentication is via JWT bearer toke
 | **Units** | `/units` | USMC unit hierarchy (read) |
 
 Interactive API documentation is available at `/docs` (Swagger UI) and `/redoc` when the backend is running.
+
+---
+
+## Security Features
+
+KEYSTONE is designed for deployment across classification domains with defense-in-depth security:
+
+| Feature | Implementation |
+|---------|---------------|
+| **Authentication** | JWT bearer tokens with configurable expiry (default 8 hours, HS256) |
+| **Authorization** | Role-based access control (6 roles) with unit hierarchy scoping |
+| **Container Hardening** | Non-root users, read-only filesystems, `no-new-privileges`, minimal capabilities per DoD Container Hardening Guide |
+| **TLS** | nginx terminates TLS with HSTS, CSP, X-Frame-Options, X-Content-Type-Options headers |
+| **Image Signing** | Cosign keyless signing with SBOM attestation in CI pipeline |
+| **Vulnerability Scanning** | Grype + Trivy CVE scans, Semgrep SAST, CodeQL, ZAP DAST on every push |
+| **Classification Banners** | Configurable UNCLASSIFIED through TS//SCI with IC/DoD standard color coding |
+| **Tile Proxy** | All external tile requests proxied through nginx to prevent CSP violations and data leakage |
+| **Input Validation** | Pydantic 2 schema validation on all API inputs; parameterized SQL via SQLAlchemy |
+| **Secrets Management** | Environment variable injection; no hardcoded credentials; seed users blocked outside development mode |
 
 ---
 

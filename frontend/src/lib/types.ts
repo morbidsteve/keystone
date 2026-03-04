@@ -483,6 +483,50 @@ export interface GenerateReportParams {
   title?: string;
 }
 
+// Export Destinations
+
+export interface ExportDestination {
+  id: number;
+  name: string;
+  url: string;
+  auth_type: 'none' | 'bearer' | 'api_key' | 'basic';
+  auth_value?: string | null;
+  headers?: Record<string, string> | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface ExportDestinationCreate {
+  name: string;
+  url: string;
+  auth_type: 'none' | 'bearer' | 'api_key' | 'basic';
+  auth_value?: string;
+  headers?: Record<string, string>;
+  is_active?: boolean;
+}
+
+export interface ExportDestinationUpdate {
+  name?: string;
+  url?: string;
+  auth_type?: 'none' | 'bearer' | 'api_key' | 'basic';
+  auth_value?: string;
+  headers?: Record<string, string>;
+  is_active?: boolean;
+}
+
+export interface ApiExportResultItem {
+  destination_id: number;
+  destination_name: string;
+  success: boolean;
+  status_code?: number | null;
+  error?: string | null;
+}
+
+export interface ApiExportResponse {
+  report_id: number;
+  results: ApiExportResultItem[];
+}
+
 // Personnel tracking enums
 
 export enum PersonnelStatus {

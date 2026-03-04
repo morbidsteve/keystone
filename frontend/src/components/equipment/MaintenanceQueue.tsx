@@ -6,6 +6,7 @@ import { formatRelativeTime } from '@/lib/utils';
 import type { MaintenanceWorkOrder } from '@/lib/types';
 import { WorkOrderStatus } from '@/lib/types';
 import { getWorkOrders } from '@/api/maintenance';
+import { useDashboardStore } from '@/stores/dashboardStore';
 import WorkOrderDetailModal from './WorkOrderDetailModal';
 import CreateWorkOrderModal from './CreateWorkOrderModal';
 
@@ -40,10 +41,11 @@ export default function MaintenanceQueue() {
   const [workOrders, setWorkOrders] = useState<MaintenanceWorkOrder[]>([]);
   const [selectedWO, setSelectedWO] = useState<MaintenanceWorkOrder | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
   const loadWorkOrders = useCallback(async () => {
     try {
-      const result = await getWorkOrders({});
+      const result = await getWorkOrders({ unitId: selectedUnitId ?? undefined });
       // Show only non-complete work orders in the queue
       const openOrders = result.data.filter(
         (wo) => wo.status !== WorkOrderStatus.COMPLETE,
@@ -52,7 +54,7 @@ export default function MaintenanceQueue() {
     } catch (err) {
       console.error('Failed to load work orders:', err);
     }
-  }, []);
+  }, [selectedUnitId]);
 
   useEffect(() => {
     loadWorkOrders();
