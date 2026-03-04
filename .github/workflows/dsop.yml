@@ -323,6 +323,7 @@ jobs:
     needs: build-images
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image: ${{ fromJSON(inputs.images) }}
     steps:
@@ -370,6 +371,7 @@ jobs:
 
       - name: Trivy scan
         uses: aquasecurity/trivy-action@0.29.0
+        continue-on-error: true
         with:
           image-ref: ${{ env.IMAGE_REF }}
           format: 'sarif'
@@ -377,8 +379,9 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
 
-      - if: always()
+      - if: always() && hashFiles(format('trivy-{0}.sarif', matrix.image.name)) != ''
         uses: github/codeql-action/upload-sarif@v3
+        continue-on-error: true
         with:
           sarif_file: trivy-${{ matrix.image.name }}.sarif
           category: trivy-${{ matrix.image.name }}
