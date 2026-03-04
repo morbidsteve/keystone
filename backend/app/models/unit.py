@@ -52,3 +52,4 @@ class Unit(Base):
     equipment_statuses = relationship("EquipmentStatus", back_populates="unit")
     movements = relationship("Movement", back_populates="unit")
     alerts = relationship("Alert", back_populates="unit")
+    personnel = relationship("Personnel", back_populates="unit")

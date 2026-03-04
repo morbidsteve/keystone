@@ -1,16 +1,21 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Polyline, Tooltip, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import { X, ChevronUp, ChevronDown, Trash2, MapPin, Plus, Navigation, Package, Users, Truck } from 'lucide-react';
+import { X, ChevronUp, ChevronDown, Trash2, MapPin, Plus, Navigation, Package, Users, Truck, Search, UserPlus, Shield } from 'lucide-react';
 import {
   SupplyClass,
   MovementStatus,
+  ConvoyRole,
   type Movement,
   type CargoItem,
   type VehicleAllocation,
   type MovementManifest,
   type SupplyRecord,
   type EquipmentRecord,
+  type PersonnelSummary,
+  type ConvoyVehicle,
+  type ConvoyPersonnelAssignment,
+  type ConvoyManifest,
 } from '@/lib/types';
 import { getMapData, type MapData, type MapRoute } from '@/api/map';
 import { mockApi } from '@/api/mockClient';
@@ -360,6 +365,16 @@ export default function RoutePlannerModal({
   // Personnel
   const [personnelRoles, setPersonnelRoles] = useState<{ role: string; count: number }[]>([]);
 
+  // Personnel detailed mode
+  const [personnelMode, setPersonnelMode] = useState<'summary' | 'detailed'>('summary');
+  const [convoyVehicles, setConvoyVehicles] = useState<ConvoyVehicle[]>([]);
+  const [unassignedPersonnel, setUnassignedPersonnel] = useState<ConvoyPersonnelAssignment[]>([]);
+  const [personnelSearchQuery, setPersonnelSearchQuery] = useState('');
+  const [personnelSearchResults, setPersonnelSearchResults] = useState<PersonnelSummary[]>([]);
+  const [personnelSearchLoading, setPersonnelSearchLoading] = useState(false);
+  const [assignTargetVehicleId, setAssignTargetVehicleId] = useState<string | null>(null);
+  const [showRoleSelector, setShowRoleSelector] = useState<string | null>(null); // personnelId being assigned
+
   // Details
   const [priority, setPriority] = useState('ROUTINE');
   const [avgSpeed, setAvgSpeed] = useState(40);
@@ -420,6 +435,148 @@ export default function RoutePlannerModal({
   }, []);
 
   // ---------------------------------------------------------------------------
+  // Sync convoy vehicles from vehicleAllocations when switching to detailed
+  // ---------------------------------------------------------------------------
+
+  const expandedConvoyVehicles = useMemo<ConvoyVehicle[]>(() => {
+    const result: ConvoyVehicle[] = [];
+    for (const alloc of vehicleAllocations) {
+      for (let i = 0; i < alloc.quantity; i++) {
+        // Reuse existing convoy vehicle if it matches
+        const existingIdx = result.length;
+        const existing = convoyVehicles.find(
+          cv => cv.vehicleType === alloc.type && cv.sequenceNumber === i + 1,
+        );
+        if (existing) {
+          result.push(existing);
+        } else {
+          result.push({
+            id: `cv-${alloc.type}-${i}`,
+            movementId: '',
+            vehicleType: alloc.type,
+            tamcn: alloc.tamcn,
+            bumperNumber: '',
+            callSign: '',
+            sequenceNumber: i + 1,
+            assignedPersonnel: [],
+          });
+        }
+      }
+    }
+    return result;
+  }, [vehicleAllocations, convoyVehicles]);
+
+  useEffect(() => {
+    if (personnelMode === 'detailed') {
+      setConvoyVehicles(prev => {
+        // Merge: keep existing vehicle data (bumperNumber, callSign, assigned personnel)
+        // but match against the expanded set from allocations
+        const merged: ConvoyVehicle[] = [];
+        for (const expanded of expandedConvoyVehicles) {
+          const match = prev.find(
+            p => p.vehicleType === expanded.vehicleType && p.sequenceNumber === expanded.sequenceNumber,
+          );
+          if (match) {
+            merged.push(match);
+          } else {
+            merged.push(expanded);
+          }
+        }
+        return merged;
+      });
+    }
+  }, [personnelMode, expandedConvoyVehicles]);
+
+  // ---------------------------------------------------------------------------
+  // Personnel search (debounced)
+  // ---------------------------------------------------------------------------
+
+  useEffect(() => {
+    if (personnelSearchQuery.length < 2) {
+      setPersonnelSearchResults([]);
+      return;
+    }
+    setPersonnelSearchLoading(true);
+    const timer = setTimeout(() => {
+      mockApi.searchPersonnel(personnelSearchQuery).then(results => {
+        setPersonnelSearchResults(results);
+        setPersonnelSearchLoading(false);
+      });
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [personnelSearchQuery]);
+
+  // ---------------------------------------------------------------------------
+  // Detailed mode personnel handlers
+  // ---------------------------------------------------------------------------
+
+  const handleAssignPersonnel = useCallback(
+    (person: PersonnelSummary, vehicleId: string | null, role: ConvoyRole) => {
+      const assignment: ConvoyPersonnelAssignment = {
+        id: `cpa-${person.id}-${Date.now()}`,
+        movementId: '',
+        personnelId: person.id,
+        convoyVehicleId: vehicleId || undefined,
+        role,
+        personnel: person,
+      };
+
+      if (vehicleId) {
+        setConvoyVehicles(prev =>
+          prev.map(cv =>
+            cv.id === vehicleId
+              ? { ...cv, assignedPersonnel: [...cv.assignedPersonnel, assignment] }
+              : cv,
+          ),
+        );
+      } else {
+        setUnassignedPersonnel(prev => [...prev, assignment]);
+      }
+
+      // Clear search state
+      setPersonnelSearchQuery('');
+      setPersonnelSearchResults([]);
+      setAssignTargetVehicleId(null);
+      setShowRoleSelector(null);
+    },
+    [],
+  );
+
+  const handleRemoveAssignedPersonnel = useCallback(
+    (assignmentId: string, vehicleId: string | null) => {
+      if (vehicleId) {
+        setConvoyVehicles(prev =>
+          prev.map(cv =>
+            cv.id === vehicleId
+              ? { ...cv, assignedPersonnel: cv.assignedPersonnel.filter(a => a.id !== assignmentId) }
+              : cv,
+          ),
+        );
+      } else {
+        setUnassignedPersonnel(prev => prev.filter(a => a.id !== assignmentId));
+      }
+    },
+    [],
+  );
+
+  const handleUpdateConvoyVehicle = useCallback(
+    (vehicleId: string, field: 'bumperNumber' | 'callSign', value: string) => {
+      setConvoyVehicles(prev =>
+        prev.map(cv => (cv.id === vehicleId ? { ...cv, [field]: value } : cv)),
+      );
+    },
+    [],
+  );
+
+  const totalDetailedPersonnel = useMemo(() => {
+    const vehicleAssigned = convoyVehicles.reduce(
+      (sum, cv) => sum + cv.assignedPersonnel.length,
+      0,
+    );
+    return vehicleAssigned + unassignedPersonnel.length;
+  }, [convoyVehicles, unassignedPersonnel]);
+
+  // ---------------------------------------------------------------------------
   // Handlers
   // ---------------------------------------------------------------------------
 
@@ -466,6 +623,13 @@ export default function RoutePlannerModal({
     setCargoItems([]);
     setVehicleAllocations([]);
     setPersonnelRoles([]);
+    setPersonnelMode('summary');
+    setConvoyVehicles([]);
+    setUnassignedPersonnel([]);
+    setPersonnelSearchQuery('');
+    setPersonnelSearchResults([]);
+    setAssignTargetVehicleId(null);
+    setShowRoleSelector(null);
     setPriority('ROUTINE');
     setAvgSpeed(40);
     setDepartureTime('');
@@ -477,7 +641,22 @@ export default function RoutePlannerModal({
 
   const handleSave = useCallback(() => {
     const totalVehicles = vehicleAllocations.reduce((sum, v) => sum + v.quantity, 0);
-    const totalPersonnel = personnelRoles.reduce((sum, p) => sum + p.count, 0);
+    const totalPersonnel =
+      personnelMode === 'detailed'
+        ? totalDetailedPersonnel
+        : personnelRoles.reduce((sum, p) => sum + p.count, 0);
+
+    // Build convoy manifest for detailed mode
+    const convoyManifestData: ConvoyManifest | undefined =
+      personnelMode === 'detailed'
+        ? {
+            movementId: '',
+            vehicles: convoyVehicles,
+            unassignedPersonnel,
+            totalVehicles,
+            totalPersonnel,
+          }
+        : undefined;
 
     const manifest: MovementManifest = {
       cargo: cargoItems.filter(c => c.quantity > 0),
@@ -486,6 +665,7 @@ export default function RoutePlannerModal({
       totalWeightTons: 0,
       totalVehicles,
       totalPersonnel,
+      convoyManifest: convoyManifestData,
     };
 
     const cargoSummary = manifest.cargo
@@ -524,6 +704,10 @@ export default function RoutePlannerModal({
   }, [
     vehicleAllocations,
     personnelRoles,
+    personnelMode,
+    convoyVehicles,
+    unassignedPersonnel,
+    totalDetailedPersonnel,
     cargoItems,
     departureTime,
     totalDistance,
@@ -1486,89 +1670,772 @@ export default function RoutePlannerModal({
               title="PERSONNEL"
               expanded={expandedSections.personnel}
               onToggle={() => toggleSection('personnel')}
-              count={personnelRoles.reduce((sum, p) => sum + p.count, 0)}
+              count={
+                personnelMode === 'detailed'
+                  ? totalDetailedPersonnel
+                  : personnelRoles.reduce((sum, p) => sum + p.count, 0)
+              }
             />
             {expandedSections.personnel && (
               <div style={{ paddingTop: 8 }}>
-                {personnelRoles.map((p, idx) => (
-                  <div
-                    key={idx}
+                {/* ── Mode toggle (segmented control) ──────────────────── */}
+                <div
+                  style={{
+                    display: 'flex',
+                    marginBottom: 8,
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius)',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <button
+                    onClick={() => setPersonnelMode('summary')}
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 60px 24px',
-                      gap: 4,
-                      alignItems: 'center',
-                      marginBottom: 4,
+                      flex: 1,
+                      padding: '5px 8px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 9,
+                      fontWeight: 700,
+                      letterSpacing: '0.5px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      backgroundColor:
+                        personnelMode === 'summary' ? 'var(--color-accent)' : 'var(--color-bg)',
+                      color: personnelMode === 'summary' ? '#fff' : 'var(--color-text-muted)',
                     }}
                   >
-                    <input
-                      value={p.role}
-                      onChange={e => {
-                        const next = [...personnelRoles];
-                        next[idx] = { ...next[idx], role: e.target.value };
-                        setPersonnelRoles(next);
-                      }}
-                      placeholder="Role"
-                      style={{ ...inputStyle, padding: '4px 6px', fontSize: 10 }}
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      value={p.count}
-                      onChange={e => {
-                        const next = [...personnelRoles];
-                        next[idx] = { ...next[idx], count: parseInt(e.target.value) || 0 };
-                        setPersonnelRoles(next);
-                      }}
-                      style={{ ...inputStyle, padding: '4px 6px', fontSize: 10 }}
-                    />
-                    <button
-                      onClick={() => setPersonnelRoles(prev => prev.filter((_, i) => i !== idx))}
-                      style={{ ...smallBtnStyle, color: 'var(--color-danger)' }}
-                    >
-                      <Trash2 size={11} />
-                    </button>
-                  </div>
-                ))}
-                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
-                  {DEFAULT_ROLES.filter(role => !personnelRoles.find(p => p.role === role)).map(
-                    role => (
-                      <button
-                        key={role}
-                        onClick={() => setPersonnelRoles(prev => [...prev, { role, count: 0 }])}
+                    SUMMARY
+                  </button>
+                  <button
+                    onClick={() => setPersonnelMode('detailed')}
+                    style={{
+                      flex: 1,
+                      padding: '5px 8px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 9,
+                      fontWeight: 700,
+                      letterSpacing: '0.5px',
+                      border: 'none',
+                      borderLeft: '1px solid var(--color-border)',
+                      cursor: 'pointer',
+                      backgroundColor:
+                        personnelMode === 'detailed' ? 'var(--color-accent)' : 'var(--color-bg)',
+                      color: personnelMode === 'detailed' ? '#fff' : 'var(--color-text-muted)',
+                    }}
+                  >
+                    DETAILED
+                  </button>
+                </div>
+
+                {/* ── SUMMARY MODE (existing behavior) ─────────────────── */}
+                {personnelMode === 'summary' && (
+                  <>
+                    {personnelRoles.map((p, idx) => (
+                      <div
+                        key={idx}
                         style={{
-                          padding: '2px 6px',
+                          display: 'grid',
+                          gridTemplateColumns: '1fr 60px 24px',
+                          gap: 4,
+                          alignItems: 'center',
+                          marginBottom: 4,
+                        }}
+                      >
+                        <input
+                          value={p.role}
+                          onChange={e => {
+                            const next = [...personnelRoles];
+                            next[idx] = { ...next[idx], role: e.target.value };
+                            setPersonnelRoles(next);
+                          }}
+                          placeholder="Role"
+                          style={{ ...inputStyle, padding: '4px 6px', fontSize: 10 }}
+                        />
+                        <input
+                          type="number"
+                          min={0}
+                          value={p.count}
+                          onChange={e => {
+                            const next = [...personnelRoles];
+                            next[idx] = { ...next[idx], count: parseInt(e.target.value) || 0 };
+                            setPersonnelRoles(next);
+                          }}
+                          style={{ ...inputStyle, padding: '4px 6px', fontSize: 10 }}
+                        />
+                        <button
+                          onClick={() => setPersonnelRoles(prev => prev.filter((_, i) => i !== idx))}
+                          style={{ ...smallBtnStyle, color: 'var(--color-danger)' }}
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
+                    ))}
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
+                      {DEFAULT_ROLES.filter(role => !personnelRoles.find(p => p.role === role)).map(
+                        role => (
+                          <button
+                            key={role}
+                            onClick={() => setPersonnelRoles(prev => [...prev, { role, count: 0 }])}
+                            style={{
+                              padding: '2px 6px',
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: 8,
+                              backgroundColor: 'var(--color-bg)',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: 'var(--radius)',
+                              color: 'var(--color-text-muted)',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            + {role}
+                          </button>
+                        ),
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setPersonnelRoles(prev => [...prev, { role: '', count: 0 }])}
+                      style={addBtnStyle}
+                    >
+                      <Plus size={11} /> ADD ROLE
+                    </button>
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 9,
+                        color: 'var(--color-text-muted)',
+                        marginTop: 4,
+                      }}
+                    >
+                      <Users size={10} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                      TOTAL: {personnelRoles.reduce((sum, p) => sum + p.count, 0)} PERSONNEL
+                    </div>
+                  </>
+                )}
+
+                {/* ── DETAILED MODE ────────────────────────────────────── */}
+                {personnelMode === 'detailed' && (
+                  <>
+                    {/* ── Convoy Vehicles ───────────────────────────────── */}
+                    <div style={{ ...labelStyle, marginBottom: 6 }}>
+                      <Truck size={10} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                      CONVOY VEHICLES ({convoyVehicles.length})
+                    </div>
+
+                    {convoyVehicles.length === 0 && (
+                      <div
+                        style={{
                           fontFamily: 'var(--font-mono)',
-                          fontSize: 8,
+                          fontSize: 10,
+                          color: 'var(--color-text-muted)',
+                          padding: '8px 0',
+                        }}
+                      >
+                        Add vehicles in the Vehicles section above to assign personnel.
+                      </div>
+                    )}
+
+                    {convoyVehicles.map(cv => (
+                      <div
+                        key={cv.id}
+                        style={{
+                          marginBottom: 8,
+                          padding: 8,
                           backgroundColor: 'var(--color-bg)',
                           border: '1px solid var(--color-border)',
                           borderRadius: 'var(--radius)',
-                          color: 'var(--color-text-muted)',
-                          cursor: 'pointer',
                         }}
                       >
-                        + {role}
+                        {/* Vehicle header */}
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            marginBottom: 6,
+                          }}
+                        >
+                          <Truck size={12} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: 'var(--color-text-bright)',
+                            }}
+                          >
+                            {cv.vehicleType || 'VEHICLE'} #{cv.sequenceNumber}
+                          </span>
+                        </div>
+
+                        {/* Bumper number + call sign */}
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            gap: 4,
+                            marginBottom: 6,
+                          }}
+                        >
+                          <div>
+                            <div style={{ ...labelStyle, fontSize: 8 }}>BUMPER #</div>
+                            <input
+                              value={cv.bumperNumber || ''}
+                              onChange={e =>
+                                handleUpdateConvoyVehicle(cv.id, 'bumperNumber', e.target.value)
+                              }
+                              placeholder="e.g. HQ-01"
+                              style={{ ...inputStyle, padding: '3px 6px', fontSize: 9 }}
+                            />
+                          </div>
+                          <div>
+                            <div style={{ ...labelStyle, fontSize: 8 }}>CALL SIGN</div>
+                            <input
+                              value={cv.callSign || ''}
+                              onChange={e =>
+                                handleUpdateConvoyVehicle(cv.id, 'callSign', e.target.value)
+                              }
+                              placeholder="e.g. RAIDER-1"
+                              style={{ ...inputStyle, padding: '3px 6px', fontSize: 9 }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Assigned personnel list */}
+                        {cv.assignedPersonnel.length > 0 && (
+                          <div style={{ marginBottom: 4 }}>
+                            {cv.assignedPersonnel.map(ap => (
+                              <div
+                                key={ap.id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 4,
+                                  padding: '3px 4px',
+                                  marginBottom: 2,
+                                  backgroundColor: 'var(--color-bg-elevated)',
+                                  borderRadius: 'var(--radius)',
+                                  fontFamily: 'var(--font-mono)',
+                                  fontSize: 9,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    padding: '1px 4px',
+                                    borderRadius: 'var(--radius)',
+                                    backgroundColor: 'var(--color-accent)',
+                                    color: '#fff',
+                                    fontSize: 8,
+                                    fontWeight: 700,
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {ap.role.replace('_', '-')}
+                                </span>
+                                <span style={{ flex: 1, color: 'var(--color-text)' }}>
+                                  {ap.personnel.rank ? `${ap.personnel.rank} ` : ''}
+                                  {ap.personnel.lastName}, {ap.personnel.firstName}
+                                </span>
+                                <span style={{ color: 'var(--color-text-muted)', fontSize: 8 }}>
+                                  {ap.personnel.mos || ''}
+                                </span>
+                                <button
+                                  onClick={() => handleRemoveAssignedPersonnel(ap.id, cv.id)}
+                                  style={{
+                                    ...smallBtnStyle,
+                                    width: 18,
+                                    height: 18,
+                                    color: 'var(--color-danger)',
+                                  }}
+                                >
+                                  <X size={10} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Assign personnel button + search */}
+                        {assignTargetVehicleId === cv.id ? (
+                          <div>
+                            {/* Search input */}
+                            <div style={{ position: 'relative', marginBottom: 4 }}>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 4,
+                                  ...inputStyle,
+                                  padding: '3px 6px',
+                                  fontSize: 9,
+                                }}
+                              >
+                                <Search size={10} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                                <input
+                                  value={personnelSearchQuery}
+                                  onChange={e => setPersonnelSearchQuery(e.target.value)}
+                                  placeholder="Search by name, EDIPI..."
+                                  autoFocus
+                                  style={{
+                                    flex: 1,
+                                    border: 'none',
+                                    outline: 'none',
+                                    backgroundColor: 'transparent',
+                                    color: 'var(--color-text)',
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: 9,
+                                  }}
+                                />
+                                <button
+                                  onClick={() => {
+                                    setAssignTargetVehicleId(null);
+                                    setPersonnelSearchQuery('');
+                                    setPersonnelSearchResults([]);
+                                    setShowRoleSelector(null);
+                                  }}
+                                  style={{ ...smallBtnStyle, width: 16, height: 16 }}
+                                >
+                                  <X size={9} />
+                                </button>
+                              </div>
+
+                              {/* Search results dropdown */}
+                              {personnelSearchResults.length > 0 && (
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: 0,
+                                    right: 0,
+                                    zIndex: 10,
+                                    maxHeight: 160,
+                                    overflowY: 'auto',
+                                    backgroundColor: 'var(--color-bg-elevated)',
+                                    border: '1px solid var(--color-border)',
+                                    borderRadius: 'var(--radius)',
+                                    marginTop: 2,
+                                  }}
+                                >
+                                  {personnelSearchResults.map(person => (
+                                    <div key={person.id}>
+                                      <div
+                                        onClick={() => {
+                                          if (showRoleSelector === person.id) {
+                                            setShowRoleSelector(null);
+                                          } else {
+                                            setShowRoleSelector(person.id);
+
+                                          }
+                                        }}
+                                        style={{
+                                          padding: '4px 8px',
+                                          fontFamily: 'var(--font-mono)',
+                                          fontSize: 9,
+                                          color: 'var(--color-text)',
+                                          cursor: 'pointer',
+                                          borderBottom: '1px solid var(--color-border)',
+                                          backgroundColor:
+                                            showRoleSelector === person.id
+                                              ? 'rgba(77,171,247,0.1)'
+                                              : 'transparent',
+                                        }}
+                                        onMouseEnter={e => {
+                                          if (showRoleSelector !== person.id)
+                                            e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                                        }}
+                                        onMouseLeave={e => {
+                                          if (showRoleSelector !== person.id)
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                        }}
+                                      >
+                                        <span style={{ fontWeight: 600 }}>
+                                          {person.rank ? `${person.rank} ` : ''}
+                                          {person.lastName}, {person.firstName}
+                                        </span>
+                                        <span style={{ color: 'var(--color-text-muted)', marginLeft: 6 }}>
+                                          ({person.edipi})
+                                        </span>
+                                        {person.mos && (
+                                          <span style={{ color: 'var(--color-text-muted)', marginLeft: 4 }}>
+                                            — {person.mos}
+                                          </span>
+                                        )}
+                                      </div>
+                                      {/* Role selector inline */}
+                                      {showRoleSelector === person.id && (
+                                        <div
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 4,
+                                            padding: '4px 8px',
+                                            backgroundColor: 'rgba(77,171,247,0.05)',
+                                            borderBottom: '1px solid var(--color-border)',
+                                            flexWrap: 'wrap',
+                                          }}
+                                        >
+                                          <span
+                                            style={{
+                                              fontFamily: 'var(--font-mono)',
+                                              fontSize: 8,
+                                              color: 'var(--color-text-muted)',
+                                              marginRight: 2,
+                                            }}
+                                          >
+                                            ROLE:
+                                          </span>
+                                          {Object.values(ConvoyRole).map(role => (
+                                            <button
+                                              key={role}
+                                              onClick={() => {
+                                                handleAssignPersonnel(person, cv.id, role);
+                                              }}
+                                              style={{
+                                                padding: '2px 6px',
+                                                fontFamily: 'var(--font-mono)',
+                                                fontSize: 8,
+                                                fontWeight: 600,
+                                                border: '1px solid var(--color-border)',
+                                                borderRadius: 'var(--radius)',
+                                                cursor: 'pointer',
+                                                backgroundColor: 'var(--color-bg)',
+                                                color: 'var(--color-text)',
+                                              }}
+                                              onMouseEnter={e => {
+                                                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+                                                e.currentTarget.style.color = '#fff';
+                                              }}
+                                              onMouseLeave={e => {
+                                                e.currentTarget.style.backgroundColor = 'var(--color-bg)';
+                                                e.currentTarget.style.color = 'var(--color-text)';
+                                              }}
+                                            >
+                                              {role.replace('_', '-')}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Loading indicator */}
+                              {personnelSearchLoading && personnelSearchQuery.length >= 2 && (
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: 0,
+                                    right: 0,
+                                    padding: '6px 8px',
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: 9,
+                                    color: 'var(--color-text-muted)',
+                                    backgroundColor: 'var(--color-bg-elevated)',
+                                    border: '1px solid var(--color-border)',
+                                    borderRadius: 'var(--radius)',
+                                    marginTop: 2,
+                                  }}
+                                >
+                                  Searching...
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setAssignTargetVehicleId(cv.id);
+                              setPersonnelSearchQuery('');
+                              setPersonnelSearchResults([]);
+                              setShowRoleSelector(null);
+                            }}
+                            style={{
+                              ...addBtnStyle,
+                              fontSize: 8,
+                              padding: '3px 6px',
+                            }}
+                          >
+                            <UserPlus size={10} /> ASSIGN PERSONNEL
+                          </button>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* ── Unassigned Personnel ─────────────────────────── */}
+                    <div style={{ ...labelStyle, marginTop: 8, marginBottom: 6 }}>
+                      <Shield size={10} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                      UNASSIGNED PERSONNEL ({unassignedPersonnel.length})
+                    </div>
+
+                    {unassignedPersonnel.map(ap => (
+                      <div
+                        key={ap.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          padding: '3px 6px',
+                          marginBottom: 2,
+                          backgroundColor: 'var(--color-bg)',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: 'var(--radius)',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 9,
+                        }}
+                      >
+                        <span
+                          style={{
+                            padding: '1px 4px',
+                            borderRadius: 'var(--radius)',
+                            backgroundColor: 'var(--color-text-muted)',
+                            color: '#fff',
+                            fontSize: 8,
+                            fontWeight: 700,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {ap.role.replace('_', '-')}
+                        </span>
+                        <span style={{ flex: 1, color: 'var(--color-text)' }}>
+                          {ap.personnel.rank ? `${ap.personnel.rank} ` : ''}
+                          {ap.personnel.lastName}, {ap.personnel.firstName}
+                        </span>
+                        <span style={{ color: 'var(--color-text-muted)', fontSize: 8 }}>
+                          {ap.personnel.mos || ''}
+                        </span>
+                        <button
+                          onClick={() => handleRemoveAssignedPersonnel(ap.id, null)}
+                          style={{
+                            ...smallBtnStyle,
+                            width: 18,
+                            height: 18,
+                            color: 'var(--color-danger)',
+                          }}
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Add unassigned personnel */}
+                    {assignTargetVehicleId === '__unassigned__' ? (
+                      <div style={{ position: 'relative', marginTop: 4 }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            ...inputStyle,
+                            padding: '3px 6px',
+                            fontSize: 9,
+                          }}
+                        >
+                          <Search size={10} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                          <input
+                            value={personnelSearchQuery}
+                            onChange={e => setPersonnelSearchQuery(e.target.value)}
+                            placeholder="Search by name, EDIPI..."
+                            autoFocus
+                            style={{
+                              flex: 1,
+                              border: 'none',
+                              outline: 'none',
+                              backgroundColor: 'transparent',
+                              color: 'var(--color-text)',
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: 9,
+                            }}
+                          />
+                          <button
+                            onClick={() => {
+                              setAssignTargetVehicleId(null);
+                              setPersonnelSearchQuery('');
+                              setPersonnelSearchResults([]);
+                              setShowRoleSelector(null);
+                            }}
+                            style={{ ...smallBtnStyle, width: 16, height: 16 }}
+                          >
+                            <X size={9} />
+                          </button>
+                        </div>
+
+                        {/* Search results dropdown */}
+                        {personnelSearchResults.length > 0 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '100%',
+                              left: 0,
+                              right: 0,
+                              zIndex: 10,
+                              maxHeight: 160,
+                              overflowY: 'auto',
+                              backgroundColor: 'var(--color-bg-elevated)',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: 'var(--radius)',
+                              marginTop: 2,
+                            }}
+                          >
+                            {personnelSearchResults.map(person => (
+                              <div key={person.id}>
+                                <div
+                                  onClick={() => {
+                                    if (showRoleSelector === person.id) {
+                                      setShowRoleSelector(null);
+                                    } else {
+                                      setShowRoleSelector(person.id);
+                                    }
+                                  }}
+                                  style={{
+                                    padding: '4px 8px',
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: 9,
+                                    color: 'var(--color-text)',
+                                    cursor: 'pointer',
+                                    borderBottom: '1px solid var(--color-border)',
+                                    backgroundColor:
+                                      showRoleSelector === person.id
+                                        ? 'rgba(77,171,247,0.1)'
+                                        : 'transparent',
+                                  }}
+                                  onMouseEnter={e => {
+                                    if (showRoleSelector !== person.id)
+                                      e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                                  }}
+                                  onMouseLeave={e => {
+                                    if (showRoleSelector !== person.id)
+                                      e.currentTarget.style.backgroundColor = 'transparent';
+                                  }}
+                                >
+                                  <span style={{ fontWeight: 600 }}>
+                                    {person.rank ? `${person.rank} ` : ''}
+                                    {person.lastName}, {person.firstName}
+                                  </span>
+                                  <span style={{ color: 'var(--color-text-muted)', marginLeft: 6 }}>
+                                    ({person.edipi})
+                                  </span>
+                                  {person.mos && (
+                                    <span style={{ color: 'var(--color-text-muted)', marginLeft: 4 }}>
+                                      — {person.mos}
+                                    </span>
+                                  )}
+                                </div>
+                                {/* Role selector inline */}
+                                {showRoleSelector === person.id && (
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 4,
+                                      padding: '4px 8px',
+                                      backgroundColor: 'rgba(77,171,247,0.05)',
+                                      borderBottom: '1px solid var(--color-border)',
+                                      flexWrap: 'wrap',
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontFamily: 'var(--font-mono)',
+                                        fontSize: 8,
+                                        color: 'var(--color-text-muted)',
+                                        marginRight: 2,
+                                      }}
+                                    >
+                                      ROLE:
+                                    </span>
+                                    {Object.values(ConvoyRole).map(role => (
+                                      <button
+                                        key={role}
+                                        onClick={() => {
+                                          handleAssignPersonnel(person, null, role);
+                                        }}
+                                        style={{
+                                          padding: '2px 6px',
+                                          fontFamily: 'var(--font-mono)',
+                                          fontSize: 8,
+                                          fontWeight: 600,
+                                          border: '1px solid var(--color-border)',
+                                          borderRadius: 'var(--radius)',
+                                          cursor: 'pointer',
+                                          backgroundColor:
+                                            role === ConvoyRole.PAX ? 'var(--color-accent)' : 'var(--color-bg)',
+                                          color: role === ConvoyRole.PAX ? '#fff' : 'var(--color-text)',
+                                        }}
+                                        onMouseEnter={e => {
+                                          e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+                                          e.currentTarget.style.color = '#fff';
+                                        }}
+                                        onMouseLeave={e => {
+                                          if (role !== ConvoyRole.PAX) {
+                                            e.currentTarget.style.backgroundColor = 'var(--color-bg)';
+                                            e.currentTarget.style.color = 'var(--color-text)';
+                                          } else {
+                                            e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+                                            e.currentTarget.style.color = '#fff';
+                                          }
+                                        }}
+                                      >
+                                        {role.replace('_', '-')}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Loading indicator */}
+                        {personnelSearchLoading && personnelSearchQuery.length >= 2 && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '100%',
+                              left: 0,
+                              right: 0,
+                              padding: '6px 8px',
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: 9,
+                              color: 'var(--color-text-muted)',
+                              backgroundColor: 'var(--color-bg-elevated)',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: 'var(--radius)',
+                              marginTop: 2,
+                            }}
+                          >
+                            Searching...
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setAssignTargetVehicleId('__unassigned__');
+                          setPersonnelSearchQuery('');
+                          setPersonnelSearchResults([]);
+                          setShowRoleSelector(null);
+                        }}
+                        style={{ ...addBtnStyle, marginTop: 4 }}
+                      >
+                        <UserPlus size={10} /> ADD UNASSIGNED PERSONNEL
                       </button>
-                    ),
-                  )}
-                </div>
-                <button
-                  onClick={() => setPersonnelRoles(prev => [...prev, { role: '', count: 0 }])}
-                  style={addBtnStyle}
-                >
-                  <Plus size={11} /> ADD ROLE
-                </button>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    marginTop: 4,
-                  }}
-                >
-                  <Users size={10} style={{ verticalAlign: 'middle', marginRight: 4 }} />
-                  TOTAL: {personnelRoles.reduce((sum, p) => sum + p.count, 0)} PERSONNEL
-                </div>
+                    )}
+
+                    {/* Total count */}
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 9,
+                        color: 'var(--color-text-muted)',
+                        marginTop: 8,
+                      }}
+                    >
+                      <Users size={10} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                      TOTAL: {totalDetailedPersonnel} PERSONNEL
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

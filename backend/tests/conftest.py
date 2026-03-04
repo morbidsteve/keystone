@@ -11,6 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.core.auth import create_access_token, hash_password
 from app.database import Base, get_db
 from app.main import app
+from app.models.personnel import Personnel, PersonnelStatus
+from app.models.transportation import Movement, MovementStatus
 from app.models.unit import Echelon, Unit
 from app.models.user import Role, User
 
@@ -158,3 +160,38 @@ def operator_token(operator_user: User) -> str:
             "unit_id": operator_user.unit_id,
         }
     )
+
+
+@pytest_asyncio.fixture
+async def test_personnel(db_session: AsyncSession, test_unit: Unit) -> Personnel:
+    """Create a test personnel record."""
+    person = Personnel(
+        edipi="1234567890",
+        first_name="John",
+        last_name="Doe",
+        rank="Sgt",
+        unit_id=test_unit.id,
+        mos="0311",
+        blood_type="O+",
+        status=PersonnelStatus.ACTIVE,
+    )
+    db_session.add(person)
+    await db_session.flush()
+    await db_session.refresh(person)
+    return person
+
+
+@pytest_asyncio.fixture
+async def test_movement(db_session: AsyncSession, test_unit: Unit) -> Movement:
+    """Create a test movement."""
+    movement = Movement(
+        unit_id=test_unit.id,
+        origin="Camp Pendleton",
+        destination="Camp Lejeune",
+        vehicle_count=5,
+        status=MovementStatus.PLANNED,
+    )
+    db_session.add(movement)
+    await db_session.flush()
+    await db_session.refresh(movement)
+    return movement

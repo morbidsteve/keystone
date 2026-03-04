@@ -22,6 +22,11 @@ from app.models import (  # noqa: F401
     SupplyStatusRecord,
     Unit,
     User,
+    Personnel,
+    Weapon,
+    AmmoLoad,
+    ConvoyVehicle,
+    ConvoyPersonnel,
 )
 
 config = context.config

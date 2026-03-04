@@ -16,6 +16,8 @@ from app.api.tak import router as tak_router
 from app.api.settings import router as settings_router
 from app.api.data_sources import router as data_sources_router
 from app.api.map import router as map_router
+from app.api.personnel import router as personnel_router
+from app.api.convoy_manifest import router as convoy_manifest_router
 
 api_router = APIRouter()
 
@@ -39,3 +41,7 @@ api_router.include_router(
     data_sources_router, prefix="/data-sources", tags=["Data Sources"]
 )
 api_router.include_router(map_router, prefix="/map", tags=["Map"])
+api_router.include_router(personnel_router, prefix="/personnel", tags=["Personnel"])
+api_router.include_router(
+    convoy_manifest_router, prefix="/transportation", tags=["Convoy Manifest"]
+)
