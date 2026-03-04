@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { X, Upload, FileUp, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useMapStore } from '@/stores/mapStore';
 import { uploadRouteFile } from '@/api/map';
@@ -29,6 +29,13 @@ export default function RouteImportModal() {
     reset();
     closeRouteImport();
   }, [reset, closeRouteImport]);
+
+  useEffect(() => {
+    if (!routeImportOpen) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [routeImportOpen, handleClose]);
 
   const handleFile = useCallback((f: File) => {
     setError('');

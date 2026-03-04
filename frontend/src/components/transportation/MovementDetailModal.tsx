@@ -175,6 +175,13 @@ const TILE_URL =
   '/tiles/osm/{z}/{x}/{y}.png';
 
 export default function MovementDetailModal({ movement, onClose }: MovementDetailModalProps) {
+  useEffect(() => {
+    if (!movement) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [movement, onClose]);
+
   if (!movement) return null;
 
   const mov = movement;
