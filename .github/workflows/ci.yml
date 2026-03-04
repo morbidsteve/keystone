@@ -454,13 +454,19 @@ jobs:
           cmd_options: '-a -j'
           allow_issue_writing: false
           artifact_name: zap_api_scan
-      - uses: zaproxy/action-full-scan@v0.13.0
-        continue-on-error: true  # ZAP full-scan Docker networking unreliable in CI
+      - name: ZAP full scan (host network)
+        run: |
+          docker run --rm --network host \
+            -v $(pwd)/reports:/zap/wrk:rw \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-full-scan.py -t http://localhost:8080 -a \
+            -r zap_full_scan.html -J zap_full_scan.json || true
+      - if: always()
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
-          target: 'http://localhost:8080'
-          cmd_options: '-a'
-          allow_issue_writing: false
-          artifact_name: zap_full_scan
+          name: zap_full_scan
+          path: reports/zap_full_scan.*
       - if: always()
         env:
           BACKEND_IMAGE: ${{ needs.build-backend.outputs.image-ref }}
