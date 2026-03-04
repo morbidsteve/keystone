@@ -1,11 +1,15 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Wrench, Package, Clock, User } from 'lucide-react';
+import { ChevronDown, ChevronRight, Wrench, Package, Clock, User, ExternalLink, Plus } from 'lucide-react';
 import type { MaintenanceWorkOrder } from '@/lib/types';
 import { WorkOrderStatus } from '@/lib/types';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
+import WorkOrderDetailModal from './WorkOrderDetailModal';
+import CreateWorkOrderModal from './CreateWorkOrderModal';
 
 interface MaintenanceHistoryTabProps {
   workOrders: MaintenanceWorkOrder[];
+  equipmentId?: string;
+  onRefresh?: () => void;
 }
 
 function getPriorityLabel(priority: number): string {
@@ -35,7 +39,7 @@ function getWOStatusColor(status: WorkOrderStatus): string {
   }
 }
 
-function WorkOrderRow({ wo }: { wo: MaintenanceWorkOrder }) {
+function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewDetails: (wo: MaintenanceWorkOrder) => void }) {
   const [expanded, setExpanded] = useState(false);
   const totalParts = wo.parts.length;
   const totalLabor = wo.laborEntries.reduce((sum, l) => sum + l.hours, 0);
@@ -313,7 +317,7 @@ function WorkOrderRow({ wo }: { wo: MaintenanceWorkOrder }) {
                             borderBottom: '1px solid var(--color-border)',
                           }}
                         >
-                          {part.unitCost ? `$${(part.unitCost * part.quantity).toLocaleString()}` : '—'}
+                          {part.unitCost ? `$${(part.unitCost * part.quantity).toLocaleString()}` : '\u2014'}
                         </td>
                       </tr>
                     ))}
@@ -421,7 +425,7 @@ function WorkOrderRow({ wo }: { wo: MaintenanceWorkOrder }) {
                             borderBottom: '1px solid var(--color-border)',
                           }}
                         >
-                          {labor.notes || '—'}
+                          {labor.notes || '\u2014'}
                         </td>
                       </tr>
                     ))}
@@ -430,14 +434,47 @@ function WorkOrderRow({ wo }: { wo: MaintenanceWorkOrder }) {
               </div>
             </div>
           )}
+
+          {/* View Full Details Button */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDetails(wo);
+              }}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 9,
+                fontWeight: 600,
+                letterSpacing: '1px',
+                padding: '6px 16px',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius)',
+                backgroundColor: 'var(--color-bg-hover)',
+                color: 'var(--color-text-bright)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                transition: 'background-color var(--transition)',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-surface)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')}
+            >
+              <ExternalLink size={10} />
+              VIEW FULL DETAILS
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-export default function MaintenanceHistoryTab({ workOrders }: MaintenanceHistoryTabProps) {
+export default function MaintenanceHistoryTab({ workOrders, equipmentId, onRefresh }: MaintenanceHistoryTabProps) {
   const [sortBy, setSortBy] = useState<'date' | 'priority' | 'status'>('date');
+  const [modalWO, setModalWO] = useState<MaintenanceWorkOrder | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   const sorted = [...workOrders].sort((a, b) => {
     switch (sortBy) {
@@ -461,6 +498,15 @@ export default function MaintenanceHistoryTab({ workOrders }: MaintenanceHistory
     0,
   );
 
+  const handleUpdate = () => {
+    setModalWO(null);
+    onRefresh?.();
+  };
+
+  const handleCreate = () => {
+    onRefresh?.();
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {/* Summary Bar */}
@@ -473,6 +519,7 @@ export default function MaintenanceHistoryTab({ workOrders }: MaintenanceHistory
           border: '1px solid var(--color-border)',
           borderRadius: 'var(--radius)',
           alignItems: 'center',
+          flexWrap: 'wrap',
         }}
       >
         <div>
@@ -545,8 +592,31 @@ export default function MaintenanceHistoryTab({ workOrders }: MaintenanceHistory
           </div>
         </div>
 
-        {/* Sort Controls */}
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+        {/* NEW WO Button + Sort Controls */}
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
+          <button
+            onClick={() => setShowCreate(true)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              fontFamily: 'var(--font-mono)',
+              fontSize: 9,
+              fontWeight: 600,
+              letterSpacing: '1px',
+              padding: '4px 10px',
+              border: '1px solid var(--color-accent)',
+              borderRadius: 'var(--radius)',
+              backgroundColor: 'transparent',
+              color: 'var(--color-accent)',
+              cursor: 'pointer',
+              textTransform: 'uppercase',
+            }}
+          >
+            <Plus size={10} />
+            NEW WO
+          </button>
+          <div style={{ width: 1, height: 20, backgroundColor: 'var(--color-border)', margin: '0 4px' }} />
           {(['date', 'priority', 'status'] as const).map((s) => (
             <button
               key={s}
@@ -586,8 +656,23 @@ export default function MaintenanceHistoryTab({ workOrders }: MaintenanceHistory
           No maintenance work orders found for this equipment.
         </div>
       ) : (
-        sorted.map((wo) => <WorkOrderRow key={wo.id} wo={wo} />)
+        sorted.map((wo) => (
+          <WorkOrderRow key={wo.id} wo={wo} onViewDetails={setModalWO} />
+        ))
       )}
+
+      <WorkOrderDetailModal
+        workOrder={modalWO}
+        onClose={() => setModalWO(null)}
+        onUpdate={handleUpdate}
+      />
+
+      <CreateWorkOrderModal
+        isOpen={showCreate}
+        onClose={() => setShowCreate(false)}
+        onCreate={handleCreate}
+        defaultEquipmentId={equipmentId}
+      />
     </div>
   );
 }
