@@ -9,6 +9,7 @@ services:
   # ---------------------------------------------------------------------------
   db:
     image: postgis/postgis:15-3.4
+    platform: linux/amd64
     environment:
       POSTGRES_DB: keystone
       POSTGRES_USER: keystone
