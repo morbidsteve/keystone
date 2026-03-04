@@ -63,6 +63,7 @@ async def dispatch_payload(
         if payload_type == "mirc":
             try:
                 from simulator.feeders.mirc import post_mirc_message
+
                 await post_mirc_message(client, payload)
             except ImportError:
                 logger.debug("mIRC feeder not available — payload logged only")
@@ -71,6 +72,7 @@ async def dispatch_payload(
         elif payload_type == "excel":
             try:
                 from simulator.feeders.excel import post_excel_report
+
                 await post_excel_report(client, payload)
             except ImportError:
                 logger.debug("Excel feeder not available — payload logged only")
@@ -79,6 +81,7 @@ async def dispatch_payload(
         elif payload_type == "tak":
             try:
                 from simulator.feeders.tak import post_tak_position
+
                 await post_tak_position(client, payload)
             except ImportError:
                 logger.debug("TAK feeder not available — payload logged only")
@@ -87,6 +90,7 @@ async def dispatch_payload(
         elif payload_type == "manual":
             try:
                 from simulator.feeders.manual import post_manual_entry
+
                 await post_manual_entry(client, payload)
             except ImportError:
                 logger.debug("Manual feeder not available — payload logged only")
@@ -112,6 +116,7 @@ async def run_periodic_generators(
     """
     try:
         from simulator.generators.mirc_gen import maybe_generate_mirc_batch
+
         payloads = await maybe_generate_mirc_batch(state, clock)
         for p in payloads:
             await dispatch_payload(client, p, stats)
@@ -122,6 +127,7 @@ async def run_periodic_generators(
 
     try:
         from simulator.generators.tak_gen import maybe_generate_tak_positions
+
         payloads = await maybe_generate_tak_positions(state, clock)
         for p in payloads:
             await dispatch_payload(client, p, stats)
@@ -132,6 +138,7 @@ async def run_periodic_generators(
 
     try:
         from simulator.generators.excel_gen import maybe_generate_excel_report
+
         payloads = await maybe_generate_excel_report(state, clock)
         for p in payloads:
             await dispatch_payload(client, p, stats)
@@ -166,6 +173,7 @@ async def run_simulation(config: SimulatorConfig) -> None:
     _client_ctx = None
     try:
         from simulator.feeders.base import SimulatorClient
+
         _client_ctx = SimulatorClient(config.base_url, api_delay_ms=config.api_delay_ms)
         client = await _client_ctx.__aenter__()
         await client.authenticate(config.username, config.password)

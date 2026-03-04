@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { MapPin } from 'lucide-react';
 import { MovementStatus, type Movement } from '@/lib/types';
 

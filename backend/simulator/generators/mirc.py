@@ -20,14 +20,32 @@ if TYPE_CHECKING:
 
 # Month abbreviations for DTG formatting
 _MONTH_ABBR = [
-    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
 ]
 
 # Supply class to roman-numeral string
 _CLASS_ROMAN = {
-    "I": "I", "II": "II", "III": "III", "IV": "IV", "V": "V",
-    "VI": "VI", "VII": "VII", "VIII": "VIII", "IX": "IX", "X": "X",
+    "I": "I",
+    "II": "II",
+    "III": "III",
+    "IV": "IV",
+    "V": "V",
+    "VI": "VI",
+    "VII": "VII",
+    "VIII": "VIII",
+    "IX": "IX",
+    "X": "X",
 }
 
 # Unit-of-measure tags used in supply requests (for the regex optional group)
@@ -80,9 +98,16 @@ CHATTER_TEMPLATES: list[str] = [
 
 # Convoy locations used in movement messages
 _CONVOY_LOCATIONS = [
-    "CSS AREA", "CAMP WILSON", "FOB BULLRUSH", "CAMP PENDLETON",
-    "LZ ROBIN", "MSR BRONZE CP1", "SUPPLY POINT ALPHA",
-    "MAINSIDE", "COMBAT TOWN", "RANGE 400",
+    "CSS AREA",
+    "CAMP WILSON",
+    "FOB BULLRUSH",
+    "CAMP PENDLETON",
+    "LZ ROBIN",
+    "MSR BRONZE CP1",
+    "SUPPLY POINT ALPHA",
+    "MAINSIDE",
+    "COMBAT TOWN",
+    "RANGE 400",
 ]
 
 # ---------------------------------------------------------------------------
@@ -195,7 +220,9 @@ def generate_supply_request(unit: UnitState, timestamp: datetime) -> str:
     class_roman = _CLASS_ROMAN.get(item.supply_class, item.supply_class)
     uom = _UOM_TAGS.get(item.name.upper(), "EACH")
 
-    text = f"REQUEST CL {class_roman} {item.name} {shortfall} {uom} FOR {unit.unit_name}"
+    text = (
+        f"REQUEST CL {class_roman} {item.name} {shortfall} {uom} FOR {unit.unit_name}"
+    )
     return _line(timestamp, sender, text)
 
 
@@ -246,7 +273,9 @@ def generate_equipment_status(unit: UnitState, timestamp: datetime) -> str:
     nmcs = cat.nmcs
     pct = int(round(cat.readiness_pct))
 
-    text = f"{cat.nomenclature} {cat.tamcn} {mc}/{total} MC {nmcm} NMCM {nmcs} NMCS {pct}%"
+    text = (
+        f"{cat.nomenclature} {cat.tamcn} {mc}/{total} MC {nmcm} NMCM {nmcs} NMCS {pct}%"
+    )
     return _line(timestamp, sender, text)
 
 

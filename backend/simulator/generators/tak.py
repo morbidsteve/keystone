@@ -62,7 +62,9 @@ def _iso(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _jitter_position(base: tuple[float, float], km: float = _JITTER_KM) -> tuple[float, float]:
+def _jitter_position(
+    base: tuple[float, float], km: float = _JITTER_KM
+) -> tuple[float, float]:
     """Apply random jitter to a base (lat, lon) position within *km* radius."""
     dlat = random.uniform(-km, km) * _DEG_PER_KM_LAT
     dlon = random.uniform(-km, km) * _DEG_PER_KM_LON
@@ -286,8 +288,7 @@ def generate_convoy_cot(
 
     _add_remarks(
         detail,
-        f"SIM convoy {cid}: {origin} -> {dest}, "
-        f"{veh_count} vehicles, cargo: {cargo}",
+        f"SIM convoy {cid}: {origin} -> {dest}, {veh_count} vehicles, cargo: {cargo}",
     )
 
     return _to_xml_string(event)

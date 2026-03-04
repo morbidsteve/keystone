@@ -55,9 +55,7 @@ async def feed_mirc(
             continue
 
         clean_channel = channel.replace("#", "")
-        filename = (
-            f"SIM_{clean_channel}_{window_end.strftime('%Y%m%d_%H%M')}.log"
-        )
+        filename = f"SIM_{clean_channel}_{window_end.strftime('%Y%m%d_%H%M')}.log"
 
         try:
             await client.post_mirc_log(log_content, channel, filename)
