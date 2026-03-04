@@ -163,6 +163,13 @@ export default function RouteDrawModal() {
     queryClient,
   ]);
 
+  useEffect(() => {
+    if (!routeDrawing.active) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') clearRouteDrawing(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [routeDrawing.active, clearRouteDrawing]);
+
   if (!routeDrawing.active) return null;
 
   // When adding a waypoint, collapse to a compact floating bar so the map is clickable

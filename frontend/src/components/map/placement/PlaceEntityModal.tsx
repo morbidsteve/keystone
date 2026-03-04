@@ -157,6 +157,13 @@ export default function PlaceEntityModal() {
     queryClient,
   ]);
 
+  useEffect(() => {
+    if (!placement.active) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') clearPlacement(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [placement.active, clearPlacement]);
+
   if (!placement.active) return null;
 
   const labelStyle: React.CSSProperties = {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Package, Clock, Wrench, User, MapPin, Calendar, Tag, Pencil, Trash2, Plus, Check, AlertTriangle, RotateCcw } from 'lucide-react';
 import type { MaintenanceWorkOrder, MaintenancePart, MaintenanceLabor, WorkOrderCategory } from '@/lib/types';
 import { WorkOrderStatus, WorkOrderCategory as WOCat, PartSource, PartStatus, LaborType } from '@/lib/types';
@@ -172,6 +172,14 @@ const inlineTdSelect: React.CSSProperties = {
 };
 
 export default function WorkOrderDetailModal({ workOrder, onClose, onUpdate }: WorkOrderDetailModalProps) {
+  // ----- ESC to close -----
+  useEffect(() => {
+    if (!workOrder) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [workOrder, onClose]);
+
   // ----- Local mutable WO state (so we can reflect mutations immediately) -----
   const [wo, setWo] = useState<MaintenanceWorkOrder | null>(null);
   const [statusLoading, setStatusLoading] = useState(false);
