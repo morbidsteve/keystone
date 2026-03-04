@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { useMapEvents } from 'react-leaflet';
-import { MapPin, Copy, Ruler, Search, Plus, Plane } from 'lucide-react';
+import { MapPin, Copy, Ruler, Search, Plus, Plane, Route as RouteIcon, Upload } from 'lucide-react';
 import { useMapStore } from '@/stores/mapStore';
 import type { PlacementType } from '@/stores/mapStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -26,7 +26,11 @@ function isSeparator(entry: MenuEntry): entry is SeparatorItem {
   return 'separator' in entry && entry.separator === true;
 }
 
-function MapContextMenuEvents() {
+/**
+ * Leaflet map event listener for right-click context menu.
+ * Must be rendered INSIDE MapContainer (needs useMapEvents).
+ */
+export function MapContextMenuEvents() {
   const showContextMenu = useMapStore((s) => s.showContextMenu);
   const hideContextMenu = useMapStore((s) => s.hideContextMenu);
   const measure = useMapStore((s) => s.measure);
@@ -47,11 +51,18 @@ function MapContextMenuEvents() {
   return null;
 }
 
+/**
+ * Context menu UI overlay.
+ * Rendered OUTSIDE MapContainer so clicks are never intercepted by Leaflet.
+ */
 export default function MapContextMenu() {
   const contextMenu = useMapStore((s) => s.contextMenu);
   const hideContextMenu = useMapStore((s) => s.hideContextMenu);
   const startMeasure = useMapStore((s) => s.startMeasure);
   const startPlacement = useMapStore((s) => s.startPlacement);
+  const startRouteDrawing = useMapStore((s) => s.startRouteDrawing);
+  const openRouteImport = useMapStore((s) => s.openRouteImport);
+  const showNearby = useMapStore((s) => s.showNearby);
   const user = useAuthStore((s) => s.user);
 
   const userRole = (user?.role as Role) ?? Role.VIEWER;
@@ -92,31 +103,20 @@ export default function MapContextMenu() {
   }, [contextMenu.lat, contextMenu.lon, startMeasure]);
 
   const handleWhatsNearby = useCallback(async () => {
+    const queryLat = contextMenu.lat;
+    const queryLon = contextMenu.lon;
     hideContextMenu();
     try {
       const result = await mapApi.getNearby({
-        lat: contextMenu.lat,
-        lon: contextMenu.lon,
+        lat: queryLat,
+        lon: queryLon,
         radius_km: 5,
       });
-      const parts: string[] = [];
-      if (result.units.length > 0) {
-        parts.push(`Units (${result.units.length}): ${result.units.map((u) => u.abbreviation).join(', ')}`);
-      }
-      if (result.supplyPoints.length > 0) {
-        parts.push(`Supply Points (${result.supplyPoints.length}): ${result.supplyPoints.map((sp) => sp.name).join(', ')}`);
-      }
-      if (result.alerts.length > 0) {
-        parts.push(`Alerts (${result.alerts.length}): ${result.alerts.map((a) => a.message).join('; ')}`);
-      }
-      if (parts.length === 0) {
-        parts.push('No entities found within 5km.');
-      }
-      alert(`Nearby (5km):\n\n${parts.join('\n\n')}`);
+      showNearby(queryLat, queryLon, result);
     } catch {
-      alert('Failed to query nearby entities.');
+      // Silently fail — user can retry
     }
-  }, [contextMenu.lat, contextMenu.lon, hideContextMenu]);
+  }, [contextMenu.lat, contextMenu.lon, hideContextMenu, showNearby]);
 
   const handlePlacement = useCallback(
     (type: PlacementType) => {
@@ -125,9 +125,7 @@ export default function MapContextMenu() {
     [contextMenu.lat, contextMenu.lon, startPlacement],
   );
 
-  if (!contextMenu.visible) {
-    return <MapContextMenuEvents />;
-  }
+  if (!contextMenu.visible) return null;
 
   let mgrsStr = '';
   try {
@@ -162,6 +160,18 @@ export default function MapContextMenu() {
       label: 'Add LZ / FARP Here',
       icon: <Plane size={14} />,
       onClick: () => handlePlacement('lz_farp'),
+      roles: placementRoles,
+    },
+    {
+      label: 'Draw Route Starting Here',
+      icon: <RouteIcon size={14} />,
+      onClick: () => startRouteDrawing(contextMenu.lat, contextMenu.lon),
+      roles: placementRoles,
+    },
+    {
+      label: 'Import Routes',
+      icon: <Upload size={14} />,
+      onClick: () => openRouteImport(),
       roles: placementRoles,
     },
     { separator: true },
@@ -202,100 +212,95 @@ export default function MapContextMenu() {
   }
 
   return (
-    <>
-      <MapContextMenuEvents />
+    <div
+      style={{
+        position: 'absolute',
+        left: contextMenu.x,
+        top: contextMenu.y,
+        zIndex: 2000,
+        backgroundColor: 'rgba(17, 17, 17, 0.95)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: 6,
+        fontFamily: "'JetBrains Mono', monospace",
+        minWidth: 220,
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+        overflow: 'hidden',
+      }}
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      {/* Coordinate header */}
       <div
         style={{
-          position: 'absolute',
-          left: contextMenu.x,
-          top: contextMenu.y,
-          zIndex: 2000,
-          backgroundColor: 'rgba(17, 17, 17, 0.95)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 6,
-          fontFamily: "'JetBrains Mono', monospace",
-          minWidth: 220,
-          backdropFilter: 'blur(12px)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
-          overflow: 'hidden',
+          padding: '8px 12px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          fontSize: 10,
+          color: '#94a3b8',
+          lineHeight: 1.6,
         }}
-        onContextMenu={(e) => e.preventDefault()}
       >
-        {/* Coordinate header */}
-        <div
-          style={{
-            padding: '8px 12px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            fontSize: 10,
-            color: '#94a3b8',
-            lineHeight: 1.6,
-          }}
-        >
-          <div style={{ color: '#e2e8f0', fontWeight: 600 }}>
-            {formatCoords(contextMenu.lat, contextMenu.lon)}
+        <div style={{ color: '#e2e8f0', fontWeight: 600 }}>
+          {formatCoords(contextMenu.lat, contextMenu.lon)}
+        </div>
+        {mgrsStr && (
+          <div style={{ color: '#60a5fa', fontSize: 9, letterSpacing: '0.5px' }}>
+            {mgrsStr}
           </div>
-          {mgrsStr && (
-            <div style={{ color: '#60a5fa', fontSize: 9, letterSpacing: '0.5px' }}>
-              {mgrsStr}
-            </div>
-          )}
-        </div>
-
-        {/* Menu items */}
-        <div style={{ padding: '4px 0' }}>
-          {cleanEntries.map((entry, idx) => {
-            if (isSeparator(entry)) {
-              return (
-                <div
-                  key={`sep-${idx}`}
-                  style={{
-                    height: 1,
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    margin: '4px 8px',
-                  }}
-                />
-              );
-            }
-            return (
-              <button
-                key={entry.label}
-                onClick={() => {
-                  entry.onClick();
-                  if (entry.label !== 'Measure Distance') {
-                    // Measure distance hides via startMeasure already
-                  }
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  width: '100%',
-                  padding: '7px 12px',
-                  border: 'none',
-                  background: 'transparent',
-                  color: '#e2e8f0',
-                  fontSize: 11,
-                  fontFamily: "'JetBrains Mono', monospace",
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  transition: 'background-color 0.1s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <span style={{ color: '#60a5fa', display: 'flex', alignItems: 'center' }}>
-                  {entry.icon}
-                </span>
-                <span>{entry.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        )}
       </div>
-    </>
+
+      {/* Menu items */}
+      <div style={{ padding: '4px 0' }}>
+        {cleanEntries.map((entry, idx) => {
+          if (isSeparator(entry)) {
+            return (
+              <div
+                key={`sep-${idx}`}
+                style={{
+                  height: 1,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  margin: '4px 8px',
+                }}
+              />
+            );
+          }
+          return (
+            <button
+              key={entry.label}
+              onClick={() => {
+                entry.onClick();
+                hideContextMenu();
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                width: '100%',
+                padding: '7px 12px',
+                border: 'none',
+                background: 'transparent',
+                color: '#e2e8f0',
+                fontSize: 11,
+                fontFamily: "'JetBrains Mono', monospace",
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'background-color 0.1s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              <span style={{ color: '#60a5fa', display: 'flex', alignItems: 'center' }}>
+                {entry.icon}
+              </span>
+              <span>{entry.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

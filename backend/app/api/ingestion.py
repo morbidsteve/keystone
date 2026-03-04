@@ -1,5 +1,7 @@
-"""Data ingestion endpoints for mIRC logs and Excel files."""
+"""Data ingestion endpoints for mIRC logs, Excel files, and route files."""
 
+import logging
+import zipfile
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
@@ -8,15 +10,28 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.exceptions import BadRequestError, NotFoundError
+from app.core.permissions import require_role
 from app.database import get_db
+from app.ingestion.route_parser import (
+    parse_geojson,
+    parse_gpx,
+    parse_kml,
+    parse_kmz,
+    parse_route_csv,
+)
+from app.models.location import Route, RouteStatus, RouteType
 from app.models.raw_data import ParseStatus, RawData, SourceType
-from app.models.user import User
+from app.models.user import Role, User
+from app.utils.coordinates import latlon_to_mgrs
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 # File size limits
 _MAX_MIRC_SIZE = 10 * 1024 * 1024  # 10 MB
 _MAX_EXCEL_SIZE = 50 * 1024 * 1024  # 50 MB
+_MAX_ROUTE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 
 @router.post("/mirc")
@@ -210,4 +225,150 @@ async def review_record(
         "parse_status": record.parse_status.value,
         "reviewed_by": current_user.id,
         "message": "Record approved" if approved else "Record rejected",
+    }
+
+
+# Map file extensions to parser functions
+_ROUTE_PARSERS = {
+    ".geojson": "geojson",
+    ".json": "geojson",
+    ".kml": "kml",
+    ".kmz": "kmz",
+    ".gpx": "gpx",
+    ".csv": "csv",
+}
+
+_VALID_ROUTE_TYPES = {t.value for t in RouteType}
+
+
+@router.post("/routes")
+async def upload_route_file(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(
+        require_role([Role.ADMIN, Role.S3, Role.COMMANDER])
+    ),
+):
+    """Upload a route file (GeoJSON, KML, KMZ, GPX, CSV) for route creation.
+
+    Requires ADMIN, S3, or COMMANDER role.
+    """
+    if not file.filename:
+        raise BadRequestError("No file provided")
+
+    # Determine format by file extension
+    filename_lower = file.filename.lower()
+    matched_format = None
+    for ext, fmt in _ROUTE_PARSERS.items():
+        if filename_lower.endswith(ext):
+            matched_format = fmt
+            break
+
+    if matched_format is None:
+        valid_exts = ", ".join(_ROUTE_PARSERS.keys())
+        raise BadRequestError(
+            f"Unsupported file format. Accepted extensions: {valid_exts}"
+        )
+
+    # Read with size limit
+    content = await file.read(_MAX_ROUTE_SIZE + 1)
+    if len(content) > _MAX_ROUTE_SIZE:
+        raise BadRequestError(
+            f"Route file exceeds maximum size of "
+            f"{_MAX_ROUTE_SIZE // (1024 * 1024)} MB."
+        )
+
+    # Create RawData tracking record
+    raw = RawData(
+        source_type=SourceType.ROUTE_FILE,
+        original_content=f"[route_file:{len(content)} bytes]",
+        file_name=file.filename,
+        parse_status=ParseStatus.PENDING,
+        confidence_score=0.0,
+    )
+    db.add(raw)
+    await db.flush()
+    await db.refresh(raw)
+
+    # Parse the file based on format
+    try:
+        if matched_format == "geojson":
+            parsed_routes = parse_geojson(content.decode("utf-8", errors="replace"))
+        elif matched_format == "kml":
+            parsed_routes = parse_kml(content)
+        elif matched_format == "kmz":
+            parsed_routes = parse_kmz(content)
+        elif matched_format == "gpx":
+            parsed_routes = parse_gpx(content)
+        elif matched_format == "csv":
+            parsed_routes = parse_route_csv(content.decode("utf-8", errors="replace"))
+        else:
+            raise BadRequestError(f"Unsupported format: {matched_format}")
+    except (ValueError, zipfile.BadZipFile) as e:
+        raw.parse_status = ParseStatus.FAILED
+        await db.flush()
+        raise BadRequestError(f"Failed to parse route file: {e}")
+    except Exception:
+        raw.parse_status = ParseStatus.FAILED
+        await db.flush()
+        logger.exception("Unexpected error parsing route file %s", file.filename)
+        raise BadRequestError("Failed to parse route file: internal error")
+
+    if not parsed_routes:
+        raw.parse_status = ParseStatus.FAILED
+        await db.flush()
+        raise BadRequestError("No routes found in uploaded file")
+
+    # Create Route records
+    created_ids: list[int] = []
+    for route_data in parsed_routes:
+        # Determine route type from parsed data or default to SUPPLY_ROUTE
+        route_type_str = route_data.get("route_type", "SUPPLY_ROUTE")
+        if route_type_str not in _VALID_ROUTE_TYPES:
+            route_type_str = "SUPPLY_ROUTE"
+
+        # Normalize waypoints: add MGRS to each
+        waypoints = []
+        for wp in route_data.get("waypoints", []):
+            lat = wp.get("lat")
+            lon = wp.get("lon")
+            if lat is None or lon is None:
+                continue
+            normalized_wp = {"lat": float(lat), "lon": float(lon)}
+            try:
+                mgrs_str = latlon_to_mgrs(float(lat), float(lon))
+                normalized_wp["mgrs"] = mgrs_str
+            except Exception:
+                pass
+            if wp.get("label"):
+                normalized_wp["label"] = wp["label"]
+            waypoints.append(normalized_wp)
+
+        if not waypoints:
+            continue
+
+        route = Route(
+            name=route_data.get("name", "Unnamed Route"),
+            route_type=RouteType(route_type_str),
+            status=RouteStatus.OPEN,
+            waypoints=waypoints,
+            description=route_data.get("description"),
+            created_by_id=current_user.id,
+        )
+        db.add(route)
+        await db.flush()
+        await db.refresh(route)
+        created_ids.append(route.id)
+
+    # Update raw data status
+    raw.parse_status = ParseStatus.PARSED
+    raw.confidence_score = 1.0
+    await db.flush()
+
+    return {
+        "raw_data_id": raw.id,
+        "file_name": file.filename,
+        "routes_created": len(created_ids),
+        "route_ids": created_ids,
+        "message": f"Successfully created {len(created_ids)} route(s) from {file.filename}",
     }

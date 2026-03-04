@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.auth import get_current_user
-from app.core.exceptions import BadRequestError, ConflictError, NotFoundError
+from app.core.exceptions import ConflictError, NotFoundError
 from app.core.permissions import get_accessible_units, require_role
 from app.database import get_db
 from app.models.personnel import AmmoLoad, Personnel, PersonnelStatus, Weapon

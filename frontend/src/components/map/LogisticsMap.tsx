@@ -11,10 +11,15 @@ import ConvoyLayer from './layers/ConvoyLayer';
 import SupplyPointLayer from './layers/SupplyPointLayer';
 import RouteLayer from './layers/RouteLayer';
 import AlertLayer from './layers/AlertLayer';
-import MapContextMenu from './MapContextMenu';
+import MapContextMenu, { MapContextMenuEvents } from './MapContextMenu';
+import MapSearchBar from './MapSearchBar';
 import CursorCoordinateDisplay from './CursorCoordinateDisplay';
 import MeasurementOverlay from './MeasurementOverlay';
 import PlaceEntityModal from './placement/PlaceEntityModal';
+import RouteDrawLayer from './placement/RouteDrawLayer';
+import RouteDrawModal from './placement/RouteDrawModal';
+import RouteImportModal from './RouteImportModal';
+import NearbyModal from './NearbyModal';
 
 interface LayerState {
   units: boolean;
@@ -34,26 +39,25 @@ interface LogisticsMapProps {
 const CAMP_PENDLETON_CENTER: [number, number] = [33.3152, -117.3125];
 const DEFAULT_ZOOM = 11;
 
-// DEPLOYMENT NOTE: These tile URLs are DEVELOPMENT DEFAULTS pointing to public third-party servers.
-// For classified or air-gapped deployments, these MUST be replaced with on-premise tile servers.
-// Set the following environment variables to override:
+// Tile URLs route through the nginx proxy for air-gapped / classified deployments.
+// Override with environment variables if needed:
 //   VITE_TILE_SERVER_URL      — OpenStreetMap-style base map tiles
 //   VITE_TILE_SERVER_SAT_URL  — Satellite imagery tiles
 //   VITE_TILE_SERVER_TOPO_URL — Topographic map tiles
 const TILE_URLS: Record<string, string> = {
-  osm: import.meta.env.VITE_TILE_SERVER_URL || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  osm: import.meta.env.VITE_TILE_SERVER_URL || '/tiles/osm/{z}/{x}/{y}.png',
   satellite:
     import.meta.env.VITE_TILE_SERVER_SAT_URL ||
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    '/tiles/satellite/{z}/{y}/{x}',
   topo:
     import.meta.env.VITE_TILE_SERVER_TOPO_URL ||
-    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    '/tiles/topo/{z}/{x}/{y}.png',
 };
 
 const TILE_ATTRIBUTIONS: Record<string, string> = {
-  osm: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  satellite: '&copy; <a href="https://www.esri.com/">Esri</a>',
-  topo: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',
+  osm: '&copy; OpenStreetMap contributors',
+  satellite: '&copy; Esri',
+  topo: '&copy; OpenTopoMap',
 };
 
 export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProps) {
@@ -121,10 +125,14 @@ export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProp
 
           {layers.alerts && <AlertLayer alerts={data.alerts} />}
 
-          {/* Interactive map overlays (inside MapContainer for useMapEvents) */}
-          <MapContextMenu />
+          {/* Location search bar (inside MapContainer for useMap access) */}
+          <MapSearchBar />
+
+          {/* Interactive map event listeners (inside MapContainer for useMapEvents) */}
+          <MapContextMenuEvents />
           <CursorCoordinateDisplay />
           <MeasurementOverlay />
+          <RouteDrawLayer />
         </MapContainer>
 
         {/* Controls overlay */}
@@ -141,11 +149,23 @@ export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProp
         <MapLegend layers={layers} />
       </div>
 
+      {/* Context menu (outside MapContainer so clicks aren't intercepted by Leaflet) */}
+      <MapContextMenu />
+
       {/* Detail slide-out panel (outside MapContainer) */}
       <DetailPanel />
 
       {/* Placement modal (outside MapContainer) */}
       <PlaceEntityModal />
+
+      {/* Route drawing modal (outside MapContainer) */}
+      <RouteDrawModal />
+
+      {/* Route import modal (outside MapContainer) */}
+      <RouteImportModal />
+
+      {/* Nearby results modal */}
+      <NearbyModal />
 
       {/* Alert pulse animation + popup styles */}
       <style>{`

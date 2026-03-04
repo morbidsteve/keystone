@@ -22,6 +22,7 @@ class SourceType(str, enum.Enum):
     EXCEL = "EXCEL"
     GCSS_MC = "GCSS_MC"
     MANUAL = "MANUAL"
+    ROUTE_FILE = "ROUTE_FILE"
 
 
 class ParseStatus(str, enum.Enum):

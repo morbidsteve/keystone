@@ -41,7 +41,7 @@ const DEFAULT_ZOOM = 11;
 
 const TILE_URL =
   import.meta.env.VITE_TILE_SERVER_URL ||
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  '/tiles/osm/{z}/{x}/{y}.png';
 
 const MAP_TO_SUPPLY_UNIT: Record<string, string> = {
   '1-1': '4',

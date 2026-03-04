@@ -25,7 +25,7 @@ const DEFAULT_ZOOM = 11;
 
 const TILE_URL =
   import.meta.env.VITE_TILE_SERVER_URL ||
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  '/tiles/osm/{z}/{x}/{y}.png';
 
 const STATUS_COLORS: Record<string, string> = {
   [MovementStatus.EN_ROUTE]: '#4dabf7',

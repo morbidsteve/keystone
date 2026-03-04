@@ -809,6 +809,26 @@ async def create_route(
     )
 
 
+@router.delete("/routes/{route_id}", status_code=status.HTTP_200_OK)
+async def delete_route(
+    route_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role([Role.ADMIN])),
+):
+    """Soft-delete a route by setting status to CLOSED. Admin only."""
+    result = await db.execute(select(Route).where(Route.id == route_id))
+    route = result.scalar_one_or_none()
+    if not route:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Route not found"
+        )
+
+    route.status = RouteStatus.CLOSED
+    await db.flush()
+
+    return {"detail": "Route closed", "id": route_id}
+
+
 @router.put("/routes/{route_id}", response_model=MapRouteResponse)
 async def update_route(
     route_id: int,
