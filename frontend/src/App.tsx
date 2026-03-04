@@ -5,6 +5,7 @@ import LoginPage from '@/pages/LoginPage';
 import DashboardPage from '@/pages/DashboardPage';
 import SupplyPage from '@/pages/SupplyPage';
 import EquipmentPage from '@/pages/EquipmentPage';
+import EquipmentDetailPage from '@/pages/EquipmentDetailPage';
 import TransportationPage from '@/pages/TransportationPage';
 import IngestionPage from '@/pages/IngestionPage';
 import DataSourcesPage from '@/pages/DataSourcesPage';
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="map" element={<MapPage />} />
         <Route path="supply" element={<SupplyPage />} />
         <Route path="equipment" element={<EquipmentPage />} />
+        <Route path="equipment/:id" element={<EquipmentDetailPage />} />
         <Route path="transportation" element={<TransportationPage />} />
         <Route path="ingestion" element={<IngestionPage />} />
         <Route path="data-sources" element={<DataSourcesPage />} />

@@ -110,8 +110,14 @@ class ConvoyVehicle(Base):
     bumper_number = Column(String(20), nullable=True)
     call_sign = Column(String(30), nullable=True)
     sequence_number = Column(Integer, nullable=True)
+    equipment_id = Column(
+        Integer, ForeignKey("equipment.id"), nullable=True, index=True
+    )
 
     movement = relationship("Movement", back_populates="convoy_vehicles")
+    equipment = relationship(
+        "Equipment", back_populates="convoy_vehicles", foreign_keys=[equipment_id]
+    )
     assigned_personnel = relationship(
         "ConvoyPersonnel", back_populates="convoy_vehicle", cascade="all, delete-orphan"
     )

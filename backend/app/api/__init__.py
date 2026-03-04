@@ -6,6 +6,7 @@ from app.api.auth import router as auth_router
 from app.api.dashboard import router as dashboard_router
 from app.api.supply import router as supply_router
 from app.api.equipment import router as equipment_router
+from app.api.equipment_individual import router as equipment_individual_router
 from app.api.transportation import router as transportation_router
 from app.api.reports import router as reports_router
 from app.api.ingestion import router as ingestion_router
@@ -18,6 +19,7 @@ from app.api.data_sources import router as data_sources_router
 from app.api.map import router as map_router
 from app.api.personnel import router as personnel_router
 from app.api.convoy_manifest import router as convoy_manifest_router
+from app.api.maintenance import router as maintenance_router
 
 api_router = APIRouter()
 
@@ -25,6 +27,11 @@ api_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(dashboard_router, prefix="/dashboard", tags=["Dashboard"])
 api_router.include_router(supply_router, prefix="/supply", tags=["Supply"])
 api_router.include_router(equipment_router, prefix="/equipment", tags=["Equipment"])
+api_router.include_router(
+    equipment_individual_router,
+    prefix="/equipment/individual",
+    tags=["Equipment Individual"],
+)
 api_router.include_router(
     transportation_router, prefix="/transportation", tags=["Transportation"]
 )
@@ -44,4 +51,7 @@ api_router.include_router(map_router, prefix="/map", tags=["Map"])
 api_router.include_router(personnel_router, prefix="/personnel", tags=["Personnel"])
 api_router.include_router(
     convoy_manifest_router, prefix="/transportation", tags=["Convoy Manifest"]
+)
+api_router.include_router(
+    maintenance_router, prefix="/maintenance", tags=["Maintenance"]
 )

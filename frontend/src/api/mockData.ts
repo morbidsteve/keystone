@@ -21,6 +21,10 @@ import type {
   VehicleAllocation,
   MovementManifest,
   Personnel,
+  EquipmentItem,
+  MaintenanceWorkOrder,
+  EquipmentFault,
+  EquipmentDriverAssignment,
 } from '@/lib/types';
 import {
   SupplyClass,
@@ -31,6 +35,13 @@ import {
   ReportType,
   ReportStatus,
   PersonnelStatus,
+  EquipmentItemStatus,
+  WorkOrderStatus,
+  WorkOrderCategory,
+  FaultSeverity,
+  PartSource,
+  PartStatus,
+  LaborType,
 } from '@/lib/types';
 
 // ---------------------------------------------------------------------------
@@ -1112,4 +1123,216 @@ export const DEMO_PERSONNEL: Personnel[] = [
       { id: 'a20', personnelId: 'p15', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
     ],
   },
+];
+
+// ---------------------------------------------------------------------------
+// Individual Equipment Items — specific serialized vehicles/assets
+// ---------------------------------------------------------------------------
+
+export const DEMO_INDIVIDUAL_EQUIPMENT: EquipmentItem[] = [
+  { id: 'ie-001', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'HMMWV M1151', tamcn: 'D1092', nomenclature: 'TRUCK, UTILITY, HWY', bumperNumber: 'A11', serialNumber: 'HMMWV-2019-44821', usmcId: 'USMC-VH-00441', status: EquipmentItemStatus.FMC, odometerMiles: 34218, notes: 'Up-armored variant. BDAR kit installed.', createdAt: daysAgo(365), updatedAt: hoursAgo(6) },
+  { id: 'ie-002', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'HMMWV M1151', tamcn: 'D1092', nomenclature: 'TRUCK, UTILITY, HWY', bumperNumber: 'A12', serialNumber: 'HMMWV-2019-44822', usmcId: 'USMC-VH-00442', status: EquipmentItemStatus.FMC, odometerMiles: 28914, createdAt: daysAgo(365), updatedAt: hoursAgo(12) },
+  { id: 'ie-003', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'HMMWV M1151', tamcn: 'D1092', nomenclature: 'TRUCK, UTILITY, HWY', bumperNumber: 'A13', serialNumber: 'HMMWV-2019-44823', usmcId: 'USMC-VH-00443', status: EquipmentItemStatus.NMC_M, odometerMiles: 41205, notes: 'Alternator failure — WO-003 open.', createdAt: daysAgo(365), updatedAt: hoursAgo(2) },
+  { id: 'ie-004', unitId: '2-1', unitName: '2/1 BN', equipmentType: 'HMMWV M1151', tamcn: 'D1092', nomenclature: 'TRUCK, UTILITY, HWY', bumperNumber: 'B11', serialNumber: 'HMMWV-2020-51003', usmcId: 'USMC-VH-00501', status: EquipmentItemStatus.FMC, odometerMiles: 22105, createdAt: daysAgo(300), updatedAt: hoursAgo(8) },
+  { id: 'ie-005', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'MTVR MK23', tamcn: 'D0095', nomenclature: 'TRUCK, CARGO, 7T', bumperNumber: 'T31', serialNumber: 'MTVR-2018-31205', usmcId: 'USMC-VH-00305', status: EquipmentItemStatus.FMC, odometerMiles: 56820, createdAt: daysAgo(400), updatedAt: hoursAgo(4) },
+  { id: 'ie-006', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'MTVR MK23', tamcn: 'D0095', nomenclature: 'TRUCK, CARGO, 7T', bumperNumber: 'T32', serialNumber: 'MTVR-2018-31206', usmcId: 'USMC-VH-00306', status: EquipmentItemStatus.NMC_M, odometerMiles: 62410, notes: 'Brake line repair — WO-004 open.', createdAt: daysAgo(400), updatedAt: hoursAgo(1) },
+  { id: 'ie-007', unitId: '2-1', unitName: '2/1 BN', equipmentType: 'MTVR MK23', tamcn: 'D0095', nomenclature: 'TRUCK, CARGO, 7T', bumperNumber: 'T41', serialNumber: 'MTVR-2019-35801', usmcId: 'USMC-VH-00381', status: EquipmentItemStatus.FMC, odometerMiles: 45102, createdAt: daysAgo(350), updatedAt: hoursAgo(10) },
+  { id: 'ie-008', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'JLTV M1280', tamcn: 'D1200', nomenclature: 'JLTV, UTILITY', bumperNumber: 'J21', serialNumber: 'JLTV-2022-80012', usmcId: 'USMC-VH-00812', status: EquipmentItemStatus.FMC, odometerMiles: 12450, createdAt: daysAgo(180), updatedAt: hoursAgo(3) },
+  { id: 'ie-009', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'JLTV M1280', tamcn: 'D1200', nomenclature: 'JLTV, UTILITY', bumperNumber: 'J22', serialNumber: 'JLTV-2022-80013', usmcId: 'USMC-VH-00813', status: EquipmentItemStatus.NMC_S, odometerMiles: 15820, notes: 'CTIS fault — WO-005 open.', createdAt: daysAgo(180), updatedAt: hoursAgo(1) },
+  { id: 'ie-010', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'JLTV M1280', tamcn: 'D1200', nomenclature: 'JLTV, UTILITY', bumperNumber: 'J23', serialNumber: 'JLTV-2022-80014', usmcId: 'USMC-VH-00814', status: EquipmentItemStatus.FMC, odometerMiles: 10280, createdAt: daysAgo(180), updatedAt: hoursAgo(5) },
+  { id: 'ie-011', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'LAV-25', tamcn: 'E0846', nomenclature: 'LAV, 25MM', bumperNumber: 'L01', serialNumber: 'LAV-2016-22018', usmcId: 'USMC-VH-00218', status: EquipmentItemStatus.FMC, odometerMiles: 8920, createdAt: daysAgo(500), updatedAt: hoursAgo(6) },
+  { id: 'ie-012', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'LAV-25', tamcn: 'E0846', nomenclature: 'LAV, 25MM', bumperNumber: 'L02', serialNumber: 'LAV-2016-22019', usmcId: 'USMC-VH-00219', status: EquipmentItemStatus.FMC, odometerMiles: 9150, createdAt: daysAgo(500), updatedAt: hoursAgo(12) },
+  { id: 'ie-013', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'AAV-P7A1', tamcn: 'E0902', nomenclature: 'AAV, PERSONNEL', bumperNumber: 'C12', serialNumber: 'AAV-2014-18042', usmcId: 'USMC-VH-00142', status: EquipmentItemStatus.DEADLINED, odometerMiles: 4210, notes: 'Engine overheating — water pump failure. WO-001 URGENT.', createdAt: daysAgo(600), updatedAt: hoursAgo(1) },
+  { id: 'ie-014', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'AAV-P7A1', tamcn: 'E0902', nomenclature: 'AAV, PERSONNEL', bumperNumber: 'C08', serialNumber: 'AAV-2014-18038', usmcId: 'USMC-VH-00138', status: EquipmentItemStatus.NMC_M, odometerMiles: 3890, notes: 'Transmission oil leak — WO-002 open.', createdAt: daysAgo(600), updatedAt: hoursAgo(3) },
+  { id: 'ie-015', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'AAV-P7A1', tamcn: 'E0902', nomenclature: 'AAV, PERSONNEL', bumperNumber: 'C09', serialNumber: 'AAV-2014-18039', usmcId: 'USMC-VH-00139', status: EquipmentItemStatus.FMC, odometerMiles: 3650, createdAt: daysAgo(600), updatedAt: hoursAgo(8) },
+  { id: 'ie-016', unitId: '2-1', unitName: '2/1 BN', equipmentType: 'M777A2', tamcn: 'D1168', nomenclature: 'HOWITZER, 155MM', bumperNumber: 'H01', serialNumber: 'M777-2017-00412', usmcId: 'USMC-ART-00112', status: EquipmentItemStatus.FMC, createdAt: daysAgo(450), updatedAt: hoursAgo(24) },
+  { id: 'ie-017', unitId: '2-1', unitName: '2/1 BN', equipmentType: 'M777A2', tamcn: 'D1168', nomenclature: 'HOWITZER, 155MM', bumperNumber: 'H02', serialNumber: 'M777-2017-00413', usmcId: 'USMC-ART-00113', status: EquipmentItemStatus.FMC, createdAt: daysAgo(450), updatedAt: hoursAgo(24) },
+  { id: 'ie-018', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'HMMWV M1165', tamcn: 'D1092', nomenclature: 'TRUCK, UTILITY, ECV', bumperNumber: 'A21', serialNumber: 'HMMWV-2020-52101', usmcId: 'USMC-VH-00521', status: EquipmentItemStatus.ADMIN, odometerMiles: 18340, notes: 'Annual inspection scheduled.', createdAt: daysAgo(280), updatedAt: hoursAgo(2) },
+  { id: 'ie-019', unitId: '1-1', unitName: '1/1 BN', equipmentType: 'MTVR MK25', tamcn: 'D0095', nomenclature: 'TRUCK, CARGO, XLWB', bumperNumber: 'T33', serialNumber: 'MTVR-2019-36002', usmcId: 'USMC-VH-00402', status: EquipmentItemStatus.FMC, odometerMiles: 38920, createdAt: daysAgo(350), updatedAt: hoursAgo(6) },
+  { id: 'ie-020', unitId: '2-1', unitName: '2/1 BN', equipmentType: 'JLTV M1280', tamcn: 'D1200', nomenclature: 'JLTV, UTILITY', bumperNumber: 'J31', serialNumber: 'JLTV-2023-90001', usmcId: 'USMC-VH-00901', status: EquipmentItemStatus.FMC, odometerMiles: 5200, createdAt: daysAgo(90), updatedAt: hoursAgo(4) },
+];
+
+// ---------------------------------------------------------------------------
+// Maintenance Work Orders
+// ---------------------------------------------------------------------------
+
+export const DEMO_WORK_ORDERS: MaintenanceWorkOrder[] = [
+  {
+    id: 'wo-001', unitId: '1-1', equipmentId: '6', individualEquipmentId: 'ie-013',
+    workOrderNumber: 'WO-2026-001', description: 'Engine overheating — water pump failure. Vehicle deadlined.',
+    status: WorkOrderStatus.AWAITING_PARTS, category: WorkOrderCategory.CORRECTIVE, priority: 1,
+    partsRequired: 'Water pump assembly, gasket kit', createdAt: daysAgo(3), estimatedCompletion: hoursFromNow(48),
+    actualHours: 6.5, location: 'Motor T Bay 2', assignedTo: 'Sgt Martinez',
+    parts: [
+      { id: 'pt-001', workOrderId: 'wo-001', nsn: '2930-01-234-5678', partNumber: 'WP-AAV-2014', nomenclature: 'PUMP, WATER, ENGINE', quantity: 1, unitCost: 1280, source: PartSource.ON_ORDER, status: PartStatus.ON_ORDER },
+      { id: 'pt-002', workOrderId: 'wo-001', partNumber: 'GK-AAV-ENG-01', nomenclature: 'GASKET KIT, ENGINE WATER PUMP', quantity: 1, unitCost: 85, source: PartSource.ON_HAND, status: PartStatus.RECEIVED },
+    ],
+    laborEntries: [
+      { id: 'lb-001', workOrderId: 'wo-001', personnelId: 'p4', laborType: LaborType.DIAGNOSE, hours: 2.0, date: dateStr(3), notes: 'Confirmed water pump bearing failure' },
+      { id: 'lb-002', workOrderId: 'wo-001', personnelId: 'p4', laborType: LaborType.INSPECT, hours: 1.5, date: dateStr(3), notes: 'Full engine bay inspection' },
+      { id: 'lb-003', workOrderId: 'wo-001', personnelId: 'p5', laborType: LaborType.REPAIR, hours: 3.0, date: dateStr(2), notes: 'Removed old pump, prepped engine block' },
+    ],
+  },
+  {
+    id: 'wo-002', unitId: '1-1', equipmentId: '6', individualEquipmentId: 'ie-014',
+    workOrderNumber: 'WO-2026-002', description: 'Transmission oil leak — rear seal failure.',
+    status: WorkOrderStatus.IN_PROGRESS, category: WorkOrderCategory.CORRECTIVE, priority: 1,
+    createdAt: daysAgo(2), estimatedCompletion: hoursFromNow(24),
+    actualHours: 4.0, location: 'Motor T Bay 3', assignedTo: 'Cpl Johnson',
+    parts: [
+      { id: 'pt-003', workOrderId: 'wo-002', nsn: '2520-01-345-6789', partNumber: 'SEAL-AAV-TRANS-R', nomenclature: 'SEAL, TRANSMISSION, REAR', quantity: 1, unitCost: 220, source: PartSource.ON_HAND, status: PartStatus.INSTALLED },
+      { id: 'pt-004', workOrderId: 'wo-002', partNumber: 'ATF-DEXIII-5G', nomenclature: 'FLUID, TRANSMISSION, 5 GAL', quantity: 2, unitCost: 45, source: PartSource.ON_HAND, status: PartStatus.RECEIVED },
+    ],
+    laborEntries: [
+      { id: 'lb-004', workOrderId: 'wo-002', personnelId: 'p5', laborType: LaborType.DIAGNOSE, hours: 1.5, date: dateStr(2), notes: 'Traced leak to rear transmission seal' },
+      { id: 'lb-005', workOrderId: 'wo-002', personnelId: 'p5', laborType: LaborType.REPLACE, hours: 2.5, date: dateStr(1), notes: 'Seal replacement in progress' },
+    ],
+  },
+  {
+    id: 'wo-003', unitId: '1-1', equipmentId: '1', individualEquipmentId: 'ie-003',
+    workOrderNumber: 'WO-2026-003', description: 'Alternator replacement — low voltage output.',
+    status: WorkOrderStatus.IN_PROGRESS, category: WorkOrderCategory.CORRECTIVE, priority: 2,
+    createdAt: daysAgo(2), estimatedCompletion: hoursFromNow(12),
+    actualHours: 3.0, location: 'Motor T Bay 1', assignedTo: 'Sgt Martinez',
+    parts: [
+      { id: 'pt-005', workOrderId: 'wo-003', nsn: '2920-01-456-7890', partNumber: 'ALT-HMMWV-200A', nomenclature: 'ALTERNATOR, 200AMP, 6.5L', quantity: 1, unitCost: 680, source: PartSource.ON_HAND, status: PartStatus.RECEIVED },
+      { id: 'pt-006', workOrderId: 'wo-003', partNumber: 'BELT-SERP-HMMWV', nomenclature: 'BELT, SERPENTINE', quantity: 1, unitCost: 32, source: PartSource.ON_HAND, status: PartStatus.RECEIVED },
+    ],
+    laborEntries: [
+      { id: 'lb-006', workOrderId: 'wo-003', personnelId: 'p4', laborType: LaborType.DIAGNOSE, hours: 1.0, date: dateStr(2), notes: 'Voltage output at 11.2V under load' },
+      { id: 'lb-007', workOrderId: 'wo-003', personnelId: 'p4', laborType: LaborType.REPLACE, hours: 2.0, date: dateStr(1), notes: 'Alternator swap in progress' },
+    ],
+  },
+  {
+    id: 'wo-004', unitId: '2-1', equipmentId: '3', individualEquipmentId: 'ie-006',
+    workOrderNumber: 'WO-2026-004', description: 'Brake line repair — corroded brake line section.',
+    status: WorkOrderStatus.OPEN, category: WorkOrderCategory.CORRECTIVE, priority: 2,
+    createdAt: daysAgo(1), estimatedCompletion: hoursFromNow(36),
+    location: 'Motor T Bay 4', assignedTo: 'Cpl Thomas',
+    parts: [
+      { id: 'pt-007', workOrderId: 'wo-004', partNumber: 'BL-MTVR-REAR-KIT', nomenclature: 'KIT, BRAKE LINE, REAR AXLE', quantity: 1, unitCost: 340, source: PartSource.ON_ORDER, status: PartStatus.ON_ORDER },
+    ],
+    laborEntries: [
+      { id: 'lb-008', workOrderId: 'wo-004', personnelId: 'p11', laborType: LaborType.INSPECT, hours: 1.0, date: dateStr(1), notes: 'Identified corroded section near rear axle junction' },
+    ],
+  },
+  {
+    id: 'wo-005', unitId: '1-1', equipmentId: '8', individualEquipmentId: 'ie-009',
+    workOrderNumber: 'WO-2026-005', description: 'CTIS (Central Tire Inflation System) fault code.',
+    status: WorkOrderStatus.OPEN, category: WorkOrderCategory.CORRECTIVE, priority: 3,
+    createdAt: hoursAgo(18), location: 'Motor T Yard', assignedTo: 'LCpl Wilson',
+    parts: [],
+    laborEntries: [
+      { id: 'lb-009', workOrderId: 'wo-005', personnelId: 'p8', laborType: LaborType.DIAGNOSE, hours: 0.5, date: dateStr(0), notes: 'Initial fault code read — CTIS controller error' },
+    ],
+  },
+  {
+    id: 'wo-006', unitId: '1-1', equipmentId: '1', individualEquipmentId: 'ie-001',
+    workOrderNumber: 'WO-2026-006', description: 'Scheduled PMCS — semi-annual service.',
+    status: WorkOrderStatus.COMPLETE, category: WorkOrderCategory.PREVENTIVE, priority: 3,
+    createdAt: daysAgo(14), completedAt: daysAgo(12), actualHours: 8.0,
+    location: 'Motor T Bay 1', assignedTo: 'Cpl Johnson',
+    parts: [
+      { id: 'pt-008', workOrderId: 'wo-006', partNumber: 'FILTER-OIL-HMMWV', nomenclature: 'FILTER, OIL, ENGINE', quantity: 1, unitCost: 18, source: PartSource.ON_HAND, status: PartStatus.INSTALLED },
+      { id: 'pt-009', workOrderId: 'wo-006', partNumber: 'FILTER-FUEL-HMMWV', nomenclature: 'FILTER, FUEL', quantity: 2, unitCost: 24, source: PartSource.ON_HAND, status: PartStatus.INSTALLED },
+      { id: 'pt-010', workOrderId: 'wo-006', partNumber: 'OIL-15W40-1G', nomenclature: 'OIL, ENGINE, 15W-40, 1 GAL', quantity: 3, unitCost: 22, source: PartSource.ON_HAND, status: PartStatus.INSTALLED },
+    ],
+    laborEntries: [
+      { id: 'lb-010', workOrderId: 'wo-006', personnelId: 'p5', laborType: LaborType.INSPECT, hours: 2.0, date: dateStr(14) },
+      { id: 'lb-011', workOrderId: 'wo-006', personnelId: 'p5', laborType: LaborType.REPLACE, hours: 3.0, date: dateStr(13), notes: 'Oil/filter change, fluid top-offs' },
+      { id: 'lb-012', workOrderId: 'wo-006', personnelId: 'p5', laborType: LaborType.TEST, hours: 3.0, date: dateStr(12), notes: 'Road test + final inspection' },
+    ],
+  },
+  {
+    id: 'wo-007', unitId: '1-1', equipmentId: '5', individualEquipmentId: 'ie-011',
+    workOrderNumber: 'WO-2026-007', description: 'Turret traverse motor inspection — unusual noise.',
+    status: WorkOrderStatus.COMPLETE, category: WorkOrderCategory.INSPECTION, priority: 2,
+    createdAt: daysAgo(10), completedAt: daysAgo(8), actualHours: 4.0,
+    location: 'LAV Maintenance Bay', assignedTo: 'Sgt Taylor',
+    parts: [],
+    laborEntries: [
+      { id: 'lb-013', workOrderId: 'wo-007', personnelId: 'p9', laborType: LaborType.INSPECT, hours: 2.0, date: dateStr(10), notes: 'Turret traverse motor inspection — within spec' },
+      { id: 'lb-014', workOrderId: 'wo-007', personnelId: 'p9', laborType: LaborType.TEST, hours: 2.0, date: dateStr(8), notes: 'Full traverse test — no faults found, lubricated' },
+    ],
+  },
+  {
+    id: 'wo-008', unitId: '1-1', equipmentId: '8', individualEquipmentId: 'ie-008',
+    workOrderNumber: 'WO-2026-008', description: 'Radio mount modification — SINCGARS to MUOS upgrade.',
+    status: WorkOrderStatus.COMPLETE, category: WorkOrderCategory.MODIFICATION, priority: 3,
+    createdAt: daysAgo(21), completedAt: daysAgo(18), actualHours: 6.0,
+    location: 'Comm Shop', assignedTo: 'Sgt Taylor',
+    parts: [
+      { id: 'pt-011', workOrderId: 'wo-008', partNumber: 'MNT-MUOS-JLTV', nomenclature: 'MOUNT, ANTENNA, MUOS', quantity: 1, unitCost: 1450, source: PartSource.ON_HAND, status: PartStatus.INSTALLED },
+      { id: 'pt-012', workOrderId: 'wo-008', partNumber: 'CBL-RF-MUOS-10FT', nomenclature: 'CABLE, RF, 10FT, MUOS', quantity: 2, unitCost: 120, source: PartSource.ON_HAND, status: PartStatus.INSTALLED },
+    ],
+    laborEntries: [
+      { id: 'lb-015', workOrderId: 'wo-008', personnelId: 'p9', laborType: LaborType.INSPECT, hours: 1.0, date: dateStr(21) },
+      { id: 'lb-016', workOrderId: 'wo-008', personnelId: 'p9', laborType: LaborType.REPLACE, hours: 3.5, date: dateStr(20), notes: 'Removed SINCGARS mount, installed MUOS mount' },
+      { id: 'lb-017', workOrderId: 'wo-008', personnelId: 'p9', laborType: LaborType.TEST, hours: 1.5, date: dateStr(18), notes: 'MUOS connectivity test — operational' },
+    ],
+  },
+  {
+    id: 'wo-009', unitId: '1-1', equipmentId: '3', individualEquipmentId: 'ie-005',
+    workOrderNumber: 'WO-2026-009', description: 'Tire replacement — 2 x rear tires worn beyond tread limit.',
+    status: WorkOrderStatus.COMPLETE, category: WorkOrderCategory.CORRECTIVE, priority: 3,
+    createdAt: daysAgo(7), completedAt: daysAgo(6), actualHours: 3.0,
+    location: 'Motor T Bay 1', assignedTo: 'LCpl Anderson',
+    parts: [
+      { id: 'pt-013', workOrderId: 'wo-009', nsn: '2610-01-567-8901', partNumber: 'TIRE-MTVR-395-85R20', nomenclature: 'TIRE, PNEUMATIC, 395/85R20', quantity: 2, unitCost: 890, source: PartSource.ON_HAND, status: PartStatus.INSTALLED },
+    ],
+    laborEntries: [
+      { id: 'lb-018', workOrderId: 'wo-009', personnelId: 'p10', laborType: LaborType.REPLACE, hours: 2.5, date: dateStr(7), notes: 'Replaced 2x rear tires' },
+      { id: 'lb-019', workOrderId: 'wo-009', personnelId: 'p10', laborType: LaborType.TEST, hours: 0.5, date: dateStr(6), notes: 'Torque check + road test' },
+    ],
+  },
+  {
+    id: 'wo-010', unitId: '1-1', equipmentId: '1', individualEquipmentId: 'ie-018',
+    workOrderNumber: 'WO-2026-010', description: 'Annual technical inspection — ECV variant.',
+    status: WorkOrderStatus.IN_PROGRESS, category: WorkOrderCategory.INSPECTION, priority: 3,
+    createdAt: daysAgo(1), estimatedCompletion: hoursFromNow(72),
+    location: 'Motor T Bay 2', assignedTo: 'Cpl Thomas',
+    parts: [],
+    laborEntries: [
+      { id: 'lb-020', workOrderId: 'wo-010', personnelId: 'p11', laborType: LaborType.INSPECT, hours: 2.0, date: dateStr(1), notes: 'Started annual TI — exterior/undercarriage' },
+    ],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Equipment Faults
+// ---------------------------------------------------------------------------
+
+export const DEMO_EQUIPMENT_FAULTS: EquipmentFault[] = [
+  { id: 'ef-001', equipmentId: 'ie-013', faultDescription: 'Engine overheating under load — water pump bearing seized', severity: FaultSeverity.SAFETY, reportedBy: 'Sgt Martinez', reportedAt: daysAgo(3), workOrderId: 'wo-001' },
+  { id: 'ef-002', equipmentId: 'ie-014', faultDescription: 'Transmission fluid leak — pooling under vehicle after operation', severity: FaultSeverity.MAJOR, reportedBy: 'Cpl Johnson', reportedAt: daysAgo(2), workOrderId: 'wo-002' },
+  { id: 'ef-003', equipmentId: 'ie-003', faultDescription: 'Low voltage warning — alternator output below 12V', severity: FaultSeverity.MAJOR, reportedBy: 'LCpl Wilson', reportedAt: daysAgo(2), workOrderId: 'wo-003' },
+  { id: 'ef-004', equipmentId: 'ie-006', faultDescription: 'Spongy brake pedal — possible brake line corrosion', severity: FaultSeverity.SAFETY, reportedBy: 'Cpl Thomas', reportedAt: daysAgo(1), workOrderId: 'wo-004' },
+  { id: 'ef-005', equipmentId: 'ie-009', faultDescription: 'CTIS fault indicator — unable to maintain tire pressure in highway mode', severity: FaultSeverity.MINOR, reportedBy: 'LCpl Wilson', reportedAt: hoursAgo(18), workOrderId: 'wo-005' },
+  { id: 'ef-006', equipmentId: 'ie-001', faultDescription: 'Minor oil seep at valve cover gasket — monitor', severity: FaultSeverity.COSMETIC, reportedBy: 'Sgt Martinez', reportedAt: daysAgo(30), resolvedAt: daysAgo(28) },
+  { id: 'ef-007', equipmentId: 'ie-011', faultDescription: 'Turret traverse motor — unusual grinding noise during rapid traverse', severity: FaultSeverity.MAJOR, reportedBy: 'Sgt Taylor', reportedAt: daysAgo(10), resolvedAt: daysAgo(8), workOrderId: 'wo-007' },
+  { id: 'ef-008', equipmentId: 'ie-005', faultDescription: 'Rear tires worn beyond tread limit — 2/32" remaining', severity: FaultSeverity.MINOR, reportedBy: 'LCpl Anderson', reportedAt: daysAgo(7), resolvedAt: daysAgo(6), workOrderId: 'wo-009' },
+  { id: 'ef-009', equipmentId: 'ie-013', faultDescription: 'Ramp hydraulic cylinder slow to extend', severity: FaultSeverity.MINOR, reportedBy: 'Sgt Martinez', reportedAt: daysAgo(45), resolvedAt: daysAgo(40) },
+  { id: 'ef-010', equipmentId: 'ie-008', faultDescription: 'Windshield crack — driver side, 6 inch', severity: FaultSeverity.COSMETIC, reportedBy: 'LCpl Wilson', reportedAt: daysAgo(60), resolvedAt: daysAgo(55) },
+];
+
+// ---------------------------------------------------------------------------
+// Driver Assignments
+// ---------------------------------------------------------------------------
+
+export const DEMO_DRIVER_ASSIGNMENTS: EquipmentDriverAssignment[] = [
+  { id: 'da-001', equipmentId: 'ie-001', personnelId: 'p4', personnelName: 'Sgt Robert Martinez', assignedAt: daysAgo(90), isPrimary: true },
+  { id: 'da-002', equipmentId: 'ie-001', personnelId: 'p5', personnelName: 'Cpl Anthony Johnson', assignedAt: daysAgo(90), isPrimary: false },
+  { id: 'da-003', equipmentId: 'ie-002', personnelId: 'p6', personnelName: 'PFC Thomas Brown', assignedAt: daysAgo(60), isPrimary: true },
+  { id: 'da-004', equipmentId: 'ie-003', personnelId: 'p8', personnelName: 'LCpl Christopher Wilson', assignedAt: daysAgo(120), isPrimary: true },
+  { id: 'da-005', equipmentId: 'ie-005', personnelId: 'p10', personnelName: 'LCpl Matthew Anderson', assignedAt: daysAgo(45), isPrimary: true },
+  { id: 'da-006', equipmentId: 'ie-006', personnelId: 'p11', personnelName: 'Cpl Andrew Thomas', assignedAt: daysAgo(45), isPrimary: true },
+  { id: 'da-007', equipmentId: 'ie-008', personnelId: 'p4', personnelName: 'Sgt Robert Martinez', assignedAt: daysAgo(30), isPrimary: true },
+  { id: 'da-008', equipmentId: 'ie-009', personnelId: 'p8', personnelName: 'LCpl Christopher Wilson', assignedAt: daysAgo(30), isPrimary: true },
+  { id: 'da-009', equipmentId: 'ie-011', personnelId: 'p9', personnelName: 'Sgt Daniel Taylor', assignedAt: daysAgo(180), isPrimary: true },
+  { id: 'da-010', equipmentId: 'ie-013', personnelId: 'p12', personnelName: 'PFC Joshua Jackson', assignedAt: daysAgo(200), isPrimary: true },
+  { id: 'da-011', equipmentId: 'ie-014', personnelId: 'p14', personnelName: 'LCpl Brandon Harris', assignedAt: daysAgo(200), isPrimary: true },
+  { id: 'da-012', equipmentId: 'ie-015', personnelId: 'p13', personnelName: 'SSgt Ryan White', assignedAt: daysAgo(150), releasedAt: daysAgo(30), isPrimary: true },
+  { id: 'da-013', equipmentId: 'ie-015', personnelId: 'p6', personnelName: 'PFC Thomas Brown', assignedAt: daysAgo(30), isPrimary: true },
+  { id: 'da-014', equipmentId: 'ie-018', personnelId: 'p15', personnelName: 'PFC Justin Clark', assignedAt: daysAgo(60), isPrimary: true },
+  { id: 'da-015', equipmentId: 'ie-020', personnelId: 'p10', personnelName: 'LCpl Matthew Anderson', assignedAt: daysAgo(20), isPrimary: true },
 ];

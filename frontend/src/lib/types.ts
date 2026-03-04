@@ -443,3 +443,164 @@ export interface ConvoyManifest {
   totalVehicles: number;
   totalPersonnel: number;
 }
+
+// Equipment & Maintenance enums
+
+export enum EquipmentItemStatus {
+  FMC = 'FMC',
+  NMC_M = 'NMC_M',
+  NMC_S = 'NMC_S',
+  ADMIN = 'ADMIN',
+  DEADLINED = 'DEADLINED',
+}
+
+export enum WorkOrderStatus {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  AWAITING_PARTS = 'AWAITING_PARTS',
+  COMPLETE = 'COMPLETE',
+}
+
+export enum WorkOrderPriority {
+  URGENT = 1,
+  PRIORITY = 2,
+  ROUTINE = 3,
+}
+
+export enum WorkOrderCategory {
+  CORRECTIVE = 'CORRECTIVE',
+  PREVENTIVE = 'PREVENTIVE',
+  MODIFICATION = 'MODIFICATION',
+  INSPECTION = 'INSPECTION',
+}
+
+export enum FaultSeverity {
+  SAFETY = 'SAFETY',
+  MAJOR = 'MAJOR',
+  MINOR = 'MINOR',
+  COSMETIC = 'COSMETIC',
+}
+
+export enum PartSource {
+  ON_HAND = 'ON_HAND',
+  ON_ORDER = 'ON_ORDER',
+  CANNIBALIZED = 'CANNIBALIZED',
+  LOCAL_PURCHASE = 'LOCAL_PURCHASE',
+}
+
+export enum PartStatus {
+  NEEDED = 'NEEDED',
+  ON_ORDER = 'ON_ORDER',
+  RECEIVED = 'RECEIVED',
+  INSTALLED = 'INSTALLED',
+}
+
+export enum LaborType {
+  INSPECT = 'INSPECT',
+  DIAGNOSE = 'DIAGNOSE',
+  REPAIR = 'REPAIR',
+  REPLACE = 'REPLACE',
+  TEST = 'TEST',
+}
+
+// Equipment & Maintenance interfaces
+
+export interface EquipmentItem {
+  id: string;
+  unitId: string;
+  unitName: string;
+  equipmentType: string;
+  tamcn: string;
+  nomenclature: string;
+  bumperNumber: string;
+  serialNumber: string;
+  usmcId: string;
+  status: EquipmentItemStatus;
+  odometerMiles?: number;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MaintenanceWorkOrder {
+  id: string;
+  unitId: string;
+  equipmentId?: string;
+  individualEquipmentId?: string;
+  workOrderNumber: string;
+  description?: string;
+  status: WorkOrderStatus;
+  category?: WorkOrderCategory;
+  priority: number;
+  partsRequired?: string;
+  createdAt: string;
+  completedAt?: string;
+  estimatedCompletion?: string;
+  actualHours?: number;
+  location?: string;
+  assignedTo?: string;
+  parts: MaintenancePart[];
+  laborEntries: MaintenanceLabor[];
+}
+
+export interface MaintenancePart {
+  id: string;
+  workOrderId: string;
+  nsn?: string;
+  partNumber: string;
+  nomenclature: string;
+  quantity: number;
+  unitCost?: number;
+  source: PartSource;
+  status: PartStatus;
+}
+
+export interface MaintenanceLabor {
+  id: string;
+  workOrderId: string;
+  personnelId: string;
+  laborType: LaborType;
+  hours: number;
+  date: string;
+  notes?: string;
+}
+
+export interface EquipmentFault {
+  id: string;
+  equipmentId: string;
+  faultDescription: string;
+  severity: FaultSeverity;
+  reportedBy: string;
+  reportedAt: string;
+  resolvedAt?: string;
+  workOrderId?: string;
+}
+
+export interface EquipmentDriverAssignment {
+  id: string;
+  equipmentId: string;
+  personnelId: string;
+  personnelName?: string;
+  assignedAt: string;
+  releasedAt?: string;
+  isPrimary: boolean;
+}
+
+export interface IndividualEquipmentFilters {
+  unitId?: string;
+  equipmentType?: string;
+  status?: EquipmentItemStatus;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface WorkOrderFilters {
+  unitId?: string;
+  equipmentId?: string;
+  status?: WorkOrderStatus;
+  priority?: number;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+}

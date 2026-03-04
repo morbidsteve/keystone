@@ -14,6 +14,12 @@ import type {
   SustainabilityProjection,
   SupplyRecord,
   EquipmentRecord,
+  EquipmentItem,
+  MaintenanceWorkOrder,
+  MaintenancePart,
+  MaintenanceLabor,
+  EquipmentFault,
+  EquipmentDriverAssignment,
   Movement,
   Alert,
   Report,
@@ -23,6 +29,8 @@ import type {
   PaginatedResponse,
   SupplyFilters,
   EquipmentFilters,
+  IndividualEquipmentFilters,
+  WorkOrderFilters,
   ReportFilters,
   GenerateReportParams,
   ReportStatus,
@@ -33,6 +41,10 @@ import type {
   PersonnelSummary,
   ConvoyManifest,
   ConvoyRole,
+} from '@/lib/types';
+
+import {
+  WorkOrderStatus,
 } from '@/lib/types';
 
 import {
@@ -50,6 +62,10 @@ import {
   DEMO_REVIEW_QUEUE,
   DEMO_REPORTS,
   DEMO_PERSONNEL,
+  DEMO_INDIVIDUAL_EQUIPMENT,
+  DEMO_WORK_ORDERS,
+  DEMO_EQUIPMENT_FAULTS,
+  DEMO_DRIVER_ASSIGNMENTS,
 } from './mockData';
 
 // ---------------------------------------------------------------------------
@@ -77,6 +93,10 @@ let demoUnits = [...DEMO_UNITS];
 let demoReports = [...DEMO_REPORTS];
 let demoMovements = [...DEMO_MOVEMENTS];
 let demoPersonnel = [...DEMO_PERSONNEL];
+let demoWorkOrders = [...DEMO_WORK_ORDERS];
+let demoIndividualEquipment = [...DEMO_INDIVIDUAL_EQUIPMENT];
+let demoFaults = [...DEMO_EQUIPMENT_FAULTS];
+let demoDriverAssignments = [...DEMO_DRIVER_ASSIGNMENTS];
 
 // ---------------------------------------------------------------------------
 // Helper: convert time range string to number of days
@@ -644,5 +664,270 @@ export const mockApi = {
     await mockDelay(300);
     // In demo mode just echo back
     return { ..._manifest, movementId };
+  },
+
+  // -------------------------------------------------------------------------
+  // Individual Equipment
+  // -------------------------------------------------------------------------
+
+  async getIndividualEquipment(
+    filters?: IndividualEquipmentFilters,
+  ): Promise<PaginatedResponse<EquipmentItem>> {
+    await mockDelay();
+    let items = [...demoIndividualEquipment];
+    if (filters?.unitId) items = items.filter((i) => i.unitId === filters.unitId);
+    if (filters?.equipmentType) {
+      const t = filters.equipmentType.toLowerCase();
+      items = items.filter((i) => i.equipmentType.toLowerCase().includes(t));
+    }
+    if (filters?.status) items = items.filter((i) => i.status === filters.status);
+    if (filters?.search) {
+      const q = filters.search.toLowerCase();
+      items = items.filter(
+        (i) =>
+          i.equipmentType.toLowerCase().includes(q) ||
+          i.bumperNumber.toLowerCase().includes(q) ||
+          i.serialNumber.toLowerCase().includes(q) ||
+          i.nomenclature.toLowerCase().includes(q),
+      );
+    }
+    const page = filters?.page ?? 1;
+    const pageSize = filters?.pageSize ?? 25;
+    const start = (page - 1) * pageSize;
+    return { data: items.slice(start, start + pageSize), total: items.length, page, pageSize };
+  },
+
+  async getIndividualEquipmentById(id: string): Promise<EquipmentItem> {
+    await mockDelay();
+    return demoIndividualEquipment.find((i) => i.id === id) || demoIndividualEquipment[0];
+  },
+
+  async createIndividualEquipment(data: Partial<EquipmentItem>): Promise<EquipmentItem> {
+    await mockDelay();
+    const item = {
+      ...demoIndividualEquipment[0],
+      ...data,
+      id: 'ie-new-' + Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as EquipmentItem;
+    demoIndividualEquipment = [...demoIndividualEquipment, item];
+    return item;
+  },
+
+  async updateIndividualEquipment(id: string, data: Partial<EquipmentItem>): Promise<EquipmentItem> {
+    await mockDelay();
+    demoIndividualEquipment = demoIndividualEquipment.map((i) =>
+      i.id === id ? { ...i, ...data, updatedAt: new Date().toISOString() } : i,
+    );
+    return demoIndividualEquipment.find((i) => i.id === id) || demoIndividualEquipment[0];
+  },
+
+  async getEquipmentHistory(id: string): Promise<MaintenanceWorkOrder[]> {
+    await mockDelay();
+    return demoWorkOrders.filter((wo) => wo.individualEquipmentId === id);
+  },
+
+  async reportFault(equipmentId: string, data: Partial<EquipmentFault>): Promise<EquipmentFault> {
+    await mockDelay();
+    const fault: EquipmentFault = {
+      id: 'ef-new-' + Date.now(),
+      equipmentId,
+      faultDescription: data.faultDescription || '',
+      severity: data.severity || ('MINOR' as never),
+      reportedBy: data.reportedBy || 'Demo User',
+      reportedAt: new Date().toISOString(),
+      ...data,
+    };
+    demoFaults = [...demoFaults, fault];
+    return fault;
+  },
+
+  async updateFault(_equipmentId: string, faultId: string, data: Partial<EquipmentFault>): Promise<EquipmentFault> {
+    await mockDelay();
+    demoFaults = demoFaults.map((f) => (f.id === faultId ? { ...f, ...data } : f));
+    return demoFaults.find((f) => f.id === faultId) || demoFaults[0];
+  },
+
+  async assignDriver(equipmentId: string, data: Partial<EquipmentDriverAssignment>): Promise<EquipmentDriverAssignment> {
+    await mockDelay();
+    const assignment: EquipmentDriverAssignment = {
+      id: 'da-new-' + Date.now(),
+      equipmentId,
+      personnelId: data.personnelId || '',
+      personnelName: data.personnelName,
+      assignedAt: new Date().toISOString(),
+      isPrimary: data.isPrimary ?? false,
+      ...data,
+    };
+    demoDriverAssignments = [...demoDriverAssignments, assignment];
+    return assignment;
+  },
+
+  async updateDriverAssignment(
+    _equipmentId: string,
+    assignmentId: string,
+    data: Partial<EquipmentDriverAssignment>,
+  ): Promise<EquipmentDriverAssignment> {
+    await mockDelay();
+    demoDriverAssignments = demoDriverAssignments.map((a) =>
+      a.id === assignmentId ? { ...a, ...data } : a,
+    );
+    return demoDriverAssignments.find((a) => a.id === assignmentId) || demoDriverAssignments[0];
+  },
+
+  async getEquipmentFaults(equipmentId: string): Promise<EquipmentFault[]> {
+    await mockDelay();
+    return demoFaults.filter((f) => f.equipmentId === equipmentId);
+  },
+
+  async getEquipmentDrivers(equipmentId: string): Promise<EquipmentDriverAssignment[]> {
+    await mockDelay();
+    return demoDriverAssignments.filter((d) => d.equipmentId === equipmentId);
+  },
+
+  // -------------------------------------------------------------------------
+  // Maintenance Work Orders
+  // -------------------------------------------------------------------------
+
+  async getWorkOrders(
+    filters?: WorkOrderFilters,
+  ): Promise<PaginatedResponse<MaintenanceWorkOrder>> {
+    await mockDelay();
+    let orders = [...demoWorkOrders];
+    if (filters?.unitId) orders = orders.filter((o) => o.unitId === filters.unitId);
+    if (filters?.equipmentId) orders = orders.filter((o) => o.individualEquipmentId === filters.equipmentId);
+    if (filters?.status) orders = orders.filter((o) => o.status === filters.status);
+    if (filters?.priority) orders = orders.filter((o) => o.priority === filters.priority);
+    if (filters?.search) {
+      const q = filters.search.toLowerCase();
+      orders = orders.filter(
+        (o) =>
+          o.workOrderNumber.toLowerCase().includes(q) ||
+          (o.description || '').toLowerCase().includes(q),
+      );
+    }
+    const page = filters?.page ?? 1;
+    const pageSize = filters?.pageSize ?? 25;
+    const start = (page - 1) * pageSize;
+    return { data: orders.slice(start, start + pageSize), total: orders.length, page, pageSize };
+  },
+
+  async getWorkOrderById(id: string): Promise<MaintenanceWorkOrder> {
+    await mockDelay();
+    return demoWorkOrders.find((o) => o.id === id) || demoWorkOrders[0];
+  },
+
+  async createWorkOrder(data: Partial<MaintenanceWorkOrder>): Promise<MaintenanceWorkOrder> {
+    await mockDelay();
+    const wo: MaintenanceWorkOrder = {
+      id: 'wo-new-' + Date.now(),
+      unitId: data.unitId || '',
+      workOrderNumber: 'WO-' + Date.now().toString().slice(-6),
+      status: WorkOrderStatus.OPEN,
+      priority: 3,
+      createdAt: new Date().toISOString(),
+      parts: [],
+      laborEntries: [],
+      ...data,
+    } as MaintenanceWorkOrder;
+    demoWorkOrders = [...demoWorkOrders, wo];
+    return wo;
+  },
+
+  async updateWorkOrder(id: string, data: Partial<MaintenanceWorkOrder>): Promise<MaintenanceWorkOrder> {
+    await mockDelay();
+    demoWorkOrders = demoWorkOrders.map((o) => (o.id === id ? { ...o, ...data } : o));
+    return demoWorkOrders.find((o) => o.id === id) || demoWorkOrders[0];
+  },
+
+  async deleteWorkOrder(id: string): Promise<void> {
+    await mockDelay();
+    demoWorkOrders = demoWorkOrders.filter((o) => o.id !== id);
+  },
+
+  async addPart(workOrderId: string, data: Partial<MaintenancePart>): Promise<MaintenancePart> {
+    await mockDelay();
+    const part: MaintenancePart = {
+      id: 'pt-new-' + Date.now(),
+      workOrderId,
+      partNumber: data.partNumber || '',
+      nomenclature: data.nomenclature || '',
+      quantity: data.quantity || 1,
+      source: data.source || ('ON_HAND' as never),
+      status: data.status || ('NEEDED' as never),
+      ...data,
+    } as MaintenancePart;
+    demoWorkOrders = demoWorkOrders.map((o) =>
+      o.id === workOrderId ? { ...o, parts: [...o.parts, part] } : o,
+    );
+    return part;
+  },
+
+  async updatePart(workOrderId: string, partId: string, data: Partial<MaintenancePart>): Promise<MaintenancePart> {
+    await mockDelay();
+    let updated: MaintenancePart | undefined;
+    demoWorkOrders = demoWorkOrders.map((o) => {
+      if (o.id !== workOrderId) return o;
+      return {
+        ...o,
+        parts: o.parts.map((p) => {
+          if (p.id !== partId) return p;
+          updated = { ...p, ...data };
+          return updated;
+        }),
+      };
+    });
+    return updated || demoWorkOrders[0].parts[0];
+  },
+
+  async deletePart(workOrderId: string, partId: string): Promise<void> {
+    await mockDelay();
+    demoWorkOrders = demoWorkOrders.map((o) =>
+      o.id === workOrderId ? { ...o, parts: o.parts.filter((p) => p.id !== partId) } : o,
+    );
+  },
+
+  async addLabor(workOrderId: string, data: Partial<MaintenanceLabor>): Promise<MaintenanceLabor> {
+    await mockDelay();
+    const labor: MaintenanceLabor = {
+      id: 'lb-new-' + Date.now(),
+      workOrderId,
+      personnelId: data.personnelId || '',
+      laborType: data.laborType || ('REPAIR' as never),
+      hours: data.hours || 0,
+      date: data.date || new Date().toISOString().split('T')[0],
+      ...data,
+    } as MaintenanceLabor;
+    demoWorkOrders = demoWorkOrders.map((o) =>
+      o.id === workOrderId ? { ...o, laborEntries: [...o.laborEntries, labor] } : o,
+    );
+    return labor;
+  },
+
+  async updateLabor(workOrderId: string, laborId: string, data: Partial<MaintenanceLabor>): Promise<MaintenanceLabor> {
+    await mockDelay();
+    let updated: MaintenanceLabor | undefined;
+    demoWorkOrders = demoWorkOrders.map((o) => {
+      if (o.id !== workOrderId) return o;
+      return {
+        ...o,
+        laborEntries: o.laborEntries.map((l) => {
+          if (l.id !== laborId) return l;
+          updated = { ...l, ...data };
+          return updated;
+        }),
+      };
+    });
+    return updated || demoWorkOrders[0].laborEntries[0];
+  },
+
+  async deleteLabor(workOrderId: string, laborId: string): Promise<void> {
+    await mockDelay();
+    demoWorkOrders = demoWorkOrders.map((o) =>
+      o.id === workOrderId
+        ? { ...o, laborEntries: o.laborEntries.filter((l) => l.id !== laborId) }
+        : o,
+    );
   },
 };

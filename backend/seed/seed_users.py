@@ -23,6 +23,10 @@ from app.database import async_session
 from app.models.unit import Unit
 from app.models.user import Role, User
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 SEED_USERS = [
     {
@@ -73,6 +77,14 @@ SEED_USERS = [
         "role": Role.VIEWER,
         "unit_abbr": "A Co 1/1",
     },
+    {
+        "username": "simulator",
+        "password": "sim-dev-only",
+        "email": "simulator@keystone.usmc.mil",
+        "full_name": "KEYSTONE Simulator",
+        "role": Role.OPERATOR,
+        "unit_abbr": "I MEF",
+    },
 ]
 
 
@@ -81,6 +93,10 @@ async def seed_users_from_session(db: AsyncSession):
 
     Called from app startup. Idempotent — skips existing users.
     """
+    if os.getenv("ENV_MODE", "production") != "development":
+        logger.warning("Refusing to seed users outside development mode")
+        return
+
     created = 0
 
     for user_data in SEED_USERS:

@@ -162,6 +162,33 @@ services:
       - /run
     restart: unless-stopped
 
+  # ---------------------------------------------------------------------------
+  # Simulator (mock data generator — demo profile only)
+  # ---------------------------------------------------------------------------
+  simulator:
+    build:
+      context: ./backend
+      target: production
+    user: "1001:1001"
+    command: ["python", "-m", "simulator", "run", "--scenario=steel_guardian", "--speed=60", "--url=http://backend:8000"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      SIM_SPEED: "60"
+      SIM_SCENARIO: steel_guardian
+      KEYSTONE_URL: http://backend:8000
+    profiles:
+      - demo
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: "no"
+
 volumes:
   pgdata:
   redisdata:

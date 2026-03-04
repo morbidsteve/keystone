@@ -18,15 +18,19 @@ from app.database import Base
 
 
 class Echelon(str, enum.Enum):
-    MEF = "MEF"
-    DIV = "DIV"
-    REGT = "REGT"
-    BN = "BN"
-    CO = "CO"
-    PLT = "PLT"
-    SQD = "SQD"
-    FT = "FT"
-    INDV = "INDV"
+    HQMC = "HQMC"  # Headquarters Marine Corps
+    MEF = "MEF"  # Marine Expeditionary Force
+    DIV = "DIV"  # Division
+    WING = "WING"  # Marine Aircraft Wing
+    GRP = "GRP"  # Group (MLG, MAG, MIG, MEU, etc.)
+    REGT = "REGT"  # Regiment
+    BN = "BN"  # Battalion
+    SQDN = "SQDN"  # Squadron (aviation)
+    CO = "CO"  # Company / Battery / Detachment
+    PLT = "PLT"  # Platoon
+    SQD = "SQD"  # Squad
+    FT = "FT"  # Fire Team
+    INDV = "INDV"  # Individual
     CUSTOM = "CUSTOM"
 
 
@@ -53,3 +57,4 @@ class Unit(Base):
     movements = relationship("Movement", back_populates="unit")
     alerts = relationship("Alert", back_populates="unit")
     personnel = relationship("Personnel", back_populates="unit")
+    equipment_assets = relationship("Equipment", back_populates="unit")

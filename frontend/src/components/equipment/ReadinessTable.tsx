@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,7 +8,7 @@ import {
   createColumnHelper,
   type SortingState,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
 import { SupplyStatus, type EquipmentRecord } from '@/lib/types';
 import { getStatusColor } from '@/lib/utils';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -27,6 +28,7 @@ const columnHelper = createColumnHelper<EquipmentRecord>();
 
 export default function ReadinessTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const navigate = useNavigate();
 
   const columns = useMemo(
     () => [
@@ -60,6 +62,13 @@ export default function ReadinessTable() {
       columnHelper.accessor('status', {
         header: 'STATUS',
         cell: (info) => <StatusBadge status={info.getValue()} />,
+      }),
+      columnHelper.display({
+        id: 'actions',
+        header: '',
+        cell: () => (
+          <ChevronRight size={14} style={{ color: 'var(--color-text-muted)' }} />
+        ),
       }),
     ],
     [],
@@ -129,7 +138,8 @@ export default function ReadinessTable() {
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                style={{ transition: 'background-color var(--transition)' }}
+                style={{ transition: 'background-color var(--transition)', cursor: 'pointer' }}
+                onClick={() => navigate(`/equipment/${row.original.id}`)}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
                 }

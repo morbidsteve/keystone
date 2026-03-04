@@ -1,0 +1,745 @@
+# =============================================================================
+# DevSecOps Pipeline (DSOP) — Reusable Workflow
+# =============================================================================
+# A fully generic, project-agnostic DevSecOps pipeline. All project-specific
+# configuration is provided via workflow_call inputs. Supports an arbitrary
+# number of container images via the `images` JSON array input.
+#
+# Usage:
+#   jobs:
+#     dsop:
+#       uses: ./.github/workflows/dsop.yml
+#       with:
+#         project-name: 'My Project'
+#         images: '[{"name":"backend","context":"backend/","suffix":"my-backend","env_var":"BACKEND_IMAGE"}]'
+# =============================================================================
+
+name: DevSecOps Pipeline (DSOP)
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'Project display name for reports'
+        required: true
+        type: string
+      images:
+        description: 'JSON array of images. Each: {"name":"svc","context":"svc/","suffix":"my-svc","env_var":"SVC_IMAGE"}'
+        required: true
+        type: string
+      python-version:
+        description: 'Python version for backend'
+        type: string
+        default: '3.11'
+      node-version:
+        description: 'Node version for frontend'
+        type: string
+        default: '20'
+      registry:
+        description: 'Container registry'
+        type: string
+        default: 'ghcr.io'
+      fail-on-severity:
+        description: 'CVE severity threshold for scans'
+        type: string
+        default: 'critical'
+      has-backend:
+        description: 'Whether project has a Python/Go backend to lint/test'
+        type: boolean
+        default: true
+      has-frontend:
+        description: 'Whether project has a Node frontend to lint/test'
+        type: boolean
+        default: true
+      backend-path:
+        description: 'Backend source directory'
+        type: string
+        default: 'backend/'
+      frontend-path:
+        description: 'Frontend source directory'
+        type: string
+        default: 'frontend/'
+      backend-lint-command:
+        description: 'Backend lint command (run from backend-path)'
+        type: string
+        default: 'ruff check . && mypy app/ --ignore-missing-imports'
+      frontend-lint-command:
+        description: 'Frontend lint command (run from frontend-path)'
+        type: string
+        default: 'npx tsc -b'
+      backend-test-command:
+        description: 'Backend test command (run from backend-path)'
+        type: string
+        default: 'pytest tests/ -v --cov=app --cov-report=xml --cov-report=term'
+      frontend-test-command:
+        description: 'Frontend test command (run from frontend-path)'
+        type: string
+        default: 'npx vitest run --coverage'
+      backend-test-deps:
+        description: 'Pip packages for backend tests (space-separated)'
+        type: string
+        default: 'pytest pytest-cov pytest-asyncio httpx aiosqlite'
+      health-endpoint:
+        description: 'Backend health check path for DAST'
+        type: string
+        default: '/api/v1/health'
+      openapi-endpoint:
+        description: 'OpenAPI spec path for ZAP API scan'
+        type: string
+        default: '/api/v1/openapi.json'
+      backend-port:
+        description: 'Backend port for DAST health check'
+        type: number
+        default: 8000
+      frontend-port:
+        description: 'Frontend port for DAST'
+        type: number
+        default: 8080
+      ci-compose-file:
+        description: 'Docker Compose file for DAST environment'
+        type: string
+        default: 'docker-compose.ci.yml'
+      enable-dast:
+        description: 'Run OWASP ZAP DAST scans'
+        type: boolean
+        default: true
+      enable-signing:
+        description: 'Cosign signing and SBOM attestation'
+        type: boolean
+        default: true
+      label-namespace:
+        description: 'OCI label namespace prefix for custom labels'
+        type: string
+        default: 'io.dsop'
+      semgrep-configs:
+        description: 'Space-separated Semgrep rule configs'
+        type: string
+        default: 'p/owasp-top-ten p/cwe-top-25 p/python p/typescript p/react p/sql-injection p/command-injection p/xss'
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  security-events: write
+  pull-requests: write
+
+jobs:
+  # ============================================================
+  # PHASE 1: CODE QUALITY (all parallel)
+  # ============================================================
+
+  lint-backend:
+    name: "Lint: Backend"
+    if: ${{ inputs.has-backend }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install linting tools
+        run: pip install ruff mypy
+      - name: Run backend linter
+        working-directory: ${{ inputs.backend-path }}
+        run: ${{ inputs.backend-lint-command }}
+
+  lint-frontend:
+    name: "Lint: Frontend"
+    if: ${{ inputs.has-frontend }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.frontend-path }}package-lock.json
+      - name: Install dependencies
+        run: cd ${{ inputs.frontend-path }} && npm ci
+      - name: Run frontend linter
+        working-directory: ${{ inputs.frontend-path }}
+        run: ${{ inputs.frontend-lint-command }}
+
+  sast-scan:
+    name: "SAST: Semgrep"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Semgrep
+        run: pip3 install semgrep
+      - name: Run Semgrep scan
+        env:
+          SEMGREP_CONFIGS: ${{ inputs.semgrep-configs }}
+        run: |
+          CONFIGS=""
+          for cfg in $SEMGREP_CONFIGS; do
+            CONFIGS="$CONFIGS --config $cfg"
+          done
+          if [ -f .github/policies/semgrep-rules.yml ]; then
+            CONFIGS="$CONFIGS --config .github/policies/semgrep-rules.yml"
+          fi
+          semgrep scan $CONFIGS --sarif --output semgrep.sarif . || true
+      - if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: sast-semgrep
+
+  secrets-scan:
+    name: "Secrets: TruffleHog"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: trufflesecurity/trufflehog@v3.88.0
+        with:
+          path: ./
+          extra_args: --only-verified --json
+
+  clamav-scan:
+    name: "Malware: ClamAV"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ClamAV
+        run: |
+          sudo apt-get update && sudo apt-get install -y clamav clamav-daemon
+          sudo systemctl stop clamav-freshclam || true
+          sudo freshclam || true
+      - name: Scan source code
+        run: |
+          clamscan --recursive --infected --suppress-ok-results \
+            --exclude-dir='.git' --exclude-dir='node_modules' \
+            --exclude-dir='__pycache__' --exclude-dir='.venv' \
+            . | tee clamav-report.txt
+          if grep -q "Infected files: 0" clamav-report.txt; then
+            echo "No malware detected"
+          else
+            echo "Malware detected!"
+            exit 1
+          fi
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clamav-report
+          path: clamav-report.txt
+
+  license-check:
+    name: "License: Compliance"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Syft
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/v1.20.0/install.sh | sh -s -- -b /usr/local/bin
+      - name: Generate SBOM for license analysis
+        run: syft dir:. -o spdx-json > source-sbom.spdx.json
+      - name: Check licenses against policy
+        run: |
+          python3 -c "
+          import json, sys
+          sbom = json.load(open('source-sbom.spdx.json'))
+          licenses = set()
+          for pkg in sbom.get('packages', []):
+              lic = pkg.get('licenseConcluded', pkg.get('licenseDeclared', 'NOASSERTION'))
+              if lic and lic != 'NOASSERTION':
+                  licenses.add(lic)
+          blocked = {'GPL-2.0-only', 'GPL-3.0-only', 'AGPL-3.0-only', 'AGPL-3.0-or-later', 'SSPL-1.0', 'EUPL-1.1'}
+          flagged = licenses & blocked
+          if flagged:
+              print(f'BLOCKED licenses found: {flagged}')
+              sys.exit(1)
+          else:
+              print(f'All {len(licenses)} detected licenses are approved')
+              for lic in sorted(licenses):
+                  print(f'  - {lic}')
+          "
+
+  # ============================================================
+  # PHASE 2: BUILD & SCAN (depends on Phase 1)
+  # ============================================================
+
+  build-images:
+    name: "Build: ${{ matrix.image.name }}"
+    needs: [lint-backend, lint-frontend, sast-scan, secrets-scan, clamav-scan, license-check]
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Compute image name
+        id: image-name
+        run: echo "full=${{ inputs.registry }}/${{ github.repository }}/${{ matrix.image.suffix }}" >> $GITHUB_OUTPUT
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image-name.outputs.full }}
+          tags: |
+            type=sha,prefix=sha-,format=long
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.image.context }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            ${{ inputs.label-namespace }}.pipeline.run-id=${{ github.run_id }}
+          cache-from: type=gha,scope=${{ matrix.image.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image.name }}
+          build-args: |
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+
+      - name: Save build digest
+        run: echo "${{ steps.build.outputs.digest }}" > digest.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-digest-${{ matrix.image.name }}
+          path: digest.txt
+
+  scan-images:
+    name: "Scan: ${{ matrix.image.name }}"
+    needs: build-images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image reference
+        run: echo "IMAGE_REF=${{ inputs.registry }}/${{ github.repository }}/${{ matrix.image.suffix }}:sha-${{ github.sha }}" >> $GITHUB_ENV
+
+      - name: Install Syft
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/v1.20.0/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM
+        run: |
+          syft ${{ env.IMAGE_REF }} \
+            -o spdx-json=${{ matrix.image.name }}-sbom.spdx.json \
+            -o cyclonedx-json=${{ matrix.image.name }}-sbom.cyclonedx.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.image.name }}-sbom
+          path: |
+            ${{ matrix.image.name }}-sbom.spdx.json
+            ${{ matrix.image.name }}-sbom.cyclonedx.json
+
+      - name: Install Grype
+        run: curl -sSfL https://raw.githubusercontent.com/anchore/grype/v0.88.0/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Grype scan (report only)
+        run: |
+          grype sbom:${{ matrix.image.name }}-sbom.spdx.json \
+            --fail-on ${{ inputs.fail-on-severity }} \
+            --output json --file grype-${{ matrix.image.name }}-report.json || true
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grype-${{ matrix.image.name }}-report
+          path: grype-${{ matrix.image.name }}-report.json
+
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          image-ref: ${{ env.IMAGE_REF }}
+          format: 'sarif'
+          output: 'trivy-${{ matrix.image.name }}.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
+      - if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.image.name }}.sarif
+          category: trivy-${{ matrix.image.name }}
+
+      - name: Validate container hardening
+        run: |
+          echo "=== ${{ matrix.image.name }} Container Hardening Check ==="
+          USER_LINE=$(docker inspect ${{ env.IMAGE_REF }} --format '{{.Config.User}}')
+          if [ -z "$USER_LINE" ] || [ "$USER_LINE" = "root" ] || [ "$USER_LINE" = "0" ]; then
+            echo "FAIL: Container runs as root (User=$USER_LINE)"
+            exit 1
+          fi
+          echo "PASS: Non-root user: $USER_LINE"
+          if docker run --rm --entrypoint="" ${{ env.IMAGE_REF }} /bin/sh -c "echo shell_exists" 2>/dev/null; then
+            echo "WARNING: Shell available in image (consider distroless)"
+          else
+            echo "PASS: No shell in final image (distroless)"
+          fi
+
+  # ============================================================
+  # PHASE 3: TESTING (depends on Phase 2)
+  # ============================================================
+
+  test-backend:
+    name: "Test: Backend"
+    if: ${{ inputs.has-backend }}
+    needs: build-images
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Install dependencies
+        env:
+          TEST_DEPS: ${{ inputs.backend-test-deps }}
+        run: |
+          cd ${{ inputs.backend-path }}
+          pip install -r requirements.txt
+          pip install $TEST_DEPS
+      - name: Run backend tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://test_user:test_password@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379
+          TESTING: "true"
+        working-directory: ${{ inputs.backend-path }}
+        run: ${{ inputs.backend-test-command }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: ${{ inputs.backend-path }}coverage.xml
+          if-no-files-found: ignore
+
+  test-frontend:
+    name: "Test: Frontend"
+    if: ${{ inputs.has-frontend }}
+    needs: build-images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.frontend-path }}package-lock.json
+      - name: Install dependencies
+        run: cd ${{ inputs.frontend-path }} && npm ci
+      - name: Run frontend tests
+        working-directory: ${{ inputs.frontend-path }}
+        run: ${{ inputs.frontend-test-command }}
+
+  dast-scan:
+    name: "DAST: OWASP ZAP"
+    if: ${{ inputs.enable-dast }}
+    needs: build-images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image environment variables
+        shell: bash
+        run: |
+          echo '${{ inputs.images }}' | jq -c '.[]' | while read -r img; do
+            env_var=$(echo "$img" | jq -r '.env_var')
+            suffix=$(echo "$img" | jq -r '.suffix')
+            # Validate env_var is a safe variable name
+            if [[ ! "$env_var" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
+              echo "ERROR: Invalid env_var name: $env_var (must match ^[A-Z_][A-Z0-9_]*$)"
+              exit 1
+            fi
+            # Validate suffix has no special characters
+            if [[ ! "$suffix" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+              echo "ERROR: Invalid image suffix: $suffix"
+              exit 1
+            fi
+            IMAGE_REF="${{ inputs.registry }}/${{ github.repository }}/${suffix}:sha-${{ github.sha }}"
+            echo "${env_var}=${IMAGE_REF}" >> "$GITHUB_ENV"
+            echo "Set ${env_var}=${IMAGE_REF}"
+          done
+
+      - name: Start application stack
+        run: docker compose -f ${{ inputs.ci-compose-file }} up -d
+
+      - name: Wait for healthy
+        run: |
+          echo "Waiting for backend at port ${{ inputs.backend-port }}..."
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:${{ inputs.backend-port }}${{ inputs.health-endpoint }} > /dev/null 2>&1; then
+              echo "Backend healthy after ${i}s"
+              break
+            fi
+            if [ "$i" = "60" ]; then
+              echo "ERROR: Backend did not become healthy within 60s"
+              docker compose -f ${{ inputs.ci-compose-file }} logs
+              exit 1
+            fi
+            sleep 1
+          done
+          echo "Waiting for frontend at port ${{ inputs.frontend-port }}..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:${{ inputs.frontend-port }} > /dev/null 2>&1; then
+              echo "Frontend healthy after ${i}s"
+              break
+            fi
+            if [ "$i" = "30" ]; then
+              echo "WARNING: Frontend did not respond within 30s"
+            fi
+            sleep 1
+          done
+
+      - name: ZAP API scan
+        uses: zaproxy/action-api-scan@v0.10.0
+        with:
+          target: 'http://localhost:${{ inputs.backend-port }}${{ inputs.openapi-endpoint }}'
+          format: openapi
+          cmd_options: '-a -j'
+          allow_issue_writing: false
+          artifact_name: zap_api_scan
+
+      - name: ZAP full scan (host network)
+        run: |
+          docker run --rm --network host \
+            -v $(pwd)/reports:/zap/wrk:rw \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-full-scan.py -t http://localhost:${{ inputs.frontend-port }} -a \
+            -r zap_full_scan.html -J zap_full_scan.json || true
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: zap_full_scan
+          path: reports/zap_full_scan.*
+
+      - if: always()
+        name: Tear down application stack
+        run: docker compose -f ${{ inputs.ci-compose-file }} down -v
+
+  # ============================================================
+  # PHASE 4: SIGN & ATTEST (main/tags only, matrix)
+  # ============================================================
+
+  sign-and-attest:
+    name: "Sign: ${{ matrix.image.name }}"
+    if: >-
+      ${{ inputs.enable-signing
+          && !failure() && !cancelled()
+          && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
+    needs: [build-images, scan-images, test-backend, test-frontend, dast-scan]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    strategy:
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Cosign
+        run: |
+          curl -Lo /usr/local/bin/cosign https://github.com/sigstore/cosign/releases/download/v2.4.3/cosign-linux-amd64
+          chmod +x /usr/local/bin/cosign
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download build digest
+        uses: actions/download-artifact@v4
+        with:
+          name: build-digest-${{ matrix.image.name }}
+
+      - name: Download SBOM
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.image.name }}-sbom
+
+      - name: Compute image reference and digest
+        id: refs
+        run: |
+          IMAGE_REF="${{ inputs.registry }}/${{ github.repository }}/${{ matrix.image.suffix }}:sha-${{ github.sha }}"
+          DIGEST=$(cat digest.txt)
+          echo "image_ref=$IMAGE_REF" >> $GITHUB_OUTPUT
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Sign image
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign sign --yes ${{ steps.refs.outputs.image_ref }}@${{ steps.refs.outputs.digest }}
+
+      - name: Attach SBOM attestation
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign attest --yes \
+            --predicate ${{ matrix.image.name }}-sbom.spdx.json \
+            --type spdxjson \
+            ${{ steps.refs.outputs.image_ref }}@${{ steps.refs.outputs.digest }}
+
+      - name: Verify signature
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          cosign verify \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity-regexp "https://github.com/${{ github.repository }}/.github/workflows/.*@refs/(heads/main|tags/v.*)" \
+            ${{ steps.refs.outputs.image_ref }}@${{ steps.refs.outputs.digest }}
+
+  # ============================================================
+  # PHASE 5: COMPLIANCE GATE
+  # ============================================================
+
+  compliance-gate:
+    name: "Compliance: Final Gate"
+    needs: [sast-scan, secrets-scan, clamav-scan, license-check, scan-images, test-backend, test-frontend, dast-scan]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: scan-results/
+
+      - name: Generate compliance evidence report
+        run: |
+          cat > scan-results/COMPLIANCE_EVIDENCE.md << 'REPORT_EOF'
+          # ${{ inputs.project-name }} Compliance Evidence Report
+          **Generated:** GENERATED_TIMESTAMP
+          **Commit:** ${{ github.sha }}
+          **Branch:** ${{ github.ref_name }}
+          **Pipeline Run:** ${{ github.run_id }}
+
+          ## Quality Gate Results
+
+          | Check | Status | Tool |
+          |-------|--------|------|
+          | SAST | ${{ needs.sast-scan.result }} | Semgrep |
+          | Secrets | ${{ needs.secrets-scan.result }} | TruffleHog |
+          | Malware | ${{ needs.clamav-scan.result }} | ClamAV |
+          | License | ${{ needs.license-check.result }} | Syft |
+          | Image Scans | ${{ needs.scan-images.result }} | Grype + Trivy |
+          | Backend Tests | ${{ needs.test-backend.result }} | Configurable |
+          | Frontend Tests | ${{ needs.test-frontend.result }} | Configurable |
+          | DAST | ${{ needs.dast-scan.result }} | OWASP ZAP |
+
+          ## Compliance Framework Mapping
+
+          | Control | Framework | Pipeline Phase | Evidence |
+          |---------|-----------|----------------|----------|
+          | SA-11 (Developer Testing) | NIST 800-53 | Phase 3 — Test | Unit test results, coverage reports |
+          | SA-11(1) (Static Code Analysis) | NIST 800-53 | Phase 1 — SAST | Semgrep SARIF results |
+          | RA-5 (Vulnerability Monitoring) | NIST 800-53 | Phase 2 — Scan | Grype + Trivy reports |
+          | SI-7 (Software Integrity) | NIST 800-53 | Phase 4 — Sign | Cosign signatures, SBOM attestations |
+          | CM-14 (Signed Components) | NIST 800-53 | Phase 4 — Sign | Cosign keyless verification |
+          | V1.1 (Secure SDLC) | OWASP ASVS 4.0 | All Phases | Full pipeline evidence |
+          | V14.2 (Dependency) | OWASP ASVS 4.0 | Phase 1 — License, Phase 2 — Scan | SBOM, license check, CVE scans |
+          | V14.5 (HTTP Security) | OWASP ASVS 4.0 | Phase 3 — DAST | ZAP API + full scan reports |
+          | 4.1 (Image Provenance) | CIS Benchmarks | Phase 2 — Build | Build digests, OCI labels |
+          | 4.6 (Non-root Container) | CIS Benchmarks | Phase 2 — Scan | Container hardening validation |
+          | Build L2 (Scripted Build) | SLSA v1.0 | Phase 2 — Build | GitHub Actions workflow, BuildKit |
+          | Source L2 (Version Controlled) | SLSA v1.0 | Phase 1 | Git commit SHA, branch ref |
+          | Provenance L2 (Authenticated) | SLSA v1.0 | Phase 4 — Sign | Sigstore keyless signing, OIDC identity |
+          | Dependencies L2 (Recorded) | SLSA v1.0 | Phase 2 — Scan | SPDX + CycloneDX SBOMs |
+          REPORT_EOF
+          sed -i "s/GENERATED_TIMESTAMP/$(date -u +'%Y-%m-%dT%H:%M:%SZ')/" scan-results/COMPLIANCE_EVIDENCE.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: compliance-evidence
+          path: scan-results/COMPLIANCE_EVIDENCE.md
+
+      - name: Final gate check
+        run: |
+          FAILED=0
+          check_result() {
+            local name="$1"
+            local result="$2"
+            if [ "$result" = "failure" ]; then
+              echo "  FAIL: $name ($result)"
+              FAILED=1
+            elif [ "$result" = "cancelled" ]; then
+              echo "  SKIP: $name ($result)"
+            elif [ "$result" = "skipped" ]; then
+              echo "  SKIP: $name ($result)"
+            else
+              echo "  PASS: $name"
+            fi
+          }
+
+          echo ""
+          echo "======================================"
+          echo "  ${{ inputs.project-name }} COMPLIANCE GATE RESULTS"
+          echo "======================================"
+          echo ""
+          check_result "SAST (Semgrep)" "${{ needs.sast-scan.result }}"
+          check_result "Secrets (TruffleHog)" "${{ needs.secrets-scan.result }}"
+          check_result "Malware (ClamAV)" "${{ needs.clamav-scan.result }}"
+          check_result "License Compliance" "${{ needs.license-check.result }}"
+          check_result "Image Scans" "${{ needs.scan-images.result }}"
+          check_result "Backend Tests" "${{ needs.test-backend.result }}"
+          check_result "Frontend Tests" "${{ needs.test-frontend.result }}"
+          check_result "DAST (ZAP)" "${{ needs.dast-scan.result }}"
+          echo ""
+          echo "======================================"
+
+          if [ $FAILED -ne 0 ]; then
+            echo ""
+            echo "PIPELINE BLOCKED — Fix failures above before merge"
+            exit 1
+          fi
+
+          echo ""
+          echo "ALL GATES PASSED — Safe to merge/deploy"
