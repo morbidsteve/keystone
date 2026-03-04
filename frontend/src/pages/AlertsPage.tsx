@@ -1,19 +1,12 @@
 import { useState } from 'react';
 import { AlertTriangle, AlertCircle, Info, Check, Filter } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import Card from '@/components/ui/Card';
 import StatusDot from '@/components/ui/StatusDot';
 import { AlertSeverity, type Alert } from '@/lib/types';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
-
-const demoAlerts: Alert[] = [
-  { id: '1', type: 'SUPPLY_CRITICAL' as never, severity: AlertSeverity.CRITICAL, unitId: '2-1', unitName: '2/1 BN', title: 'CL V AMMUNITION CRITICAL', message: '5.56mm Ball at 45% authorized level. 2 DOS remaining at current consumption rate. Emergency resupply requested.', acknowledged: false, createdAt: '2026-03-03T06:00:00Z' },
-  { id: '2', type: 'SUPPLY_LOW' as never, severity: AlertSeverity.WARNING, unitId: '1-1', unitName: '1/1 BN', title: 'CL III POL LOW', message: 'JP-8 at 62% authorized. Consumption rate exceeding projections. 4 DOS remaining.', acknowledged: false, createdAt: '2026-03-03T07:30:00Z' },
-  { id: '3', type: 'EQUIPMENT_DOWN' as never, severity: AlertSeverity.WARNING, unitId: '1-1', unitName: '1/1 BN', title: 'AAV READINESS BELOW THRESHOLD', message: '4x AAV NMC (33%). Water pump failure on AAV-12, transmission leak on AAV-08. Parts on backorder, ETA 48hrs.', acknowledged: false, createdAt: '2026-03-03T06:30:00Z' },
-  { id: '4', type: 'MOVEMENT_DELAYED' as never, severity: AlertSeverity.WARNING, unitId: 'clb-1', unitName: 'CLB-1', title: 'CONVOY CHARLIE DELAYED', message: 'Delayed due to MSR BRAVO bridge restriction. Rerouting via ASR DELTA. New ETA +4hrs.', acknowledged: false, createdAt: '2026-03-03T08:00:00Z' },
-  { id: '5', type: 'READINESS_DROP' as never, severity: AlertSeverity.CRITICAL, unitId: '3-1', unitName: '3/1 BN', title: 'UNIT READINESS CRITICAL', message: '3/1 BN overall readiness dropped to 68%. Multiple supply classes AMBER/RED. Sustainability at 3 DOS.', acknowledged: false, createdAt: '2026-03-03T05:00:00Z' },
-  { id: '6', type: 'SUPPLY_LOW' as never, severity: AlertSeverity.WARNING, unitId: '2-1', unitName: '2/1 BN', title: 'CL IX PARTS SHORTAGE', message: 'HMMWV repair parts at 70%. Multiple items on backorder. Expected impact on vehicle readiness.', acknowledged: true, acknowledgedBy: 'sgt.jones', acknowledgedAt: '2026-03-03T07:00:00Z', createdAt: '2026-03-03T04:00:00Z' },
-  { id: '7', type: 'INGESTION_ERROR' as never, severity: AlertSeverity.INFO, unitId: '', unitName: 'SYSTEM', title: 'INGESTION PARSE ERROR', message: 'File bad_format.txt could not be parsed. Unrecognized format.', acknowledged: true, acknowledgedBy: 'cpl.smith', acknowledgedAt: '2026-03-03T09:00:00Z', createdAt: '2026-03-03T08:30:00Z' },
-];
+import { getAlerts } from '@/api/alerts';
+import { useDashboardStore } from '@/stores/dashboardStore';
 
 function getSeverityIcon(severity: AlertSeverity) {
   switch (severity) {
@@ -42,25 +35,33 @@ function getSeverityDot(severity: AlertSeverity) {
 export default function AlertsPage() {
   const [severityFilter, setSeverityFilter] = useState<string>('ALL');
   const [showAcknowledged, setShowAcknowledged] = useState(false);
+  const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
-  const filtered = demoAlerts.filter((a) => {
+  const { data: apiAlerts } = useQuery({
+    queryKey: ['alerts', 'page', selectedUnitId],
+    queryFn: () => getAlerts({ unitId: selectedUnitId ?? undefined }),
+  });
+
+  const allAlerts: Alert[] = apiAlerts || [];
+
+  const filtered = allAlerts.filter((a) => {
     if (severityFilter !== 'ALL' && a.severity !== severityFilter) return false;
     if (!showAcknowledged && a.acknowledged) return false;
     return true;
   });
 
-  const criticalCount = demoAlerts.filter((a) => a.severity === AlertSeverity.CRITICAL && !a.acknowledged).length;
-  const warningCount = demoAlerts.filter((a) => a.severity === AlertSeverity.WARNING && !a.acknowledged).length;
+  const criticalCount = allAlerts.filter((a) => a.severity === AlertSeverity.CRITICAL && !a.acknowledged).length;
+  const warningCount = allAlerts.filter((a) => a.severity === AlertSeverity.WARNING && !a.acknowledged).length;
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Summary */}
       <div className="grid-responsive-4col">
         {[
-          { label: 'TOTAL ACTIVE', value: demoAlerts.filter((a) => !a.acknowledged).length, color: 'var(--color-text-bright)' },
+          { label: 'TOTAL ACTIVE', value: allAlerts.filter((a) => !a.acknowledged).length, color: 'var(--color-text-bright)' },
           { label: 'CRITICAL', value: criticalCount, color: 'var(--color-danger)' },
           { label: 'WARNING', value: warningCount, color: 'var(--color-warning)' },
-          { label: 'ACKNOWLEDGED', value: demoAlerts.filter((a) => a.acknowledged).length, color: 'var(--color-text-muted)' },
+          { label: 'ACKNOWLEDGED', value: allAlerts.filter((a) => a.acknowledged).length, color: 'var(--color-text-muted)' },
         ].map((stat) => (
           <div
             key={stat.label}

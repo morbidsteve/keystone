@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useDashboard } from '@/hooks/useDashboard';
 import { useAlerts } from '@/hooks/useAlerts';
 import SupplyStatusCard from './SupplyStatusCard';
@@ -28,36 +29,54 @@ const demoSupplyData: SupplyClassSummary[] = [
   { supplyClass: SupplyClass.II, name: 'Clothing & Equip', percentage: 88, dos: 10, status: SupplyStatus.GREEN, trend: 'UP', onHand: 8800, authorized: 10000 },
 ];
 
-const demoReadinessData = [
-  { type: 'HMMWV', percent: 87 },
-  { type: 'MTVR', percent: 74 },
-  { type: 'LAV-25', percent: 92 },
-  { type: 'AAV', percent: 68 },
-  { type: 'M777', percent: 95 },
-  { type: 'JLTV', percent: 81 },
-];
-
 const demoAlerts: Alert[] = [
   { id: '1', type: 'SUPPLY_CRITICAL' as never, severity: AlertSeverity.CRITICAL, unitId: '1-1', unitName: '1/1 BN', title: 'CL V CRITICAL', message: 'Ammunition below 50% - 2 DOS remaining', acknowledged: false, createdAt: new Date(Date.now() - 1800000).toISOString() },
   { id: '2', type: 'SUPPLY_LOW' as never, severity: AlertSeverity.WARNING, unitId: '2-1', unitName: '2/1 BN', title: 'CL III LOW', message: 'POL at 62% authorized level - consumption rate increasing', acknowledged: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
   { id: '3', type: 'EQUIPMENT_DOWN' as never, severity: AlertSeverity.WARNING, unitId: '1-1', unitName: '1/1 BN', title: 'AAV READINESS DROP', message: '3x AAV NMC - parts on order, ETA 48hrs', acknowledged: false, createdAt: new Date(Date.now() - 7200000).toISOString() },
 ];
 
-const demoStatusTiles = [
-  { label: 'SUPPLY', status: SupplyStatus.AMBER, value: 74, detail: '6/10 classes green' },
-  { label: 'MAINTENANCE', status: SupplyStatus.GREEN, value: 84, detail: '312/371 MC' },
-  { label: 'TRANSPORTATION', status: SupplyStatus.GREEN, value: 91, detail: '3 active convoys' },
-  { label: 'ENGINEERING', status: SupplyStatus.GREEN, value: 95, detail: 'All projects on track' },
-  { label: 'HEALTH SVCS', status: SupplyStatus.GREEN, value: 92, detail: 'CL VIII adequate' },
-  { label: 'SERVICES', status: SupplyStatus.AMBER, value: 78, detail: '2 facilities degraded' },
-];
-
 export default function CommanderView() {
-  const { summary, supplyOverview, sustainability, isLoading } = useDashboard();
+  const { summary, supplyOverview, readiness, sustainability, isLoading } = useDashboard();
   const { alerts, acknowledgeAlert } = useAlerts();
 
   const supplyData = supplyOverview || demoSupplyData;
   const displayAlerts = alerts.length > 0 ? alerts : demoAlerts;
+
+  // Derive readiness data from API or use summary-based data
+  const readinessData = useMemo(() => {
+    if (readiness?.byType && readiness.byType.length > 0) {
+      return readiness.byType.map((r) => ({
+        type: r.type,
+        percent: r.readinessPercent,
+      }));
+    }
+    return [];
+  }, [readiness]);
+
+  // Compute status tiles from API data when available
+  const statusTiles = useMemo(() => {
+    const supplyPct = supplyOverview
+      ? Math.round(supplyOverview.reduce((s, c) => s + c.percentage, 0) / supplyOverview.length)
+      : 74;
+    const supplyGreenCount = supplyOverview
+      ? supplyOverview.filter((c) => c.status === SupplyStatus.GREEN).length
+      : 6;
+    const supplyTotal = supplyOverview ? supplyOverview.length : 10;
+
+    const maintenancePct = readiness?.overall ?? 84;
+    const maintenanceStatus = maintenancePct >= 90 ? SupplyStatus.GREEN : maintenancePct >= 75 ? SupplyStatus.AMBER : SupplyStatus.RED;
+
+    const movementCount = summary?.activeMovements ?? 3;
+
+    return [
+      { label: 'SUPPLY', status: supplyPct >= 80 ? SupplyStatus.GREEN : supplyPct >= 60 ? SupplyStatus.AMBER : SupplyStatus.RED, value: supplyPct, detail: `${supplyGreenCount}/${supplyTotal} classes green` },
+      { label: 'MAINTENANCE', status: maintenanceStatus, value: Math.round(maintenancePct), detail: readiness ? `${readiness.byType.reduce((s, r) => s + r.missionCapable, 0)}/${readiness.byType.reduce((s, r) => s + r.authorized, 0)} MC` : '312/371 MC' },
+      { label: 'TRANSPORTATION', status: SupplyStatus.GREEN, value: 91, detail: `${movementCount} active convoys` },
+      { label: 'ENGINEERING', status: SupplyStatus.GREEN, value: 95, detail: 'All projects on track' },
+      { label: 'HEALTH SVCS', status: SupplyStatus.GREEN, value: 92, detail: 'CL VIII adequate' },
+      { label: 'SERVICES', status: SupplyStatus.AMBER, value: 78, detail: '2 facilities degraded' },
+    ];
+  }, [supplyOverview, readiness, summary]);
 
   if (isLoading) {
     return (
@@ -75,7 +94,7 @@ export default function CommanderView() {
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Top Row: Status Tiles */}
       <div className="grid-responsive-6col">
-        {demoStatusTiles.map((tile) => {
+        {statusTiles.map((tile) => {
           const color = getStatusColor(tile.status);
           return (
             <div
@@ -153,7 +172,7 @@ export default function CommanderView() {
               justifyItems: 'center',
             }}
           >
-            {demoReadinessData.map((eq) => (
+            {readinessData.map((eq) => (
               <ReadinessGauge key={eq.type} percent={eq.percent} label={eq.type} size={72} />
             ))}
           </div>

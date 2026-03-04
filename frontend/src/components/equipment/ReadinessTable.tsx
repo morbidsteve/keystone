@@ -8,27 +8,27 @@ import {
   createColumnHelper,
   type SortingState,
 } from '@tanstack/react-table';
+import { useQuery } from '@tanstack/react-query';
 import { ArrowUpDown, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
-import { SupplyStatus, type EquipmentRecord } from '@/lib/types';
+import { type EquipmentRecord } from '@/lib/types';
 import { getStatusColor } from '@/lib/utils';
 import StatusBadge from '@/components/ui/StatusBadge';
-
-const demoData: EquipmentRecord[] = [
-  { id: '1', unitId: '1-1', unitName: '1/1 BN', type: 'HMMWV', tamcn: 'D1092', authorized: 48, onHand: 46, missionCapable: 40, notMissionCapable: 6, readinessPercent: 87, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T08:00:00Z' },
-  { id: '2', unitId: '2-1', unitName: '2/1 BN', type: 'HMMWV', tamcn: 'D1092', authorized: 48, onHand: 48, missionCapable: 44, notMissionCapable: 4, readinessPercent: 92, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T07:00:00Z' },
-  { id: '3', unitId: '1-1', unitName: '1/1 BN', type: 'MTVR', tamcn: 'D0095', authorized: 24, onHand: 24, missionCapable: 18, notMissionCapable: 6, readinessPercent: 75, status: SupplyStatus.AMBER, lastUpdated: '2026-03-03T07:00:00Z' },
-  { id: '4', unitId: '2-1', unitName: '2/1 BN', type: 'MTVR', tamcn: 'D0095', authorized: 24, onHand: 22, missionCapable: 20, notMissionCapable: 2, readinessPercent: 91, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T06:00:00Z' },
-  { id: '5', unitId: '1-1', unitName: '1/1 BN', type: 'LAV-25', tamcn: 'E0846', authorized: 16, onHand: 16, missionCapable: 15, notMissionCapable: 1, readinessPercent: 94, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T08:00:00Z' },
-  { id: '6', unitId: '1-1', unitName: '1/1 BN', type: 'AAV', tamcn: 'E0902', authorized: 12, onHand: 12, missionCapable: 8, notMissionCapable: 4, readinessPercent: 67, status: SupplyStatus.RED, lastUpdated: '2026-03-03T06:30:00Z' },
-  { id: '7', unitId: '2-1', unitName: '2/1 BN', type: 'M777', tamcn: 'D1168', authorized: 6, onHand: 6, missionCapable: 6, notMissionCapable: 0, readinessPercent: 100, status: SupplyStatus.GREEN, lastUpdated: '2026-03-03T08:00:00Z' },
-  { id: '8', unitId: '1-1', unitName: '1/1 BN', type: 'JLTV', tamcn: 'D1200', authorized: 36, onHand: 34, missionCapable: 28, notMissionCapable: 6, readinessPercent: 82, status: SupplyStatus.AMBER, lastUpdated: '2026-03-03T07:00:00Z' },
-];
+import { getEquipmentRecords } from '@/api/equipment';
+import { useDashboardStore } from '@/stores/dashboardStore';
 
 const columnHelper = createColumnHelper<EquipmentRecord>();
 
 export default function ReadinessTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const navigate = useNavigate();
+  const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
+
+  const { data: apiData } = useQuery({
+    queryKey: ['equipment', 'readiness-table', selectedUnitId],
+    queryFn: () => getEquipmentRecords({ unitId: selectedUnitId ?? undefined }),
+  });
+
+  const tableData = useMemo(() => apiData?.data || [], [apiData]);
 
   const columns = useMemo(
     () => [
@@ -75,7 +75,7 @@ export default function ReadinessTable() {
   );
 
   const table = useReactTable({
-    data: demoData,
+    data: tableData,
     columns,
     state: { sorting },
     onSortingChange: setSorting,

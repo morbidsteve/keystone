@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { FileText, Check, Download, Clock, User } from 'lucide-react';
+import { FileText, Check, Download, Clock, User, FileDown, Send, X, Loader } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { ReportStatus, ReportType } from '@/lib/types';
-import type { Report, ReportContent } from '@/lib/types';
+import type { Report, ReportContent, ExportDestination, ApiExportResultItem } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
-import { getReports, finalizeReport as apiFinalizeReport } from '@/api/reports';
+import { getReports, finalizeReport as apiFinalizeReport, exportReportPdf, getExportDestinations, exportReportToApi } from '@/api/reports';
 import { useReportStore } from '@/stores/reportStore';
 
 function getReportStatusColor(status: ReportStatus | string) {
@@ -36,6 +36,8 @@ function statusColor(s: string): string {
 export default function ReportViewer() {
   const { selectedReport, generatedReports, setSelectedReport, setReports, updateReport } = useReportStore();
   const [loading, setLoading] = useState(true);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [showApiExportModal, setShowApiExportModal] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -85,6 +87,35 @@ export default function ReportViewer() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportPdf = async () => {
+    if (!selectedReport) return;
+    setPdfLoading(true);
+    try {
+      const blob = await exportReportPdf(selectedReport.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedReport.title.replace(/[^a-zA-Z0-9-_ ]/g, '') || 'report'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Silently fail in demo
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const exportBtnStyle: React.CSSProperties = {
+    display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px',
+    backgroundColor: 'transparent',
+    border: '1px solid var(--color-border-strong)',
+    borderRadius: 'var(--radius)',
+    color: 'var(--color-text-muted)',
+    fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '1px', cursor: 'pointer',
   };
 
   return (
@@ -162,18 +193,15 @@ export default function ReportViewer() {
                   <Check size={10} /> FINALIZE
                 </button>
               )}
-              <button
-                onClick={handleExport}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid var(--color-border-strong)',
-                  borderRadius: 'var(--radius)',
-                  color: 'var(--color-text-muted)',
-                  fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '1px', cursor: 'pointer',
-                }}
-              >
-                <Download size={10} /> EXPORT
+              <button onClick={handleExportPdf} disabled={pdfLoading} style={exportBtnStyle}>
+                {pdfLoading ? <Loader size={10} className="animate-spin" /> : <FileDown size={10} />}
+                {pdfLoading ? 'GENERATING...' : 'EXPORT PDF'}
+              </button>
+              <button onClick={() => setShowApiExportModal(true)} style={exportBtnStyle}>
+                <Send size={10} /> EXPORT TO API
+              </button>
+              <button onClick={handleExport} style={exportBtnStyle}>
+                <Download size={10} /> EXPORT TXT
               </button>
             </div>
           }
@@ -199,6 +227,188 @@ export default function ReportViewer() {
           }
         </Card>
       )}
+
+      {/* API Export Modal */}
+      {showApiExportModal && selectedReport && (
+        <ApiExportModal
+          reportId={selectedReport.id}
+          onClose={() => setShowApiExportModal(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// API Export Modal
+// ---------------------------------------------------------------------------
+
+function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () => void }) {
+  const [destinations, setDestinations] = useState<ExportDestination[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [results, setResults] = useState<ApiExportResultItem[] | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const dests = await getExportDestinations();
+        setDestinations(dests.filter((d) => d.is_active));
+      } catch {
+        // ignore
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const toggleDest = (id: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleSend = async () => {
+    if (selected.size === 0) return;
+    setSending(true);
+    try {
+      const resp = await exportReportToApi(reportId, Array.from(selected));
+      setResults(resp.results);
+    } catch {
+      setResults([]);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex',
+    alignItems: 'center', justifyContent: 'center', zIndex: 9999,
+  };
+
+  const modalStyle: React.CSSProperties = {
+    backgroundColor: 'var(--color-bg-surface)', border: '1px solid var(--color-border)',
+    borderRadius: 'var(--radius)', padding: 20, minWidth: 400, maxWidth: 500,
+    maxHeight: '80vh', overflow: 'auto',
+  };
+
+  const checkboxRowStyle: React.CSSProperties = {
+    display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
+    backgroundColor: 'var(--color-bg)', borderRadius: 'var(--radius)',
+    border: '1px solid var(--color-border)', cursor: 'pointer',
+  };
+
+  return (
+    <div style={overlayStyle} onClick={onClose}>
+      <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, letterSpacing: '1.5px', color: 'var(--color-text-bright)' }}>
+            EXPORT TO API
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+            <X size={16} />
+          </button>
+        </div>
+
+        {loading ? (
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', textAlign: 'center', padding: 20 }}>
+            Loading destinations...
+          </div>
+        ) : destinations.length === 0 ? (
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', textAlign: 'center', padding: 20 }}>
+            No active export destinations configured.
+          </div>
+        ) : results ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>
+              EXPORT RESULTS
+            </div>
+            {results.map((r) => (
+              <div key={r.destination_id} style={{
+                ...checkboxRowStyle,
+                borderColor: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)',
+                cursor: 'default',
+              }}>
+                <div style={{
+                  width: 8, height: 8, borderRadius: '50%',
+                  backgroundColor: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)',
+                }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                    {r.destination_name}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+                    {r.success ? `Success (${r.status_code})` : `Failed: ${r.error || 'Unknown error'}`}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button
+              onClick={onClose}
+              style={{
+                marginTop: 8, padding: '8px 16px', backgroundColor: 'var(--color-accent)',
+                border: 'none', borderRadius: 'var(--radius)', color: 'var(--color-bg)',
+                fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '1px', cursor: 'pointer',
+              }}
+            >
+              CLOSE
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>
+              SELECT DESTINATIONS
+            </div>
+            {destinations.map((d) => (
+              <div key={d.id} style={checkboxRowStyle} onClick={() => toggleDest(d.id)}>
+                <input
+                  type="checkbox"
+                  checked={selected.has(d.id)}
+                  onChange={() => toggleDest(d.id)}
+                  style={{ accentColor: 'var(--color-accent)' }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                    {d.name}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+                    {d.url}
+                  </div>
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 8, padding: '2px 6px',
+                  borderRadius: 'var(--radius)', backgroundColor: 'var(--color-bg-surface)',
+                  border: '1px solid var(--color-border)', color: 'var(--color-text-muted)',
+                  textTransform: 'uppercase', letterSpacing: '0.5px',
+                }}>
+                  {d.auth_type}
+                </div>
+              </div>
+            ))}
+            <button
+              onClick={handleSend}
+              disabled={selected.size === 0 || sending}
+              style={{
+                marginTop: 8, padding: '8px 16px',
+                backgroundColor: selected.size === 0 || sending ? 'var(--color-bg-surface)' : 'var(--color-accent)',
+                border: selected.size === 0 || sending ? '1px solid var(--color-border)' : 'none',
+                borderRadius: 'var(--radius)',
+                color: selected.size === 0 || sending ? 'var(--color-text-muted)' : 'var(--color-bg)',
+                fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '1px',
+                cursor: selected.size === 0 || sending ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              }}
+            >
+              {sending ? <><Loader size={12} className="animate-spin" /> SENDING...</> : <><Send size={12} /> SEND TO {selected.size} DESTINATION{selected.size !== 1 ? 'S' : ''}</>}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

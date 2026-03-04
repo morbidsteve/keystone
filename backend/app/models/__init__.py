@@ -22,7 +22,7 @@ from app.models.maintenance import (
     MaintenanceLabor,
     LaborType,
 )
-from app.models.report import Report, ReportType, ReportStatus
+from app.models.report import Report, ReportType, ReportStatus, ReportExportDestination, AuthType
 from app.models.raw_data import RawData, SourceType, ParseStatus
 from app.models.alert import Alert, AlertType, AlertSeverity
 from app.models.canonical_schema import CanonicalField
@@ -83,6 +83,8 @@ __all__ = [
     "Report",
     "ReportType",
     "ReportStatus",
+    "ReportExportDestination",
+    "AuthType",
     "RawData",
     "SourceType",
     "ParseStatus",

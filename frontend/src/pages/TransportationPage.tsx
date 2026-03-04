@@ -5,19 +5,21 @@ import ThroughputChart from '@/components/transportation/ThroughputChart';
 import RoutePlannerModal from '@/components/transportation/RoutePlannerModal';
 import { mockApi } from '@/api/mockClient';
 import type { Movement } from '@/lib/types';
+import { useDashboardStore } from '@/stores/dashboardStore';
 
 export default function TransportationPage() {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [selectedConvoyId, setSelectedConvoyId] = useState<string | null>(null);
   const [routePlannerOpen, setRoutePlannerOpen] = useState(false);
+  const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
   useEffect(() => {
-    mockApi.getMovements().then(setMovements);
-  }, []);
+    mockApi.getMovements({ unitId: selectedUnitId ?? undefined }).then(setMovements);
+  }, [selectedUnitId]);
 
   const handleSaveRoute = async (data: Partial<Movement>) => {
     await mockApi.createMovement(data);
-    const updated = await mockApi.getMovements();
+    const updated = await mockApi.getMovements({ unitId: selectedUnitId ?? undefined });
     setMovements(updated);
     setRoutePlannerOpen(false);
   };

@@ -5,10 +5,12 @@ import SupplyTable from '@/components/supply/SupplyTable';
 import SupplyClassBreakdown from '@/components/supply/SupplyClassBreakdown';
 import DOSCalculator from '@/components/supply/DOSCalculator';
 import ConsumptionChart from '@/components/dashboard/ConsumptionChart';
+import { useDashboardStore } from '@/stores/dashboardStore';
 
 export default function SupplyPage() {
   const [classFilter, setClassFilter] = useState<SupplyClass | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<SupplyStatus | undefined>(undefined);
+  const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -91,7 +93,7 @@ export default function SupplyPage() {
 
       {/* Table */}
       <div className="responsive-table-wrapper">
-        <SupplyTable classFilter={classFilter} statusFilter={statusFilter} />
+        <SupplyTable unitFilter={selectedUnitId ?? undefined} classFilter={classFilter} statusFilter={statusFilter} />
       </div>
 
       {/* Bottom Row: Breakdown + Charts + Calculator */}
