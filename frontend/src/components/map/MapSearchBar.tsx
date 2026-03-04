@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useMap } from 'react-leaflet';
+import L from 'leaflet';
 import { Search, X, MapPin, Loader2 } from 'lucide-react';
 import {
   mgrsToLatLon,
@@ -68,25 +69,14 @@ export default function MapSearchBar() {
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Prevent Leaflet from receiving events on the search bar container
+  // Prevent Leaflet from receiving click/scroll events on the search bar
+  // Uses Leaflet's own helpers which stop propagation at mousedown level,
+  // allowing React 18's click event delegation to still work.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-
-    const stop = (e: Event) => e.stopPropagation();
-    // Stop scroll, click, dblclick, mousedown from reaching the map
-    const events = [
-      'click',
-      'dblclick',
-      'mousedown',
-      'mouseup',
-      'wheel',
-      'touchstart',
-    ] as const;
-    events.forEach((evt) => el.addEventListener(evt, stop));
-    return () => {
-      events.forEach((evt) => el.removeEventListener(evt, stop));
-    };
+    L.DomEvent.disableClickPropagation(el);
+    L.DomEvent.disableScrollPropagation(el);
   }, []);
 
   // Click-outside handler to close dropdown
