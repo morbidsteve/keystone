@@ -23,6 +23,7 @@ import type {
   Movement,
   Alert,
   Report,
+  ReportContent,
   RawData,
   ParsedRecord,
   ConsumptionDataPoint,
@@ -34,7 +35,6 @@ import type {
   ReportFilters,
   GenerateReportParams,
   ReportStatus,
-  ReportType,
   MovementStatus,
   CargoItem,
   Personnel,
@@ -44,6 +44,7 @@ import type {
 } from '@/lib/types';
 
 import {
+  ReportType,
   WorkOrderStatus,
 } from '@/lib/types';
 
@@ -468,19 +469,25 @@ export const mockApi = {
 
   async generateReport(params: GenerateReportParams): Promise<Report> {
     await mockDelay(800);
-    return {
+    const unitName =
+      DEMO_UNITS.find((u) => u.id === params.unitId)?.abbreviation ||
+      'Unknown';
+    const content = generateMockReportContent(params.type, params.unitId, unitName);
+    const report: Report = {
       id: 'rpt-new-' + Date.now(),
       type: params.type,
       title: params.title || `${params.type} Report`,
       unitId: params.unitId,
-      unitName:
-        DEMO_UNITS.find((u) => u.id === params.unitId)?.abbreviation ||
-        'Unknown',
+      unitName,
       dateRange: params.dateRange,
-      status: 'GENERATING' as ReportStatus,
+      status: 'READY' as ReportStatus,
+      content: JSON.stringify(content),
+      parsedContent: content,
       generatedBy: 'Demo User',
       generatedAt: new Date().toISOString(),
     };
+    demoReports = [report, ...demoReports];
+    return report;
   },
 
   async getReport(id: string): Promise<Report> {
@@ -931,3 +938,280 @@ export const mockApi = {
     );
   },
 };
+
+// ---------------------------------------------------------------------------
+// Mock report content generator — builds realistic structured data
+// from existing demo data for each report type.
+// ---------------------------------------------------------------------------
+
+function generateMockReportContent(
+  reportType: ReportType | string,
+  unitId: string,
+  unitName: string,
+): ReportContent {
+  const now = new Date();
+  const base: ReportContent = {
+    report_type: String(reportType),
+    unit: { id: Number(unitId) || 1, name: unitName, abbreviation: unitName },
+    generated_at: now.toISOString(),
+    period_start: new Date(now.getTime() - 7 * 86400000).toISOString(),
+    period_end: now.toISOString(),
+  };
+
+  switch (reportType) {
+    case ReportType.LOGSTAT:
+    case 'LOGSTAT':
+      return {
+        ...base,
+        dtg: now.toISOString(),
+        as_of: now.toISOString(),
+        supply_status: [
+          {
+            class: 'I', class_name: 'Subsistence',
+            items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'I').slice(0, 3).map(r => ({
+              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
+              consumption_rate: r.consumptionRate, status: r.status,
+            })),
+            overall_status: 'AMBER',
+          },
+          {
+            class: 'III', class_name: 'POL (Petroleum, Oils, Lubricants)',
+            items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'III').slice(0, 3).map(r => ({
+              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
+              consumption_rate: r.consumptionRate, status: r.status,
+            })),
+            overall_status: 'RED',
+          },
+          {
+            class: 'V', class_name: 'Ammunition',
+            items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'V').slice(0, 3).map(r => ({
+              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
+              consumption_rate: r.consumptionRate, status: r.status,
+            })),
+            overall_status: 'GREEN',
+          },
+          {
+            class: 'IX', class_name: 'Repair Parts',
+            items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'IX').slice(0, 3).map(r => ({
+              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
+              consumption_rate: r.consumptionRate, status: r.status,
+            })),
+            overall_status: 'AMBER',
+          },
+        ],
+        equipment_readiness: {
+          total_possessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
+          total_mission_capable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
+          readiness_pct: 87.3,
+          status: 'AMBER',
+        },
+        open_work_orders: demoWorkOrders.filter(wo => wo.status !== WorkOrderStatus.COMPLETE).length,
+        active_movements: DEMO_MOVEMENTS.filter(m => m.status === 'EN_ROUTE' || m.status === 'PLANNED').length,
+        personnel_strength: demoPersonnel.filter(p => p.status !== 'INACTIVE').length,
+        total_supply_items: DEMO_SUPPLY_RECORDS.length,
+      };
+
+    case ReportType.READINESS:
+    case 'READINESS':
+      return {
+        ...base,
+        overall_readiness_pct: 87.3,
+        overall_status: 'AMBER',
+        total_possessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
+        total_mission_capable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
+        total_nmc: DEMO_EQUIPMENT.reduce((s, e) => s + e.notMissionCapable, 0),
+        equipment_types: DEMO_EQUIPMENT.map(e => ({
+          tamcn: e.tamcn,
+          nomenclature: e.type,
+          total_possessed: e.onHand,
+          mission_capable: e.missionCapable,
+          nmc_maintenance: Math.floor(e.notMissionCapable * 0.6),
+          nmc_supply: Math.ceil(e.notMissionCapable * 0.4),
+          readiness_pct: e.readinessPercent,
+          status: e.readinessPercent >= 90 ? 'GREEN' : e.readinessPercent >= 75 ? 'AMBER' : 'RED',
+        })),
+        equipment_type_count: DEMO_EQUIPMENT.length,
+        individual_status_breakdown: {
+          FMC: demoIndividualEquipment.filter(i => i.status === 'FMC').length,
+          NMC_M: demoIndividualEquipment.filter(i => i.status === 'NMC_M').length,
+          NMC_S: demoIndividualEquipment.filter(i => i.status === 'NMC_S').length,
+          ADMIN: demoIndividualEquipment.filter(i => i.status === 'ADMIN').length,
+          DEADLINED: demoIndividualEquipment.filter(i => i.status === 'DEADLINED').length,
+        },
+        deadlined_items: demoIndividualEquipment
+          .filter(i => i.status === 'DEADLINED')
+          .slice(0, 5)
+          .map(i => ({
+            bumper_number: i.bumperNumber,
+            nomenclature: i.nomenclature,
+            tamcn: i.tamcn,
+            equipment_type: i.equipmentType,
+          })),
+      };
+
+    case ReportType.SUPPLY_STATUS:
+    case 'SUPPLY_STATUS': {
+      const classes = ['I', 'II', 'III', 'IV', 'V', 'VIII', 'IX'];
+      const classSummaries = classes.map(cls => {
+        const records = DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === cls);
+        const totalOnHand = records.reduce((s, r) => s + r.onHand, 0);
+        const totalRequired = records.reduce((s, r) => s + r.required, 0);
+        const avgDos = records.length ? records.reduce((s, r) => s + r.dos, 0) / records.length : 0;
+        const redItems = records.filter(r => r.status === 'RED');
+        const classNames: Record<string, string> = {
+          I: 'Subsistence', II: 'Clothing & Equipment', III: 'POL',
+          IV: 'Construction', V: 'Ammunition', VIII: 'Medical', IX: 'Repair Parts',
+        };
+        return {
+          supply_class: cls,
+          class_name: classNames[cls] || cls,
+          total_on_hand: Math.round(totalOnHand * 10) / 10,
+          total_required: Math.round(totalRequired * 10) / 10,
+          fill_rate_pct: totalRequired > 0 ? Math.round(totalOnHand / totalRequired * 1000) / 10 : 0,
+          avg_dos: Math.round(avgDos * 10) / 10,
+          avg_consumption_rate: records.length ? Math.round(records.reduce((s, r) => s + r.consumptionRate, 0) / records.length * 100) / 100 : 0,
+          item_count: records.length,
+          red_items: redItems.length,
+          amber_items: records.filter(r => r.status === 'AMBER').length,
+          status: avgDos > 5 ? 'GREEN' : avgDos > 3 ? 'AMBER' : 'RED',
+          critical_items: redItems.slice(0, 5).map(r => ({
+            item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
+          })),
+        };
+      }).filter(c => c.item_count > 0);
+      return {
+        ...base,
+        overall_health: classSummaries.some(c => c.status === 'RED') ? 'RED' : classSummaries.some(c => c.status === 'AMBER') ? 'AMBER' : 'GREEN',
+        total_classes_tracked: classSummaries.length,
+        red_classes: classSummaries.filter(c => c.status === 'RED').length,
+        amber_classes: classSummaries.filter(c => c.status === 'AMBER').length,
+        class_summaries: classSummaries,
+      };
+    }
+
+    case ReportType.EQUIPMENT_STATUS:
+    case 'EQUIPMENT_STATUS':
+      return {
+        ...base,
+        fleet_readiness: {
+          total_possessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
+          total_mission_capable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
+          total_nmc_maintenance: DEMO_EQUIPMENT.reduce((s, e) => s + Math.floor(e.notMissionCapable * 0.6), 0),
+          total_nmc_supply: DEMO_EQUIPMENT.reduce((s, e) => s + Math.ceil(e.notMissionCapable * 0.4), 0),
+          readiness_pct: 87.3,
+          status: 'AMBER',
+        },
+        fleet_by_type: DEMO_EQUIPMENT.map(e => ({
+          tamcn: e.tamcn,
+          nomenclature: e.type,
+          total_possessed: e.onHand,
+          mission_capable: e.missionCapable,
+          nmc_maintenance: Math.floor(e.notMissionCapable * 0.6),
+          nmc_supply: Math.ceil(e.notMissionCapable * 0.4),
+          readiness_pct: e.readinessPercent,
+          status: e.readinessPercent >= 90 ? 'GREEN' : e.readinessPercent >= 75 ? 'AMBER' : 'RED',
+        })),
+        individual_status_breakdown: {
+          FMC: demoIndividualEquipment.filter(i => i.status === 'FMC').length,
+          NMC_M: demoIndividualEquipment.filter(i => i.status === 'NMC_M').length,
+          NMC_S: demoIndividualEquipment.filter(i => i.status === 'NMC_S').length,
+          ADMIN: demoIndividualEquipment.filter(i => i.status === 'ADMIN').length,
+          DEADLINED: demoIndividualEquipment.filter(i => i.status === 'DEADLINED').length,
+        },
+        individual_total: demoIndividualEquipment.length,
+        top_deadlined_items: demoIndividualEquipment
+          .filter(i => i.status === 'DEADLINED')
+          .slice(0, 5)
+          .map(i => ({
+            bumper_number: i.bumperNumber,
+            nomenclature: i.nomenclature,
+            tamcn: i.tamcn,
+            equipment_type: i.equipmentType,
+            fault: demoFaults.find(f => f.equipmentId === i.id)?.faultDescription || 'No active fault',
+            fault_severity: demoFaults.find(f => f.equipmentId === i.id)?.severity,
+          })),
+      };
+
+    case ReportType.MAINTENANCE_SUMMARY:
+    case 'MAINTENANCE_SUMMARY': {
+      const open = demoWorkOrders.filter(wo => wo.status === WorkOrderStatus.OPEN).length;
+      const inProg = demoWorkOrders.filter(wo => wo.status === WorkOrderStatus.IN_PROGRESS).length;
+      const awaitParts = demoWorkOrders.filter(wo => wo.status === WorkOrderStatus.AWAITING_PARTS).length;
+      const complete = demoWorkOrders.filter(wo => wo.status === WorkOrderStatus.COMPLETE).length;
+      const totalLabor = demoWorkOrders.reduce((s, wo) => s + wo.laborEntries.reduce((ls, l) => ls + l.hours, 0), 0);
+      const partsOnOrder = demoWorkOrders.reduce((s, wo) => s + wo.parts.filter(p => p.status === 'ON_ORDER').length, 0);
+      const issueMap: Record<string, number> = {};
+      demoWorkOrders.filter(wo => wo.status !== WorkOrderStatus.COMPLETE).forEach(wo => {
+        if (wo.individualEquipmentId) {
+          const eq = demoIndividualEquipment.find(e => e.id === wo.individualEquipmentId);
+          if (eq) issueMap[eq.equipmentType] = (issueMap[eq.equipmentType] || 0) + 1;
+        }
+      });
+      return {
+        ...base,
+        work_order_counts: { OPEN: open, IN_PROGRESS: inProg, AWAITING_PARTS: awaitParts, COMPLETE: complete },
+        total_work_orders: demoWorkOrders.length,
+        avg_completion_time_hours: 36.4,
+        total_labor_hours: Math.round(totalLabor * 10) / 10,
+        parts_on_order: partsOnOrder,
+        top_issues: Object.entries(issueMap)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 5)
+          .map(([et, cnt]) => ({ equipment_type: et, open_work_orders: cnt })),
+      };
+    }
+
+    case ReportType.MOVEMENT_SUMMARY:
+    case 'MOVEMENT_SUMMARY':
+      return {
+        ...base,
+        status_counts: {
+          PLANNED: DEMO_MOVEMENTS.filter(m => m.status === 'PLANNED').length,
+          EN_ROUTE: DEMO_MOVEMENTS.filter(m => m.status === 'EN_ROUTE').length,
+          DELAYED: DEMO_MOVEMENTS.filter(m => m.status === 'DELAYED').length,
+          ARRIVED: DEMO_MOVEMENTS.filter(m => m.status === 'ARRIVED').length,
+          CANCELLED: DEMO_MOVEMENTS.filter(m => m.status === 'CANCELLED').length,
+        },
+        total_movements: DEMO_MOVEMENTS.length,
+        total_vehicles_in_transit: DEMO_MOVEMENTS
+          .filter(m => m.status === 'EN_ROUTE')
+          .reduce((s, m) => s + m.vehicles, 0),
+        total_personnel_in_transit: DEMO_MOVEMENTS
+          .filter(m => m.status === 'EN_ROUTE')
+          .reduce((s, m) => s + m.personnel, 0),
+        recent_completions: DEMO_MOVEMENTS
+          .filter(m => m.status === 'ARRIVED')
+          .slice(0, 5)
+          .map(m => ({
+            convoy_id: m.id,
+            origin: m.originUnit,
+            destination: m.destinationUnit,
+            vehicle_count: m.vehicles,
+            arrival: m.arrivalTime || null,
+          })),
+      };
+
+    case ReportType.PERSONNEL_STRENGTH:
+    case 'PERSONNEL_STRENGTH': {
+      const statusBreakdown: Record<string, number> = {
+        ACTIVE: 0, DEPLOYED: 0, TDY: 0, LEAVE: 0, MEDICAL: 0, INACTIVE: 0,
+      };
+      demoPersonnel.forEach(p => { statusBreakdown[p.status] = (statusBreakdown[p.status] || 0) + 1; });
+      const rankBreakdown: Record<string, number> = {};
+      demoPersonnel.forEach(p => { const r = p.rank || 'Unknown'; rankBreakdown[r] = (rankBreakdown[r] || 0) + 1; });
+      const mosBreakdown: Record<string, number> = {};
+      demoPersonnel.forEach(p => { const m = p.mos || 'Unknown'; mosBreakdown[m] = (mosBreakdown[m] || 0) + 1; });
+      return {
+        ...base,
+        total_assigned: demoPersonnel.length,
+        total_active: demoPersonnel.filter(p => p.status !== 'INACTIVE').length,
+        status_breakdown: statusBreakdown,
+        rank_breakdown: rankBreakdown,
+        mos_breakdown: mosBreakdown,
+      };
+    }
+
+    default:
+      return base;
+  }
+}

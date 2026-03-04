@@ -34,7 +34,7 @@ export default function TransportationPage() {
       />
 
       {/* Bottom section - 2 columns */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="grid-responsive-2col">
         <MovementTracker
           movements={movements}
           selectedConvoyId={selectedConvoyId}

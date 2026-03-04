@@ -62,7 +62,7 @@ export default function CommanderView() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
+        <div className="grid-responsive-6col">
           {Array.from({ length: 6 }).map((_, i) => (
             <CardSkeleton key={i} />
           ))}
@@ -74,7 +74,7 @@ export default function CommanderView() {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Top Row: Status Tiles */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
+      <div className="grid-responsive-6col">
         {demoStatusTiles.map((tile) => {
           const color = getStatusColor(tile.status);
           return (
@@ -135,10 +135,10 @@ export default function CommanderView() {
       </div>
 
       {/* Middle Row: Supply Cards + Readiness */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+      <div className="grid-responsive-2fr1fr">
         {/* Supply Status Cards */}
         <Card title="SUPPLY CLASS STATUS">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+          <div className="grid-responsive-3col" style={{ gap: 10 }}>
             {supplyData.map((s) => (
               <SupplyStatusCard key={s.supplyClass} data={s} />
             ))}
@@ -148,10 +148,8 @@ export default function CommanderView() {
         {/* Equipment Readiness */}
         <Card title="EQUIPMENT READINESS">
           <div
+            className="grid-responsive-3col"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 12,
               justifyItems: 'center',
             }}
           >
@@ -163,7 +161,7 @@ export default function CommanderView() {
       </div>
 
       {/* Sustainability + Consumption */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="grid-responsive-2col">
         <SustainabilityTimeline data={sustainability ?? undefined} />
         <ConsumptionChart />
       </div>

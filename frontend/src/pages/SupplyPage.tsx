@@ -13,7 +13,7 @@ export default function SupplyPage() {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <div>
           <label
             style={{
@@ -90,10 +90,12 @@ export default function SupplyPage() {
       </div>
 
       {/* Table */}
-      <SupplyTable classFilter={classFilter} statusFilter={statusFilter} />
+      <div className="responsive-table-wrapper">
+        <SupplyTable classFilter={classFilter} statusFilter={statusFilter} />
+      </div>
 
       {/* Bottom Row: Breakdown + Charts + Calculator */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 16 }}>
+      <div className="grid-responsive-1fr1fr320">
         <SupplyClassBreakdown className={classFilter ? SUPPLY_CLASS_SHORT[classFilter] : undefined} />
         <ConsumptionChart title="CONSUMPTION TREND" />
         <DOSCalculator />

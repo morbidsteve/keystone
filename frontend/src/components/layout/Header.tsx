@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, Clock, LogOut, User } from 'lucide-react';
+import { Bell, ChevronDown, Clock, LogOut, Menu, User } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
@@ -20,7 +20,11 @@ const pageTitles: Record<string, string> = {
   '/admin': 'ADMINISTRATION',
 };
 
-export default function Header() {
+interface HeaderProps {
+  onMenuToggle: () => void;
+}
+
+export default function Header({ onMenuToggle }: HeaderProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
@@ -54,6 +58,15 @@ export default function Header() {
     >
       {/* Page Title */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Hamburger button (mobile only) */}
+        <button
+          className="hamburger-btn"
+          onClick={onMenuToggle}
+          aria-label="Toggle navigation menu"
+        >
+          <Menu size={18} />
+        </button>
+
         <h1
           style={{
             fontFamily: 'var(--font-mono)',
@@ -69,6 +82,7 @@ export default function Header() {
         </h1>
         {isDemoMode && (
           <span
+            className="hide-mobile"
             style={{
               fontFamily: 'var(--font-mono)',
               fontSize: 9,
@@ -87,9 +101,9 @@ export default function Header() {
       </div>
 
       {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        {/* Time Range Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <div className="header-right-controls" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* Time Range Selector (hidden on mobile) */}
+        <div className="header-time-range" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Clock size={12} style={{ color: 'var(--color-text-muted)', marginRight: 6 }} />
           {TIME_RANGES.map((range) => (
             <button
@@ -177,7 +191,7 @@ export default function Header() {
             }}
           >
             <User size={14} style={{ color: 'var(--color-text-muted)' }} />
-            <span>{user?.username || 'USER'}</span>
+            <span className="hide-mobile">{user?.username || 'USER'}</span>
             <ChevronDown size={12} style={{ color: 'var(--color-text-muted)' }} />
           </button>
           {userMenuOpen && (

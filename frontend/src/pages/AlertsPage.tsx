@@ -55,7 +55,7 @@ export default function AlertsPage() {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Summary */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+      <div className="grid-responsive-4col">
         {[
           { label: 'TOTAL ACTIVE', value: demoAlerts.filter((a) => !a.acknowledged).length, color: 'var(--color-text-bright)' },
           { label: 'CRITICAL', value: criticalCount, color: 'var(--color-danger)' },
@@ -81,7 +81,7 @@ export default function AlertsPage() {
       </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <Filter size={14} style={{ color: 'var(--color-text-muted)' }} />
         <select
           value={severityFilter}
@@ -141,6 +141,7 @@ export default function AlertsPage() {
                 }}
               >
                 <div
+                  className="alert-item-header"
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',

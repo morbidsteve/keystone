@@ -114,6 +114,7 @@ export default function MapPage() {
 
   return (
     <div
+      className="map-full-viewport"
       style={{
         height: 'calc(100vh - 48px)',
         margin: '-20px',

@@ -152,7 +152,7 @@ export default function S4View() {
       </Card>
 
       {/* Two Column: Equipment + Movements */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="grid-responsive-2col">
         {/* Equipment Readiness */}
         <Card title="EQUIPMENT READINESS">
           <div style={{ overflowX: 'auto' }}>

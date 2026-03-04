@@ -1,6 +1,8 @@
 """Report generation and management endpoints."""
 
 import json
+import logging
+from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -9,13 +11,29 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.exceptions import BadRequestError, NotFoundError
-from app.core.permissions import check_unit_access, get_accessible_units
+from app.core.permissions import check_unit_access, get_accessible_units, require_role
 from app.database import get_db
 from app.models.report import Report, ReportStatus, ReportType
-from app.models.user import User
+from app.models.user import Role, User
 from app.schemas.report import ReportCreate, ReportResponse
+from app.services.report_generator import generate_and_save_report
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+WRITE_ROLES = [Role.ADMIN, Role.COMMANDER, Role.S4]
+
+# Valid report types for the generate endpoint
+VALID_REPORT_TYPES = {
+    "LOGSTAT",
+    "READINESS",
+    "SUPPLY_STATUS",
+    "EQUIPMENT_STATUS",
+    "MAINTENANCE_SUMMARY",
+    "MOVEMENT_SUMMARY",
+    "PERSONNEL_STRENGTH",
+}
 
 
 @router.get("/", response_model=List[ReportResponse])
@@ -43,11 +61,67 @@ async def list_reports(
 
 @router.post("/generate", response_model=ReportResponse, status_code=201)
 async def generate_report(
+    report_type: str = Query(...),
+    unit_id: int = Query(...),
+    title: Optional[str] = Query(None, max_length=255),
+    date_from: Optional[str] = Query(None),
+    date_to: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(WRITE_ROLES)),
+):
+    """Generate a new report by querying live data sources.
+
+    Supported report types:
+    - LOGSTAT: Daily logistics status (supply, equipment, maintenance, movements, personnel)
+    - READINESS: Equipment readiness with MC/NMC rates
+    - SUPPLY_STATUS: Supply levels by class with critical items
+    - EQUIPMENT_STATUS: Fleet readiness and individual equipment breakdown
+    - MAINTENANCE_SUMMARY: Work order counts, completion times, parts, labor
+    - MOVEMENT_SUMMARY: Active/planned/completed movements
+    - PERSONNEL_STRENGTH: Assigned vs active, status breakdown by rank/MOS
+    """
+    if report_type not in VALID_REPORT_TYPES:
+        raise BadRequestError(
+            f"Invalid report type. Valid types: {', '.join(sorted(VALID_REPORT_TYPES))}"
+        )
+
+    await check_unit_access(current_user, unit_id, db)
+
+    # Parse dates if provided
+    parsed_from: Optional[datetime] = None
+    parsed_to: Optional[datetime] = None
+    if date_from:
+        try:
+            parsed_from = datetime.fromisoformat(date_from)
+        except ValueError:
+            raise BadRequestError("Invalid date_from format. Use ISO 8601 (e.g. 2026-01-15)")
+    if date_to:
+        try:
+            parsed_to = datetime.fromisoformat(date_to)
+        except ValueError:
+            raise BadRequestError("Invalid date_to format. Use ISO 8601 (e.g. 2026-01-15)")
+
+    report_title = title or f"{report_type} Report"
+
+    report = await generate_and_save_report(
+        db=db,
+        report_type=report_type,
+        unit_id=unit_id,
+        title=report_title,
+        user_id=current_user.id,
+        date_from=parsed_from,
+        date_to=parsed_to,
+    )
+    return report
+
+
+@router.post("/", response_model=ReportResponse, status_code=201)
+async def create_report(
     data: ReportCreate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Generate a new report. Triggers background processing via Celery."""
+    """Create a new report record (legacy endpoint, uses Celery for generation)."""
     await check_unit_access(current_user, data.unit_id, db)
 
     report = Report(
@@ -69,9 +143,9 @@ async def generate_report(
 
         generate_report_task.delay(report.id)
     except Exception:
-        # If Celery is unavailable, generate synchronously placeholder
+        logger.warning("Celery broker unavailable; report %s queued locally", report.id, exc_info=True)
         report.content = json.dumps(
-            {"status": "pending", "message": "Report generation queued"}
+            {"status": "pending", "message": "Report generation queued (async worker unavailable)"}
         )
 
     return report
@@ -97,7 +171,7 @@ async def get_report(
 async def finalize_report(
     report_id: int,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role(WRITE_ROLES)),
 ):
     """Mark a report as final."""
     result = await db.execute(select(Report).where(Report.id == report_id))
