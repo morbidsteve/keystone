@@ -1,4 +1,5 @@
-import { Truck, MapPin, Clock, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { Truck, MapPin, Clock, ArrowRight, ChevronDown, Package } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import StatusDot from '@/components/ui/StatusDot';
 import { MovementStatus, type Movement } from '@/lib/types';
@@ -41,6 +42,7 @@ export default function MovementTracker({
   selectedConvoyId,
   onSelectConvoy,
 }: MovementTrackerProps) {
+  const [expandedManifest, setExpandedManifest] = useState<string | null>(null);
   const displayMovements = movements && movements.length > 0 ? movements : fallbackMovements;
 
   return (
@@ -147,15 +149,120 @@ export default function MovementTracker({
               </div>
 
               {/* Cargo */}
-              <div
-                style={{
-                  fontSize: 11,
-                  color: 'var(--color-text-muted)',
-                  marginBottom: 6,
-                }}
-              >
-                {mov.cargo}
+              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginBottom: 6 }}>
+                {mov.manifest ? (
+                  <div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {mov.manifest.cargo.map((c, i) => (
+                        <span key={i} style={{
+                          padding: '1px 6px',
+                          backgroundColor: 'rgba(77, 171, 247, 0.08)',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: 'var(--radius)',
+                          fontSize: 10,
+                          fontFamily: 'var(--font-mono)',
+                        }}>
+                          CL {c.supplyClass}: {c.quantity} {c.unit}
+                        </span>
+                      ))}
+                    </div>
+                    {mov.manifest.vehicles.length > 0 && (
+                      <div style={{ marginTop: 4, fontSize: 10, fontFamily: 'var(--font-mono)' }}>
+                        {mov.manifest.vehicles.map(v => `${v.quantity}x ${v.type}`).join(', ')}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  mov.cargo
+                )}
               </div>
+
+              {/* Manifest expand toggle */}
+              {mov.manifest && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedManifest(prev => prev === mov.id ? null : mov.id);
+                  }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '2px 0', marginBottom: 4,
+                    fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600,
+                    letterSpacing: '0.5px',
+                    color: 'var(--color-accent)',
+                    background: 'none', border: 'none', cursor: 'pointer',
+                  }}
+                >
+                  <Package size={10} />
+                  {expandedManifest === mov.id ? 'HIDE MANIFEST' : 'VIEW MANIFEST'}
+                  <ChevronDown size={10} style={{
+                    transform: expandedManifest === mov.id ? 'rotate(180deg)' : 'rotate(0)',
+                    transition: 'transform 0.2s',
+                  }} />
+                </button>
+              )}
+
+              {/* Expanded manifest detail */}
+              {mov.manifest && expandedManifest === mov.id && (
+                <div style={{
+                  padding: 8,
+                  marginBottom: 6,
+                  backgroundColor: 'rgba(77, 171, 247, 0.03)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius)',
+                  fontSize: 10,
+                  fontFamily: 'var(--font-mono)',
+                }}>
+                  {/* Cargo table */}
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'var(--color-text-muted)', marginBottom: 4 }}>CARGO</div>
+                    {mov.manifest.cargo.map((c, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid var(--color-border)' }}>
+                        <span style={{ color: 'var(--color-text)' }}>CL {c.supplyClass} — {c.description}</span>
+                        <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{c.quantity} {c.unit}</span>
+                      </div>
+                    ))}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', fontWeight: 700, color: 'var(--color-text-bright)' }}>
+                      <span>TOTAL WEIGHT</span>
+                      <span>{mov.manifest.totalWeightTons} T</span>
+                    </div>
+                  </div>
+
+                  {/* Vehicle table */}
+                  {mov.manifest.vehicles.length > 0 && (
+                    <div style={{ marginBottom: 8 }}>
+                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'var(--color-text-muted)', marginBottom: 4 }}>VEHICLES</div>
+                      {mov.manifest.vehicles.map((v, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid var(--color-border)' }}>
+                          <span style={{ color: 'var(--color-text)' }}>{v.type} ({v.tamcn})</span>
+                          <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{v.quantity}x</span>
+                        </div>
+                      ))}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', fontWeight: 700, color: 'var(--color-text-bright)' }}>
+                        <span>TOTAL</span>
+                        <span>{mov.manifest.totalVehicles} VEH</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Personnel table */}
+                  {mov.manifest.personnelByRole.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'var(--color-text-muted)', marginBottom: 4 }}>PERSONNEL</div>
+                      {mov.manifest.personnelByRole.map((p, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid var(--color-border)' }}>
+                          <span style={{ color: 'var(--color-text)' }}>{p.role}</span>
+                          <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{p.count}</span>
+                        </div>
+                      ))}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', fontWeight: 700, color: 'var(--color-text-bright)' }}>
+                        <span>TOTAL</span>
+                        <span>{mov.manifest.totalPersonnel} PAX</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Details Footer */}
               <div

@@ -142,6 +142,29 @@ export interface EquipmentRecord {
   lastUpdated: string;
 }
 
+export interface CargoItem {
+  supplyClass: SupplyClass;
+  description: string;
+  quantity: number;
+  unit: string; // 'T', 'GAL', 'EA', 'CASES'
+}
+
+export interface VehicleAllocation {
+  type: string;       // e.g. 'HMMWV M1151'
+  tamcn: string;
+  quantity: number;
+  available: number;  // MC count at origin — for reference
+}
+
+export interface MovementManifest {
+  cargo: CargoItem[];
+  vehicles: VehicleAllocation[];
+  personnelByRole: { role: string; count: number }[];
+  totalWeightTons: number;
+  totalVehicles: number;
+  totalPersonnel: number;
+}
+
 export interface Movement {
   id: string;
   name: string;
@@ -158,6 +181,9 @@ export interface Movement {
   notes?: string;
   routeWaypoints?: Array<{ lat: number; lon: number; label?: string }>;
   lastUpdated: string;
+  manifest?: MovementManifest;
+  originCoords?: { lat: number; lon: number };
+  destinationCoords?: { lat: number; lon: number };
 }
 
 export interface DashboardSummary {

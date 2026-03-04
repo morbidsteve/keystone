@@ -17,6 +17,9 @@ import type {
   RawData,
   ParsedRecord,
   ConsumptionDataPoint,
+  CargoItem,
+  VehicleAllocation,
+  MovementManifest,
 } from '@/lib/types';
 import {
   SupplyClass,
@@ -271,6 +274,27 @@ export const DEMO_MOVEMENTS: Movement[] = [
     personnel: 18,
     notes: 'Primary MSR open. MTVR convoy w/ gun truck escort.',
     lastUpdated: hoursAgo(1),
+    manifest: {
+      cargo: [
+        { supplyClass: SupplyClass.I, description: 'MRE Cases (12ct)', quantity: 200, unit: 'CASES' },
+        { supplyClass: SupplyClass.III, description: 'JP-8 Fuel', quantity: 5000, unit: 'GAL' },
+        { supplyClass: SupplyClass.V, description: '5.56mm M855A1', quantity: 80, unit: 'CASES' },
+      ],
+      vehicles: [
+        { type: 'MTVR MK23', tamcn: 'D0099', quantity: 8, available: 19 },
+        { type: 'HMMWV M1151', tamcn: 'D1127', quantity: 4, available: 34 },
+      ],
+      personnelByRole: [
+        { role: 'DRIVER', count: 12 },
+        { role: 'A-DRIVER', count: 4 },
+        { role: 'GUNNER', count: 2 },
+      ],
+      totalWeightTons: 28.5,
+      totalVehicles: 12,
+      totalPersonnel: 18,
+    },
+    originCoords: { lat: 33.35, lon: -117.30 },
+    destinationCoords: { lat: 33.27, lon: -117.34 },
     routeWaypoints: [{ lat: 33.35, lon: -117.30, label: 'SP: CLB-1' }, { lat: 33.34, lon: -117.31 }, { lat: 33.33, lon: -117.32 }, { lat: 33.31, lon: -117.33 }, { lat: 33.27, lon: -117.34, label: 'RP: 1/1 BN' }],
   },
   {
@@ -316,6 +340,28 @@ export const DEMO_MOVEMENTS: Movement[] = [
     vehicles: 8,
     personnel: 14,
     notes: 'Awaiting route clearance confirmation. 1x PLS + 7x MTVR.',
+    manifest: {
+      cargo: [
+        { supplyClass: SupplyClass.V, description: '155mm HE M795', quantity: 180, unit: 'EA' },
+        { supplyClass: SupplyClass.V, description: '155mm Illum M485A2', quantity: 60, unit: 'EA' },
+        { supplyClass: SupplyClass.V, description: '155mm WP M825A1', quantity: 40, unit: 'EA' },
+      ],
+      vehicles: [
+        { type: 'MTVR MK23', tamcn: 'D0099', quantity: 7, available: 19 },
+        { type: 'HMMWV M1151', tamcn: 'D1127', quantity: 1, available: 34 },
+      ],
+      personnelByRole: [
+        { role: 'DRIVER', count: 8 },
+        { role: 'A-DRIVER', count: 4 },
+        { role: 'GUNNER', count: 1 },
+        { role: 'MEDIC', count: 1 },
+      ],
+      totalWeightTons: 14.2,
+      totalVehicles: 8,
+      totalPersonnel: 14,
+    },
+    originCoords: { lat: 33.32, lon: -117.28 },
+    destinationCoords: { lat: 33.30, lon: -117.34 },
     lastUpdated: hoursAgo(1),
   },
   {
