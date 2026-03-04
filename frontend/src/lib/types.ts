@@ -73,7 +73,9 @@ export enum ReportType {
   READINESS = 'READINESS',
   SUPPLY_STATUS = 'SUPPLY_STATUS',
   EQUIPMENT_STATUS = 'EQUIPMENT_STATUS',
+  MAINTENANCE_SUMMARY = 'MAINTENANCE_SUMMARY',
   MOVEMENT_SUMMARY = 'MOVEMENT_SUMMARY',
+  PERSONNEL_STRENGTH = 'PERSONNEL_STRENGTH',
   CUSTOM = 'CUSTOM',
 }
 
@@ -252,10 +254,142 @@ export interface Report {
   dateRange: { start: string; end: string };
   status: ReportStatus;
   content?: string;
+  /** Parsed JSON content from report generation */
+  parsedContent?: ReportContent;
   generatedBy: string;
   generatedAt: string;
   finalizedAt?: string;
   finalizedBy?: string;
+}
+
+/** Structured content sections returned by the report generator */
+export interface ReportContent {
+  report_type: string;
+  unit?: { id: number; name: string; abbreviation: string; uic?: string };
+  generated_at?: string;
+  dtg?: string;
+  as_of?: string;
+  period_start?: string | null;
+  period_end?: string | null;
+  // LOGSTAT fields
+  supply_status?: ReportSupplySection[];
+  equipment_readiness?: {
+    total_possessed: number;
+    total_mission_capable: number;
+    readiness_pct: number;
+    status: string;
+  };
+  open_work_orders?: number;
+  active_movements?: number;
+  personnel_strength?: number;
+  total_supply_items?: number;
+  // READINESS fields
+  overall_readiness_pct?: number;
+  overall_status?: string;
+  total_possessed?: number;
+  total_mission_capable?: number;
+  total_nmc?: number;
+  equipment_types?: ReportEquipmentType[];
+  equipment_type_count?: number;
+  individual_status_breakdown?: Record<string, number>;
+  deadlined_items?: ReportDeadlinedItem[];
+  // SUPPLY_STATUS fields
+  overall_health?: string;
+  total_classes_tracked?: number;
+  red_classes?: number;
+  amber_classes?: number;
+  class_summaries?: ReportClassSummary[];
+  // EQUIPMENT_STATUS fields
+  fleet_readiness?: {
+    total_possessed: number;
+    total_mission_capable: number;
+    total_nmc_maintenance: number;
+    total_nmc_supply: number;
+    readiness_pct: number;
+    status: string;
+  };
+  fleet_by_type?: ReportEquipmentType[];
+  individual_total?: number;
+  top_deadlined_items?: ReportDeadlinedItem[];
+  // MAINTENANCE_SUMMARY fields
+  work_order_counts?: Record<string, number>;
+  total_work_orders?: number;
+  avg_completion_time_hours?: number;
+  total_labor_hours?: number;
+  parts_on_order?: number;
+  top_issues?: { equipment_type: string; open_work_orders: number }[];
+  // MOVEMENT_SUMMARY fields
+  status_counts?: Record<string, number>;
+  total_movements?: number;
+  total_vehicles_in_transit?: number;
+  total_personnel_in_transit?: number;
+  recent_completions?: {
+    convoy_id: string | null;
+    origin: string;
+    destination: string;
+    vehicle_count: number;
+    arrival: string | null;
+  }[];
+  // PERSONNEL_STRENGTH fields
+  total_assigned?: number;
+  total_active?: number;
+  status_breakdown?: Record<string, number>;
+  rank_breakdown?: Record<string, number>;
+  mos_breakdown?: Record<string, number>;
+}
+
+export interface ReportSupplySection {
+  class: string;
+  class_name: string;
+  items: {
+    item: string;
+    on_hand: number;
+    required: number;
+    dos: number;
+    consumption_rate: number;
+    status: string;
+  }[];
+  overall_status?: string;
+}
+
+export interface ReportEquipmentType {
+  tamcn: string;
+  nomenclature: string;
+  total_possessed: number;
+  mission_capable: number;
+  nmc_maintenance?: number;
+  nmc_supply?: number;
+  readiness_pct: number;
+  status: string;
+}
+
+export interface ReportDeadlinedItem {
+  bumper_number: string;
+  nomenclature: string;
+  tamcn: string;
+  equipment_type: string;
+  fault?: string;
+  fault_severity?: string;
+}
+
+export interface ReportClassSummary {
+  supply_class: string;
+  class_name: string;
+  total_on_hand: number;
+  total_required: number;
+  fill_rate_pct: number;
+  avg_dos: number;
+  avg_consumption_rate: number;
+  item_count: number;
+  red_items: number;
+  amber_items: number;
+  status: string;
+  critical_items: {
+    item: string;
+    on_hand: number;
+    required: number;
+    dos: number;
+  }[];
 }
 
 export interface RawData {

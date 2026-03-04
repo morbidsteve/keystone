@@ -1,0 +1,363 @@
+/* ==========================================================================
+   KEYSTONE Responsive Design
+   Breakpoints: mobile < 768px | tablet 768-1024px | desktop > 1024px
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Sidebar: slide-out drawer on mobile, narrow on tablet
+   -------------------------------------------------------------------------- */
+
+.sidebar {
+  transition: transform 0.25s ease, width 0.25s ease;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-overlay.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* Hamburger toggle button */
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.hamburger-btn:hover {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-strong);
+}
+
+/* Sidebar close button (mobile only) */
+.sidebar-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.sidebar-close-btn:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-bright);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Grid helpers
+   -------------------------------------------------------------------------- */
+
+.grid-responsive-6col {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.grid-responsive-4col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.grid-responsive-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.grid-responsive-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.grid-responsive-2fr1fr {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.grid-responsive-sidebar-content {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+}
+
+.grid-responsive-1fr1fr320 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 320px;
+  gap: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive table wrapper
+   -------------------------------------------------------------------------- */
+
+.responsive-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive tab bar
+   -------------------------------------------------------------------------- */
+
+.responsive-tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------------
+   Utility: hide on specific breakpoints
+   -------------------------------------------------------------------------- */
+
+.hide-mobile {
+  /* visible by default */
+}
+
+.hide-desktop {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Map page: full viewport on all sizes
+   -------------------------------------------------------------------------- */
+
+.map-full-viewport {
+  height: calc(100vh - 48px);
+  margin: -20px;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   MOBILE: < 768px
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Sidebar becomes fixed drawer, hidden by default */
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px !important;
+    min-width: 260px !important;
+    transform: translateX(-100%);
+    z-index: 1000;
+    box-shadow: none;
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Main content takes full width */
+  .main-content-area {
+    margin-left: 0 !important;
+  }
+
+  /* Show hamburger button */
+  .hamburger-btn {
+    display: flex;
+  }
+
+  /* Show sidebar close button */
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  /* Grids collapse to 1 column */
+  .grid-responsive-6col {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .grid-responsive-4col {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .grid-responsive-3col {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-responsive-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-responsive-2fr1fr {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-responsive-sidebar-content {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-responsive-1fr1fr320 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tab bars: allow horizontal scroll, minimum touch target */
+  .responsive-tabs button {
+    min-height: 44px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Header adjustments */
+  .header-time-range {
+    display: none !important;
+  }
+
+  .header-right-controls {
+    gap: 8px !important;
+  }
+
+  /* Main content padding */
+  .main-content-padding {
+    padding: 12px 12px !important;
+  }
+
+  /* Hide elements on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+
+  /* Show elements only on mobile */
+  .hide-desktop {
+    display: flex !important;
+  }
+
+  /* Touch targets: minimum 44px */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Map page: account for no sidebar */
+  .map-full-viewport {
+    height: calc(100vh - 48px);
+    margin: -12px;
+  }
+
+  /* Equipment detail header: stack */
+  .equipment-detail-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  /* Equipment info line: wrap */
+  .equipment-info-line {
+    flex-wrap: wrap;
+  }
+
+  /* Alert items: stack acknowledge button */
+  .alert-item-header {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  /* Fault metadata: wrap */
+  .fault-metadata {
+    flex-wrap: wrap;
+    gap: 4px !important;
+  }
+}
+
+/* ==========================================================================
+   TABLET: 768px - 1024px
+   ========================================================================== */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Narrower sidebar */
+  .sidebar {
+    width: 200px !important;
+    min-width: 200px !important;
+  }
+
+  /* Grids adapt to fewer columns */
+  .grid-responsive-6col {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid-responsive-4col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-responsive-3col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-responsive-2col {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .grid-responsive-2fr1fr {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-responsive-sidebar-content {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-responsive-1fr1fr320 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Compact header time range */
+  .header-time-range {
+    gap: 1px !important;
+  }
+
+  .header-time-range button {
+    padding: 4px 6px !important;
+    font-size: 9px !important;
+  }
+}
+
+/* ==========================================================================
+   Touch targets for all non-desktop
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  /* Ensure interactive elements have adequate touch targets */
+  .sidebar nav a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  select,
+  input[type="checkbox"] {
+    min-height: 36px;
+  }
+}

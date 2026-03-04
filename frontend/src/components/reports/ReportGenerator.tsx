@@ -1,37 +1,72 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { FileText, Loader } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import { ReportType } from '@/lib/types';
+import type { GenerateReportParams, ReportContent } from '@/lib/types';
+import { generateReport } from '@/api/reports';
+import { useReportStore } from '@/stores/reportStore';
 
 const reportTypes = [
-  { value: ReportType.LOGSTAT, label: 'LOGSTAT' },
-  { value: ReportType.READINESS, label: 'READINESS REPORT' },
-  { value: ReportType.SUPPLY_STATUS, label: 'SUPPLY STATUS' },
-  { value: ReportType.EQUIPMENT_STATUS, label: 'EQUIPMENT STATUS' },
-  { value: ReportType.MOVEMENT_SUMMARY, label: 'MOVEMENT SUMMARY' },
-  { value: ReportType.CUSTOM, label: 'CUSTOM REPORT' },
+  { value: ReportType.LOGSTAT, label: 'LOGSTAT', desc: 'Supply, equipment, maintenance, movements, personnel' },
+  { value: ReportType.READINESS, label: 'READINESS', desc: 'MC/NMC rates, individual status, deadlined items' },
+  { value: ReportType.SUPPLY_STATUS, label: 'SUPPLY STATUS', desc: 'All classes with on-hand, DOS, critical items' },
+  { value: ReportType.EQUIPMENT_STATUS, label: 'EQUIPMENT STATUS', desc: 'Fleet readiness, FMC/NMC breakdown, top faults' },
+  { value: ReportType.MAINTENANCE_SUMMARY, label: 'MAINTENANCE', desc: 'WO counts, avg completion, parts, labor hours' },
+  { value: ReportType.MOVEMENT_SUMMARY, label: 'MOVEMENTS', desc: 'Active/planned/completed, vehicles in transit' },
+  { value: ReportType.PERSONNEL_STRENGTH, label: 'PERSONNEL', desc: 'Assigned vs active, by rank and MOS' },
 ];
 
 const units = [
-  { value: '1mar', label: '1ST MAR' },
-  { value: '1-1', label: '1/1 BN' },
-  { value: '2-1', label: '2/1 BN' },
-  { value: '3-1', label: '3/1 BN' },
-  { value: 'clb-1', label: 'CLB-1' },
+  { value: '1', label: 'I MEF' },
+  { value: '2', label: '1ST MARDIV' },
+  { value: '3', label: '1ST MARINES' },
+  { value: '4', label: '1/1 BN' },
+  { value: '5', label: '2/1 BN' },
+  { value: '6', label: '3/1 BN' },
 ];
 
 export default function ReportGenerator() {
   const [reportType, setReportType] = useState(ReportType.LOGSTAT);
-  const [unitId, setUnitId] = useState('1mar');
-  const [startDate, setStartDate] = useState('2026-03-01');
-  const [endDate, setEndDate] = useState('2026-03-03');
+  const [unitId, setUnitId] = useState('3');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { setSelectedReport, addReport } = useReportStore();
 
-  const handleGenerate = () => {
+  const selectedTypeInfo = reportTypes.find((rt) => rt.value === reportType);
+
+  const handleGenerate = useCallback(async () => {
     setIsGenerating(true);
-    // Simulate generation
-    setTimeout(() => setIsGenerating(false), 2000);
-  };
+    setError(null);
+    try {
+      const now = new Date();
+      const weekAgo = new Date(now.getTime() - 7 * 86400000);
+      const params: GenerateReportParams = {
+        type: reportType,
+        unitId,
+        dateRange: {
+          start: startDate || weekAgo.toISOString(),
+          end: endDate || now.toISOString(),
+        },
+      };
+      const report = await generateReport(params);
+      // Parse content string into structured object if needed
+      if (report.content && !report.parsedContent) {
+        try {
+          report.parsedContent = JSON.parse(report.content) as ReportContent;
+        } catch {
+          // content is plaintext, leave as-is
+        }
+      }
+      addReport(report);
+      setSelectedReport(report);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate report');
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [reportType, unitId, startDate, endDate, setSelectedReport, addReport]);
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
@@ -42,6 +77,7 @@ export default function ReportGenerator() {
     fontFamily: 'var(--font-mono)',
     fontSize: 12,
     color: 'var(--color-text)',
+    boxSizing: 'border-box',
   };
 
   const labelStyle: React.CSSProperties = {
@@ -73,6 +109,17 @@ export default function ReportGenerator() {
               </option>
             ))}
           </select>
+          {selectedTypeInfo && (
+            <div style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 9,
+              color: 'var(--color-text-muted)',
+              marginTop: 4,
+              lineHeight: 1.4,
+            }}>
+              {selectedTypeInfo.desc}
+            </div>
+          )}
         </div>
 
         <div>
@@ -110,6 +157,20 @@ export default function ReportGenerator() {
             />
           </div>
         </div>
+
+        {error && (
+          <div style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 10,
+            color: 'var(--color-red, #ff4444)',
+            padding: '6px 8px',
+            backgroundColor: 'rgba(255,68,68,0.08)',
+            borderRadius: 'var(--radius)',
+            border: '1px solid rgba(255,68,68,0.2)',
+          }}>
+            {error}
+          </div>
+        )}
 
         <button
           onClick={handleGenerate}

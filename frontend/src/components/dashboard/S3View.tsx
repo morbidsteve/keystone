@@ -70,7 +70,7 @@ export default function S3View() {
         <div className="section-header" style={{ marginBottom: 12, paddingLeft: 2 }}>
           UNIT SUSTAINABILITY OVERLAY
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div className="grid-responsive-3col">
           {unitCards.map((unit) => {
             const color = getStatusColor(unit.overallStatus);
             return (

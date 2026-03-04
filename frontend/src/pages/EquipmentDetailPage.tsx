@@ -131,6 +131,7 @@ export default function EquipmentDetailPage() {
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Header */}
       <div
+        className="equipment-detail-header"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -166,7 +167,7 @@ export default function EquipmentDetailPage() {
           EQUIPMENT
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+        <div className="equipment-info-line" style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
           <span
             style={{
               display: 'inline-block',
@@ -230,6 +231,7 @@ export default function EquipmentDetailPage() {
 
       {/* Tab Navigation */}
       <div
+        className="responsive-tabs"
         style={{
           display: 'flex',
           gap: 2,
@@ -406,6 +408,7 @@ function FaultsTab({ faults }: { faults: EquipmentFault[] }) {
               {fault.faultDescription}
             </div>
             <div
+              className="fault-metadata"
               style={{
                 display: 'flex',
                 gap: 12,
@@ -466,6 +469,7 @@ function DriversTab({ drivers }: { drivers: EquipmentDriverAssignment[] }) {
 
   return (
     <div
+      className="responsive-table-wrapper"
       style={{
         backgroundColor: 'var(--color-bg-elevated)',
         border: '1px solid var(--color-border)',
@@ -473,7 +477,7 @@ function DriversTab({ drivers }: { drivers: EquipmentDriverAssignment[] }) {
         overflow: 'hidden',
       }}
     >
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
         <thead>
           <tr>
             {['STATUS', 'NAME', 'ROLE', 'ASSIGNED', 'RELEASED'].map((h) => (

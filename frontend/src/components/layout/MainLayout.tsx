@@ -1,17 +1,27 @@
 import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import DemoBanner from '@/components/ui/DemoBanner';
 import ClassificationBanner from '@/components/ui/ClassificationBanner';
 import { useClassificationStore } from '@/stores/classificationStore';
+import { useSidebarToggle } from '@/hooks/useMediaQuery';
 
 export default function MainLayout() {
   const fetchClassification = useClassificationStore((s) => s.fetchClassification);
+  const { isMobile, isMobileOpen, toggle, close } = useSidebarToggle();
+  const location = useLocation();
 
   useEffect(() => {
     fetchClassification();
   }, [fetchClassification]);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    if (isMobile) {
+      close();
+    }
+  }, [location.pathname, isMobile, close]);
 
   return (
     <div
@@ -28,10 +38,21 @@ export default function MainLayout() {
       <ClassificationBanner position="top" />
       <DemoBanner />
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        <Sidebar />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <Header />
+        {/* Mobile overlay */}
+        <div
+          className={`sidebar-overlay${isMobileOpen ? ' visible' : ''}`}
+          onClick={close}
+        />
+
+        <Sidebar isMobileOpen={isMobileOpen} onClose={close} />
+
+        <div
+          className="main-content-area"
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        >
+          <Header onMenuToggle={toggle} />
           <main
+            className="main-content-padding"
             style={{
               flex: 1,
               overflow: 'auto',

@@ -11,6 +11,8 @@ import {
   MapPin,
   Settings,
   Shield,
+  BookOpen,
+  X,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
@@ -28,14 +30,21 @@ const navItems = [
   { to: '/reports', icon: FileText, label: 'REPORTS' },
   { to: '/alerts', icon: AlertTriangle, label: 'ALERTS' },
   { to: '/admin', icon: Settings, label: 'ADMIN' },
+  { to: '/docs', icon: BookOpen, label: 'DOCS' },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  isMobileOpen: boolean;
+  onClose: () => void;
+}
+
+export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   const user = useAuthStore((s) => s.user);
   const { selectedUnitId, setSelectedUnitId } = useDashboardStore();
 
   return (
     <aside
+      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''}`}
       style={{
         width: 240,
         minWidth: 240,
@@ -88,6 +97,16 @@ export default function Sidebar() {
             DEMO
           </span>
         )}
+
+        {/* Close button (mobile only) */}
+        <button
+          className="sidebar-close-btn"
+          onClick={onClose}
+          aria-label="Close sidebar"
+          style={{ marginLeft: isDemoMode ? 4 : 'auto' }}
+        >
+          <X size={16} />
+        </button>
       </div>
 
       {/* Unit Selector */}
@@ -118,6 +137,7 @@ export default function Sidebar() {
           <NavLink
             key={item.to}
             to={item.to}
+            onClick={onClose}
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',

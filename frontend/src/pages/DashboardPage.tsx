@@ -16,6 +16,7 @@ export default function DashboardPage() {
     <div>
       {/* View Tabs */}
       <div
+        className="responsive-tabs"
         style={{
           display: 'flex',
           gap: 2,

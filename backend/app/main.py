@@ -127,11 +127,147 @@ async def _run_dev_seeds():
 app = FastAPI(
     title="KEYSTONE",
     description=(
-        "USMC Logistics Intelligence Application — "
-        "Automated ingestion, analysis, and reporting of "
-        "supply, equipment, and transportation data."
+        "## USMC Logistics Intelligence Application\n\n"
+        "KEYSTONE provides automated ingestion, analysis, and reporting of "
+        "supply, equipment, and transportation data for USMC logistics operations.\n\n"
+        "### Capabilities\n"
+        "- **Supply Tracking** — Monitor supply status, shortfalls, and readiness "
+        "across echelons\n"
+        "- **Equipment Management** — Track individual equipment items with "
+        "maintenance history\n"
+        "- **Transportation** — Convoy manifests, route tracking, and movement "
+        "planning\n"
+        "- **Automated Ingestion** — Parse CSV, XML, and JSON logistics reports\n"
+        "- **Real-Time Alerts** — Configurable thresholds for readiness conditions\n"
+        "- **COP Dashboard** — Commander, S-4, and S-3 operational views\n"
+        "- **Map Overlay** — Unit positions with NATO MIL-STD-2525D symbology\n"
+        "- **TAK Integration** — Push/pull CoT events to TAK Server\n\n"
+        "### Authentication\n"
+        "All endpoints (except `/api/v1/auth/login` and `/health`) require a valid "
+        "JWT bearer token obtained from the login endpoint."
     ),
     version="0.1.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json",
+    openapi_tags=[
+        {
+            "name": "Authentication",
+            "description": (
+                "User login, token issuance, and session management."
+            ),
+        },
+        {
+            "name": "Dashboard",
+            "description": (
+                "Aggregated readiness metrics for Commander, S-4, and S-3 views."
+            ),
+        },
+        {
+            "name": "Supply",
+            "description": (
+                "Supply status records — shortfalls, readiness percentages, "
+                "and trends."
+            ),
+        },
+        {
+            "name": "Equipment",
+            "description": (
+                "Unit-level equipment readiness and aggregated status reporting."
+            ),
+        },
+        {
+            "name": "Equipment Individual",
+            "description": (
+                "Individual equipment items — serial-level tracking and "
+                "maintenance history."
+            ),
+        },
+        {
+            "name": "Transportation",
+            "description": (
+                "Movement requests, convoy tracking, and route management."
+            ),
+        },
+        {
+            "name": "Convoy Manifest",
+            "description": (
+                "Convoy manifest creation, vehicle assignments, and load planning."
+            ),
+        },
+        {
+            "name": "Reports",
+            "description": (
+                "Generate and retrieve formatted logistics reports (LOGSTAT, etc.)."
+            ),
+        },
+        {
+            "name": "Ingestion",
+            "description": (
+                "Upload and parse logistics data files (CSV, XML, JSON) with "
+                "schema mapping."
+            ),
+        },
+        {
+            "name": "Alerts",
+            "description": (
+                "Readiness alerts, threshold configuration, and notification "
+                "management."
+            ),
+        },
+        {
+            "name": "Units",
+            "description": (
+                "Unit hierarchy management — echelons, parent/child relationships, "
+                "BILLETs."
+            ),
+        },
+        {
+            "name": "Schema Mapping",
+            "description": (
+                "Map external data source fields to KEYSTONE canonical schema."
+            ),
+        },
+        {
+            "name": "TAK Integration",
+            "description": (
+                "Push/pull Cursor-on-Target (CoT) events to/from TAK Server."
+            ),
+        },
+        {
+            "name": "Settings",
+            "description": (
+                "System-wide settings — classification level, banner text, "
+                "and display options."
+            ),
+        },
+        {
+            "name": "Data Sources",
+            "description": (
+                "Manage external data source connections and ingestion schedules."
+            ),
+        },
+        {
+            "name": "Map",
+            "description": (
+                "Geospatial data for COP map — unit positions, routes, "
+                "and overlays."
+            ),
+        },
+        {
+            "name": "Personnel",
+            "description": (
+                "Personnel strength tracking and manning reports."
+            ),
+        },
+        {
+            "name": "Maintenance",
+            "description": (
+                "Equipment maintenance requests, scheduling, and work-order "
+                "tracking."
+            ),
+        },
+    ],
     lifespan=lifespan,
 )
 
