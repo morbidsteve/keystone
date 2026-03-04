@@ -55,7 +55,11 @@ def generate_supply_update_payload(
         Dict ready for JSON serialization and POST.
     """
     pct = item.percentage if item.percentage else 0.0
-    status = item.status if hasattr(item, "status") and item.status else _status_from_percentage(pct)
+    status = (
+        item.status
+        if hasattr(item, "status") and item.status
+        else _status_from_percentage(pct)
+    )
 
     return {
         "unit_id": getattr(unit, "unit_id", 1),
@@ -65,8 +69,8 @@ def generate_supply_update_payload(
         "required_qty": float(item.required),
         "dos": float(item.dos),
         "consumption_rate": float(item.daily_consumption_rate)
-            if hasattr(item, "daily_consumption_rate") and item.daily_consumption_rate
-            else 0.0,
+        if hasattr(item, "daily_consumption_rate") and item.daily_consumption_rate
+        else 0.0,
         "reorder_point": None,
         "status": str(status),
         "source": "SIM_MANUAL",
@@ -139,7 +143,10 @@ def generate_movement_payload(
             hh = int(eta_raw[:2])
             mm = int(eta_raw[2:4])
             eta_dt = report_time.replace(
-                hour=hh, minute=mm, second=0, microsecond=0,
+                hour=hh,
+                minute=mm,
+                second=0,
+                microsecond=0,
                 tzinfo=timezone.utc,
             ).isoformat()
         except (ValueError, IndexError):

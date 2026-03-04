@@ -117,9 +117,7 @@ class ReportGenerator:
                 SupplyStatusRecord.reported_at >= date_from
             )
         if date_to:
-            supply_query = supply_query.where(
-                SupplyStatusRecord.reported_at <= date_to
-            )
+            supply_query = supply_query.where(SupplyStatusRecord.reported_at <= date_to)
         supply_query = supply_query.order_by(
             SupplyStatusRecord.supply_class,
             SupplyStatusRecord.reported_at.desc(),
@@ -141,14 +139,16 @@ class ReportGenerator:
                     "class_name": SUPPLY_CLASS_NAMES.get(sc, sc.value),  # type: ignore[call-overload]
                     "items": [],
                 }
-            supply_sections[sc]["items"].append({
-                "item": rec.item_description,
-                "on_hand": rec.on_hand_qty,
-                "required": rec.required_qty,
-                "dos": rec.dos,
-                "consumption_rate": rec.consumption_rate,
-                "status": rec.status.value,
-            })
+            supply_sections[sc]["items"].append(
+                {
+                    "item": rec.item_description,
+                    "on_hand": rec.on_hand_qty,
+                    "required": rec.required_qty,
+                    "dos": rec.dos,
+                    "consumption_rate": rec.consumption_rate,
+                    "status": rec.status.value,
+                }
+            )
 
         for sc, section in supply_sections.items():
             if section["items"]:
@@ -160,9 +160,7 @@ class ReportGenerator:
                 ).value
 
         # --- Equipment readiness rates ---
-        eq_query = select(EquipmentStatus).where(
-            EquipmentStatus.unit_id == unit_id
-        )
+        eq_query = select(EquipmentStatus).where(EquipmentStatus.unit_id == unit_id)
         result = await self.db.execute(eq_query)
         eq_records = result.scalars().all()
         total_poss = sum(r.total_possessed for r in eq_records)
@@ -236,9 +234,7 @@ class ReportGenerator:
         now = datetime.now(timezone.utc)
 
         # Per-type MC/NMC from EquipmentStatus
-        eq_query = select(EquipmentStatus).where(
-            EquipmentStatus.unit_id == unit_id
-        )
+        eq_query = select(EquipmentStatus).where(EquipmentStatus.unit_id == unit_id)
         if date_from:
             eq_query = eq_query.where(EquipmentStatus.reported_at >= date_from)
         if date_to:
@@ -268,9 +264,7 @@ class ReportGenerator:
 
         total_poss = sum(e["total_possessed"] for e in equipment_types.values())
         total_mc = sum(e["mission_capable"] for e in equipment_types.values())
-        overall_pct = (
-            round(total_mc / total_poss * 100, 1) if total_poss > 0 else 0.0
-        )
+        overall_pct = round(total_mc / total_poss * 100, 1) if total_poss > 0 else 0.0
 
         # Individual equipment by status
         indiv_query = select(Equipment).where(Equipment.unit_id == unit_id)
@@ -283,12 +277,14 @@ class ReportGenerator:
             status_val = item.status.value
             status_breakdown[status_val] = status_breakdown.get(status_val, 0) + 1
             if item.status == EquipmentAssetStatus.DEADLINED:
-                deadlined_items.append({
-                    "bumper_number": item.bumper_number,
-                    "nomenclature": item.nomenclature,
-                    "tamcn": item.tamcn,
-                    "equipment_type": item.equipment_type,
-                })
+                deadlined_items.append(
+                    {
+                        "bumper_number": item.bumper_number,
+                        "nomenclature": item.nomenclature,
+                        "tamcn": item.tamcn,
+                        "equipment_type": item.equipment_type,
+                    }
+                )
 
         return {
             "report_type": "READINESS",
@@ -347,32 +343,34 @@ class ReportGenerator:
             red_items = [r for r in records if r.status == SupplyStatus.RED]
             amber_items = [r for r in records if r.status == SupplyStatus.AMBER]
 
-            class_summaries.append({
-                "supply_class": sc.value,
-                "class_name": SUPPLY_CLASS_NAMES.get(sc, sc.value),
-                "total_on_hand": round(total_on_hand, 1),
-                "total_required": round(total_required, 1),
-                "fill_rate_pct": (
-                    round(total_on_hand / total_required * 100, 1)
-                    if total_required > 0
-                    else 0.0
-                ),
-                "avg_dos": round(avg_dos, 1),
-                "avg_consumption_rate": round(avg_rate, 2),
-                "item_count": len(records),
-                "red_items": len(red_items),
-                "amber_items": len(amber_items),
-                "status": determine_supply_status_by_dos(avg_dos).value,
-                "critical_items": [
-                    {
-                        "item": r.item_description,
-                        "on_hand": r.on_hand_qty,
-                        "required": r.required_qty,
-                        "dos": r.dos,
-                    }
-                    for r in red_items[:5]
-                ],
-            })
+            class_summaries.append(
+                {
+                    "supply_class": sc.value,
+                    "class_name": SUPPLY_CLASS_NAMES.get(sc, sc.value),
+                    "total_on_hand": round(total_on_hand, 1),
+                    "total_required": round(total_required, 1),
+                    "fill_rate_pct": (
+                        round(total_on_hand / total_required * 100, 1)
+                        if total_required > 0
+                        else 0.0
+                    ),
+                    "avg_dos": round(avg_dos, 1),
+                    "avg_consumption_rate": round(avg_rate, 2),
+                    "item_count": len(records),
+                    "red_items": len(red_items),
+                    "amber_items": len(amber_items),
+                    "status": determine_supply_status_by_dos(avg_dos).value,
+                    "critical_items": [
+                        {
+                            "item": r.item_description,
+                            "on_hand": r.on_hand_qty,
+                            "required": r.required_qty,
+                            "dos": r.dos,
+                        }
+                        for r in red_items[:5]
+                    ],
+                }
+            )
 
         red_classes = sum(1 for c in class_summaries if c["status"] == "RED")
         amber_classes = sum(1 for c in class_summaries if c["status"] == "AMBER")
@@ -410,9 +408,7 @@ class ReportGenerator:
         now = datetime.now(timezone.utc)
 
         # Fleet aggregate readiness from EquipmentStatus
-        eq_query = select(EquipmentStatus).where(
-            EquipmentStatus.unit_id == unit_id
-        )
+        eq_query = select(EquipmentStatus).where(EquipmentStatus.unit_id == unit_id)
         if date_from:
             eq_query = eq_query.where(EquipmentStatus.reported_at >= date_from)
         if date_to:
@@ -468,14 +464,16 @@ class ReportGenerator:
             )
             result = await self.db.execute(fault_q)
             fault = result.scalar_one_or_none()
-            deadlined_with_faults.append({
-                "bumper_number": dl_item.bumper_number,
-                "nomenclature": dl_item.nomenclature,
-                "tamcn": dl_item.tamcn,
-                "equipment_type": dl_item.equipment_type,
-                "fault": fault.fault_description if fault else "No active fault",
-                "fault_severity": fault.severity.value if fault else None,
-            })
+            deadlined_with_faults.append(
+                {
+                    "bumper_number": dl_item.bumper_number,
+                    "nomenclature": dl_item.nomenclature,
+                    "tamcn": dl_item.tamcn,
+                    "equipment_type": dl_item.equipment_type,
+                    "fault": fault.fault_description if fault else "No active fault",
+                    "fault_severity": fault.severity.value if fault else None,
+                }
+            )
 
         return {
             "report_type": "EQUIPMENT_STATUS",
@@ -535,7 +533,11 @@ class ReportGenerator:
             status_counts[wo.status.value] += 1
             if wo.actual_hours:
                 total_hours += wo.actual_hours
-            if wo.status == WorkOrderStatus.COMPLETE and wo.completed_at and wo.created_at:
+            if (
+                wo.status == WorkOrderStatus.COMPLETE
+                and wo.completed_at
+                and wo.created_at
+            ):
                 delta = wo.completed_at - wo.created_at
                 completion_times.append(delta.total_seconds() / 3600)
                 completed_count += 1
@@ -573,17 +575,13 @@ class ReportGenerator:
             eq_id = wo.individual_equipment_id
             if eq_id:
                 # Look up equipment type
-                eq_q = select(Equipment.equipment_type).where(
-                    Equipment.id == eq_id
-                )
+                eq_q = select(Equipment.equipment_type).where(Equipment.id == eq_id)
                 result = await self.db.execute(eq_q)
                 eq_type = result.scalar_one_or_none()
                 if eq_type:
                     top_issues[eq_type] = top_issues.get(eq_type, 0) + 1
 
-        sorted_issues = sorted(
-            top_issues.items(), key=lambda x: x[1], reverse=True
-        )[:5]
+        sorted_issues = sorted(top_issues.items(), key=lambda x: x[1], reverse=True)[:5]
 
         return {
             "report_type": "MAINTENANCE_SUMMARY",
@@ -652,9 +650,7 @@ class ReportGenerator:
                 "origin": mv.origin,
                 "destination": mv.destination,
                 "vehicle_count": mv.vehicle_count,
-                "arrival": mv.actual_arrival.isoformat()
-                if mv.actual_arrival
-                else None,
+                "arrival": mv.actual_arrival.isoformat() if mv.actual_arrival else None,
             }
             for mv in movements
             if mv.status == MovementStatus.COMPLETE
@@ -702,9 +698,7 @@ class ReportGenerator:
 
         total_assigned = len(all_personnel)
         active_count = sum(
-            1
-            for p in all_personnel
-            if p.status != PersonnelStatus.INACTIVE
+            1 for p in all_personnel if p.status != PersonnelStatus.INACTIVE
         )
 
         # Group by rank

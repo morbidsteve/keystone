@@ -19,7 +19,9 @@ class SimulatorClient:
             await client.post_tak_cot("<event .../>")
     """
 
-    def __init__(self, base_url: str = "http://localhost:8000", api_delay_ms: int = 200) -> None:
+    def __init__(
+        self, base_url: str = "http://localhost:8000", api_delay_ms: int = 200
+    ) -> None:
         self.base_url = base_url.rstrip("/")
         self.token: Optional[str] = None
         self._client: Optional[httpx.AsyncClient] = None
@@ -52,10 +54,14 @@ class SimulatorClient:
     # Request helper with 401 retry
     # ------------------------------------------------------------------
 
-    async def _request_with_retry(self, method: str, url: str, **kwargs) -> httpx.Response:
+    async def _request_with_retry(
+        self, method: str, url: str, **kwargs
+    ) -> httpx.Response:
         """Make request, retry once with re-auth on 401."""
         if self._client is None:
-            raise RuntimeError("SimulatorClient not initialized. Use 'async with' context manager.")
+            raise RuntimeError(
+                "SimulatorClient not initialized. Use 'async with' context manager."
+            )
         await self._rate_limit()
         resp = await self._client.request(method, url, **kwargs)
         if resp.status_code == 401 and self._username and self._password:
@@ -72,7 +78,9 @@ class SimulatorClient:
     async def authenticate(self, username: str, password: str) -> None:
         """Login and store JWT token."""
         if self._client is None:
-            raise RuntimeError("SimulatorClient not initialized. Use 'async with' context manager.")
+            raise RuntimeError(
+                "SimulatorClient not initialized. Use 'async with' context manager."
+            )
         self._username = username
         self._password = password
         resp = await self._client.post(
@@ -95,9 +103,7 @@ class SimulatorClient:
     # Ingestion endpoints
     # ------------------------------------------------------------------
 
-    async def post_mirc_log(
-        self, content: str, channel: str, filename: str
-    ) -> dict:
+    async def post_mirc_log(self, content: str, channel: str, filename: str) -> dict:
         """Upload mIRC log file through the ingestion pipeline."""
         resp = await self._request_with_retry(
             "POST",

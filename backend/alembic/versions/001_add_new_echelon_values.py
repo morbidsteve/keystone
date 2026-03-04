@@ -4,6 +4,7 @@ Revision ID: 001_add_echelons
 Revises:
 Create Date: 2026-03-04
 """
+
 from typing import Sequence, Union
 
 from alembic import op

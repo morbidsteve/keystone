@@ -77,18 +77,20 @@ async def _handle_supply_consumption(
                         },
                     )
                 )
-                payloads.append({
-                    "type": "mirc",
-                    "channel": "BN LOG NET",
-                    "content": (
-                        f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-                        f"FLASH — {item.name} at {item.dos:.1f} DOS. "
-                        f"Request emergency resupply class {item.supply_class.value}. "
-                        f"Current on-hand: {item.on_hand:.0f} {item.unit_of_measure}."
-                    ),
-                    "unit": unit.abbreviation,
-                    "timestamp": clock.now.isoformat(),
-                })
+                payloads.append(
+                    {
+                        "type": "mirc",
+                        "channel": "BN LOG NET",
+                        "content": (
+                            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                            f"FLASH — {item.name} at {item.dos:.1f} DOS. "
+                            f"Request emergency resupply class {item.supply_class.value}. "
+                            f"Current on-hand: {item.on_hand:.0f} {item.unit_of_measure}."
+                        ),
+                        "unit": unit.abbreviation,
+                        "timestamp": clock.now.isoformat(),
+                    }
+                )
 
     # Reschedule next consumption tick
     new_events.append(
@@ -132,17 +134,19 @@ async def _handle_emergency_resupply(
         )
     )
 
-    payloads.append({
-        "type": "mirc",
-        "channel": "MSR NET",
-        "content": (
-            f"[IRONHORSE 3] LOGPAC {convoy_id} tasked for emergency resupply to "
-            f"{unit.abbreviation}. SP time {sp_time:%H%MZ}. "
-            f"Class {event.data.get('supply_class', 'III')} priority."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    })
+    payloads.append(
+        {
+            "type": "mirc",
+            "channel": "MSR NET",
+            "content": (
+                f"[IRONHORSE 3] LOGPAC {convoy_id} tasked for emergency resupply to "
+                f"{unit.abbreviation}. SP time {sp_time:%H%MZ}. "
+                f"Class {event.data.get('supply_class', 'III')} priority."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    )
     return new_events, payloads
 
 
@@ -231,19 +235,21 @@ async def _handle_equipment_breakdown(
         )
     )
 
-    payloads.append({
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-            f"EQUIP DEADLINE: {broken.nomenclature} SN {broken.serial} — "
-            f"{broken.status}. Fault: {fault}. "
-            f"ECD: {broken.ecd:%d%b%y %H%MZ}. "
-            f"{cat.nomenclature} readiness now {cat.readiness_pct:.0f}%."
-        ),
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-    })
+    payloads.append(
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                f"EQUIP DEADLINE: {broken.nomenclature} SN {broken.serial} — "
+                f"{broken.status}. Fault: {fault}. "
+                f"ECD: {broken.ecd:%d%b%y %H%MZ}. "
+                f"{cat.nomenclature} readiness now {cat.readiness_pct:.0f}%."
+            ),
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+        }
+    )
     return new_events, payloads
 
 
@@ -251,17 +257,19 @@ async def _handle_parts_ordered(
     event: SimEvent, state: "SimulationState", clock: "SimulationClock"
 ) -> tuple[list[SimEvent], list[dict[str, Any]]]:
     """Log that parts have been ordered for a deadlined item."""
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[IRONHORSE 4] Parts ordered for {event.data.get('nomenclature', '?')} "
-            f"SN {event.data.get('serial', '?')} ({event.unit_id}). "
-            f"Fault: {event.data.get('fault', 'unknown')}. Tracking initiated."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[IRONHORSE 4] Parts ordered for {event.data.get('nomenclature', '?')} "
+                f"SN {event.data.get('serial', '?')} ({event.unit_id}). "
+                f"Fault: {event.data.get('fault', 'unknown')}. Tracking initiated."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -269,17 +277,19 @@ async def _handle_parts_received(
     event: SimEvent, state: "SimulationState", clock: "SimulationClock"
 ) -> tuple[list[SimEvent], list[dict[str, Any]]]:
     """Log parts receipt."""
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[IRONHORSE 4] Parts received for {event.data.get('nomenclature', '?')} "
-            f"SN {event.data.get('serial', '?')} ({event.unit_id}). "
-            f"Forwarding to maintenance platoon."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[IRONHORSE 4] Parts received for {event.data.get('nomenclature', '?')} "
+                f"SN {event.data.get('serial', '?')} ({event.unit_id}). "
+                f"Forwarding to maintenance platoon."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -303,17 +313,19 @@ async def _handle_equipment_repaired(
                     f"[SIM {clock.format()}] {unit.abbreviation} — "
                     f"{item.nomenclature} ({serial}) repaired, now MC"
                 )
-                payloads.append({
-                    "type": "mirc",
-                    "channel": "BN LOG NET",
-                    "content": (
-                        f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-                        f"EQUIP UPDATE: {item.nomenclature} SN {serial} repaired — "
-                        f"now MC. {cat.nomenclature} readiness {cat.readiness_pct:.0f}%."
-                    ),
-                    "unit": unit.abbreviation,
-                    "timestamp": clock.now.isoformat(),
-                })
+                payloads.append(
+                    {
+                        "type": "mirc",
+                        "channel": "BN LOG NET",
+                        "content": (
+                            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                            f"EQUIP UPDATE: {item.nomenclature} SN {serial} repaired — "
+                            f"now MC. {cat.nomenclature} readiness {cat.readiness_pct:.0f}%."
+                        ),
+                        "unit": unit.abbreviation,
+                        "timestamp": clock.now.isoformat(),
+                    }
+                )
                 return [], payloads
     return [], payloads
 
@@ -322,17 +334,19 @@ async def _handle_recovery_op(
     event: SimEvent, state: "SimulationState", clock: "SimulationClock"
 ) -> tuple[list[SimEvent], list[dict[str, Any]]]:
     """Log a recovery operation dispatched for a deadlined vehicle."""
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "MSR NET",
-        "content": (
-            f"[IRONHORSE 3] Recovery team dispatched for "
-            f"{event.data.get('nomenclature', '?')} SN {event.data.get('serial', '?')} "
-            f"at {event.unit_id} position. ETA 2-4 hours."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "MSR NET",
+            "content": (
+                f"[IRONHORSE 3] Recovery team dispatched for "
+                f"{event.data.get('nomenclature', '?')} SN {event.data.get('serial', '?')} "
+                f"at {event.unit_id} position. ETA 2-4 hours."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -348,9 +362,7 @@ async def _handle_convoy_sp(
     # 1-3 checkpoints en route
     num_checkpoints = random.randint(1, 3)
     for i in range(num_checkpoints):
-        cp_time = clock.now + timedelta(
-            minutes=random.randint(20, 45) * (i + 1)
-        )
+        cp_time = clock.now + timedelta(minutes=random.randint(20, 45) * (i + 1))
         new_events.append(
             SimEvent(
                 fire_at=cp_time,
@@ -366,16 +378,12 @@ async def _handle_convoy_sp(
         )
 
     # Arrival
-    arrival_time = clock.now + timedelta(
-        hours=random.uniform(2, 5)
-    )
+    arrival_time = clock.now + timedelta(hours=random.uniform(2, 5))
 
     # Possible delay (20% chance)
     if random.random() < 0.2:
         delay_minutes = random.randint(15, 90)
-        delay_time = clock.now + timedelta(
-            minutes=random.randint(30, 90)
-        )
+        delay_time = clock.now + timedelta(minutes=random.randint(30, 90))
         new_events.append(
             SimEvent(
                 fire_at=delay_time,
@@ -385,13 +393,15 @@ async def _handle_convoy_sp(
                 data={
                     "convoy_id": convoy_id,
                     "delay_minutes": delay_minutes,
-                    "reason": random.choice([
-                        "IED threat — route clearance in progress",
-                        "Vehicle breakdown in convoy",
-                        "Route congestion at checkpoint",
-                        "Sandstorm — reduced visibility",
-                        "Detour required — obstacle on MSR",
-                    ]),
+                    "reason": random.choice(
+                        [
+                            "IED threat — route clearance in progress",
+                            "Vehicle breakdown in convoy",
+                            "Route congestion at checkpoint",
+                            "Sandstorm — reduced visibility",
+                            "Detour required — obstacle on MSR",
+                        ]
+                    ),
                 },
             )
         )
@@ -424,17 +434,19 @@ async def _handle_convoy_sp(
         )
     )
 
-    payloads.append({
-        "type": "mirc",
-        "channel": "MSR NET",
-        "content": (
-            f"[IRONHORSE 3] LOGPAC {convoy_id} SP time NOW. "
-            f"En route to {destination}. {num_checkpoints} checkpoints. "
-            f"ETA {arrival_time:%H%MZ}."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    })
+    payloads.append(
+        {
+            "type": "mirc",
+            "channel": "MSR NET",
+            "content": (
+                f"[IRONHORSE 3] LOGPAC {convoy_id} SP time NOW. "
+                f"En route to {destination}. {num_checkpoints} checkpoints. "
+                f"ETA {arrival_time:%H%MZ}."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    )
     return new_events, payloads
 
 
@@ -445,16 +457,18 @@ async def _handle_convoy_checkpoint(
     convoy_id = event.data.get("convoy_id", "?")
     cp = event.data.get("checkpoint", "?")
     total = event.data.get("total_checkpoints", "?")
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "MSR NET",
-        "content": (
-            f"[IRONHORSE 3] LOGPAC {convoy_id} checkpoint {cp}/{total}. "
-            f"All vehicles accounted for. Proceeding."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "MSR NET",
+            "content": (
+                f"[IRONHORSE 3] LOGPAC {convoy_id} checkpoint {cp}/{total}. "
+                f"All vehicles accounted for. Proceeding."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -463,16 +477,18 @@ async def _handle_convoy_arrived(
 ) -> tuple[list[SimEvent], list[dict[str, Any]]]:
     """Log convoy arrival at destination."""
     convoy_id = event.data.get("convoy_id", "?")
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "MSR NET",
-        "content": (
-            f"[IRONHORSE 3] LOGPAC {convoy_id} arrived at {event.unit_id}. "
-            f"Commencing offload."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "MSR NET",
+            "content": (
+                f"[IRONHORSE 3] LOGPAC {convoy_id} arrived at {event.unit_id}. "
+                f"Commencing offload."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -483,16 +499,18 @@ async def _handle_convoy_delayed(
     convoy_id = event.data.get("convoy_id", "?")
     reason = event.data.get("reason", "unknown cause")
     delay = event.data.get("delay_minutes", 0)
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "MSR NET",
-        "content": (
-            f"[IRONHORSE 3] WARNING — LOGPAC {convoy_id} delayed ~{delay} min. "
-            f"Reason: {reason}. Will advise updated ETA."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "MSR NET",
+            "content": (
+                f"[IRONHORSE 3] WARNING — LOGPAC {convoy_id} delayed ~{delay} min. "
+                f"Reason: {reason}. Will advise updated ETA."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -512,16 +530,18 @@ async def _handle_resupply_delivery(
         # Deliver a mix of everything
         for sc_val in SupplyClass:
             unit.resupply(sc_val, random.uniform(500, 2000))
-        payloads.append({
-            "type": "mirc",
-            "channel": "BN LOG NET",
-            "content": (
-                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-                f"LOGPAC received. General resupply complete. Updating LOGSTAT."
-            ),
-            "unit": unit.abbreviation,
-            "timestamp": clock.now.isoformat(),
-        })
+        payloads.append(
+            {
+                "type": "mirc",
+                "channel": "BN LOG NET",
+                "content": (
+                    f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                    f"LOGPAC received. General resupply complete. Updating LOGSTAT."
+                ),
+                "unit": unit.abbreviation,
+                "timestamp": clock.now.isoformat(),
+            }
+        )
         return [], payloads
 
     # Targeted resupply
@@ -535,17 +555,19 @@ async def _handle_resupply_delivery(
     amount = amount_map.get(sc, 1000)
     unit.resupply(sc, amount)
 
-    payloads.append({
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-            f"Class {sc.value} resupply received from "
-            f"LOGPAC {event.data.get('convoy_id', '?')}. Updating LOGSTAT."
-        ),
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-    })
+    payloads.append(
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                f"Class {sc.value} resupply received from "
+                f"LOGPAC {event.data.get('convoy_id', '?')}. Updating LOGSTAT."
+            ),
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+        }
+    )
     return [], payloads
 
 
@@ -569,16 +591,18 @@ async def _handle_resupply_convoy(
             },
         )
     ]
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[IRONHORSE 3] Scheduled LOGPAC {convoy_id} for {event.unit_id}. "
-            f"SP time {sp_time:%H%MZ}."
-        ),
-        "unit": "CLB-1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[IRONHORSE 3] Scheduled LOGPAC {convoy_id} for {event.unit_id}. "
+                f"SP time {sp_time:%H%MZ}."
+            ),
+            "unit": "CLB-1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return new_events, payloads
 
 
@@ -587,16 +611,18 @@ async def _handle_convoy_planned(
 ) -> tuple[list[SimEvent], list[dict[str, Any]]]:
     """Announce a planned convoy."""
     convoy_id = event.data.get("convoy_id", f"PLAN-{random.randint(1000, 9999)}")
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[RAIDER 4] Convoy {convoy_id} planned for {event.unit_id}. "
-            f"Coordinating with CLB-1 for execution."
-        ),
-        "unit": "1/1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[RAIDER 4] Convoy {convoy_id} planned for {event.unit_id}. "
+                f"Coordinating with CLB-1 for execution."
+            ),
+            "unit": "1/1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -611,20 +637,21 @@ async def _handle_phase_change(
         unit.current_tempo = new_tempo
 
     logger.info(
-        f"[SIM {clock.format()}] === PHASE CHANGE: {new_phase} "
-        f"(tempo: {new_tempo}) ==="
+        f"[SIM {clock.format()}] === PHASE CHANGE: {new_phase} (tempo: {new_tempo}) ==="
     )
 
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN TAC 1",
-        "content": (
-            f"[RAIDER 6] ALL STATIONS — PHASE TRANSITION to {new_phase}. "
-            f"Op tempo now {new_tempo}. Acknowledge."
-        ),
-        "unit": "1/1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN TAC 1",
+            "content": (
+                f"[RAIDER 6] ALL STATIONS — PHASE TRANSITION to {new_phase}. "
+                f"Op tempo now {new_tempo}. Acknowledge."
+            ),
+            "unit": "1/1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -640,21 +667,24 @@ async def _handle_unit_displaced(
     if new_pos:
         unit.position = tuple(new_pos)
 
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN TAC 1",
-        "content": (
-            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-            f"Displacement complete. Set at new pos. REDCON 1."
-        ),
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-    }, {
-        "type": "tak",
-        "unit": unit.abbreviation,
-        "position": unit.position,
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN TAC 1",
+            "content": (
+                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                f"Displacement complete. Set at new pos. REDCON 1."
+            ),
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+        },
+        {
+            "type": "tak",
+            "unit": unit.abbreviation,
+            "position": unit.position,
+            "timestamp": clock.now.isoformat(),
+        },
+    ]
     return [], payloads
 
 
@@ -672,23 +702,25 @@ async def _handle_mass_casualty(
             item.on_hand = max(0, item.on_hand - item.daily_consumption_rate * 3)
 
     num_casualties = event.data.get("casualties", random.randint(3, 12))
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN TAC 1",
-        "content": (
-            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-            f"MASCAL MASCAL MASCAL — {num_casualties}x casualties. "
-            f"Request CASEVAC and Class VIII resupply. "
-            f"Current medical status: "
-            + ", ".join(
-                f"{i.name}: {i.status}"
-                for i in unit.supply_items
-                if i.supply_class == SupplyClass.VIII
-            )
-        ),
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN TAC 1",
+            "content": (
+                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                f"MASCAL MASCAL MASCAL — {num_casualties}x casualties. "
+                f"Request CASEVAC and Class VIII resupply. "
+                f"Current medical status: "
+                + ", ".join(
+                    f"{i.name}: {i.status}"
+                    for i in unit.supply_items
+                    if i.supply_class == SupplyClass.VIII
+                )
+            ),
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
 
     # Trigger emergency medical resupply
     new_events = [
@@ -711,16 +743,18 @@ async def _handle_increased_tempo(
     if unit is None:
         return [], []
     unit.current_tempo = "HIGH"
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN TAC 1",
-        "content": (
-            f"[RAIDER 3] {unit.abbreviation} — increased op tempo to HIGH. "
-            f"Expect higher consumption rates."
-        ),
-        "unit": "1/1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN TAC 1",
+            "content": (
+                f"[RAIDER 3] {unit.abbreviation} — increased op tempo to HIGH. "
+                f"Expect higher consumption rates."
+            ),
+            "unit": "1/1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -732,16 +766,18 @@ async def _handle_decreased_tempo(
     if unit is None:
         return [], []
     unit.current_tempo = "LOW"
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN TAC 1",
-        "content": (
-            f"[RAIDER 3] {unit.abbreviation} — decreased op tempo to LOW. "
-            f"Consolidation phase."
-        ),
-        "unit": "1/1",
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN TAC 1",
+            "content": (
+                f"[RAIDER 3] {unit.abbreviation} — decreased op tempo to LOW. "
+                f"Consolidation phase."
+            ),
+            "unit": "1/1",
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -768,42 +804,46 @@ async def _handle_logstat_due(
         )
     logstat_text = "\n".join(lines)
 
-    payloads.append({
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}]\n"
-            f"{logstat_text}"
-        ),
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-    })
+    payloads.append(
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}]\n"
+                f"{logstat_text}"
+            ),
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+        }
+    )
 
     # Also generate an Excel-style payload
-    payloads.append({
-        "type": "excel",
-        "report_type": "logstat",
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-        "data": {
-            "unit_name": unit.unit_name,
-            "abbreviation": unit.abbreviation,
-            "dtg": clock.now.isoformat(),
-            "items": [
-                {
-                    "name": item.name,
-                    "class": item.supply_class.value,
-                    "uom": item.unit_of_measure,
-                    "on_hand": item.on_hand,
-                    "required": item.required,
-                    "dos": item.dos,
-                    "status": item.status,
-                    "pct": item.percentage,
-                }
-                for item in unit.supply_items
-            ],
-        },
-    })
+    payloads.append(
+        {
+            "type": "excel",
+            "report_type": "logstat",
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+            "data": {
+                "unit_name": unit.unit_name,
+                "abbreviation": unit.abbreviation,
+                "dtg": clock.now.isoformat(),
+                "items": [
+                    {
+                        "name": item.name,
+                        "class": item.supply_class.value,
+                        "uom": item.unit_of_measure,
+                        "on_hand": item.on_hand,
+                        "required": item.required,
+                        "dos": item.dos,
+                        "status": item.status,
+                        "pct": item.percentage,
+                    }
+                    for item in unit.supply_items
+                ],
+            },
+        }
+    )
 
     # Reschedule next LOGSTAT in 12 hours
     new_events.append(
@@ -828,25 +868,26 @@ async def _handle_sitrep_due(
     # Count RED items
     red_items = [i for i in unit.supply_items if i.status == "RED"]
     amber_items = [i for i in unit.supply_items if i.status == "AMBER"]
-    avg_readiness = (
-        sum(c.readiness_pct for c in unit.equipment_categories)
-        / max(len(unit.equipment_categories), 1)
+    avg_readiness = sum(c.readiness_pct for c in unit.equipment_categories) / max(
+        len(unit.equipment_categories), 1
     )
 
-    payloads: list[dict[str, Any]] = [{
-        "type": "mirc",
-        "channel": "BN TAC 1",
-        "content": (
-            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
-            f"SITREP {clock.now:%d%H%MZ%b%y}: "
-            f"Tempo {unit.current_tempo}. "
-            f"Supply: {len(red_items)} RED, {len(amber_items)} AMBER. "
-            f"Equip readiness: {avg_readiness:.0f}%. "
-            f"Active convoys: {len(unit.active_convoys)}."
-        ),
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-    }]
+    payloads: list[dict[str, Any]] = [
+        {
+            "type": "mirc",
+            "channel": "BN TAC 1",
+            "content": (
+                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}] "
+                f"SITREP {clock.now:%d%H%MZ%b%y}: "
+                f"Tempo {unit.current_tempo}. "
+                f"Supply: {len(red_items)} RED, {len(amber_items)} AMBER. "
+                f"Equip readiness: {avg_readiness:.0f}%. "
+                f"Active convoys: {len(unit.active_convoys)}."
+            ),
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+        }
+    ]
     return [], payloads
 
 
@@ -863,7 +904,9 @@ async def _handle_readiness_report_due(
 
     unit.last_equip_report = clock.now
 
-    lines = [f"READINESS REPORT {unit.abbreviation} DTG {clock.now:%d%H%MZ%b%y}".upper()]
+    lines = [
+        f"READINESS REPORT {unit.abbreviation} DTG {clock.now:%d%H%MZ%b%y}".upper()
+    ]
     for cat in unit.equipment_categories:
         lines.append(
             f"  {cat.nomenclature} ({cat.tamcn}): "
@@ -873,40 +916,44 @@ async def _handle_readiness_report_due(
         )
     report_text = "\n".join(lines)
 
-    payloads.append({
-        "type": "mirc",
-        "channel": "BN LOG NET",
-        "content": (
-            f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}]\n"
-            f"{report_text}"
-        ),
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-    })
+    payloads.append(
+        {
+            "type": "mirc",
+            "channel": "BN LOG NET",
+            "content": (
+                f"[{unit.callsigns[0] if unit.callsigns else unit.abbreviation}]\n"
+                f"{report_text}"
+            ),
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+        }
+    )
 
-    payloads.append({
-        "type": "excel",
-        "report_type": "readiness",
-        "unit": unit.abbreviation,
-        "timestamp": clock.now.isoformat(),
-        "data": {
-            "unit_name": unit.unit_name,
-            "abbreviation": unit.abbreviation,
-            "dtg": clock.now.isoformat(),
-            "categories": [
-                {
-                    "tamcn": cat.tamcn,
-                    "nomenclature": cat.nomenclature,
-                    "total": cat.total_possessed,
-                    "mc": cat.mission_capable,
-                    "nmcm": cat.nmcm,
-                    "nmcs": cat.nmcs,
-                    "readiness_pct": cat.readiness_pct,
-                }
-                for cat in unit.equipment_categories
-            ],
-        },
-    })
+    payloads.append(
+        {
+            "type": "excel",
+            "report_type": "readiness",
+            "unit": unit.abbreviation,
+            "timestamp": clock.now.isoformat(),
+            "data": {
+                "unit_name": unit.unit_name,
+                "abbreviation": unit.abbreviation,
+                "dtg": clock.now.isoformat(),
+                "categories": [
+                    {
+                        "tamcn": cat.tamcn,
+                        "nomenclature": cat.nomenclature,
+                        "total": cat.total_possessed,
+                        "mc": cat.mission_capable,
+                        "nmcm": cat.nmcm,
+                        "nmcs": cat.nmcs,
+                        "readiness_pct": cat.readiness_pct,
+                    }
+                    for cat in unit.equipment_categories
+                ],
+            },
+        }
+    )
 
     # Reschedule in 24 hours
     new_events.append(

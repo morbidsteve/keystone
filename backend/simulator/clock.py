@@ -51,9 +51,13 @@ class SimulationClock:
         if self._paused and self._paused_at is not None:
             # Calculate how much real time passed while paused — that real time
             # should NOT advance sim time, so we subtract the sim-equivalent.
-            elapsed_real = (datetime.now(timezone.utc) - self.real_start).total_seconds()
+            elapsed_real = (
+                datetime.now(timezone.utc) - self.real_start
+            ).total_seconds()
             elapsed_sim = elapsed_real * self.speed_multiplier
-            expected_now = self.start_time + timedelta(seconds=elapsed_sim) + self._pause_offset
+            expected_now = (
+                self.start_time + timedelta(seconds=elapsed_sim) + self._pause_offset
+            )
             drift = expected_now - self._paused_at
             self._pause_offset -= drift
             self._paused = False

@@ -94,12 +94,16 @@ async def generate_report(
         try:
             parsed_from = datetime.fromisoformat(date_from)
         except ValueError:
-            raise BadRequestError("Invalid date_from format. Use ISO 8601 (e.g. 2026-01-15)")
+            raise BadRequestError(
+                "Invalid date_from format. Use ISO 8601 (e.g. 2026-01-15)"
+            )
     if date_to:
         try:
             parsed_to = datetime.fromisoformat(date_to)
         except ValueError:
-            raise BadRequestError("Invalid date_to format. Use ISO 8601 (e.g. 2026-01-15)")
+            raise BadRequestError(
+                "Invalid date_to format. Use ISO 8601 (e.g. 2026-01-15)"
+            )
 
     report_title = title or f"{report_type} Report"
 
@@ -143,9 +147,16 @@ async def create_report(
 
         generate_report_task.delay(report.id)
     except Exception:
-        logger.warning("Celery broker unavailable; report %s queued locally", report.id, exc_info=True)
+        logger.warning(
+            "Celery broker unavailable; report %s queued locally",
+            report.id,
+            exc_info=True,
+        )
         report.content = json.dumps(
-            {"status": "pending", "message": "Report generation queued (async worker unavailable)"}
+            {
+                "status": "pending",
+                "message": "Report generation queued (async worker unavailable)",
+            }
         )
 
     return report

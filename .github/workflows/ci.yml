@@ -40,8 +40,8 @@ jobs:
       backend-test-command: 'pytest tests/ -v --cov=app --cov-report=xml --cov-report=term'
       frontend-test-command: 'npx vitest run --coverage'
       backend-test-deps: 'pytest pytest-cov pytest-asyncio httpx aiosqlite'
-      health-endpoint: '/api/v1/health'
-      openapi-endpoint: '/api/v1/openapi.json'
+      health-endpoint: '/health'
+      openapi-endpoint: '/api/openapi.json'
       backend-port: 8000
       frontend-port: 8080
       ci-compose-file: 'docker-compose.ci.yml'

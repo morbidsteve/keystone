@@ -153,9 +153,7 @@ app = FastAPI(
     openapi_tags=[
         {
             "name": "Authentication",
-            "description": (
-                "User login, token issuance, and session management."
-            ),
+            "description": ("User login, token issuance, and session management."),
         },
         {
             "name": "Dashboard",
@@ -166,8 +164,7 @@ app = FastAPI(
         {
             "name": "Supply",
             "description": (
-                "Supply status records — shortfalls, readiness percentages, "
-                "and trends."
+                "Supply status records — shortfalls, readiness percentages, and trends."
             ),
         },
         {
@@ -250,21 +247,17 @@ app = FastAPI(
         {
             "name": "Map",
             "description": (
-                "Geospatial data for COP map — unit positions, routes, "
-                "and overlays."
+                "Geospatial data for COP map — unit positions, routes, and overlays."
             ),
         },
         {
             "name": "Personnel",
-            "description": (
-                "Personnel strength tracking and manning reports."
-            ),
+            "description": ("Personnel strength tracking and manning reports."),
         },
         {
             "name": "Maintenance",
             "description": (
-                "Equipment maintenance requests, scheduling, and work-order "
-                "tracking."
+                "Equipment maintenance requests, scheduling, and work-order tracking."
             ),
         },
     ],

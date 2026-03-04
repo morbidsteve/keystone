@@ -43,9 +43,7 @@ async def feed_tak(
             await client.post_tak_cot(position_xml)
             stats["tak_posts"] = stats.get("tak_posts", 0) + 1
         except Exception:
-            logger.exception(
-                "Failed to post TAK position for %s", unit.abbreviation
-            )
+            logger.exception("Failed to post TAK position for %s", unit.abbreviation)
 
         # ---- Supply CoT (throttled to every ~2 hours) -------------------
         last_supply = getattr(unit, "last_tak_supply", None)

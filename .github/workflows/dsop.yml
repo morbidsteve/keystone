@@ -524,7 +524,7 @@ jobs:
           done
           echo "Waiting for frontend at port ${{ inputs.frontend-port }}..."
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:${{ inputs.frontend-port }} > /dev/null 2>&1; then
+            if curl -sfkL http://localhost:${{ inputs.frontend-port }} > /dev/null 2>&1; then
               echo "Frontend healthy after ${i}s"
               break
             fi

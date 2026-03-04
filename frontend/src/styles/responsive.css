@@ -152,7 +152,7 @@
 
 .map-full-viewport {
   height: calc(100vh - 48px);
-  margin: -20px;
+  margin: -20px -24px;
   overflow: hidden;
 }
 
@@ -262,7 +262,7 @@
     min-width: 44px;
   }
 
-  /* Map page: account for no sidebar */
+  /* Map page: account for reduced padding on mobile */
   .map-full-viewport {
     height: calc(100vh - 48px);
     margin: -12px;

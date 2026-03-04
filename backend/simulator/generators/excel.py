@@ -36,8 +36,18 @@ _CENTER = Alignment(horizontal="center", vertical="center")
 # Month abbreviations for DTG formatting (duplicated from mirc.py to avoid
 # cross-generator imports — each generator is self-contained).
 _MONTH_ABBR = [
-    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
 ]
 
 
@@ -113,7 +123,7 @@ def generate_logstat_excel(unit: UnitState, report_time: datetime) -> bytes:
     """
     wb = Workbook()
     ws = wb.active
-    ws.title = f"SIM_LOGSTAT_{unit.abbreviation}".replace('/', '-').replace(' ', '_')
+    ws.title = f"SIM_LOGSTAT_{unit.abbreviation}".replace("/", "-").replace(" ", "_")
 
     dtg = _format_dtg(report_time)
     header_row = _write_header_block(ws, "LOGSTAT REPORT", unit.unit_name, dtg)
@@ -128,7 +138,11 @@ def generate_logstat_excel(unit: UnitState, report_time: datetime) -> bytes:
     data_row = header_row + 1
     for item in unit.supply_items:
         pct = round(item.percentage, 1) if item.percentage else 0.0
-        status = item.status if hasattr(item, "status") and item.status else _status_from_pct(pct)
+        status = (
+            item.status
+            if hasattr(item, "status") and item.status
+            else _status_from_pct(pct)
+        )
         ws.cell(row=data_row, column=1, value=unit.unit_name)
         ws.cell(row=data_row, column=2, value=item.supply_class)
         ws.cell(row=data_row, column=3, value=item.name)
@@ -169,12 +183,23 @@ def generate_equipment_excel(unit: UnitState, report_time: datetime) -> bytes:
     """
     wb = Workbook()
     ws = wb.active
-    ws.title = f"SIM_EQUIP_{unit.abbreviation}".replace('/', '-').replace(' ', '_')
+    ws.title = f"SIM_EQUIP_{unit.abbreviation}".replace("/", "-").replace(" ", "_")
 
     dtg = _format_dtg(report_time)
     header_row = _write_header_block(ws, "EQUIPMENT READINESS", unit.unit_name, dtg)
 
-    columns = ["UNIT", "TAMCN", "NOMENCLATURE", "TOTAL", "POSS", "MC", "NMCM", "NMCS", "MC%", "REMARKS"]
+    columns = [
+        "UNIT",
+        "TAMCN",
+        "NOMENCLATURE",
+        "TOTAL",
+        "POSS",
+        "MC",
+        "NMCM",
+        "NMCS",
+        "MC%",
+        "REMARKS",
+    ]
     for col_idx, col_name in enumerate(columns, start=1):
         ws.cell(row=header_row, column=col_idx, value=col_name)
     _style_header_row(ws, header_row, len(columns))
@@ -240,13 +265,23 @@ def generate_convoy_manifest_excel(
     """
     wb = Workbook()
     ws = wb.active
-    ws.title = "SIM_CONVOY_MANIFEST".replace('/', '-').replace(' ', '_')
+    ws.title = "SIM_CONVOY_MANIFEST".replace("/", "-").replace(" ", "_")
 
     dtg = _format_dtg(report_time)
     cid = convoy_data.get("convoy_id", "C-2026-001")
     header_row = _write_header_block(ws, f"CONVOY MANIFEST {cid}", cid, dtg)
 
-    columns = ["CONVOY", "VEHICLE", "BUMPER", "CARGO", "WEIGHT", "ORIGIN", "DESTINATION", "ETD", "ETA"]
+    columns = [
+        "CONVOY",
+        "VEHICLE",
+        "BUMPER",
+        "CARGO",
+        "WEIGHT",
+        "ORIGIN",
+        "DESTINATION",
+        "ETD",
+        "ETA",
+    ]
     for col_idx, col_name in enumerate(columns, start=1):
         ws.cell(row=header_row, column=col_idx, value=col_name)
     _style_header_row(ws, header_row, len(columns))
@@ -275,7 +310,7 @@ def generate_convoy_manifest_excel(
 
         ws.cell(row=data_row, column=1, value=cid)
         ws.cell(row=data_row, column=2, value=veh.get("type", "MTVR"))
-        ws.cell(row=data_row, column=3, value=veh.get("bumper", f"SIM-{i+1:03d}"))
+        ws.cell(row=data_row, column=3, value=veh.get("bumper", f"SIM-{i + 1:03d}"))
         ws.cell(row=data_row, column=4, value=veh.get("cargo", "MIXED CARGO"))
         ws.cell(row=data_row, column=5, value=veh.get("weight_lbs", 15000))
         ws.cell(row=data_row, column=6, value=origin)

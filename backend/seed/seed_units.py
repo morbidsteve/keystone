@@ -87,7 +87,6 @@ UNIT_HIERARCHY = {
         "uic": "H00001",
         "children": {},
     },
-
     # ═══════════════════════════════════════════════════════════════════
     # I MARINE EXPEDITIONARY FORCE — Camp Pendleton, CA
     # ═══════════════════════════════════════════════════════════════════
@@ -96,7 +95,6 @@ UNIT_HIERARCHY = {
         "echelon": _MEF,
         "uic": "M10000",
         "children": {
-
             # ─── 1st Marine Division ──────────────────────────────────
             "1st Marine Division": {
                 "abbr": "1st MarDiv",
@@ -108,7 +106,6 @@ UNIT_HIERARCHY = {
                         "echelon": _BN,
                         "uic": "M11001",
                     },
-
                     # 1st Marine Regiment
                     "1st Marine Regiment": {
                         "abbr": "1st Marines",
@@ -141,7 +138,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 5th Marine Regiment
                     "5th Marine Regiment": {
                         "abbr": "5th Marines",
@@ -174,7 +170,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 7th Marine Regiment
                     "7th Marine Regiment": {
                         "abbr": "7th Marines",
@@ -201,7 +196,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 11th Marine Regiment (Artillery)
                     "11th Marine Regiment": {
                         "abbr": "11th Marines",
@@ -225,7 +219,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # Separate Battalions under 1st MarDiv
                     "1st Reconnaissance Battalion": {
                         "abbr": "1st Recon Bn",
@@ -259,7 +252,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── 3rd Marine Aircraft Wing ─────────────────────────────
             "3rd Marine Aircraft Wing": {
                 "abbr": "3rd MAW",
@@ -276,13 +268,41 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M12100",
                         "children": {
-                            "VMFA-211": {"abbr": "VMFA-211", "echelon": _SQDN, "uic": "M12111"},
-                            "VMFA-225": {"abbr": "VMFA-225", "echelon": _SQDN, "uic": "M12112"},
-                            "VMFA-232": {"abbr": "VMFA-232", "echelon": _SQDN, "uic": "M12113"},
-                            "VMFA-314": {"abbr": "VMFA-314", "echelon": _SQDN, "uic": "M12114"},
-                            "VMFA-323": {"abbr": "VMFA-323", "echelon": _SQDN, "uic": "M12115"},
-                            "VMFAT-101": {"abbr": "VMFAT-101", "echelon": _SQDN, "uic": "M12116"},
-                            "VMGR-352": {"abbr": "VMGR-352", "echelon": _SQDN, "uic": "M12117"},
+                            "VMFA-211": {
+                                "abbr": "VMFA-211",
+                                "echelon": _SQDN,
+                                "uic": "M12111",
+                            },
+                            "VMFA-225": {
+                                "abbr": "VMFA-225",
+                                "echelon": _SQDN,
+                                "uic": "M12112",
+                            },
+                            "VMFA-232": {
+                                "abbr": "VMFA-232",
+                                "echelon": _SQDN,
+                                "uic": "M12113",
+                            },
+                            "VMFA-314": {
+                                "abbr": "VMFA-314",
+                                "echelon": _SQDN,
+                                "uic": "M12114",
+                            },
+                            "VMFA-323": {
+                                "abbr": "VMFA-323",
+                                "echelon": _SQDN,
+                                "uic": "M12115",
+                            },
+                            "VMFAT-101": {
+                                "abbr": "VMFAT-101",
+                                "echelon": _SQDN,
+                                "uic": "M12116",
+                            },
+                            "VMGR-352": {
+                                "abbr": "VMGR-352",
+                                "echelon": _SQDN,
+                                "uic": "M12117",
+                            },
                         },
                     },
                     "Marine Aircraft Group 13": {
@@ -290,11 +310,31 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M12200",
                         "children": {
-                            "VMFA-121": {"abbr": "VMFA-121", "echelon": _SQDN, "uic": "M12211"},
-                            "VMFA-211 Det": {"abbr": "VMFA-211 Det", "echelon": _SQDN, "uic": "M12212"},
-                            "VMFA-311": {"abbr": "VMFA-311", "echelon": _SQDN, "uic": "M12213"},
-                            "VMFA-122": {"abbr": "VMFA-122", "echelon": _SQDN, "uic": "M12214"},
-                            "VMU-1": {"abbr": "VMU-1", "echelon": _SQDN, "uic": "M12215"},
+                            "VMFA-121": {
+                                "abbr": "VMFA-121",
+                                "echelon": _SQDN,
+                                "uic": "M12211",
+                            },
+                            "VMFA-211 Det": {
+                                "abbr": "VMFA-211 Det",
+                                "echelon": _SQDN,
+                                "uic": "M12212",
+                            },
+                            "VMFA-311": {
+                                "abbr": "VMFA-311",
+                                "echelon": _SQDN,
+                                "uic": "M12213",
+                            },
+                            "VMFA-122": {
+                                "abbr": "VMFA-122",
+                                "echelon": _SQDN,
+                                "uic": "M12214",
+                            },
+                            "VMU-1": {
+                                "abbr": "VMU-1",
+                                "echelon": _SQDN,
+                                "uic": "M12215",
+                            },
                         },
                     },
                     "Marine Aircraft Group 16": {
@@ -302,14 +342,46 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M12300",
                         "children": {
-                            "VMM-161": {"abbr": "VMM-161", "echelon": _SQDN, "uic": "M12311"},
-                            "VMM-163": {"abbr": "VMM-163", "echelon": _SQDN, "uic": "M12312"},
-                            "VMM-165": {"abbr": "VMM-165", "echelon": _SQDN, "uic": "M12313"},
-                            "VMM-166": {"abbr": "VMM-166", "echelon": _SQDN, "uic": "M12314"},
-                            "HMH-361": {"abbr": "HMH-361", "echelon": _SQDN, "uic": "M12315"},
-                            "HMH-462": {"abbr": "HMH-462", "echelon": _SQDN, "uic": "M12316"},
-                            "HMH-465": {"abbr": "HMH-465", "echelon": _SQDN, "uic": "M12317"},
-                            "HMH-466": {"abbr": "HMH-466", "echelon": _SQDN, "uic": "M12318"},
+                            "VMM-161": {
+                                "abbr": "VMM-161",
+                                "echelon": _SQDN,
+                                "uic": "M12311",
+                            },
+                            "VMM-163": {
+                                "abbr": "VMM-163",
+                                "echelon": _SQDN,
+                                "uic": "M12312",
+                            },
+                            "VMM-165": {
+                                "abbr": "VMM-165",
+                                "echelon": _SQDN,
+                                "uic": "M12313",
+                            },
+                            "VMM-166": {
+                                "abbr": "VMM-166",
+                                "echelon": _SQDN,
+                                "uic": "M12314",
+                            },
+                            "HMH-361": {
+                                "abbr": "HMH-361",
+                                "echelon": _SQDN,
+                                "uic": "M12315",
+                            },
+                            "HMH-462": {
+                                "abbr": "HMH-462",
+                                "echelon": _SQDN,
+                                "uic": "M12316",
+                            },
+                            "HMH-465": {
+                                "abbr": "HMH-465",
+                                "echelon": _SQDN,
+                                "uic": "M12317",
+                            },
+                            "HMH-466": {
+                                "abbr": "HMH-466",
+                                "echelon": _SQDN,
+                                "uic": "M12318",
+                            },
                         },
                     },
                     "Marine Aircraft Group 39": {
@@ -317,13 +389,41 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M12400",
                         "children": {
-                            "HMLA-169": {"abbr": "HMLA-169", "echelon": _SQDN, "uic": "M12411"},
-                            "HMLA-267": {"abbr": "HMLA-267", "echelon": _SQDN, "uic": "M12412"},
-                            "HMLA-367": {"abbr": "HMLA-367", "echelon": _SQDN, "uic": "M12413"},
-                            "HMLA-469": {"abbr": "HMLA-469", "echelon": _SQDN, "uic": "M12414"},
-                            "VMM-362": {"abbr": "VMM-362", "echelon": _SQDN, "uic": "M12415"},
-                            "VMM-364": {"abbr": "VMM-364", "echelon": _SQDN, "uic": "M12416"},
-                            "HMLAT-303": {"abbr": "HMLAT-303", "echelon": _SQDN, "uic": "M12417"},
+                            "HMLA-169": {
+                                "abbr": "HMLA-169",
+                                "echelon": _SQDN,
+                                "uic": "M12411",
+                            },
+                            "HMLA-267": {
+                                "abbr": "HMLA-267",
+                                "echelon": _SQDN,
+                                "uic": "M12412",
+                            },
+                            "HMLA-367": {
+                                "abbr": "HMLA-367",
+                                "echelon": _SQDN,
+                                "uic": "M12413",
+                            },
+                            "HMLA-469": {
+                                "abbr": "HMLA-469",
+                                "echelon": _SQDN,
+                                "uic": "M12414",
+                            },
+                            "VMM-362": {
+                                "abbr": "VMM-362",
+                                "echelon": _SQDN,
+                                "uic": "M12415",
+                            },
+                            "VMM-364": {
+                                "abbr": "VMM-364",
+                                "echelon": _SQDN,
+                                "uic": "M12416",
+                            },
+                            "HMLAT-303": {
+                                "abbr": "HMLAT-303",
+                                "echelon": _SQDN,
+                                "uic": "M12417",
+                            },
                         },
                     },
                     "Marine Air Control Group 38": {
@@ -338,7 +438,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── 1st Marine Logistics Group ───────────────────────────
             "1st Marine Logistics Group": {
                 "abbr": "1st MLG",
@@ -423,7 +522,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── I MEF Information Group ──────────────────────────────
             "I MEF Information Group": {
                 "abbr": "I MIG",
@@ -457,7 +555,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── MEUs under I MEF ─────────────────────────────────────
             "11th Marine Expeditionary Unit": {
                 "abbr": "11th MEU",
@@ -476,7 +573,6 @@ UNIT_HIERARCHY = {
             },
         },
     },
-
     # ═══════════════════════════════════════════════════════════════════
     # II MARINE EXPEDITIONARY FORCE — Camp Lejeune, NC
     # ═══════════════════════════════════════════════════════════════════
@@ -485,7 +581,6 @@ UNIT_HIERARCHY = {
         "echelon": _MEF,
         "uic": "M20000",
         "children": {
-
             # ─── 2nd Marine Division ──────────────────────────────────
             "2nd Marine Division": {
                 "abbr": "2nd MarDiv",
@@ -497,7 +592,6 @@ UNIT_HIERARCHY = {
                         "echelon": _BN,
                         "uic": "M21001",
                     },
-
                     # 2nd Marine Regiment
                     "2nd Marine Regiment": {
                         "abbr": "2nd Marines",
@@ -530,7 +624,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 6th Marine Regiment
                     "6th Marine Regiment": {
                         "abbr": "6th Marines",
@@ -563,7 +656,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 10th Marine Regiment (Artillery)
                     "10th Marine Regiment": {
                         "abbr": "10th Marines",
@@ -582,7 +674,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # Separate Battalions under 2nd MarDiv
                     "2nd Reconnaissance Battalion": {
                         "abbr": "2nd Recon Bn",
@@ -606,7 +697,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── 2nd Marine Aircraft Wing ─────────────────────────────
             "2nd Marine Aircraft Wing": {
                 "abbr": "2nd MAW",
@@ -623,13 +713,41 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M22100",
                         "children": {
-                            "VMFA-115": {"abbr": "VMFA-115", "echelon": _SQDN, "uic": "M22111"},
-                            "VMFA-224": {"abbr": "VMFA-224", "echelon": _SQDN, "uic": "M22112"},
-                            "VMFA-251": {"abbr": "VMFA-251", "echelon": _SQDN, "uic": "M22113"},
-                            "VMFA-312": {"abbr": "VMFA-312", "echelon": _SQDN, "uic": "M22114"},
-                            "VMFA-501": {"abbr": "VMFA-501", "echelon": _SQDN, "uic": "M22115"},
-                            "VMFA-542": {"abbr": "VMFA-542", "echelon": _SQDN, "uic": "M22116"},
-                            "VMGR-252": {"abbr": "VMGR-252", "echelon": _SQDN, "uic": "M22117"},
+                            "VMFA-115": {
+                                "abbr": "VMFA-115",
+                                "echelon": _SQDN,
+                                "uic": "M22111",
+                            },
+                            "VMFA-224": {
+                                "abbr": "VMFA-224",
+                                "echelon": _SQDN,
+                                "uic": "M22112",
+                            },
+                            "VMFA-251": {
+                                "abbr": "VMFA-251",
+                                "echelon": _SQDN,
+                                "uic": "M22113",
+                            },
+                            "VMFA-312": {
+                                "abbr": "VMFA-312",
+                                "echelon": _SQDN,
+                                "uic": "M22114",
+                            },
+                            "VMFA-501": {
+                                "abbr": "VMFA-501",
+                                "echelon": _SQDN,
+                                "uic": "M22115",
+                            },
+                            "VMFA-542": {
+                                "abbr": "VMFA-542",
+                                "echelon": _SQDN,
+                                "uic": "M22116",
+                            },
+                            "VMGR-252": {
+                                "abbr": "VMGR-252",
+                                "echelon": _SQDN,
+                                "uic": "M22117",
+                            },
                         },
                     },
                     "Marine Aircraft Group 26": {
@@ -637,13 +755,41 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M22200",
                         "children": {
-                            "VMM-261": {"abbr": "VMM-261", "echelon": _SQDN, "uic": "M22211"},
-                            "VMM-263": {"abbr": "VMM-263", "echelon": _SQDN, "uic": "M22212"},
-                            "VMM-264": {"abbr": "VMM-264", "echelon": _SQDN, "uic": "M22213"},
-                            "VMM-266": {"abbr": "VMM-266", "echelon": _SQDN, "uic": "M22214"},
-                            "HMH-461": {"abbr": "HMH-461", "echelon": _SQDN, "uic": "M22215"},
-                            "HMH-464": {"abbr": "HMH-464", "echelon": _SQDN, "uic": "M22216"},
-                            "HMH-366": {"abbr": "HMH-366", "echelon": _SQDN, "uic": "M22217"},
+                            "VMM-261": {
+                                "abbr": "VMM-261",
+                                "echelon": _SQDN,
+                                "uic": "M22211",
+                            },
+                            "VMM-263": {
+                                "abbr": "VMM-263",
+                                "echelon": _SQDN,
+                                "uic": "M22212",
+                            },
+                            "VMM-264": {
+                                "abbr": "VMM-264",
+                                "echelon": _SQDN,
+                                "uic": "M22213",
+                            },
+                            "VMM-266": {
+                                "abbr": "VMM-266",
+                                "echelon": _SQDN,
+                                "uic": "M22214",
+                            },
+                            "HMH-461": {
+                                "abbr": "HMH-461",
+                                "echelon": _SQDN,
+                                "uic": "M22215",
+                            },
+                            "HMH-464": {
+                                "abbr": "HMH-464",
+                                "echelon": _SQDN,
+                                "uic": "M22216",
+                            },
+                            "HMH-366": {
+                                "abbr": "HMH-366",
+                                "echelon": _SQDN,
+                                "uic": "M22217",
+                            },
                         },
                     },
                     "Marine Aircraft Group 29": {
@@ -651,10 +797,26 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M22300",
                         "children": {
-                            "HMLA-167": {"abbr": "HMLA-167", "echelon": _SQDN, "uic": "M22311"},
-                            "HMLA-269": {"abbr": "HMLA-269", "echelon": _SQDN, "uic": "M22312"},
-                            "HMLA-467": {"abbr": "HMLA-467", "echelon": _SQDN, "uic": "M22313"},
-                            "VMU-2": {"abbr": "VMU-2", "echelon": _SQDN, "uic": "M22314"},
+                            "HMLA-167": {
+                                "abbr": "HMLA-167",
+                                "echelon": _SQDN,
+                                "uic": "M22311",
+                            },
+                            "HMLA-269": {
+                                "abbr": "HMLA-269",
+                                "echelon": _SQDN,
+                                "uic": "M22312",
+                            },
+                            "HMLA-467": {
+                                "abbr": "HMLA-467",
+                                "echelon": _SQDN,
+                                "uic": "M22313",
+                            },
+                            "VMU-2": {
+                                "abbr": "VMU-2",
+                                "echelon": _SQDN,
+                                "uic": "M22314",
+                            },
                         },
                     },
                     "Marine Air Control Group 28": {
@@ -669,7 +831,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── 2nd Marine Logistics Group ───────────────────────────
             "2nd Marine Logistics Group": {
                 "abbr": "2nd MLG",
@@ -754,7 +915,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── II MEF Information Group ─────────────────────────────
             "II MEF Information Group": {
                 "abbr": "II MIG",
@@ -788,7 +948,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── MEUs under II MEF ────────────────────────────────────
             "22nd Marine Expeditionary Unit": {
                 "abbr": "22nd MEU",
@@ -805,7 +964,6 @@ UNIT_HIERARCHY = {
                 "echelon": _GRP,
                 "uic": "M25300",
             },
-
             # ─── 2nd MEB ─────────────────────────────────────────────
             "2nd Marine Expeditionary Brigade": {
                 "abbr": "2nd MEB",
@@ -814,7 +972,6 @@ UNIT_HIERARCHY = {
             },
         },
     },
-
     # ═══════════════════════════════════════════════════════════════════
     # III MARINE EXPEDITIONARY FORCE — Okinawa, Japan
     # ═══════════════════════════════════════════════════════════════════
@@ -823,7 +980,6 @@ UNIT_HIERARCHY = {
         "echelon": _MEF,
         "uic": "M30000",
         "children": {
-
             # ─── 3rd Marine Division ──────────────────────────────────
             "3rd Marine Division": {
                 "abbr": "3rd MarDiv",
@@ -835,7 +991,6 @@ UNIT_HIERARCHY = {
                         "echelon": _BN,
                         "uic": "M31001",
                     },
-
                     # 3rd Marine Littoral Regiment (MLR)
                     "3rd Marine Littoral Regiment": {
                         "abbr": "3rd MLR",
@@ -859,7 +1014,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 12th Marine Littoral Regiment (MLR)
                     "12th Marine Littoral Regiment": {
                         "abbr": "12th MLR",
@@ -883,7 +1037,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 4th Marine Regiment (remaining traditional infantry)
                     "4th Marine Regiment": {
                         "abbr": "4th Marines",
@@ -898,7 +1051,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # 12th Marine Regiment (Artillery — redesignated)
                     "12th Marine Regiment": {
                         "abbr": "12th Marines",
@@ -912,7 +1064,6 @@ UNIT_HIERARCHY = {
                             },
                         },
                     },
-
                     # Separate Battalions under 3rd MarDiv
                     "3rd Reconnaissance Battalion": {
                         "abbr": "3rd Recon Bn",
@@ -926,7 +1077,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── 1st Marine Aircraft Wing ─────────────────────────────
             "1st Marine Aircraft Wing": {
                 "abbr": "1st MAW",
@@ -943,7 +1093,11 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M32100",
                         "children": {
-                            "VMFA-242": {"abbr": "VMFA-242", "echelon": _SQDN, "uic": "M32111"},
+                            "VMFA-242": {
+                                "abbr": "VMFA-242",
+                                "echelon": _SQDN,
+                                "uic": "M32111",
+                            },
                         },
                     },
                     "Marine Aircraft Group 24": {
@@ -951,8 +1105,16 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M32200",
                         "children": {
-                            "VMM-268": {"abbr": "VMM-268", "echelon": _SQDN, "uic": "M32211"},
-                            "HMLA-367 Det": {"abbr": "HMLA-367 Det", "echelon": _SQDN, "uic": "M32212"},
+                            "VMM-268": {
+                                "abbr": "VMM-268",
+                                "echelon": _SQDN,
+                                "uic": "M32211",
+                            },
+                            "HMLA-367 Det": {
+                                "abbr": "HMLA-367 Det",
+                                "echelon": _SQDN,
+                                "uic": "M32212",
+                            },
                         },
                     },
                     "Marine Aircraft Group 36": {
@@ -960,10 +1122,26 @@ UNIT_HIERARCHY = {
                         "echelon": _GRP,
                         "uic": "M32300",
                         "children": {
-                            "VMM-262": {"abbr": "VMM-262", "echelon": _SQDN, "uic": "M32311"},
-                            "VMM-265": {"abbr": "VMM-265", "echelon": _SQDN, "uic": "M32312"},
-                            "HMLA-369": {"abbr": "HMLA-369", "echelon": _SQDN, "uic": "M32313"},
-                            "HMH-772": {"abbr": "HMH-772", "echelon": _SQDN, "uic": "M32314"},
+                            "VMM-262": {
+                                "abbr": "VMM-262",
+                                "echelon": _SQDN,
+                                "uic": "M32311",
+                            },
+                            "VMM-265": {
+                                "abbr": "VMM-265",
+                                "echelon": _SQDN,
+                                "uic": "M32312",
+                            },
+                            "HMLA-369": {
+                                "abbr": "HMLA-369",
+                                "echelon": _SQDN,
+                                "uic": "M32313",
+                            },
+                            "HMH-772": {
+                                "abbr": "HMH-772",
+                                "echelon": _SQDN,
+                                "uic": "M32314",
+                            },
                         },
                     },
                     "Marine Air Control Group 18": {
@@ -978,7 +1156,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── 3rd Marine Logistics Group ───────────────────────────
             "3rd Marine Logistics Group": {
                 "abbr": "3rd MLG",
@@ -1051,7 +1228,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── III MEF Information Group ────────────────────────────
             "III MEF Information Group": {
                 "abbr": "III MIG",
@@ -1085,7 +1261,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── MEU & MEB under III MEF ──────────────────────────────
             "31st Marine Expeditionary Unit": {
                 "abbr": "31st MEU",
@@ -1099,7 +1274,6 @@ UNIT_HIERARCHY = {
             },
         },
     },
-
     # ═══════════════════════════════════════════════════════════════════
     # MARINE FORCES RESERVE
     # ═══════════════════════════════════════════════════════════════════
@@ -1108,7 +1282,6 @@ UNIT_HIERARCHY = {
         "echelon": _MEF,
         "uic": "M40000",
         "children": {
-
             # ─── 4th Marine Division (Reserve) ────────────────────────
             "4th Marine Division": {
                 "abbr": "4th MarDiv",
@@ -1120,9 +1293,21 @@ UNIT_HIERARCHY = {
                         "echelon": _REGT,
                         "uic": "M41100",
                         "children": {
-                            "2nd Bn 14th Marines": {"abbr": "2/14", "echelon": _BN, "uic": "M41110"},
-                            "3rd Bn 14th Marines": {"abbr": "3/14", "echelon": _BN, "uic": "M41120"},
-                            "5th Bn 14th Marines": {"abbr": "5/14", "echelon": _BN, "uic": "M41130"},
+                            "2nd Bn 14th Marines": {
+                                "abbr": "2/14",
+                                "echelon": _BN,
+                                "uic": "M41110",
+                            },
+                            "3rd Bn 14th Marines": {
+                                "abbr": "3/14",
+                                "echelon": _BN,
+                                "uic": "M41120",
+                            },
+                            "5th Bn 14th Marines": {
+                                "abbr": "5/14",
+                                "echelon": _BN,
+                                "uic": "M41130",
+                            },
                         },
                     },
                     "23rd Marine Regiment": {
@@ -1130,9 +1315,21 @@ UNIT_HIERARCHY = {
                         "echelon": _REGT,
                         "uic": "M41200",
                         "children": {
-                            "1st Bn 23rd Marines": {"abbr": "1/23", "echelon": _BN, "uic": "M41210"},
-                            "2nd Bn 23rd Marines": {"abbr": "2/23", "echelon": _BN, "uic": "M41220"},
-                            "3rd Bn 23rd Marines": {"abbr": "3/23", "echelon": _BN, "uic": "M41230"},
+                            "1st Bn 23rd Marines": {
+                                "abbr": "1/23",
+                                "echelon": _BN,
+                                "uic": "M41210",
+                            },
+                            "2nd Bn 23rd Marines": {
+                                "abbr": "2/23",
+                                "echelon": _BN,
+                                "uic": "M41220",
+                            },
+                            "3rd Bn 23rd Marines": {
+                                "abbr": "3/23",
+                                "echelon": _BN,
+                                "uic": "M41230",
+                            },
                         },
                     },
                     "24th Marine Regiment": {
@@ -1140,9 +1337,21 @@ UNIT_HIERARCHY = {
                         "echelon": _REGT,
                         "uic": "M41300",
                         "children": {
-                            "1st Bn 24th Marines": {"abbr": "1/24", "echelon": _BN, "uic": "M41310"},
-                            "2nd Bn 24th Marines": {"abbr": "2/24", "echelon": _BN, "uic": "M41320"},
-                            "3rd Bn 24th Marines": {"abbr": "3/24", "echelon": _BN, "uic": "M41330"},
+                            "1st Bn 24th Marines": {
+                                "abbr": "1/24",
+                                "echelon": _BN,
+                                "uic": "M41310",
+                            },
+                            "2nd Bn 24th Marines": {
+                                "abbr": "2/24",
+                                "echelon": _BN,
+                                "uic": "M41320",
+                            },
+                            "3rd Bn 24th Marines": {
+                                "abbr": "3/24",
+                                "echelon": _BN,
+                                "uic": "M41330",
+                            },
                         },
                     },
                     "25th Marine Regiment": {
@@ -1150,20 +1359,51 @@ UNIT_HIERARCHY = {
                         "echelon": _REGT,
                         "uic": "M41400",
                         "children": {
-                            "1st Bn 25th Marines": {"abbr": "1/25", "echelon": _BN, "uic": "M41410"},
-                            "2nd Bn 25th Marines": {"abbr": "2/25", "echelon": _BN, "uic": "M41420"},
-                            "3rd Bn 25th Marines": {"abbr": "3/25", "echelon": _BN, "uic": "M41430"},
+                            "1st Bn 25th Marines": {
+                                "abbr": "1/25",
+                                "echelon": _BN,
+                                "uic": "M41410",
+                            },
+                            "2nd Bn 25th Marines": {
+                                "abbr": "2/25",
+                                "echelon": _BN,
+                                "uic": "M41420",
+                            },
+                            "3rd Bn 25th Marines": {
+                                "abbr": "3/25",
+                                "echelon": _BN,
+                                "uic": "M41430",
+                            },
                         },
                     },
                     # Separate Battalions (Reserve)
-                    "4th Assault Amphibian Battalion": {"abbr": "4th AABn", "echelon": _BN, "uic": "M41510"},
-                    "4th Combat Engineer Battalion": {"abbr": "4th CEB", "echelon": _BN, "uic": "M41520"},
-                    "4th Light Armored Reconnaissance Battalion": {"abbr": "4th LAR Bn", "echelon": _BN, "uic": "M41530"},
-                    "4th Reconnaissance Battalion": {"abbr": "4th Recon Bn", "echelon": _BN, "uic": "M41540"},
-                    "4th Tank Battalion": {"abbr": "4th Tanks", "echelon": _BN, "uic": "M41550"},
+                    "4th Assault Amphibian Battalion": {
+                        "abbr": "4th AABn",
+                        "echelon": _BN,
+                        "uic": "M41510",
+                    },
+                    "4th Combat Engineer Battalion": {
+                        "abbr": "4th CEB",
+                        "echelon": _BN,
+                        "uic": "M41520",
+                    },
+                    "4th Light Armored Reconnaissance Battalion": {
+                        "abbr": "4th LAR Bn",
+                        "echelon": _BN,
+                        "uic": "M41530",
+                    },
+                    "4th Reconnaissance Battalion": {
+                        "abbr": "4th Recon Bn",
+                        "echelon": _BN,
+                        "uic": "M41540",
+                    },
+                    "4th Tank Battalion": {
+                        "abbr": "4th Tanks",
+                        "echelon": _BN,
+                        "uic": "M41550",
+                    },
                 },
             },
-
             # ─── 4th Marine Aircraft Wing (Reserve) ───────────────────
             "4th Marine Aircraft Wing": {
                 "abbr": "4th MAW",
@@ -1187,7 +1427,6 @@ UNIT_HIERARCHY = {
                     },
                 },
             },
-
             # ─── 4th Marine Logistics Group (Reserve) ─────────────────
             "4th Marine Logistics Group": {
                 "abbr": "4th MLG",
@@ -1199,16 +1438,35 @@ UNIT_HIERARCHY = {
                         "echelon": _REGT,
                         "uic": "M43100",
                         "children": {
-                            "Combat Logistics Battalion 451": {"abbr": "CLB-451", "echelon": _BN, "uic": "M43110"},
-                            "Combat Logistics Battalion 453": {"abbr": "CLB-453", "echelon": _BN, "uic": "M43120"},
+                            "Combat Logistics Battalion 451": {
+                                "abbr": "CLB-451",
+                                "echelon": _BN,
+                                "uic": "M43110",
+                            },
+                            "Combat Logistics Battalion 453": {
+                                "abbr": "CLB-453",
+                                "echelon": _BN,
+                                "uic": "M43120",
+                            },
                         },
                     },
-                    "4th Medical Battalion": {"abbr": "4th Med Bn", "echelon": _BN, "uic": "M43210"},
-                    "4th Dental Battalion": {"abbr": "4th Dental Bn", "echelon": _BN, "uic": "M43220"},
-                    "6th Engineer Support Battalion": {"abbr": "6th ESB", "echelon": _BN, "uic": "M43230"},
+                    "4th Medical Battalion": {
+                        "abbr": "4th Med Bn",
+                        "echelon": _BN,
+                        "uic": "M43210",
+                    },
+                    "4th Dental Battalion": {
+                        "abbr": "4th Dental Bn",
+                        "echelon": _BN,
+                        "uic": "M43220",
+                    },
+                    "6th Engineer Support Battalion": {
+                        "abbr": "6th ESB",
+                        "echelon": _BN,
+                        "uic": "M43230",
+                    },
                 },
             },
-
             # ─── Force Headquarters Group ─────────────────────────────
             "Force Headquarters Group": {
                 "abbr": "FHG",
@@ -1217,7 +1475,6 @@ UNIT_HIERARCHY = {
             },
         },
     },
-
     # ═══════════════════════════════════════════════════════════════════
     # MARINE FORCES SPECIAL OPERATIONS COMMAND (MARSOC)
     # ═══════════════════════════════════════════════════════════════════
@@ -1231,9 +1488,21 @@ UNIT_HIERARCHY = {
                 "echelon": _REGT,
                 "uic": "M51000",
                 "children": {
-                    "1st Marine Raider Battalion": {"abbr": "1st MRB", "echelon": _BN, "uic": "M51100"},
-                    "2nd Marine Raider Battalion": {"abbr": "2nd MRB", "echelon": _BN, "uic": "M51200"},
-                    "3rd Marine Raider Battalion": {"abbr": "3rd MRB", "echelon": _BN, "uic": "M51300"},
+                    "1st Marine Raider Battalion": {
+                        "abbr": "1st MRB",
+                        "echelon": _BN,
+                        "uic": "M51100",
+                    },
+                    "2nd Marine Raider Battalion": {
+                        "abbr": "2nd MRB",
+                        "echelon": _BN,
+                        "uic": "M51200",
+                    },
+                    "3rd Marine Raider Battalion": {
+                        "abbr": "3rd MRB",
+                        "echelon": _BN,
+                        "uic": "M51300",
+                    },
                 },
             },
             "Marine Raider Support Group": {
@@ -1241,13 +1510,20 @@ UNIT_HIERARCHY = {
                 "echelon": _GRP,
                 "uic": "M52000",
                 "children": {
-                    "Marine Raider Training Center": {"abbr": "MRTC", "echelon": _BN, "uic": "M52100"},
-                    "Marine Raider Support Battalion": {"abbr": "MRSB", "echelon": _BN, "uic": "M52200"},
+                    "Marine Raider Training Center": {
+                        "abbr": "MRTC",
+                        "echelon": _BN,
+                        "uic": "M52100",
+                    },
+                    "Marine Raider Support Battalion": {
+                        "abbr": "MRSB",
+                        "echelon": _BN,
+                        "uic": "M52200",
+                    },
                 },
             },
         },
     },
-
     # ═══════════════════════════════════════════════════════════════════
     # SUPPORTING ESTABLISHMENT
     # ═══════════════════════════════════════════════════════════════════
@@ -1317,22 +1593,61 @@ UNIT_HIERARCHY = {
             },
         },
     },
-
     "Marine Corps Installations Command": {
         "abbr": "MCICOM",
         "echelon": _GRP,
         "uic": "M70000",
         "children": {
-            "Marine Corps Base Camp Pendleton": {"abbr": "MCB CamPen", "echelon": _GRP, "uic": "M71000"},
-            "Marine Corps Base Camp Lejeune": {"abbr": "MCB CamLej", "echelon": _GRP, "uic": "M72000"},
-            "Marine Corps Base Quantico": {"abbr": "MCB Quantico", "echelon": _GRP, "uic": "M73000"},
-            "Marine Corps Base Camp Butler": {"abbr": "MCB CamBut", "echelon": _GRP, "uic": "M74000"},
-            "Marine Corps Base Hawaii": {"abbr": "MCB Hawaii", "echelon": _GRP, "uic": "M75000"},
-            "Marine Corps Air Station Miramar": {"abbr": "MCAS Miramar", "echelon": _GRP, "uic": "M76000"},
-            "Marine Corps Air Station Cherry Point": {"abbr": "MCAS ChPt", "echelon": _GRP, "uic": "M77000"},
-            "Marine Corps Air Station Yuma": {"abbr": "MCAS Yuma", "echelon": _GRP, "uic": "M78000"},
-            "Marine Corps Air Station Beaufort": {"abbr": "MCAS Beaufort", "echelon": _GRP, "uic": "M79000"},
-            "Marine Corps Air Station Iwakuni": {"abbr": "MCAS Iwakuni", "echelon": _GRP, "uic": "M79100"},
+            "Marine Corps Base Camp Pendleton": {
+                "abbr": "MCB CamPen",
+                "echelon": _GRP,
+                "uic": "M71000",
+            },
+            "Marine Corps Base Camp Lejeune": {
+                "abbr": "MCB CamLej",
+                "echelon": _GRP,
+                "uic": "M72000",
+            },
+            "Marine Corps Base Quantico": {
+                "abbr": "MCB Quantico",
+                "echelon": _GRP,
+                "uic": "M73000",
+            },
+            "Marine Corps Base Camp Butler": {
+                "abbr": "MCB CamBut",
+                "echelon": _GRP,
+                "uic": "M74000",
+            },
+            "Marine Corps Base Hawaii": {
+                "abbr": "MCB Hawaii",
+                "echelon": _GRP,
+                "uic": "M75000",
+            },
+            "Marine Corps Air Station Miramar": {
+                "abbr": "MCAS Miramar",
+                "echelon": _GRP,
+                "uic": "M76000",
+            },
+            "Marine Corps Air Station Cherry Point": {
+                "abbr": "MCAS ChPt",
+                "echelon": _GRP,
+                "uic": "M77000",
+            },
+            "Marine Corps Air Station Yuma": {
+                "abbr": "MCAS Yuma",
+                "echelon": _GRP,
+                "uic": "M78000",
+            },
+            "Marine Corps Air Station Beaufort": {
+                "abbr": "MCAS Beaufort",
+                "echelon": _GRP,
+                "uic": "M79000",
+            },
+            "Marine Corps Air Station Iwakuni": {
+                "abbr": "MCAS Iwakuni",
+                "echelon": _GRP,
+                "uic": "M79100",
+            },
             "Marine Corps Air Ground Combat Center Twentynine Palms": {
                 "abbr": "MCAGCC 29 Palms",
                 "echelon": _GRP,
@@ -1340,7 +1655,6 @@ UNIT_HIERARCHY = {
             },
         },
     },
-
     # ─── Marine Corps Forces Commands ─────────────────────────────────
     "Marine Forces Pacific": {
         "abbr": "MARFORPAC",
