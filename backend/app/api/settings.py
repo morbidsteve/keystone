@@ -141,9 +141,7 @@ class TileLayerConfig(BaseModel):
             )
         # Block any attempt to use protocol-relative or absolute URLs
         if "://" in v or v.startswith("//"):
-            raise ValueError(
-                "url_template must not contain external URLs"
-            )
+            raise ValueError("url_template must not contain external URLs")
         return v
 
 
@@ -220,9 +218,7 @@ async def update_tile_layers(
     for layer in payload.layers:
         TileLayerConfig.validate_url_template(layer.url_template)
 
-    layers_data = {
-        "layers": [layer.model_dump() for layer in payload.layers]
-    }
+    layers_data = {"layers": [layer.model_dump() for layer in payload.layers]}
     json_value = json.dumps(layers_data)
 
     result = await db.execute(

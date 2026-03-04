@@ -100,7 +100,10 @@ class ConvoyVehicle(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     movement_id = Column(
-        Integer, ForeignKey("movements.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer,
+        ForeignKey("movements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
     vehicle_type = Column(String(80), nullable=False)
     tamcn = Column(String(20), nullable=True)
@@ -119,11 +122,12 @@ class ConvoyPersonnel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     movement_id = Column(
-        Integer, ForeignKey("movements.id", ondelete="CASCADE"), nullable=False, index=True
+        Integer,
+        ForeignKey("movements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
     )
-    personnel_id = Column(
-        Integer, ForeignKey("personnel.id"), nullable=False
-    )
+    personnel_id = Column(Integer, ForeignKey("personnel.id"), nullable=False)
     convoy_vehicle_id = Column(
         Integer, ForeignKey("convoy_vehicles.id", ondelete="SET NULL"), nullable=True
     )

@@ -3,7 +3,7 @@
 import pytest
 from httpx import AsyncClient
 
-from app.models.personnel import Personnel, PersonnelStatus
+from app.models.personnel import Personnel
 
 
 @pytest.mark.asyncio
@@ -70,7 +70,9 @@ async def test_create_personnel_with_weapons(client: AsyncClient, admin_token: s
 
 
 @pytest.mark.asyncio
-async def test_create_duplicate_edipi(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_create_duplicate_edipi(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Duplicate EDIPI should return 409."""
     resp = await client.post(
         "/api/v1/personnel/",
@@ -100,7 +102,9 @@ async def test_create_invalid_edipi(client: AsyncClient, admin_token: str):
 
 
 @pytest.mark.asyncio
-async def test_list_personnel(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_list_personnel(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """List should return personnel accessible to the user."""
     resp = await client.get(
         "/api/v1/personnel/",
@@ -113,7 +117,9 @@ async def test_list_personnel(client: AsyncClient, admin_token: str, test_person
 
 
 @pytest.mark.asyncio
-async def test_search_personnel(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_search_personnel(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Search by EDIPI prefix."""
     resp = await client.get(
         f"/api/v1/personnel/search?q={test_personnel.edipi[:5]}",
@@ -125,7 +131,9 @@ async def test_search_personnel(client: AsyncClient, admin_token: str, test_pers
 
 
 @pytest.mark.asyncio
-async def test_get_personnel_detail(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_get_personnel_detail(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Get detail with weapons and ammo."""
     resp = await client.get(
         f"/api/v1/personnel/{test_personnel.id}",
@@ -139,7 +147,9 @@ async def test_get_personnel_detail(client: AsyncClient, admin_token: str, test_
 
 
 @pytest.mark.asyncio
-async def test_update_personnel(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_update_personnel(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Update personnel fields."""
     resp = await client.put(
         f"/api/v1/personnel/{test_personnel.id}",
@@ -153,7 +163,9 @@ async def test_update_personnel(client: AsyncClient, admin_token: str, test_pers
 
 
 @pytest.mark.asyncio
-async def test_delete_personnel_soft(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_delete_personnel_soft(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Delete should soft-delete (set INACTIVE)."""
     resp = await client.delete(
         f"/api/v1/personnel/{test_personnel.id}",
@@ -171,7 +183,9 @@ async def test_delete_personnel_soft(client: AsyncClient, admin_token: str, test
 
 
 @pytest.mark.asyncio
-async def test_add_weapon(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_add_weapon(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Add a weapon to a personnel record."""
     resp = await client.post(
         f"/api/v1/personnel/{test_personnel.id}/weapons",
@@ -191,7 +205,9 @@ async def test_add_weapon(client: AsyncClient, admin_token: str, test_personnel:
 
 
 @pytest.mark.asyncio
-async def test_update_weapon(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_update_weapon(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Add then update a weapon."""
     # Create weapon first
     create_resp = await client.post(
@@ -211,7 +227,9 @@ async def test_update_weapon(client: AsyncClient, admin_token: str, test_personn
 
 
 @pytest.mark.asyncio
-async def test_delete_weapon(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_delete_weapon(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Add then delete a weapon."""
     create_resp = await client.post(
         f"/api/v1/personnel/{test_personnel.id}/weapons",
@@ -228,7 +246,9 @@ async def test_delete_weapon(client: AsyncClient, admin_token: str, test_personn
 
 
 @pytest.mark.asyncio
-async def test_add_ammo_load(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_add_ammo_load(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Add ammo and verify total_rounds computed."""
     resp = await client.post(
         f"/api/v1/personnel/{test_personnel.id}/ammo-loads",
@@ -246,7 +266,9 @@ async def test_add_ammo_load(client: AsyncClient, admin_token: str, test_personn
 
 
 @pytest.mark.asyncio
-async def test_update_ammo_load(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_update_ammo_load(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Update ammo and verify total_rounds recomputed."""
     create_resp = await client.post(
         f"/api/v1/personnel/{test_personnel.id}/ammo-loads",
@@ -265,7 +287,9 @@ async def test_update_ammo_load(client: AsyncClient, admin_token: str, test_pers
 
 
 @pytest.mark.asyncio
-async def test_delete_ammo_load(client: AsyncClient, admin_token: str, test_personnel: Personnel):
+async def test_delete_ammo_load(
+    client: AsyncClient, admin_token: str, test_personnel: Personnel
+):
     """Add then delete an ammo load."""
     create_resp = await client.post(
         f"/api/v1/personnel/{test_personnel.id}/ammo-loads",

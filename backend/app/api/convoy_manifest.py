@@ -1,6 +1,5 @@
 """Convoy manifest endpoints — vehicle & personnel assignment per movement."""
 
-
 from fastapi import APIRouter, Depends
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -113,9 +112,7 @@ async def bulk_create_manifest(
         all_personnel_ids.add(p.personnel_id)
 
     for pid in all_personnel_ids:
-        person_result = await db.execute(
-            select(Personnel).where(Personnel.id == pid)
-        )
+        person_result = await db.execute(select(Personnel).where(Personnel.id == pid))
         if not person_result.scalar_one_or_none():
             raise NotFoundError("Personnel", pid)
 

@@ -60,7 +60,11 @@ async def list_personnel(
             )
         )
 
-    query = query.order_by(Personnel.last_name, Personnel.first_name).offset(offset).limit(limit)
+    query = (
+        query.order_by(Personnel.last_name, Personnel.first_name)
+        .offset(offset)
+        .limit(limit)
+    )
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -129,9 +133,7 @@ async def create_personnel(
 ):
     """Create a new personnel record with optional nested weapons/ammo."""
     # Check EDIPI uniqueness
-    existing = await db.execute(
-        select(Personnel).where(Personnel.edipi == data.edipi)
-    )
+    existing = await db.execute(select(Personnel).where(Personnel.edipi == data.edipi))
     if existing.scalar_one_or_none():
         raise ConflictError("A personnel record with this EDIPI already exists")
 
@@ -244,6 +246,7 @@ async def delete_personnel(
 
 # --- Weapon sub-routes ---
 
+
 @router.post(
     "/{person_id}/weapons",
     response_model=WeaponResponse,
@@ -355,6 +358,7 @@ async def delete_weapon(
 
 # --- AmmoLoad sub-routes ---
 
+
 @router.post(
     "/{person_id}/ammo-loads",
     response_model=AmmoLoadResponse,
@@ -414,7 +418,9 @@ async def update_ammo_load(
         raise NotFoundError("Personnel", person_id)
 
     result = await db.execute(
-        select(AmmoLoad).where(AmmoLoad.id == ammo_id, AmmoLoad.personnel_id == person_id)
+        select(AmmoLoad).where(
+            AmmoLoad.id == ammo_id, AmmoLoad.personnel_id == person_id
+        )
     )
     ammo = result.scalar_one_or_none()
     if not ammo:
@@ -455,7 +461,9 @@ async def delete_ammo_load(
         raise NotFoundError("Personnel", person_id)
 
     result = await db.execute(
-        select(AmmoLoad).where(AmmoLoad.id == ammo_id, AmmoLoad.personnel_id == person_id)
+        select(AmmoLoad).where(
+            AmmoLoad.id == ammo_id, AmmoLoad.personnel_id == person_id
+        )
     )
     ammo = result.scalar_one_or_none()
     if not ammo:

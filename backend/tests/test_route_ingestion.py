@@ -27,13 +27,14 @@ from app.ingestion.route_parser import (
 )
 from app.models.location import Route, RouteStatus, RouteType
 from app.models.system_settings import SystemSetting
-from app.models.unit import Echelon, Unit
+from app.models.unit import Unit
 from app.models.user import Role, User
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_kmz(kml_content: bytes) -> bytes:
     """Create a KMZ file (ZIP with a .kml inside) from raw KML bytes."""
@@ -44,23 +45,25 @@ def _make_kmz(kml_content: bytes) -> bytes:
 
 
 # Reusable test data
-_VALID_GEOJSON_FC = json.dumps({
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "properties": {"name": "MSR Tampa"},
-            "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                    [-117.1611, 32.7157],
-                    [-117.2000, 32.7500],
-                    [-117.2500, 32.7800],
-                ],
-            },
-        }
-    ],
-})
+_VALID_GEOJSON_FC = json.dumps(
+    {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {"name": "MSR Tampa"},
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [-117.1611, 32.7157],
+                        [-117.2000, 32.7500],
+                        [-117.2500, 32.7800],
+                    ],
+                },
+            }
+        ],
+    }
+)
 
 _VALID_KML = b"""\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -106,6 +109,7 @@ _VALID_CSV = "route_name,lat,lon,label\nMSR Tampa,32.7157,-117.1611,Start\nMSR T
 # ---------------------------------------------------------------------------
 # Fixtures local to this module
 # ---------------------------------------------------------------------------
+
 
 @pytest_asyncio.fixture
 async def s3_user(db_session: AsyncSession, test_unit: Unit) -> User:
@@ -187,14 +191,16 @@ class TestParseGeoJSON:
 
     async def test_single_feature(self):
         """A bare Feature (not wrapped in FeatureCollection) should still parse."""
-        geojson = json.dumps({
-            "type": "Feature",
-            "properties": {"name": "Route Bravo"},
-            "geometry": {
-                "type": "LineString",
-                "coordinates": [[-117.1, 32.7], [-117.2, 32.8]],
-            },
-        })
+        geojson = json.dumps(
+            {
+                "type": "Feature",
+                "properties": {"name": "Route Bravo"},
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[-117.1, 32.7], [-117.2, 32.8]],
+                },
+            }
+        )
         routes = parse_geojson(geojson)
         assert len(routes) == 1
         assert routes[0]["name"] == "Route Bravo"
@@ -202,10 +208,12 @@ class TestParseGeoJSON:
 
     async def test_bare_linestring_geometry(self):
         """A bare LineString geometry (no Feature wrapper) should parse."""
-        geojson = json.dumps({
-            "type": "LineString",
-            "coordinates": [[-117.1, 32.7], [-117.2, 32.8], [-117.3, 32.9]],
-        })
+        geojson = json.dumps(
+            {
+                "type": "LineString",
+                "coordinates": [[-117.1, 32.7], [-117.2, 32.8], [-117.3, 32.9]],
+            }
+        )
         routes = parse_geojson(geojson)
         assert len(routes) == 1
         # Default name when no properties exist
@@ -214,20 +222,24 @@ class TestParseGeoJSON:
 
     async def test_multilinestring(self):
         """A MultiLineString should produce multiple routes with indexed names."""
-        geojson = json.dumps({
-            "type": "FeatureCollection",
-            "features": [{
-                "type": "Feature",
-                "properties": {"name": "Split Route"},
-                "geometry": {
-                    "type": "MultiLineString",
-                    "coordinates": [
-                        [[-117.1, 32.7], [-117.2, 32.8]],
-                        [[-117.3, 32.9], [-117.4, 33.0]],
-                    ],
-                },
-            }],
-        })
+        geojson = json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {"name": "Split Route"},
+                        "geometry": {
+                            "type": "MultiLineString",
+                            "coordinates": [
+                                [[-117.1, 32.7], [-117.2, 32.8]],
+                                [[-117.3, 32.9], [-117.4, 33.0]],
+                            ],
+                        },
+                    }
+                ],
+            }
+        )
         routes = parse_geojson(geojson)
         assert len(routes) == 2
         assert routes[0]["name"] == "Split Route (1)"
@@ -243,31 +255,37 @@ class TestParseGeoJSON:
 
     async def test_point_geometry_skipped(self):
         """Non-line geometries (Point, Polygon) are silently skipped."""
-        geojson = json.dumps({
-            "type": "FeatureCollection",
-            "features": [{
-                "type": "Feature",
-                "properties": {"name": "A Point"},
-                "geometry": {"type": "Point", "coordinates": [-117.1, 32.7]},
-            }],
-        })
+        geojson = json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {"name": "A Point"},
+                        "geometry": {"type": "Point", "coordinates": [-117.1, 32.7]},
+                    }
+                ],
+            }
+        )
         routes = parse_geojson(geojson)
         assert routes == []
 
     async def test_properties_extraction(self):
         """route_type and description are extracted from properties."""
-        geojson = json.dumps({
-            "type": "Feature",
-            "properties": {
-                "name": "MSR Gold",
-                "route_type": "MSR",
-                "description": "Main highway",
-            },
-            "geometry": {
-                "type": "LineString",
-                "coordinates": [[-117.1, 32.7], [-117.2, 32.8]],
-            },
-        })
+        geojson = json.dumps(
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "MSR Gold",
+                    "route_type": "MSR",
+                    "description": "Main highway",
+                },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[-117.1, 32.7], [-117.2, 32.8]],
+                },
+            }
+        )
         routes = parse_geojson(geojson)
         assert len(routes) == 1
         assert routes[0]["route_type"] == "MSR"
@@ -275,25 +293,33 @@ class TestParseGeoJSON:
 
     async def test_feature_without_geometry_skipped(self):
         """A Feature with no geometry key should be skipped."""
-        geojson = json.dumps({
-            "type": "FeatureCollection",
-            "features": [
-                {"type": "Feature", "properties": {"name": "Broken"}, "geometry": None},
-            ],
-        })
+        geojson = json.dumps(
+            {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {"name": "Broken"},
+                        "geometry": None,
+                    },
+                ],
+            }
+        )
         routes = parse_geojson(geojson)
         assert routes == []
 
     async def test_default_name_when_missing(self):
         """If properties has no name, a default 'Route N' is generated."""
-        geojson = json.dumps({
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-                "type": "LineString",
-                "coordinates": [[-117.1, 32.7], [-117.2, 32.8]],
-            },
-        })
+        geojson = json.dumps(
+            {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[-117.1, 32.7], [-117.2, 32.8]],
+                },
+            }
+        )
         routes = parse_geojson(geojson)
         assert len(routes) == 1
         assert routes[0]["name"] == "Route 1"
@@ -569,11 +595,7 @@ class TestParseRouteCSV:
 
     async def test_non_numeric_coords_skipped(self):
         """Rows with non-numeric lat/lon are silently skipped."""
-        csv_content = (
-            "route_name,lat,lon\n"
-            "Test,abc,-117.0\n"
-            "Test,32.0,-117.0\n"
-        )
+        csv_content = "route_name,lat,lon\nTest,abc,-117.0\nTest,32.0,-117.0\n"
         routes = parse_route_csv(csv_content)
         assert len(routes) == 1
         assert len(routes[0]["waypoints"]) == 1
@@ -661,7 +683,13 @@ class TestRouteUploadEndpoint:
         """Upload a .geojson file with a valid FeatureCollection."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("test.geojson", _VALID_GEOJSON_FC.encode(), "application/geo+json")},
+            files={
+                "file": (
+                    "test.geojson",
+                    _VALID_GEOJSON_FC.encode(),
+                    "application/geo+json",
+                )
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
@@ -679,7 +707,9 @@ class TestRouteUploadEndpoint:
         """Upload with .json extension also triggers geojson parsing."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("routes.json", _VALID_GEOJSON_FC.encode(), "application/json")},
+            files={
+                "file": ("routes.json", _VALID_GEOJSON_FC.encode(), "application/json")
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
@@ -726,7 +756,13 @@ class TestRouteUploadEndpoint:
         """Upload a .kml route file."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("route.kml", _VALID_KML, "application/vnd.google-earth.kml+xml")},
+            files={
+                "file": (
+                    "route.kml",
+                    _VALID_KML,
+                    "application/vnd.google-earth.kml+xml",
+                )
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
@@ -743,7 +779,9 @@ class TestRouteUploadEndpoint:
         kmz_bytes = _make_kmz(_VALID_KML)
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("route.kmz", kmz_bytes, "application/vnd.google-earth.kmz")},
+            files={
+                "file": ("route.kmz", kmz_bytes, "application/vnd.google-earth.kmz")
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
@@ -773,7 +811,13 @@ class TestRouteUploadEndpoint:
         """Upload without Authorization header returns 401 or 403."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("test.geojson", _VALID_GEOJSON_FC.encode(), "application/geo+json")},
+            files={
+                "file": (
+                    "test.geojson",
+                    _VALID_GEOJSON_FC.encode(),
+                    "application/geo+json",
+                )
+            },
         )
         assert response.status_code in (401, 403)
 
@@ -786,7 +830,13 @@ class TestRouteUploadEndpoint:
         """OPERATOR role should be forbidden from uploading routes."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("test.geojson", _VALID_GEOJSON_FC.encode(), "application/geo+json")},
+            files={
+                "file": (
+                    "test.geojson",
+                    _VALID_GEOJSON_FC.encode(),
+                    "application/geo+json",
+                )
+            },
             headers={"Authorization": f"Bearer {operator_token}"},
         )
         assert response.status_code == 403
@@ -800,7 +850,13 @@ class TestRouteUploadEndpoint:
         """S3 role should be allowed to upload routes."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("test.geojson", _VALID_GEOJSON_FC.encode(), "application/geo+json")},
+            files={
+                "file": (
+                    "test.geojson",
+                    _VALID_GEOJSON_FC.encode(),
+                    "application/geo+json",
+                )
+            },
             headers={"Authorization": f"Bearer {s3_token}"},
         )
         assert response.status_code == 200
@@ -815,7 +871,13 @@ class TestRouteUploadEndpoint:
         """COMMANDER role should be allowed to upload routes."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("test.geojson", _VALID_GEOJSON_FC.encode(), "application/geo+json")},
+            files={
+                "file": (
+                    "test.geojson",
+                    _VALID_GEOJSON_FC.encode(),
+                    "application/geo+json",
+                )
+            },
             headers={"Authorization": f"Bearer {commander_token}"},
         )
         assert response.status_code == 200
@@ -847,7 +909,9 @@ class TestRouteUploadEndpoint:
         empty_fc = json.dumps({"type": "FeatureCollection", "features": []})
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("empty.geojson", empty_fc.encode(), "application/geo+json")},
+            files={
+                "file": ("empty.geojson", empty_fc.encode(), "application/geo+json")
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 400
@@ -878,7 +942,13 @@ class TestRouteUploadEndpoint:
         """Verify the uploaded route actually persists in the database."""
         response = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("test.geojson", _VALID_GEOJSON_FC.encode(), "application/geo+json")},
+            files={
+                "file": (
+                    "test.geojson",
+                    _VALID_GEOJSON_FC.encode(),
+                    "application/geo+json",
+                )
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert response.status_code == 200
@@ -902,7 +972,9 @@ class TestRouteUploadEndpoint:
 class TestRouteDeleteEndpoint:
     """Integration tests for DELETE /api/v1/map/routes/{route_id}."""
 
-    async def _create_route(self, db_session: AsyncSession, admin_user_id: int) -> Route:
+    async def _create_route(
+        self, db_session: AsyncSession, admin_user_id: int
+    ) -> Route:
         """Helper to insert a route directly into the database."""
         route = Route(
             name="Deletable Route",
@@ -1045,7 +1117,7 @@ class TestTileLayersGetEndpoint:
         assert "layers" in data
         layers = data["layers"]
         assert len(layers) >= 3
-        names = [l["name"] for l in layers]
+        names = [layer["name"] for layer in layers]
         assert "osm" in names
         assert "satellite" in names
         assert "topo" in names
@@ -1233,14 +1305,30 @@ class TestTileLayersPutEndpoint:
         # First update
         await client.put(
             "/api/v1/settings/tile-layers",
-            json={"layers": [{"name": "first", "label": "First", "url_template": "/tiles/first/{z}/{x}/{y}.png"}]},
+            json={
+                "layers": [
+                    {
+                        "name": "first",
+                        "label": "First",
+                        "url_template": "/tiles/first/{z}/{x}/{y}.png",
+                    }
+                ]
+            },
             headers=headers,
         )
 
         # Second update replaces
         await client.put(
             "/api/v1/settings/tile-layers",
-            json={"layers": [{"name": "second", "label": "Second", "url_template": "/tiles/second/{z}/{x}/{y}.png"}]},
+            json={
+                "layers": [
+                    {
+                        "name": "second",
+                        "label": "Second",
+                        "url_template": "/tiles/second/{z}/{x}/{y}.png",
+                    }
+                ]
+            },
             headers=headers,
         )
 

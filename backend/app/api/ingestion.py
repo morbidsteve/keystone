@@ -245,9 +245,7 @@ _VALID_ROUTE_TYPES = {t.value for t in RouteType}
 async def upload_route_file(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(
-        require_role([Role.ADMIN, Role.S3, Role.COMMANDER])
-    ),
+    current_user: User = Depends(require_role([Role.ADMIN, Role.S3, Role.COMMANDER])),
 ):
     """Upload a route file (GeoJSON, KML, KMZ, GPX, CSV) for route creation.
 
@@ -274,8 +272,7 @@ async def upload_route_file(
     content = await file.read(_MAX_ROUTE_SIZE + 1)
     if len(content) > _MAX_ROUTE_SIZE:
         raise BadRequestError(
-            f"Route file exceeds maximum size of "
-            f"{_MAX_ROUTE_SIZE // (1024 * 1024)} MB."
+            f"Route file exceeds maximum size of {_MAX_ROUTE_SIZE // (1024 * 1024)} MB."
         )
 
     # Create RawData tracking record

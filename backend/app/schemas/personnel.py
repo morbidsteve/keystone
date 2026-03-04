@@ -11,6 +11,7 @@ from app.models.personnel import ConvoyRole, PersonnelStatus
 
 # --- Weapon schemas ---
 
+
 class WeaponCreate(BaseModel):
     weapon_type: str = Field(..., max_length=50)
     serial_number: str = Field(..., max_length=50)
@@ -68,6 +69,7 @@ class WeaponResponse(BaseModel):
 
 # --- AmmoLoad schemas ---
 
+
 class AmmoLoadCreate(BaseModel):
     caliber: str = Field(..., max_length=20)
     magazine_count: int = Field(..., ge=0)
@@ -92,6 +94,7 @@ class AmmoLoadResponse(BaseModel):
 
 
 # --- Personnel schemas ---
+
 
 class PersonnelCreate(BaseModel):
     edipi: str = Field(..., pattern=r"^\d{10}$")
@@ -148,6 +151,7 @@ class PersonnelResponse(BaseModel):
 
 # --- ConvoyVehicle schemas ---
 
+
 class ConvoyVehicleCreate(BaseModel):
     vehicle_type: str = Field(..., max_length=80)
     tamcn: Optional[str] = Field(None, max_length=20)
@@ -200,6 +204,7 @@ class ConvoyVehicleResponse(BaseModel):
 
 
 # --- Manifest schemas ---
+
 
 class BulkVehicleEntry(BaseModel):
     vehicle_type: str = Field(..., max_length=80)

@@ -156,7 +156,9 @@ async def test_bulk_replaces_existing(
                 {
                     "vehicle_type": "HMMWV",
                     "sequence_number": 1,
-                    "personnel": [{"personnel_id": test_personnel.id, "role": "DRIVER"}],
+                    "personnel": [
+                        {"personnel_id": test_personnel.id, "role": "DRIVER"}
+                    ],
                 }
             ],
             "unassigned_personnel": [],
@@ -203,9 +205,7 @@ async def test_full_manifest_response(
                     "bumper_number": "1A-01",
                     "call_sign": "ALPHA-1",
                     "sequence_number": 1,
-                    "personnel": [
-                        {"personnel_id": test_personnel.id, "role": "TC"}
-                    ],
+                    "personnel": [{"personnel_id": test_personnel.id, "role": "TC"}],
                 }
             ],
             "unassigned_personnel": [],
@@ -245,7 +245,11 @@ async def test_delete_vehicle_nullifies_assignments(
 
     await client.post(
         f"/api/v1/transportation/{test_movement.id}/personnel",
-        json={"personnel_id": test_personnel.id, "convoy_vehicle_id": vehicle_id, "role": "DRIVER"},
+        json={
+            "personnel_id": test_personnel.id,
+            "convoy_vehicle_id": vehicle_id,
+            "role": "DRIVER",
+        },
         headers={"Authorization": f"Bearer {admin_token}"},
     )
 

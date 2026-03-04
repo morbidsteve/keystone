@@ -275,7 +275,7 @@ async def get_map_routes(
     responses = []
     for r in routes:
         wp_list = []
-        for wp in r.waypoints or []:
+        for wp in r.waypoints or []:  # type: ignore[union-attr]
             if isinstance(wp, dict):
                 wp_list.append(
                     RouteWaypointResponse(
@@ -796,7 +796,7 @@ async def create_route(
             mgrs=wp.get("mgrs"),
             label=wp.get("label"),
         )
-        for wp in (route.waypoints or [])
+        for wp in (route.waypoints or [])  # type: ignore[union-attr]
     ]
 
     return MapRouteResponse(
@@ -905,7 +905,7 @@ async def update_route(
             mgrs=wp.get("mgrs"),
             label=wp.get("label"),
         )
-        for wp in (route.waypoints or [])
+        for wp in (route.waypoints or [])  # type: ignore[union-attr]
     ]
 
     return MapRouteResponse(

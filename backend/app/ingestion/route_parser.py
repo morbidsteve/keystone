@@ -107,16 +107,26 @@ def parse_kml(content: bytes) -> list[dict[str, Any]]:
         # Try without namespace
         placemark_list = list(root.iter("Placemark"))
 
-    ns = f"{{{_KML_NS}}}" if placemark_list and placemark_list[0].tag.startswith("{") else ""
+    ns = (
+        f"{{{_KML_NS}}}"
+        if placemark_list and placemark_list[0].tag.startswith("{")
+        else ""
+    )
 
     for idx, pm in enumerate(placemark_list):
         # Extract name
         name_el = pm.find(f"{ns}name")
-        name = name_el.text.strip() if name_el is not None and name_el.text else f"Route {idx + 1}"
+        name = (
+            name_el.text.strip()
+            if name_el is not None and name_el.text
+            else f"Route {idx + 1}"
+        )
 
         # Extract description
         desc_el = pm.find(f"{ns}description")
-        description = desc_el.text.strip() if desc_el is not None and desc_el.text else None
+        description = (
+            desc_el.text.strip() if desc_el is not None and desc_el.text else None
+        )
 
         # Look for LineString coordinates (directly or nested in MultiGeometry)
         all_waypoints: list[dict[str, float]] = []
@@ -150,7 +160,8 @@ def parse_kmz(content: bytes) -> list[dict[str, Any]]:
     """
     with zipfile.ZipFile(io.BytesIO(content)) as zf:
         kml_names = [
-            n for n in zf.namelist()
+            n
+            for n in zf.namelist()
             if n.lower().endswith(".kml")
             and ".." not in n  # Reject path traversal
             and not n.startswith("/")  # Reject absolute paths
@@ -197,10 +208,16 @@ def parse_gpx(content: bytes) -> list[dict[str, Any]]:
     # Parse tracks (trk -> trkseg -> trkpt)
     for trk_idx, trk in enumerate(root.iter(f"{ns}trk")):
         name_el = trk.find(f"{ns}name")
-        name = name_el.text.strip() if name_el is not None and name_el.text else f"Track {trk_idx + 1}"
+        name = (
+            name_el.text.strip()
+            if name_el is not None and name_el.text
+            else f"Track {trk_idx + 1}"
+        )
 
         desc_el = trk.find(f"{ns}desc")
-        description = desc_el.text.strip() if desc_el is not None and desc_el.text else None
+        description = (
+            desc_el.text.strip() if desc_el is not None and desc_el.text else None
+        )
 
         for seg_idx, trkseg in enumerate(trk.iter(f"{ns}trkseg")):
             waypoints = []
@@ -231,10 +248,16 @@ def parse_gpx(content: bytes) -> list[dict[str, Any]]:
     # Parse routes (rte -> rtept)
     for rte_idx, rte in enumerate(root.iter(f"{ns}rte")):
         name_el = rte.find(f"{ns}name")
-        name = name_el.text.strip() if name_el is not None and name_el.text else f"Route {rte_idx + 1}"
+        name = (
+            name_el.text.strip()
+            if name_el is not None and name_el.text
+            else f"Route {rte_idx + 1}"
+        )
 
         desc_el = rte.find(f"{ns}desc")
-        description = desc_el.text.strip() if desc_el is not None and desc_el.text else None
+        description = (
+            desc_el.text.strip() if desc_el is not None and desc_el.text else None
+        )
 
         waypoints = []
         for rtept in rte.iter(f"{ns}rtept"):
@@ -287,13 +310,11 @@ def parse_route_csv(content: str) -> list[dict[str, Any]]:
         )
     if "lat" not in header_map:
         raise ValueError(
-            "CSV must contain a 'lat' column. "
-            f"Found columns: {list(reader.fieldnames)}"
+            f"CSV must contain a 'lat' column. Found columns: {list(reader.fieldnames)}"
         )
     if "lon" not in header_map:
         raise ValueError(
-            "CSV must contain a 'lon' column. "
-            f"Found columns: {list(reader.fieldnames)}"
+            f"CSV must contain a 'lon' column. Found columns: {list(reader.fieldnames)}"
         )
 
     route_name_col = header_map["route_name"]
@@ -336,9 +357,11 @@ def parse_route_csv(content: str) -> list[dict[str, Any]]:
     routes: list[dict[str, Any]] = []
     for name, waypoints in grouped.items():
         if waypoints:
-            routes.append({
-                "name": name,
-                "waypoints": waypoints,
-            })
+            routes.append(
+                {
+                    "name": name,
+                    "waypoints": waypoints,
+                }
+            )
 
     return routes
