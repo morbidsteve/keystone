@@ -49,7 +49,7 @@ export default function Header() {
         padding: '0 20px',
         position: 'sticky',
         top: 0,
-        zIndex: 15,
+        zIndex: 1050,
       }}
     >
       {/* Page Title */}
@@ -186,7 +186,7 @@ export default function Header() {
                 style={{
                   position: 'fixed',
                   inset: 0,
-                  zIndex: 40,
+                  zIndex: 1100,
                 }}
                 onClick={() => setUserMenuOpen(false)}
               />
@@ -200,7 +200,7 @@ export default function Header() {
                   backgroundColor: 'var(--color-bg-surface)',
                   border: '1px solid var(--color-border-strong)',
                   borderRadius: 'var(--radius)',
-                  zIndex: 50,
+                  zIndex: 1101,
                   boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
                   overflow: 'hidden',
                 }}
