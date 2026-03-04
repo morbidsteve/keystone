@@ -28,6 +28,7 @@ import type {
   ReportStatus,
   ReportType,
   MovementStatus,
+  CargoItem,
 } from '@/lib/types';
 
 import {
@@ -322,24 +323,44 @@ export const mockApi = {
 
   async createMovement(data: Partial<Movement>): Promise<Movement> {
     await mockDelay();
+    // Auto-generate cargo summary from manifest if not provided
+    let cargoSummary = data.cargo || '';
+    if (!cargoSummary && data.manifest?.cargo.length) {
+      cargoSummary = data.manifest.cargo
+        .map((c: CargoItem) => `CL ${c.supplyClass}: ${c.quantity} ${c.unit}`)
+        .join(', ');
+    }
     const newMovement: Movement = {
       id: 'mov-' + Date.now(),
       name: data.name || 'NEW CONVOY',
       originUnit: data.originUnit || 'TBD',
       destinationUnit: data.destinationUnit || 'TBD',
       status: data.status || ('PLANNED' as unknown as MovementStatus),
-      cargo: data.cargo || '',
+      cargo: cargoSummary,
       priority: data.priority || 'ROUTINE',
       departureTime: data.departureTime,
       eta: data.eta,
-      vehicles: data.vehicles || 0,
-      personnel: data.personnel || 0,
+      vehicles: data.manifest?.totalVehicles ?? data.vehicles ?? 0,
+      personnel: data.manifest?.totalPersonnel ?? data.personnel ?? 0,
       notes: data.notes,
       lastUpdated: new Date().toISOString(),
       routeWaypoints: data.routeWaypoints,
+      manifest: data.manifest,
+      originCoords: data.originCoords,
+      destinationCoords: data.destinationCoords,
     };
     demoMovements = [...demoMovements, newMovement];
     return newMovement;
+  },
+
+  async getUnitEquipment(unitId: string): Promise<EquipmentRecord[]> {
+    await mockDelay();
+    return DEMO_EQUIPMENT.filter((r) => r.unitId === unitId);
+  },
+
+  async getUnitSupply(unitId: string): Promise<SupplyRecord[]> {
+    await mockDelay();
+    return DEMO_SUPPLY_RECORDS.filter((r) => r.unitId === unitId);
   },
 
   // -------------------------------------------------------------------------

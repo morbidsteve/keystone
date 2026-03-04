@@ -244,10 +244,27 @@ export default function ConvoyMap({
                     {mov.status.replace('_', ' ')}
                   </div>
                   <div style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>
-                    {mov.cargo}
+                    {mov.manifest ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {mov.manifest.cargo.map((c, i) => (
+                          <div key={i} style={{ fontSize: 10 }}>
+                            CL {c.supplyClass}: {c.quantity} {c.unit}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      mov.cargo
+                    )}
                   </div>
                   <div style={{ color: 'var(--color-text-muted)', fontSize: 10 }}>
-                    {mov.vehicles} VEH / {mov.personnel} PAX
+                    {mov.manifest ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <div>{mov.manifest.vehicles.map(v => `${v.quantity}x ${v.type}`).join(', ')}</div>
+                        <div>{mov.manifest.totalVehicles} VEH / {mov.manifest.totalPersonnel} PAX</div>
+                      </div>
+                    ) : (
+                      <>{mov.vehicles} VEH / {mov.personnel} PAX</>
+                    )}
                   </div>
                   {mov.eta && (
                     <div
