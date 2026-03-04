@@ -29,6 +29,10 @@ import type {
   ReportType,
   MovementStatus,
   CargoItem,
+  Personnel,
+  PersonnelSummary,
+  ConvoyManifest,
+  ConvoyRole,
 } from '@/lib/types';
 
 import {
@@ -45,6 +49,7 @@ import {
   DEMO_INGESTION_HISTORY,
   DEMO_REVIEW_QUEUE,
   DEMO_REPORTS,
+  DEMO_PERSONNEL,
 } from './mockData';
 
 // ---------------------------------------------------------------------------
@@ -71,6 +76,7 @@ let demoReviewQueue = [...DEMO_REVIEW_QUEUE];
 let demoUnits = [...DEMO_UNITS];
 let demoReports = [...DEMO_REPORTS];
 let demoMovements = [...DEMO_MOVEMENTS];
+let demoPersonnel = [...DEMO_PERSONNEL];
 
 // ---------------------------------------------------------------------------
 // Helper: convert time range string to number of days
@@ -574,5 +580,69 @@ export const mockApi = {
       throw new Error('Cannot delete unit with children');
     }
     demoUnits = demoUnits.filter((u) => u.id !== id);
+  },
+
+  // -------------------------------------------------------------------------
+  // Personnel
+  // -------------------------------------------------------------------------
+
+  async getPersonnel(filters?: { unitId?: string; status?: string; search?: string }): Promise<Personnel[]> {
+    await mockDelay(200);
+    let results = [...demoPersonnel];
+    if (filters?.unitId) results = results.filter(p => p.unitId === filters.unitId);
+    if (filters?.status) results = results.filter(p => p.status === filters.status);
+    if (filters?.search) {
+      const q = filters.search.toLowerCase();
+      results = results.filter(p =>
+        p.edipi.includes(q) ||
+        p.firstName.toLowerCase().includes(q) ||
+        p.lastName.toLowerCase().includes(q)
+      );
+    }
+    return results;
+  },
+
+  async searchPersonnel(query: string): Promise<PersonnelSummary[]> {
+    await mockDelay(150);
+    const q = query.toLowerCase();
+    return demoPersonnel
+      .filter(p =>
+        p.edipi.includes(q) ||
+        p.firstName.toLowerCase().includes(q) ||
+        p.lastName.toLowerCase().includes(q)
+      )
+      .slice(0, 10)
+      .map(p => ({
+        id: p.id,
+        edipi: p.edipi,
+        firstName: p.firstName,
+        lastName: p.lastName,
+        rank: p.rank,
+        mos: p.mos,
+        status: p.status,
+      }));
+  },
+
+  async getPersonnelById(id: string): Promise<Personnel | null> {
+    await mockDelay(150);
+    return demoPersonnel.find(p => p.id === id) || null;
+  },
+
+  async getConvoyManifest(movementId: string): Promise<ConvoyManifest> {
+    await mockDelay(200);
+    // Return empty manifest by default
+    return {
+      movementId,
+      vehicles: [],
+      unassignedPersonnel: [],
+      totalVehicles: 0,
+      totalPersonnel: 0,
+    };
+  },
+
+  async saveConvoyManifest(movementId: string, _manifest: ConvoyManifest): Promise<ConvoyManifest> {
+    await mockDelay(300);
+    // In demo mode just echo back
+    return { ..._manifest, movementId };
   },
 };

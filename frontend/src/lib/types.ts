@@ -163,6 +163,7 @@ export interface MovementManifest {
   totalWeightTons: number;
   totalVehicles: number;
   totalPersonnel: number;
+  convoyManifest?: ConvoyManifest;
 }
 
 export interface Movement {
@@ -346,4 +347,99 @@ export interface GenerateReportParams {
   unitId: string;
   dateRange: { start: string; end: string };
   title?: string;
+}
+
+// Personnel tracking enums
+
+export enum PersonnelStatus {
+  ACTIVE = 'ACTIVE',
+  DEPLOYED = 'DEPLOYED',
+  TDY = 'TDY',
+  LEAVE = 'LEAVE',
+  MEDICAL = 'MEDICAL',
+  INACTIVE = 'INACTIVE',
+}
+
+export enum ConvoyRole {
+  DRIVER = 'DRIVER',
+  A_DRIVER = 'A_DRIVER',
+  GUNNER = 'GUNNER',
+  TC = 'TC',
+  VC = 'VC',
+  MEDIC = 'MEDIC',
+  PAX = 'PAX',
+}
+
+// Personnel tracking interfaces
+
+export interface Weapon {
+  id: string;
+  personnelId: string;
+  weaponType: string;
+  serialNumber: string;
+  optic?: string;
+  accessories?: string[];
+}
+
+export interface AmmoLoad {
+  id: string;
+  personnelId: string;
+  caliber: string;
+  magazineCount: number;
+  roundsPerMagazine: number;
+  totalRounds: number;
+}
+
+export interface Personnel {
+  id: string;
+  edipi: string;
+  firstName: string;
+  lastName: string;
+  rank?: string;
+  unitId?: string;
+  mos?: string;
+  bloodType?: string;
+  status: PersonnelStatus;
+  weapons: Weapon[];
+  ammoLoads: AmmoLoad[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PersonnelSummary {
+  id: string;
+  edipi: string;
+  firstName: string;
+  lastName: string;
+  rank?: string;
+  mos?: string;
+  status: PersonnelStatus;
+}
+
+export interface ConvoyVehicle {
+  id: string;
+  movementId: string;
+  vehicleType: string;
+  tamcn?: string;
+  bumperNumber?: string;
+  callSign?: string;
+  sequenceNumber?: number;
+  assignedPersonnel: ConvoyPersonnelAssignment[];
+}
+
+export interface ConvoyPersonnelAssignment {
+  id: string;
+  movementId: string;
+  personnelId: string;
+  convoyVehicleId?: string;
+  role: ConvoyRole;
+  personnel: PersonnelSummary;
+}
+
+export interface ConvoyManifest {
+  movementId: string;
+  vehicles: ConvoyVehicle[];
+  unassignedPersonnel: ConvoyPersonnelAssignment[];
+  totalVehicles: number;
+  totalPersonnel: number;
 }

@@ -57,3 +57,9 @@ class Movement(Base):
     raw_data_id = Column(Integer, ForeignKey("raw_data.id"), nullable=True)
 
     unit = relationship("Unit", back_populates="movements")
+    convoy_vehicles = relationship(
+        "ConvoyVehicle", back_populates="movement", cascade="all, delete-orphan"
+    )
+    convoy_personnel = relationship(
+        "ConvoyPersonnel", back_populates="movement", cascade="all, delete-orphan"
+    )

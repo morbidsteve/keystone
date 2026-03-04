@@ -20,6 +20,7 @@ import type {
   CargoItem,
   VehicleAllocation,
   MovementManifest,
+  Personnel,
 } from '@/lib/types';
 import {
   SupplyClass,
@@ -29,6 +30,7 @@ import {
   AlertSeverity,
   ReportType,
   ReportStatus,
+  PersonnelStatus,
 } from '@/lib/types';
 
 // ---------------------------------------------------------------------------
@@ -838,5 +840,276 @@ export const DEMO_REPORTS: Report[] = [
     status: ReportStatus.GENERATING,
     generatedBy: 'COL Mitchell',
     generatedAt: hoursAgo(0.5),
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Personnel
+// ---------------------------------------------------------------------------
+
+export const DEMO_PERSONNEL: Personnel[] = [
+  {
+    id: 'p1',
+    edipi: '1234567890',
+    firstName: 'James',
+    lastName: 'Rodriguez',
+    rank: 'Sgt',
+    unitId: '4',
+    mos: '0311',
+    bloodType: 'O+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w1', personnelId: 'p1', weaponType: 'M4A1', serialNumber: 'M4-00231', optic: 'ACOG TA31', accessories: ['PEQ-15', 'Surefire M600'] },
+    ],
+    ammoLoads: [
+      { id: 'a1', personnelId: 'p1', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+    ],
+  },
+  {
+    id: 'p2',
+    edipi: '1234567891',
+    firstName: 'Michael',
+    lastName: 'Chen',
+    rank: 'Cpl',
+    unitId: '4',
+    mos: '0311',
+    bloodType: 'A+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w2', personnelId: 'p2', weaponType: 'M4A1', serialNumber: 'M4-00232', optic: 'Aimpoint M68', accessories: ['PEQ-15'] },
+      { id: 'w3', personnelId: 'p2', weaponType: 'M9', serialNumber: 'M9-00891', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a2', personnelId: 'p2', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+      { id: 'a3', personnelId: 'p2', caliber: '9mm', magazineCount: 3, roundsPerMagazine: 15, totalRounds: 45 },
+    ],
+  },
+  {
+    id: 'p3',
+    edipi: '1234567892',
+    firstName: 'David',
+    lastName: 'Williams',
+    rank: 'LCpl',
+    unitId: '4',
+    mos: '0331',
+    bloodType: 'B+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w4', personnelId: 'p3', weaponType: 'M240B', serialNumber: 'M240-00112', accessories: [] },
+      { id: 'w5', personnelId: 'p3', weaponType: 'M9', serialNumber: 'M9-00892', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a4', personnelId: 'p3', caliber: '7.62mm', magazineCount: 4, roundsPerMagazine: 100, totalRounds: 400 },
+      { id: 'a5', personnelId: 'p3', caliber: '9mm', magazineCount: 2, roundsPerMagazine: 15, totalRounds: 30 },
+    ],
+  },
+  {
+    id: 'p4',
+    edipi: '1234567893',
+    firstName: 'Robert',
+    lastName: 'Martinez',
+    rank: 'Sgt',
+    unitId: '4',
+    mos: '3531',
+    bloodType: 'O-',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w6', personnelId: 'p4', weaponType: 'M4A1', serialNumber: 'M4-00233', optic: 'ACOG TA31', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a6', personnelId: 'p4', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+    ],
+  },
+  {
+    id: 'p5',
+    edipi: '1234567894',
+    firstName: 'Anthony',
+    lastName: 'Johnson',
+    rank: 'Cpl',
+    unitId: '4',
+    mos: '3531',
+    bloodType: 'AB+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w7', personnelId: 'p5', weaponType: 'M4A1', serialNumber: 'M4-00234', optic: 'Aimpoint M68', accessories: ['PEQ-15'] },
+    ],
+    ammoLoads: [
+      { id: 'a7', personnelId: 'p5', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+    ],
+  },
+  {
+    id: 'p6',
+    edipi: '1234567895',
+    firstName: 'Thomas',
+    lastName: 'Brown',
+    rank: 'PFC',
+    unitId: '4',
+    mos: '0311',
+    bloodType: 'A-',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w8', personnelId: 'p6', weaponType: 'M27 IAR', serialNumber: 'M27-00045', optic: 'SDO', accessories: ['Harris bipod', 'PEQ-15'] },
+    ],
+    ammoLoads: [
+      { id: 'a8', personnelId: 'p6', caliber: '5.56mm', magazineCount: 10, roundsPerMagazine: 30, totalRounds: 300 },
+    ],
+  },
+  {
+    id: 'p7',
+    edipi: '1234567896',
+    firstName: 'Kevin',
+    lastName: 'Davis',
+    rank: 'HM3',
+    unitId: '4',
+    mos: '8404',
+    bloodType: 'O+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w9', personnelId: 'p7', weaponType: 'M9', serialNumber: 'M9-00893', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a9', personnelId: 'p7', caliber: '9mm', magazineCount: 3, roundsPerMagazine: 15, totalRounds: 45 },
+    ],
+  },
+  {
+    id: 'p8',
+    edipi: '1234567897',
+    firstName: 'Christopher',
+    lastName: 'Wilson',
+    rank: 'LCpl',
+    unitId: '4',
+    mos: '0311',
+    bloodType: 'B-',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w10', personnelId: 'p8', weaponType: 'M4A1', serialNumber: 'M4-00235', optic: 'ACOG TA31', accessories: ['PEQ-15'] },
+    ],
+    ammoLoads: [
+      { id: 'a10', personnelId: 'p8', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+    ],
+  },
+  {
+    id: 'p9',
+    edipi: '1234567898',
+    firstName: 'Daniel',
+    lastName: 'Taylor',
+    rank: 'Sgt',
+    unitId: '5',
+    mos: '0369',
+    bloodType: 'A+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w11', personnelId: 'p9', weaponType: 'M4A1', serialNumber: 'M4-00236', optic: 'ACOG TA31', accessories: ['PEQ-15', 'AN/PVS-14'] },
+      { id: 'w12', personnelId: 'p9', weaponType: 'M9', serialNumber: 'M9-00894', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a11', personnelId: 'p9', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+      { id: 'a12', personnelId: 'p9', caliber: '9mm', magazineCount: 3, roundsPerMagazine: 15, totalRounds: 45 },
+    ],
+  },
+  {
+    id: 'p10',
+    edipi: '1234567899',
+    firstName: 'Matthew',
+    lastName: 'Anderson',
+    rank: 'LCpl',
+    unitId: '5',
+    mos: '0311',
+    bloodType: 'O+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w13', personnelId: 'p10', weaponType: 'M249 SAW', serialNumber: 'M249-00067', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a13', personnelId: 'p10', caliber: '5.56mm', magazineCount: 3, roundsPerMagazine: 200, totalRounds: 600 },
+    ],
+  },
+  {
+    id: 'p11',
+    edipi: '2345678901',
+    firstName: 'Andrew',
+    lastName: 'Thomas',
+    rank: 'Cpl',
+    unitId: '5',
+    mos: '3531',
+    bloodType: 'AB-',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w14', personnelId: 'p11', weaponType: 'M4A1', serialNumber: 'M4-00237', optic: 'Aimpoint M68', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a14', personnelId: 'p11', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+    ],
+  },
+  {
+    id: 'p12',
+    edipi: '2345678902',
+    firstName: 'Joshua',
+    lastName: 'Jackson',
+    rank: 'PFC',
+    unitId: '5',
+    mos: '0311',
+    bloodType: 'B+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w15', personnelId: 'p12', weaponType: 'M4A1', serialNumber: 'M4-00238', optic: 'ACOG TA31', accessories: ['PEQ-15'] },
+    ],
+    ammoLoads: [
+      { id: 'a15', personnelId: 'p12', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+    ],
+  },
+  {
+    id: 'p13',
+    edipi: '2345678903',
+    firstName: 'Ryan',
+    lastName: 'White',
+    rank: 'SSgt',
+    unitId: '4',
+    mos: '0369',
+    bloodType: 'O+',
+    status: PersonnelStatus.DEPLOYED,
+    weapons: [
+      { id: 'w16', personnelId: 'p13', weaponType: 'M4A1', serialNumber: 'M4-00239', optic: 'ACOG TA31', accessories: ['PEQ-15', 'Surefire M600'] },
+      { id: 'w17', personnelId: 'p13', weaponType: 'M9', serialNumber: 'M9-00895', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a16', personnelId: 'p13', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+      { id: 'a17', personnelId: 'p13', caliber: '9mm', magazineCount: 3, roundsPerMagazine: 15, totalRounds: 45 },
+    ],
+  },
+  {
+    id: 'p14',
+    edipi: '2345678904',
+    firstName: 'Brandon',
+    lastName: 'Harris',
+    rank: 'LCpl',
+    unitId: '5',
+    mos: '0341',
+    bloodType: 'A+',
+    status: PersonnelStatus.ACTIVE,
+    weapons: [
+      { id: 'w18', personnelId: 'p14', weaponType: 'M4A1', serialNumber: 'M4-00240', optic: 'Aimpoint M68', accessories: [] },
+    ],
+    ammoLoads: [
+      { id: 'a18', personnelId: 'p14', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+      { id: 'a19', personnelId: 'p14', caliber: '40mm', magazineCount: 6, roundsPerMagazine: 1, totalRounds: 6 },
+    ],
+  },
+  {
+    id: 'p15',
+    edipi: '2345678905',
+    firstName: 'Justin',
+    lastName: 'Clark',
+    rank: 'PFC',
+    unitId: '4',
+    mos: '0311',
+    bloodType: 'O-',
+    status: PersonnelStatus.LEAVE,
+    weapons: [
+      { id: 'w19', personnelId: 'p15', weaponType: 'M4A1', serialNumber: 'M4-00241', optic: 'ACOG TA31', accessories: ['PEQ-15'] },
+    ],
+    ammoLoads: [
+      { id: 'a20', personnelId: 'p15', caliber: '5.56mm', magazineCount: 7, roundsPerMagazine: 30, totalRounds: 210 },
+    ],
   },
 ];

@@ -30,6 +30,15 @@ from app.models.location import (
     RouteType,
     RouteStatus,
 )
+from app.models.personnel import (
+    Personnel,
+    PersonnelStatus,
+    Weapon,
+    AmmoLoad,
+    ConvoyVehicle,
+    ConvoyPersonnel,
+    ConvoyRole,
+)
 
 __all__ = [
     "User",
@@ -72,4 +81,11 @@ __all__ = [
     "Route",
     "RouteType",
     "RouteStatus",
+    "Personnel",
+    "PersonnelStatus",
+    "Weapon",
+    "AmmoLoad",
+    "ConvoyVehicle",
+    "ConvoyPersonnel",
+    "ConvoyRole",
 ]
