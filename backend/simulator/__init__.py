@@ -9,6 +9,8 @@ from simulator.clock import SimulationClock
 from simulator.config import SimulatorConfig
 from simulator.units import UnitState, SupplyItem, EquipmentItem, EquipmentCategory
 from simulator.scenario import Scenario, Phase
+from simulator.areas_of_operation import SCENARIO_AO
+from simulator.callsigns import CALLSIGNS
 
 __all__ = [
     "SimulationClock",
@@ -19,4 +21,6 @@ __all__ = [
     "EquipmentCategory",
     "Scenario",
     "Phase",
+    "SCENARIO_AO",
+    "CALLSIGNS",
 ]

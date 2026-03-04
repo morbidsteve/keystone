@@ -21,11 +21,11 @@ from typing import Optional
 class SupplyClass(str, Enum):
     """NATO supply classes tracked by the simulator."""
 
-    I = "I"        # Rations / Water  # noqa: E741
-    III = "III"    # POL (fuel)
-    V = "V"        # Ammunition
+    I = "I"  # Rations / Water  # noqa: E741
+    III = "III"  # POL (fuel)
+    V = "V"  # Ammunition
     VIII = "VIII"  # Medical
-    IX = "IX"      # Repair parts
+    IX = "IX"  # Repair parts
 
 
 @dataclass
@@ -148,7 +148,9 @@ class UnitState:
         """Check whether an equipment readiness report is overdue."""
         if self.last_equip_report is None:
             return True
-        return (sim_now - self.last_equip_report).total_seconds() >= interval_hours * 3600
+        return (
+            sim_now - self.last_equip_report
+        ).total_seconds() >= interval_hours * 3600
 
     def mirc_batch_due(self, sim_now: datetime, interval_minutes: int = 30) -> bool:
         """Check whether a mIRC chat batch is overdue."""
@@ -158,53 +160,10 @@ class UnitState:
 
 
 # ---------------------------------------------------------------------------
-# AO coordinates for all scenarios
+# AO coordinates — imported from areas_of_operation module
 # ---------------------------------------------------------------------------
 
-AO_29_PALMS: dict[str, tuple[float, float]] = {
-    "main_base": (34.2367, -116.0560),
-    "camp_wilson": (34.2100, -116.1330),
-    "fob_alpha": (34.2950, -116.0200),
-    "fob_bravo": (34.1800, -116.1700),
-    "supply_point_1": (34.2500, -116.0900),
-    "lz_eagle": (34.2700, -116.0400),
-    "checkpoint_1": (34.2200, -116.0700),
-    "checkpoint_2": (34.2600, -116.1100),
-    "range_400": (34.3000, -116.0000),
-    "combat_town": (34.2150, -116.1250),
-}
-
-AO_LEJEUNE = {
-    "center": (34.6700, -77.3500),
-    "radius_km": 15,
-    "mainside": (34.6700, -77.3500),
-    "camp_geiger": (34.6567, -77.3872),
-    "courthouse_bay": (34.6192, -77.3461),
-    "onslow_beach": (34.5800, -77.3200),
-    "mile_hammock_bay": (34.5900, -77.3400),
-    "camp_johnson": (34.7000, -77.4200),
-    "stone_bay": (34.6100, -77.3300),
-}
-
-AO_OKINAWA = {
-    "center": (26.3344, 127.7731),
-    "radius_km": 25,
-    "camp_foster": (26.3344, 127.7731),
-    "camp_hansen": (26.4494, 127.7686),
-    "camp_schwab": (26.5292, 127.9375),
-    "camp_kinser": (26.3014, 127.7222),
-    "mcas_futenma": (26.2742, 127.7564),
-    "kadena_ab": (26.3517, 127.7681),
-    "white_beach": (26.3306, 127.8817),
-    "naha_port": (26.2167, 127.6700),
-    "northern_training_area": (26.5800, 128.0500),
-}
-
-SCENARIO_AO: dict[str, dict] = {
-    "steel_guardian": AO_29_PALMS,
-    "pacific_fury": AO_LEJEUNE,
-    "iron_forge": AO_OKINAWA,
-}
+from simulator.areas_of_operation import AO_29_PALMS, SCENARIO_AO  # noqa: E402
 
 # Common faults for equipment breakdown events
 COMMON_FAULTS = [
@@ -441,67 +400,255 @@ SCENARIO_UNITS: dict[str, list[str]] = {
         "7th Comm Bn",
         "31st MEU",
     ],
+    # ── ITX (2/5 BN) ──
+    "itx": [
+        "2/5",
+        "A Co 2/5",
+        "B Co 2/5",
+        "C Co 2/5",
+        "Wpns Co 2/5",
+        "H&S Co 2/5",
+        "2/11",
+        "CLB-5",
+        "CLR-1",
+        "1st Recon Bn",
+    ],
+    # ── Steel Knight (1st MarDiv) ──
+    "steel_knight": [
+        "1st MarDiv",
+        "HQBN 1st MarDiv",
+        "1/5",
+        "A Co 1/5",
+        "B Co 1/5",
+        "C Co 1/5",
+        "3/5",
+        "A Co 3/5",
+        "B Co 3/5",
+        "C Co 3/5",
+        "2/7",
+        "A Co 2/7",
+        "B Co 2/7",
+        "C Co 2/7",
+        "3/11",
+        "1st LAR Bn",
+        "CLB-11",
+        "1st DSB",
+        "I MIG",
+        "9th Comm Bn",
+        "1st Intel Bn",
+    ],
+    # ── COMPTUEX (24th MEU) ──
+    "comptuex": [
+        "24th MEU",
+        "1/8",
+        "A Co 1/8",
+        "B Co 1/8",
+        "C Co 1/8",
+        "Wpns Co 1/8",
+        "H&S Co 1/8",
+        "CLB-24",
+        "VMM-264",
+        "HMLA-167",
+        "VMFA-224",
+    ],
+    # ── Cobra Gold ──
+    "cobra_gold": [
+        "3/4",
+        "A Co 3/4",
+        "B Co 3/4",
+        "C Co 3/4",
+        "3/12",
+        "CLB-3",
+        "VMM-262",
+        "HMLA-369",
+        "3rd Recon Bn",
+    ],
+    # ── Balikatan ──
+    "balikatan": [
+        "3rd MLR",
+        "3rd LCT",
+        "3rd LAAB",
+        "3rd LLB",
+        "3/4",
+        "A Co 3/4",
+        "B Co 3/4",
+        "C Co 3/4",
+        "3/12",
+        "CLB-31",
+        "3rd Recon Bn",
+    ],
+    # ── Resolute Dragon ──
+    "resolute_dragon": [
+        "3rd MLR",
+        "3rd LCT",
+        "3rd LAAB",
+        "3rd LLB",
+        "3/4",
+        "A Co 3/4",
+        "B Co 3/4",
+        "C Co 3/4",
+        "3/12",
+        "CLB-4",
+        "VMM-265",
+        "HMLA-369",
+        "3rd CEB",
+    ],
+    # ── Ssang Yong ──
+    "ssang_yong": [
+        "31st MEU",
+        "3/4",
+        "A Co 3/4",
+        "B Co 3/4",
+        "C Co 3/4",
+        "3/12",
+        "CLB-31",
+        "CLR-37",
+        "VMM-262",
+        "HMLA-369",
+        "3rd Recon Bn",
+    ],
+    # ── Kamandag ──
+    "kamandag": [
+        "3rd MLR",
+        "3rd LCT",
+        "3rd LAAB",
+        "3rd LLB",
+        "CLB-3",
+        "VMM-262",
+        "3rd Recon Bn",
+    ],
+    # ── Valiant Shield ──
+    "valiant_shield": [
+        "3rd MLR",
+        "3rd LCT",
+        "3rd LAAB",
+        "3rd LLB",
+        "12th MLR",
+        "12th LCT",
+        "12th LAAB",
+        "12th LLB",
+        "3/4",
+        "A Co 3/4",
+        "B Co 3/4",
+        "C Co 3/4",
+        "3/12",
+        "CLB-3",
+        "CLB-4",
+        "CLR-3",
+        "VMM-262",
+        "HMLA-369",
+        "31st MEU",
+    ],
+    # ── RIMPAC ──
+    "rimpac": [
+        "3/4",
+        "A Co 3/4",
+        "B Co 3/4",
+        "C Co 3/4",
+        "3rd MLR",
+        "3rd LCT",
+        "3rd LAAB",
+        "3rd LLB",
+        "CLB-3",
+        "VMM-268",
+        "VMM-163",
+        "31st MEU",
+    ],
+    # ── African Lion ──
+    "african_lion": [
+        "1/2",
+        "A Co 1/2",
+        "B Co 1/2",
+        "C Co 1/2",
+        "Wpns Co 1/2",
+        "H&S Co 1/2",
+        "CLB-2",
+        "2nd LAR Bn",
+    ],
+    # ── Cold Response ──
+    "cold_response": [
+        "2/2",
+        "A Co 2/2",
+        "B Co 2/2",
+        "C Co 2/2",
+        "Wpns Co 2/2",
+        "H&S Co 2/2",
+        "CLB-6",
+        "2nd LAR Bn",
+        "8th Comm Bn",
+        "2nd Intel Bn",
+    ],
+    # ── Native Fury ──
+    "native_fury": [
+        "1/8",
+        "A Co 1/8",
+        "B Co 1/8",
+        "C Co 1/8",
+        "Wpns Co 1/8",
+        "H&S Co 1/8",
+        "CLB-8",
+        "2nd Recon Bn",
+    ],
+    # ── UNITAS ──
+    "unitas": [
+        "2/6",
+        "A Co 2/6",
+        "B Co 2/6",
+        "C Co 2/6",
+        "CLB-26",
+        "VMM-266",
+    ],
+    # ── Reserve ITX ──
+    "reserve_itx": [
+        "1/23",
+        "2/23",
+        "3/23",
+        "2/14",
+        "3/14",
+        "4th LAR Bn",
+        "4th CEB",
+        "CLB-451",
+        "CLR-4",
+        "4th Recon Bn",
+    ],
+    # ── Island Sentinel (EABO) ──
+    "island_sentinel": [
+        "3rd MLR",
+        "3rd LCT",
+        "3rd LAAB",
+        "3rd LLB",
+        "12th MLR",
+        "12th LCT",
+        "12th LAAB",
+        "12th LLB",
+        "CLB-31",
+        "CLR-37",
+        "3rd Recon Bn",
+        "3rd CEB",
+    ],
+    # ── Trident Spear (13th MEU) ──
+    "trident_spear": [
+        "13th MEU",
+        "1/4",
+        "A Co 1/4",
+        "B Co 1/4",
+        "C Co 1/4",
+        "Wpns Co 1/4",
+        "H&S Co 1/4",
+        "CLB-13",
+        "VMM-161",
+        "HMLA-469",
+        "VMFA-211",
+        "1st ANGLICO",
+    ],
 }
 
 
 # ---------------------------------------------------------------------------
-# Callsigns
+# Callsigns — imported from callsigns module
 # ---------------------------------------------------------------------------
 
-CALLSIGNS: dict[str, list[str]] = {
-    # steel_guardian
-    "1/7": ["RIPPER 6", "RIPPER 3", "RIPPER 4"],
-    "A Co 1/7": ["ALPHA 6", "ALPHA 5"],
-    "B Co 1/7": ["BRAVO 6", "BRAVO 5"],
-    "C Co 1/7": ["CHARLIE 6", "CHARLIE 5"],
-    "Wpns Co 1/7": ["WEAPON 6", "WEAPON 5"],
-    "H&S Co 1/7": ["HEADHUNTER 6", "HEADHUNTER 5"],
-    "1/11": ["CANNON 6", "CANNON 3"],
-    "CLB-7": ["IRONHORSE 6", "IRONHORSE 3", "IRONHORSE 4"],
-    "CLR-1": ["SUPPLY 6", "SUPPLY 3"],
-    "1st Recon Bn": ["SHADOW 6", "SHADOW 3"],
-    # pacific_fury
-    "26th MEU": ["EAGLE 6", "EAGLE 3"],
-    "2/6": ["SPARTAN 6", "SPARTAN 3", "SPARTAN 4"],
-    "A Co 2/6": ["APACHE 6", "APACHE 5"],
-    "B Co 2/6": ["BANDIT 6", "BANDIT 5"],
-    "C Co 2/6": ["COBRA 6", "COBRA 5"],
-    "Wpns Co 2/6": ["DAGGER 6", "DAGGER 5"],
-    "H&S Co 2/6": ["HAMMER 6", "HAMMER 5"],
-    "2/10": ["THUNDER 6", "THUNDER 3"],
-    "VMM-266": ["GRIFFIN 6", "GRIFFIN OPS"],
-    "HMLA-269": ["GUNRUNNER 6", "GUNRUNNER OPS"],
-    "VMFA-251": ["THUNDERBOLT 6", "THUNDERBOLT OPS"],
-    "CLB-26": ["MUSTANG 6", "MUSTANG 3"],
-    "2nd Recon Bn": ["GHOST 6", "GHOST 3"],
-    # iron_forge
-    "3rd MLR": ["TRIDENT 6", "TRIDENT 3"],
-    "3rd LCT": ["LANCER 6", "LANCER 3"],
-    "3rd LAAB": ["SHIELD 6", "SHIELD 3"],
-    "3rd LLB": ["ANCHOR 6", "ANCHOR 3"],
-    "12th MLR": ["VANGUARD 6", "VANGUARD 3"],
-    "12th LCT": ["SABER 6", "SABER 3"],
-    "12th LAAB": ["SENTINEL 6", "SENTINEL 3"],
-    "12th LLB": ["DEPOT 6", "DEPOT 3"],
-    "3/4": ["DARKSIDE 6", "DARKSIDE 3", "DARKSIDE 4"],
-    "A Co 3/4": ["ASSASSIN 6", "ASSASSIN 5"],
-    "B Co 3/4": ["BARBARIAN 6", "BARBARIAN 5"],
-    "C Co 3/4": ["CRUSADER 6", "CRUSADER 5"],
-    "3/12": ["STEEL RAIN 6", "STEEL RAIN 3"],
-    "3rd Recon Bn": ["REAPER 6", "REAPER 3"],
-    "3rd CEB": ["PIONEER 6", "PIONEER 3"],
-    "VMM-262": ["TIGER 6", "TIGER OPS"],
-    "HMLA-369": ["GUNFIGHTER 6", "GUNFIGHTER OPS"],
-    "CLB-3": ["WARHORSE 6", "WARHORSE 3"],
-    "CLB-4": ["STALLION 6", "STALLION 3"],
-    "CLR-3": ["PROVIDER 6", "PROVIDER 3"],
-    "3rd Maint Bn": ["WRENCH 6", "WRENCH 3"],
-    "9th ESB": ["BUILDER 6", "BUILDER 3"],
-    "3rd TSB": ["TRANSPORTER 6", "TRANSPORTER 3"],
-    "3rd Intel Bn": ["ORACLE 6", "ORACLE 3"],
-    "7th Comm Bn": ["SIGNAL 6", "SIGNAL 3"],
-    "31st MEU": ["WOLFPACK 6", "WOLFPACK 3"],
-}
+from simulator.callsigns import CALLSIGNS  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -622,6 +769,524 @@ SCENARIO_CHANNELS: dict[str, dict[str, dict]] = {
         "#31MEU-LOG": {
             "units": ["31st MEU"],
             "content": "logistics",
+        },
+    },
+    # ── ITX (2/5) ──
+    "itx": {
+        "#2-5-LOG-NET": {
+            "units": [
+                "2/5",
+                "A Co 2/5",
+                "B Co 2/5",
+                "C Co 2/5",
+                "Wpns Co 2/5",
+            ],
+            "content": "logistics",
+        },
+        "#2-5-MAINT-NET": {
+            "units": ["2/5", "A Co 2/5", "B Co 2/5", "C Co 2/5"],
+            "content": "maintenance",
+        },
+        "#2-5-SUPPLY-REQ": {
+            "units": ["2/5", "A Co 2/5", "B Co 2/5", "C Co 2/5"],
+            "content": "supply_requests",
+        },
+        "#CLB5-DISTRO": {
+            "units": ["CLB-5", "CLR-1", "2/5"],
+            "content": "distribution",
+        },
+        "#5THMAR-LOG-COMMON": {
+            "units": ["2/5", "CLB-5", "CLR-1", "2/11"],
+            "content": "regimental_log",
+        },
+        "#2-11-FIRES": {
+            "units": ["2/11", "2/5"],
+            "content": "fires_support",
+        },
+        "#RECON-OPS": {
+            "units": ["1st Recon Bn", "2/5"],
+            "content": "recon_ops",
+        },
+    },
+    # ── Steel Knight (1st MarDiv) ──
+    "steel_knight": {
+        "#1MARDIV-LOG-NET": {
+            "units": [
+                "1st MarDiv",
+                "HQBN 1st MarDiv",
+                "1/5",
+                "3/5",
+                "2/7",
+                "CLB-11",
+                "1st DSB",
+            ],
+            "content": "logistics",
+        },
+        "#1-5-LOG-NET": {
+            "units": ["1/5", "A Co 1/5", "B Co 1/5", "C Co 1/5"],
+            "content": "logistics",
+        },
+        "#3-5-LOG-NET": {
+            "units": ["3/5", "A Co 3/5", "B Co 3/5", "C Co 3/5"],
+            "content": "logistics",
+        },
+        "#2-7-LOG-NET": {
+            "units": ["2/7", "A Co 2/7", "B Co 2/7", "C Co 2/7"],
+            "content": "logistics",
+        },
+        "#1MARDIV-MAINT": {
+            "units": ["1st MarDiv", "CLB-11", "1st DSB"],
+            "content": "maintenance",
+        },
+        "#3-11-FIRES": {
+            "units": ["3/11", "1/5", "3/5", "2/7"],
+            "content": "fires_support",
+        },
+        "#1MARDIV-INTEL": {
+            "units": ["1st MarDiv", "1st Intel Bn", "I MIG"],
+            "content": "intelligence",
+        },
+        "#1MARDIV-COMMS": {
+            "units": ["9th Comm Bn", "1st MarDiv", "I MIG"],
+            "content": "communications",
+        },
+        "#CLB11-DISTRO": {
+            "units": ["CLB-11", "1st DSB", "1/5", "3/5", "2/7"],
+            "content": "distribution",
+        },
+    },
+    # ── COMPTUEX (24th MEU) ──
+    "comptuex": {
+        "#24MEU-LOG-NET": {
+            "units": ["24th MEU", "1/8", "CLB-24"],
+            "content": "logistics",
+        },
+        "#BLT-1-8-LOG": {
+            "units": [
+                "1/8",
+                "A Co 1/8",
+                "B Co 1/8",
+                "C Co 1/8",
+                "Wpns Co 1/8",
+            ],
+            "content": "logistics",
+        },
+        "#BLT-1-8-MAINT": {
+            "units": ["1/8", "A Co 1/8", "B Co 1/8", "C Co 1/8"],
+            "content": "maintenance",
+        },
+        "#CLB24-DISTRO": {
+            "units": ["CLB-24", "1/8"],
+            "content": "distribution",
+        },
+        "#24MEU-ACE-OPS": {
+            "units": ["VMM-264", "HMLA-167", "VMFA-224", "24th MEU"],
+            "content": "aviation_ops",
+        },
+        "#24MEU-TAC-LOG": {
+            "units": ["24th MEU", "1/8", "CLB-24", "VMM-264"],
+            "content": "tactical_log",
+        },
+    },
+    # ── Cobra Gold ──
+    "cobra_gold": {
+        "#CG-LOG-NET": {
+            "units": ["3/4", "A Co 3/4", "B Co 3/4", "C Co 3/4", "CLB-3"],
+            "content": "logistics",
+        },
+        "#CG-MAINT-NET": {
+            "units": ["3/4", "CLB-3"],
+            "content": "maintenance",
+        },
+        "#CG-FIRES": {
+            "units": ["3/12", "3/4"],
+            "content": "fires_support",
+        },
+        "#CG-AVN-OPS": {
+            "units": ["VMM-262", "HMLA-369"],
+            "content": "aviation_ops",
+        },
+        "#CG-RECON": {
+            "units": ["3rd Recon Bn", "3/4"],
+            "content": "recon_ops",
+        },
+    },
+    # ── Balikatan ──
+    "balikatan": {
+        "#BK-LOG-NET": {
+            "units": [
+                "3rd MLR",
+                "3rd LCT",
+                "3rd LAAB",
+                "3rd LLB",
+                "CLB-31",
+            ],
+            "content": "logistics",
+        },
+        "#BK-3-4-LOG": {
+            "units": ["3/4", "A Co 3/4", "B Co 3/4", "C Co 3/4"],
+            "content": "logistics",
+        },
+        "#BK-FIRES": {
+            "units": ["3/12", "3/4", "3rd MLR"],
+            "content": "fires_support",
+        },
+        "#BK-EABO-OPS": {
+            "units": ["3rd MLR", "3rd LCT", "3rd LAAB"],
+            "content": "eabo_operations",
+        },
+        "#BK-RECON": {
+            "units": ["3rd Recon Bn", "3/4"],
+            "content": "recon_ops",
+        },
+    },
+    # ── Resolute Dragon ──
+    "resolute_dragon": {
+        "#RD-LOG-NET": {
+            "units": [
+                "3rd MLR",
+                "3rd LCT",
+                "3rd LAAB",
+                "3rd LLB",
+                "CLB-4",
+            ],
+            "content": "logistics",
+        },
+        "#RD-3-4-LOG": {
+            "units": ["3/4", "A Co 3/4", "B Co 3/4", "C Co 3/4"],
+            "content": "logistics",
+        },
+        "#RD-FIRES": {
+            "units": ["3/12", "3/4", "3rd MLR"],
+            "content": "fires_support",
+        },
+        "#RD-AVN-OPS": {
+            "units": ["VMM-265", "HMLA-369"],
+            "content": "aviation_ops",
+        },
+        "#RD-ENGR": {
+            "units": ["3rd CEB", "3/4"],
+            "content": "engineer_ops",
+        },
+    },
+    # ── Ssang Yong ──
+    "ssang_yong": {
+        "#SY-LOG-NET": {
+            "units": ["31st MEU", "3/4", "CLB-31", "CLR-37"],
+            "content": "logistics",
+        },
+        "#SY-3-4-LOG": {
+            "units": ["3/4", "A Co 3/4", "B Co 3/4", "C Co 3/4"],
+            "content": "logistics",
+        },
+        "#SY-FIRES": {
+            "units": ["3/12", "3/4"],
+            "content": "fires_support",
+        },
+        "#SY-AVN-OPS": {
+            "units": ["VMM-262", "HMLA-369", "31st MEU"],
+            "content": "aviation_ops",
+        },
+        "#SY-RECON": {
+            "units": ["3rd Recon Bn", "3/4"],
+            "content": "recon_ops",
+        },
+        "#SY-CLB31-DISTRO": {
+            "units": ["CLB-31", "CLR-37", "3/4"],
+            "content": "distribution",
+        },
+    },
+    # ── Kamandag ──
+    "kamandag": {
+        "#KD-LOG-NET": {
+            "units": [
+                "3rd MLR",
+                "3rd LCT",
+                "3rd LAAB",
+                "3rd LLB",
+                "CLB-3",
+            ],
+            "content": "logistics",
+        },
+        "#KD-AVN-OPS": {
+            "units": ["VMM-262", "3rd MLR"],
+            "content": "aviation_ops",
+        },
+        "#KD-RECON": {
+            "units": ["3rd Recon Bn", "3rd LCT"],
+            "content": "recon_ops",
+        },
+    },
+    # ── Valiant Shield ──
+    "valiant_shield": {
+        "#VS-LOG-NET": {
+            "units": [
+                "3rd MLR",
+                "12th MLR",
+                "3/4",
+                "CLB-3",
+                "CLB-4",
+                "CLR-3",
+            ],
+            "content": "logistics",
+        },
+        "#VS-3MLR-LOG": {
+            "units": ["3rd MLR", "3rd LCT", "3rd LAAB", "3rd LLB"],
+            "content": "logistics",
+        },
+        "#VS-12MLR-LOG": {
+            "units": ["12th MLR", "12th LCT", "12th LAAB", "12th LLB"],
+            "content": "logistics",
+        },
+        "#VS-3-4-LOG": {
+            "units": ["3/4", "A Co 3/4", "B Co 3/4", "C Co 3/4"],
+            "content": "logistics",
+        },
+        "#VS-FIRES": {
+            "units": ["3/12", "3rd MLR", "3/4"],
+            "content": "fires_support",
+        },
+        "#VS-AVN-OPS": {
+            "units": ["VMM-262", "HMLA-369", "31st MEU"],
+            "content": "aviation_ops",
+        },
+        "#VS-DISTRO": {
+            "units": ["CLR-3", "CLB-3", "CLB-4"],
+            "content": "distribution",
+        },
+    },
+    # ── RIMPAC ──
+    "rimpac": {
+        "#RIMPAC-LOG-NET": {
+            "units": [
+                "3/4",
+                "3rd MLR",
+                "CLB-3",
+                "31st MEU",
+            ],
+            "content": "logistics",
+        },
+        "#RIMPAC-3-4-LOG": {
+            "units": ["3/4", "A Co 3/4", "B Co 3/4", "C Co 3/4"],
+            "content": "logistics",
+        },
+        "#RIMPAC-MLR-LOG": {
+            "units": ["3rd MLR", "3rd LCT", "3rd LAAB", "3rd LLB"],
+            "content": "logistics",
+        },
+        "#RIMPAC-AVN-OPS": {
+            "units": ["VMM-268", "VMM-163"],
+            "content": "aviation_ops",
+        },
+        "#RIMPAC-DISTRO": {
+            "units": ["CLB-3", "3/4", "3rd MLR"],
+            "content": "distribution",
+        },
+    },
+    # ── African Lion ──
+    "african_lion": {
+        "#AL-LOG-NET": {
+            "units": [
+                "1/2",
+                "A Co 1/2",
+                "B Co 1/2",
+                "C Co 1/2",
+                "CLB-2",
+            ],
+            "content": "logistics",
+        },
+        "#AL-MAINT-NET": {
+            "units": ["1/2", "CLB-2"],
+            "content": "maintenance",
+        },
+        "#AL-SUPPLY-REQ": {
+            "units": ["1/2", "A Co 1/2", "B Co 1/2", "C Co 1/2"],
+            "content": "supply_requests",
+        },
+        "#AL-DISTRO": {
+            "units": ["CLB-2", "1/2"],
+            "content": "distribution",
+        },
+        "#AL-RECON": {
+            "units": ["2nd LAR Bn", "1/2"],
+            "content": "recon_ops",
+        },
+    },
+    # ── Cold Response ──
+    "cold_response": {
+        "#CR-LOG-NET": {
+            "units": [
+                "2/2",
+                "A Co 2/2",
+                "B Co 2/2",
+                "C Co 2/2",
+                "CLB-6",
+            ],
+            "content": "logistics",
+        },
+        "#CR-MAINT-NET": {
+            "units": ["2/2", "CLB-6"],
+            "content": "maintenance",
+        },
+        "#CR-SUPPLY-REQ": {
+            "units": ["2/2", "A Co 2/2", "B Co 2/2", "C Co 2/2"],
+            "content": "supply_requests",
+        },
+        "#CR-DISTRO": {
+            "units": ["CLB-6", "2/2"],
+            "content": "distribution",
+        },
+        "#CR-RECON": {
+            "units": ["2nd LAR Bn", "2/2"],
+            "content": "recon_ops",
+        },
+        "#CR-COMMS": {
+            "units": ["8th Comm Bn", "2/2"],
+            "content": "communications",
+        },
+        "#CR-INTEL": {
+            "units": ["2nd Intel Bn", "2/2"],
+            "content": "intelligence",
+        },
+    },
+    # ── Native Fury ──
+    "native_fury": {
+        "#NF-LOG-NET": {
+            "units": [
+                "1/8",
+                "A Co 1/8",
+                "B Co 1/8",
+                "C Co 1/8",
+                "CLB-8",
+            ],
+            "content": "logistics",
+        },
+        "#NF-MAINT-NET": {
+            "units": ["1/8", "CLB-8"],
+            "content": "maintenance",
+        },
+        "#NF-SUPPLY-REQ": {
+            "units": ["1/8", "A Co 1/8", "B Co 1/8", "C Co 1/8"],
+            "content": "supply_requests",
+        },
+        "#NF-DISTRO": {
+            "units": ["CLB-8", "1/8"],
+            "content": "distribution",
+        },
+        "#NF-RECON": {
+            "units": ["2nd Recon Bn", "1/8"],
+            "content": "recon_ops",
+        },
+    },
+    # ── UNITAS ──
+    "unitas": {
+        "#UN-LOG-NET": {
+            "units": ["2/6", "A Co 2/6", "B Co 2/6", "C Co 2/6", "CLB-26"],
+            "content": "logistics",
+        },
+        "#UN-AVN-OPS": {
+            "units": ["VMM-266", "2/6"],
+            "content": "aviation_ops",
+        },
+        "#UN-DISTRO": {
+            "units": ["CLB-26", "2/6"],
+            "content": "distribution",
+        },
+    },
+    # ── Reserve ITX ──
+    "reserve_itx": {
+        "#RITX-LOG-NET": {
+            "units": ["1/23", "2/23", "3/23", "CLB-451", "CLR-4"],
+            "content": "logistics",
+        },
+        "#RITX-MAINT-NET": {
+            "units": ["1/23", "2/23", "3/23", "CLB-451"],
+            "content": "maintenance",
+        },
+        "#RITX-FIRES": {
+            "units": ["2/14", "3/14", "1/23", "2/23", "3/23"],
+            "content": "fires_support",
+        },
+        "#RITX-DISTRO": {
+            "units": ["CLB-451", "CLR-4", "1/23", "2/23", "3/23"],
+            "content": "distribution",
+        },
+        "#RITX-RECON": {
+            "units": ["4th Recon Bn", "4th LAR Bn", "1/23"],
+            "content": "recon_ops",
+        },
+        "#RITX-ENGR": {
+            "units": ["4th CEB", "1/23", "2/23"],
+            "content": "engineer_ops",
+        },
+    },
+    # ── Island Sentinel ──
+    "island_sentinel": {
+        "#IS-LOG-NET": {
+            "units": [
+                "3rd MLR",
+                "12th MLR",
+                "CLB-31",
+                "CLR-37",
+            ],
+            "content": "logistics",
+        },
+        "#IS-3MLR-OPS": {
+            "units": ["3rd MLR", "3rd LCT", "3rd LAAB", "3rd LLB"],
+            "content": "eabo_operations",
+        },
+        "#IS-12MLR-OPS": {
+            "units": ["12th MLR", "12th LCT", "12th LAAB", "12th LLB"],
+            "content": "eabo_operations",
+        },
+        "#IS-DISTRO": {
+            "units": ["CLB-31", "CLR-37", "3rd MLR", "12th MLR"],
+            "content": "distribution",
+        },
+        "#IS-RECON": {
+            "units": ["3rd Recon Bn", "3rd MLR", "12th MLR"],
+            "content": "recon_ops",
+        },
+        "#IS-ENGR": {
+            "units": ["3rd CEB", "3rd MLR"],
+            "content": "engineer_ops",
+        },
+    },
+    # ── Trident Spear (13th MEU) ──
+    "trident_spear": {
+        "#TS-LOG-NET": {
+            "units": ["13th MEU", "1/4", "CLB-13"],
+            "content": "logistics",
+        },
+        "#TS-BLT-LOG": {
+            "units": [
+                "1/4",
+                "A Co 1/4",
+                "B Co 1/4",
+                "C Co 1/4",
+                "Wpns Co 1/4",
+            ],
+            "content": "logistics",
+        },
+        "#TS-BLT-MAINT": {
+            "units": ["1/4", "A Co 1/4", "B Co 1/4", "C Co 1/4"],
+            "content": "maintenance",
+        },
+        "#TS-CLB13-DISTRO": {
+            "units": ["CLB-13", "1/4"],
+            "content": "distribution",
+        },
+        "#TS-ACE-OPS": {
+            "units": ["VMM-161", "HMLA-469", "VMFA-211", "13th MEU"],
+            "content": "aviation_ops",
+        },
+        "#TS-TAC-LOG": {
+            "units": ["13th MEU", "1/4", "CLB-13", "VMM-161"],
+            "content": "tactical_log",
+        },
+        "#TS-FIRES": {
+            "units": ["1st ANGLICO", "1/4", "13th MEU"],
+            "content": "fires_support",
         },
     },
 }
@@ -749,9 +1414,7 @@ def get_units_for_scenario(scenario_name: str) -> list[str]:
     """Return the list of unit abbreviations for a given scenario."""
     if scenario_name not in SCENARIO_UNITS:
         available = ", ".join(sorted(SCENARIO_UNITS.keys()))
-        raise ValueError(
-            f"Unknown scenario '{scenario_name}'. Available: {available}"
-        )
+        raise ValueError(f"Unknown scenario '{scenario_name}'. Available: {available}")
     return list(SCENARIO_UNITS[scenario_name])
 
 
@@ -774,9 +1437,7 @@ def classify_unit_type(unit_abbr: str, echelon: str) -> str:
         return "mlr_anti_air_battalion"
     if "LLB" in unit_abbr:
         return "logistics_battalion"
-    if any(
-        x in unit_abbr for x in ["VMM", "VMFA", "HMLA", "HMH", "VMGR", "VMU"]
-    ):
+    if any(x in unit_abbr for x in ["VMM", "VMFA", "HMLA", "HMH", "VMGR", "VMU"]):
         return "aviation_squadron"
     if any(x in unit_abbr for x in ["CEB", "ESB"]):
         return "engineer_battalion"
@@ -845,8 +1506,7 @@ def create_unit_states_for_scenario(scenario_name: str) -> list[UnitState]:
             items: list[EquipmentItem] = []
             for j in range(et.count):
                 serial = (
-                    f"{et.tamcn}-{abbr.replace('/', '-').replace(' ', '')}"
-                    f"-{j + 1:03d}"
+                    f"{et.tamcn}-{abbr.replace('/', '-').replace(' ', '')}-{j + 1:03d}"
                 )
                 if random.random() > et.breakdown_rate * 3:
                     eq_status = "MC"
