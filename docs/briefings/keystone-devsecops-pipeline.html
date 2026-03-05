@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KEYSTONE DevSecOps Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --navy: #0f172a;
+    --dark: #1e293b;
+    --mid: #334155;
+    --slate: #475569;
+    --light-slate: #94a3b8;
+    --lighter: #cbd5e1;
+    --lightest: #e2e8f0;
+    --white: #f8fafc;
+    --blue: #3b82f6;
+    --blue-dark: #2563eb;
+    --blue-light: #93c5fd;
+    --blue-glow: rgba(59, 130, 246, 0.15);
+    --green: #22c55e;
+    --green-dark: #16a34a;
+    --green-bg: rgba(34, 197, 94, 0.1);
+    --red: #ef4444;
+    --red-bg: rgba(239, 68, 68, 0.08);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245, 158, 11, 0.1);
+    --purple: #a855f7;
+    --purple-bg: rgba(168, 85, 247, 0.1);
+    --cyan: #06b6d4;
+    --cyan-bg: rgba(6, 182, 212, 0.1);
+    --teal: #14b8a6;
+    --pink: #ec4899;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #1a1a3e 50%, var(--dark) 100%);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    padding: 28px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+  }
+  .header-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff 0%, var(--blue-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--light-slate);
+    margin-top: 3px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+  .header-badge {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .badge-blue { background: var(--blue-glow); color: var(--blue-light); border: 1px solid rgba(59,130,246,0.3); }
+  .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+
+  /* ─── Tab Navigation ─── */
+  .tabs {
+    display: flex;
+    gap: 0;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(15, 23, 42, 0.8);
+  }
+  .tab {
+    padding: 14px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--light-slate);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+  .tab.active {
+    color: var(--blue-light);
+    border-bottom-color: var(--blue);
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  .content { max-width: 1600px; margin: 0 auto; padding: 32px 40px 60px; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ═══════════════════════════════════════════════ */
+  /* VIEW 1: Pipeline Flow                          */
+  /* ═══════════════════════════════════════════════ */
+  .pipeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .phase-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .phase-label-col {
+    width: 200px;
+    flex-shrink: 0;
+    padding-top: 16px;
+  }
+
+  .phase-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .phase-name {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .phase-desc {
+    font-size: 11px;
+    color: var(--light-slate);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .phase-jobs {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .job-card {
+    background: var(--dark);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    width: 220px;
+    transition: all 0.25s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .job-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    border-radius: 10px 0 0 10px;
+  }
+  .job-card:hover {
+    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+  .job-card .job-icon {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .job-card .job-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+  .job-card .job-tool {
+    font-size: 11px;
+    color: var(--light-slate);
+    line-height: 1.4;
+  }
+  .job-card .job-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* Color coding per category */
+  .cat-sast::before { background: var(--blue); }
+  .cat-sast .job-badge { background: var(--blue-glow); color: var(--blue-light); }
+  .cat-secrets::before { background: var(--red); }
+  .cat-secrets .job-badge { background: var(--red-bg); color: var(--red); }
+  .cat-malware::before { background: var(--pink); }
+  .cat-malware .job-badge { background: rgba(236,72,153,0.12); color: var(--pink); }
+  .cat-sbom::before { background: var(--teal); }
+  .cat-sbom .job-badge { background: rgba(20,184,166,0.12); color: var(--teal); }
+  .cat-license::before { background: var(--amber); }
+  .cat-license .job-badge { background: var(--amber-bg); color: var(--amber); }
+  .cat-build::before { background: var(--purple); }
+  .cat-build .job-badge { background: var(--purple-bg); color: var(--purple); }
+  .cat-scan::before { background: #f97316; }
+  .cat-scan .job-badge { background: rgba(249,115,22,0.12); color: #f97316; }
+  .cat-test::before { background: var(--green); }
+  .cat-test .job-badge { background: var(--green-bg); color: var(--green); }
+  .cat-dast::before { background: #e11d48; }
+  .cat-dast .job-badge { background: rgba(225,29,72,0.12); color: #e11d48; }
+  .cat-sign::before { background: var(--cyan); }
+  .cat-sign .job-badge { background: var(--cyan-bg); color: var(--cyan); }
+  .cat-gate::before { background: #facc15; }
+  .cat-gate .job-badge { background: rgba(250,204,21,0.12); color: #facc15; }
+
+  /* Connector arrows */
+  .phase-connector {
+    display: flex;
+    align-items: center;
+    padding-left: 290px;
+    height: 20px;
+    position: relative;
+  }
+  .phase-connector::before {
+    content: '';
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(59,130,246,0.4), rgba(59,130,246,0.15));
+  }
+  .phase-connector .arrow-label {
+    font-size: 10px;
+    color: var(--light-slate);
+    margin-left: 10px;
+    font-style: italic;
+  }
+
+  /* ═══════════════════════════════════════════════ */
+  /* VIEW 2: Tool Matrix                            */
+  /* ═══════════════════════════════════════════════ */
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .tool-tile {
+    background: var(--dark);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.25s;
+    cursor: pointer;
+    position: relative;
+  }
+  .tool-tile:hover {
+    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .tool-tile .tile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .tool-tile .tile-icon { font-size: 24px; }
+  .tool-tile .tile-cat {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .tool-tile h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .tool-tile .tile-desc { font-size: 12px; color: var(--light-slate); line-height: 1.5; margin-bottom: 14px; }
+  .tool-tile .tile-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tile-tag {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    color: var(--lighter);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tile-tag.fail { background: var(--red-bg); color: var(--red); border-color: rgba(239,68,68,0.2); }
+  .tile-tag.gate { background: var(--green-bg); color: var(--green); border-color: rgba(34,197,94,0.2); }
+  .tile-tag.fw { background: var(--blue-glow); color: var(--blue-light); border-color: rgba(59,130,246,0.2); }
+
+  /* ═══════════════════════════════════════════════ */
+  /* VIEW 3: Compliance Heatmap                     */
+  /* ═══════════════════════════════════════════════ */
+  .heatmap-section {
+    margin-bottom: 36px;
+  }
+  .heatmap-section h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .heatmap-section h2 .fw-badge {
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .heatmap-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .heatmap-table th {
+    background: var(--dark);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--light-slate);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .heatmap-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+  }
+  .heatmap-table tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+  .heatmap-table tr:hover td { background: rgba(59,130,246,0.05); }
+  .heatmap-table td.control-id { font-weight: 600; color: var(--blue-light); white-space: nowrap; }
+  .heatmap-table td.tools { color: var(--lighter); }
+  .coverage-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+  .coverage-dot.full { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+  .coverage-dot.partial { background: var(--amber); box-shadow: 0 0 6px rgba(245,158,11,0.4); }
+
+  /* ═══════════════════════════════════════════════ */
+  /* VIEW 4: Approval Gates Detail                  */
+  /* ═══════════════════════════════════════════════ */
+  .gates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .gate-card {
+    background: var(--dark);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 22px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .gate-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+  }
+  .gate-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  }
+  .gate-card .gate-type {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .gate-blocking .gate-type { background: var(--red-bg); color: var(--red); }
+  .gate-blocking::after { background: var(--red); }
+  .gate-conditional .gate-type { background: var(--amber-bg); color: var(--amber); }
+  .gate-conditional::after { background: var(--amber); }
+  .gate-advisory .gate-type { background: var(--blue-glow); color: var(--blue-light); }
+  .gate-advisory::after { background: var(--blue); }
+  .gate-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .gate-card .gate-tools { font-size: 12px; color: var(--light-slate); line-height: 1.6; margin-bottom: 12px; }
+  .gate-card .gate-tools strong { color: var(--lighter); font-weight: 600; }
+  .gate-card .gate-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .gate-card .gate-footer span {
+    font-size: 11px;
+    color: var(--light-slate);
+  }
+  .gate-card .gate-bypass {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 8px;
+  }
+  .bypass-no { background: rgba(239,68,68,0.1); color: var(--red); }
+  .bypass-na { background: rgba(255,255,255,0.05); color: var(--light-slate); }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 1200px) {
+    .phase-label-col { width: 160px; }
+    .job-card { width: 190px; }
+  }
+  @media (max-width: 900px) {
+    .header { padding: 20px; }
+    .content { padding: 20px; }
+    .tabs { padding: 0 20px; overflow-x: auto; }
+    .phase-row { flex-direction: column; }
+    .phase-label-col { width: auto; }
+    .phase-connector { padding-left: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <h1>KEYSTONE DevSecOps Pipeline</h1>
+      <div class="header-sub">USMC Logistics Common Operating Picture &mdash; CI/CD Security Architecture</div>
+    </div>
+    <div class="header-badge">
+      <span class="badge badge-blue">SLSA Level 2</span>
+      <span class="badge badge-green">DoD CHG v1.2</span>
+      <span class="badge badge-purple">NIST 800-53</span>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)">Pipeline Flow</div>
+  <div class="tab" onclick="switchTab(1)">Tool Inventory</div>
+  <div class="tab" onclick="switchTab(2)">Compliance Coverage</div>
+  <div class="tab" onclick="switchTab(3)">Approval Gates</div>
+</div>
+
+<div class="content">
+
+<!-- ═══ VIEW 0: PIPELINE FLOW ═══ -->
+<div class="view active" id="view-0">
+  <div class="pipeline-container">
+
+    <!-- PHASE 1 -->
+    <div class="phase-row">
+      <div class="phase-label-col">
+        <div class="phase-num" style="color:var(--blue-light)">Phase 1</div>
+        <div class="phase-name">Code Quality</div>
+        <div class="phase-desc">6 parallel jobs scan source code before anything builds</div>
+      </div>
+      <div class="phase-jobs">
+        <div class="job-card cat-sast">
+          <span class="job-badge">SAST</span>
+          <div class="job-icon">🔍</div>
+          <div class="job-name">lint-backend</div>
+          <div class="job-tool">Ruff + mypy — Python lint, format, type-check</div>
+        </div>
+        <div class="job-card cat-sast">
+          <span class="job-badge">SAST</span>
+          <div class="job-icon">🔍</div>
+          <div class="job-name">lint-frontend</div>
+          <div class="job-tool">tsc -b — Full TypeScript type-check build</div>
+        </div>
+        <div class="job-card cat-sast">
+          <span class="job-badge">SAST</span>
+          <div class="job-icon">🛡️</div>
+          <div class="job-name">sast-scan</div>
+          <div class="job-tool">Semgrep — OWASP Top 10, CWE Top 25, 5 custom rules → SARIF</div>
+        </div>
+        <div class="job-card cat-secrets">
+          <span class="job-badge">SECRETS</span>
+          <div class="job-icon">🔑</div>
+          <div class="job-name">secrets-scan</div>
+          <div class="job-tool">TruffleHog — Full repo history, verified secrets only</div>
+        </div>
+        <div class="job-card cat-malware">
+          <span class="job-badge">MALWARE</span>
+          <div class="job-icon">🦠</div>
+          <div class="job-name">clamav-scan</div>
+          <div class="job-tool">ClamAV — Virus/malware, zero tolerance policy</div>
+        </div>
+        <div class="job-card cat-license">
+          <span class="job-badge">LICENSE</span>
+          <div class="job-icon">📜</div>
+          <div class="job-name">license-check</div>
+          <div class="job-tool">Syft SBOM + Policy — Blocks GPL/AGPL/SSPL/EUPL</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-connector"><span class="arrow-label">▼ all 6 must pass</span></div>
+
+    <!-- PHASE 2 -->
+    <div class="phase-row">
+      <div class="phase-label-col">
+        <div class="phase-num" style="color:var(--purple)">Phase 2</div>
+        <div class="phase-name">Build & Scan</div>
+        <div class="phase-desc">Container images built, then scanned with dual vulnerability tools</div>
+      </div>
+      <div class="phase-jobs">
+        <div class="job-card cat-build">
+          <span class="job-badge">BUILD</span>
+          <div class="job-icon">📦</div>
+          <div class="job-name">build-backend</div>
+          <div class="job-tool">Docker Buildx — Multi-stage Python build → GHCR</div>
+        </div>
+        <div class="job-card cat-build">
+          <span class="job-badge">BUILD</span>
+          <div class="job-icon">📦</div>
+          <div class="job-name">build-frontend</div>
+          <div class="job-tool">Docker Buildx — Multi-stage Vite/nginx → GHCR</div>
+        </div>
+        <div class="job-card cat-scan">
+          <span class="job-badge">SCA</span>
+          <div class="job-icon">🔬</div>
+          <div class="job-name">scan-backend</div>
+          <div class="job-tool">Syft SBOM + Grype CVE + Trivy + Container Hardening (DoD CHG)</div>
+        </div>
+        <div class="job-card cat-scan">
+          <span class="job-badge">SCA</span>
+          <div class="job-icon">🔬</div>
+          <div class="job-name">scan-frontend</div>
+          <div class="job-tool">Syft SBOM + Grype CVE + Trivy + Container Hardening (DoD CHG)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-connector"><span class="arrow-label">▼ builds + scans pass</span></div>
+
+    <!-- PHASE 3 -->
+    <div class="phase-row">
+      <div class="phase-label-col">
+        <div class="phase-num" style="color:var(--green)">Phase 3</div>
+        <div class="phase-name">Testing</div>
+        <div class="phase-desc">Unit tests with coverage + dynamic security against live stack</div>
+      </div>
+      <div class="phase-jobs">
+        <div class="job-card cat-test">
+          <span class="job-badge">TEST</span>
+          <div class="job-icon">🧪</div>
+          <div class="job-name">test-backend</div>
+          <div class="job-tool">pytest — PostgreSQL 15 + PostGIS + Redis, 80% coverage min</div>
+        </div>
+        <div class="job-card cat-test">
+          <span class="job-badge">TEST</span>
+          <div class="job-icon">🧪</div>
+          <div class="job-name">test-frontend</div>
+          <div class="job-tool">Vitest — React/TS unit tests, 80% coverage min</div>
+        </div>
+        <div class="job-card cat-dast">
+          <span class="job-badge">DAST</span>
+          <div class="job-icon">⚡</div>
+          <div class="job-name">dast-scan</div>
+          <div class="job-tool">OWASP ZAP — API scan (OpenAPI) + full-site crawl on ephemeral CI stack</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-connector"><span class="arrow-label">▼ tests + DAST pass</span></div>
+
+    <!-- PHASE 4 -->
+    <div class="phase-row">
+      <div class="phase-label-col">
+        <div class="phase-num" style="color:var(--cyan)">Phase 4</div>
+        <div class="phase-name">Sign & Attest</div>
+        <div class="phase-desc">Keyless OIDC signing for main branch and release tags only</div>
+      </div>
+      <div class="phase-jobs">
+        <div class="job-card cat-sign">
+          <span class="job-badge">SIGNING</span>
+          <div class="job-icon">✍️</div>
+          <div class="job-name">sign-and-attest</div>
+          <div class="job-tool">Cosign (Sigstore) — Keyless OIDC signing + SBOM attestation</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-connector"><span class="arrow-label">▼ all phases aggregate</span></div>
+
+    <!-- PHASE 5 -->
+    <div class="phase-row">
+      <div class="phase-label-col">
+        <div class="phase-num" style="color:#facc15">Phase 5</div>
+        <div class="phase-name">Compliance Gate</div>
+        <div class="phase-desc">Final 9-check aggregation — any failure blocks merge</div>
+      </div>
+      <div class="phase-jobs">
+        <div class="job-card cat-gate" style="width: 460px;">
+          <span class="job-badge">GATE</span>
+          <div class="job-icon">🏁</div>
+          <div class="job-name">compliance-gate</div>
+          <div class="job-tool">Aggregates: SAST ✓ Secrets ✓ Malware ✓ License ✓ Backend Scan ✓ Frontend Scan ✓ Backend Test ✓ Frontend Test ✓ DAST ✓ → Markdown evidence report (NIST 800-53 mapping)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUXILIARY PIPELINES -->
+    <div style="margin-top: 20px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06);">
+      <div style="font-size:11px; font-weight:700; color:var(--light-slate); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px;">Auxiliary Pipelines</div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap;">
+        <div class="job-card cat-scan" style="width:280px;">
+          <span class="job-badge">PR GATE</span>
+          <div class="job-icon">🔄</div>
+          <div class="job-name">dependency-review.yml</div>
+          <div class="job-tool">GitHub Dependency Review — Blocks critical deps + banned licenses on PRs to main</div>
+        </div>
+        <div class="job-card cat-scan" style="width:280px;">
+          <span class="job-badge">NIGHTLY</span>
+          <div class="job-icon">🌙</div>
+          <div class="job-name">nightly-scan.yml</div>
+          <div class="job-tool">Syft + Grype + Trivy — Daily 6AM UTC rescan, auto-creates GitHub Issues</div>
+        </div>
+        <div class="job-card cat-build" style="width:280px;">
+          <span class="job-badge">DEPLOY</span>
+          <div class="job-icon">🚀</div>
+          <div class="job-name">deploy-pages.yml</div>
+          <div class="job-tool">GitHub Pages — Frontend demo mode deployment on main push</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VIEW 1: TOOL INVENTORY ═══ -->
+<div class="view" id="view-1">
+  <div class="matrix-grid">
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🔍</span>
+        <span class="tile-cat" style="background:var(--blue-glow);color:var(--blue-light)">SAST</span>
+      </div>
+      <h3>Semgrep</h3>
+      <div class="tile-desc">Pattern-based static analysis with OWASP Top 10, CWE Top 25, and 5 custom Keystone rules targeting SQL injection, hardcoded secrets, sensitive logging, pickle deserialization, and SSRF.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: ERROR severity</span>
+        <span class="tile-tag gate">Gate: SAST check</span>
+        <span class="tile-tag fw">NIST SA-11</span>
+        <span class="tile-tag fw">OWASP V1.14</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🔑</span>
+        <span class="tile-cat" style="background:var(--red-bg);color:var(--red)">SECRETS</span>
+      </div>
+      <h3>TruffleHog</h3>
+      <div class="tile-desc">Scans entire repo history for leaked credentials, API keys, and tokens. Only verified secrets trigger failure to reduce false positives.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Any verified secret</span>
+        <span class="tile-tag gate">Gate: Secrets check</span>
+        <span class="tile-tag fw">CWE-798</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🦠</span>
+        <span class="tile-cat" style="background:rgba(236,72,153,0.12);color:var(--pink)">MALWARE</span>
+      </div>
+      <h3>ClamAV</h3>
+      <div class="tile-desc">Virus and malware scanning across the entire repository. Zero tolerance — any infection immediately fails the pipeline.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Any infection</span>
+        <span class="tile-tag gate">Gate: Malware check</span>
+        <span class="tile-tag fw">NIST SI-7</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">📜</span>
+        <span class="tile-cat" style="background:var(--amber-bg);color:var(--amber)">LICENSE</span>
+      </div>
+      <h3>Syft + License Policy</h3>
+      <div class="tile-desc">Generates SBOM (SPDX 2.3 + CycloneDX), then validates against allowed-licenses.yml. Blocks 8 copyleft licenses (GPL, AGPL, SSPL, EUPL). Warns on 7 weak copyleft.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Blocked license</span>
+        <span class="tile-tag gate">Gate: License check</span>
+        <span class="tile-tag fw">NIST CM-14</span>
+        <span class="tile-tag fw">SLSA L2</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🔬</span>
+        <span class="tile-cat" style="background:rgba(249,115,22,0.12);color:#f97316">SCA</span>
+      </div>
+      <h3>Grype</h3>
+      <div class="tile-desc">CVE vulnerability scanning against SBOM for container images. Runs in CI (Phase 2) and nightly rescans. Unfixed CVEs are not ignored.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Critical CVEs</span>
+        <span class="tile-tag gate">Gate: Image scan</span>
+        <span class="tile-tag fw">NIST RA-5</span>
+        <span class="tile-tag fw">CIS 4.1</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🔬</span>
+        <span class="tile-cat" style="background:rgba(249,115,22,0.12);color:#f97316">CONTAINER</span>
+      </div>
+      <h3>Trivy</h3>
+      <div class="tile-desc">Container image vulnerability scanner. Defense-in-depth alongside Grype. SARIF output uploaded to GitHub CodeQL Security tab.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: CRITICAL + HIGH</span>
+        <span class="tile-tag gate">Gate: Image scan</span>
+        <span class="tile-tag fw">NIST RA-5</span>
+        <span class="tile-tag fw">CIS 4.1</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">⚡</span>
+        <span class="tile-cat" style="background:rgba(225,29,72,0.12);color:#e11d48">DAST</span>
+      </div>
+      <h3>OWASP ZAP</h3>
+      <div class="tile-desc">Dynamic application security testing against ephemeral CI stack. API scan via OpenAPI spec + full-site crawl of the frontend.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: High/Critical</span>
+        <span class="tile-tag gate">Gate: DAST check</span>
+        <span class="tile-tag fw">NIST RA-5</span>
+        <span class="tile-tag fw">OWASP V2/V5</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">✍️</span>
+        <span class="tile-cat" style="background:var(--cyan-bg);color:var(--cyan)">SIGNING</span>
+      </div>
+      <h3>Cosign (Sigstore)</h3>
+      <div class="tile-desc">Keyless OIDC image signing and SBOM attestation. Runs on main branch and release tags only. Required for production deployment.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Signature failure</span>
+        <span class="tile-tag gate">Gate: Production release</span>
+        <span class="tile-tag fw">NIST SI-7</span>
+        <span class="tile-tag fw">SLSA L2</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🧪</span>
+        <span class="tile-cat" style="background:var(--green-bg);color:var(--green)">TEST</span>
+      </div>
+      <h3>pytest + Vitest</h3>
+      <div class="tile-desc">Backend: pytest with PostgreSQL 15 + PostGIS + Redis service containers. Frontend: Vitest for React/TS. Both require 80% minimum coverage.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: &lt;80% coverage</span>
+        <span class="tile-tag gate">Gate: Test checks</span>
+        <span class="tile-tag fw">NIST SA-11</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">📦</span>
+        <span class="tile-cat" style="background:var(--purple-bg);color:var(--purple)">BUILD</span>
+      </div>
+      <h3>Docker Buildx</h3>
+      <div class="tile-desc">Multi-stage container builds with OCI labels, build provenance, and GHA caching. Pushes to GitHub Container Registry (GHCR).</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Build error</span>
+        <span class="tile-tag gate">Gate: Implicit</span>
+        <span class="tile-tag fw">SLSA L2</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🏗️</span>
+        <span class="tile-cat" style="background:rgba(249,115,22,0.12);color:#f97316">HARDENING</span>
+      </div>
+      <h3>Container Hardening</h3>
+      <div class="tile-desc">Validates DoD CHG v1.2: non-root (UID≥1000), read-only rootfs, no-new-privileges, drop ALL caps, healthcheck, no :latest, signed + SBOM.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Policy violation</span>
+        <span class="tile-tag gate">Gate: Image scan</span>
+        <span class="tile-tag fw">DoD CHG v1.2</span>
+        <span class="tile-tag fw">CIS 4.6</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🔄</span>
+        <span class="tile-cat" style="background:var(--blue-glow);color:var(--blue-light)">PR GATE</span>
+      </div>
+      <h3>Dependency Review</h3>
+      <div class="tile-desc">GitHub-native PR gate. Blocks merges introducing critical-severity dependencies or banned licenses. Posts summary comment on every PR.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Critical / banned</span>
+        <span class="tile-tag gate">Gate: PR merge</span>
+        <span class="tile-tag fw">NIST CM-14</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🌙</span>
+        <span class="tile-cat" style="background:rgba(255,255,255,0.05);color:var(--lighter)">MONITORING</span>
+      </div>
+      <h3>Nightly Rescan</h3>
+      <div class="tile-desc">Daily 6AM UTC rescan of latest main images using Syft + Grype + Trivy. Auto-creates deduplicated GitHub Issues on new vulnerabilities. 90-day artifact retention.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Critical (default)</span>
+        <span class="tile-tag gate">Gate: Advisory</span>
+        <span class="tile-tag fw">NIST RA-5</span>
+      </div>
+    </div>
+
+    <div class="tool-tile">
+      <div class="tile-header">
+        <span class="tile-icon">🔍</span>
+        <span class="tile-cat" style="background:var(--blue-glow);color:var(--blue-light)">LINT</span>
+      </div>
+      <h3>Ruff + mypy</h3>
+      <div class="tile-desc">Python backend linting (Ruff) and type checking (mypy). Enforces formatting standards and catches type errors before build.</div>
+      <div class="tile-meta">
+        <span class="tile-tag fail">Fails: Any lint/type error</span>
+        <span class="tile-tag gate">Gate: Code Quality</span>
+        <span class="tile-tag fw">OWASP V1.14</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ VIEW 2: COMPLIANCE COVERAGE ═══ -->
+<div class="view" id="view-2">
+
+  <div class="heatmap-section">
+    <h2>NIST SP 800-53 <span class="fw-badge" style="background:var(--purple-bg);color:var(--purple)">Federal</span></h2>
+    <table class="heatmap-table">
+      <thead><tr><th>Control ID</th><th>Control Name</th><th>Tools Providing Evidence</th><th>Phase</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td class="control-id">SA-11</td><td>Developer Testing & Evaluation</td><td class="tools">pytest, Vitest, Semgrep, OWASP ZAP</td><td>Phase 1 + 3</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">RA-5</td><td>Vulnerability Monitoring</td><td class="tools">Grype, Trivy, OWASP ZAP, Nightly Rescan</td><td>Phase 2 + 3 + Nightly</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">SI-7</td><td>Software & Information Integrity</td><td class="tools">Cosign, ClamAV, Container Hardening</td><td>Phase 1 + 2 + 4</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">CM-14</td><td>Signed Components</td><td class="tools">Cosign, Syft SBOM, License Policy, Dependency Review</td><td>Phase 1 + 2 + 4 + PR</td><td><span class="coverage-dot full"></span>Full</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="heatmap-section">
+    <h2>OWASP ASVS <span class="fw-badge" style="background:var(--blue-glow);color:var(--blue-light)">AppSec</span></h2>
+    <table class="heatmap-table">
+      <thead><tr><th>Section</th><th>Area</th><th>Tools</th><th>Phase</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td class="control-id">V1.14</td><td>Configuration Architecture</td><td class="tools">Semgrep (custom SAST rules)</td><td>Phase 1</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">V2</td><td>Authentication</td><td class="tools">OWASP ZAP (DAST)</td><td>Phase 3</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">V5</td><td>Validation, Sanitization, Encoding</td><td class="tools">Semgrep + OWASP ZAP</td><td>Phase 1 + 3</td><td><span class="coverage-dot full"></span>Full</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="heatmap-section">
+    <h2>CIS Benchmark <span class="fw-badge" style="background:var(--green-bg);color:var(--green)">Container</span></h2>
+    <table class="heatmap-table">
+      <thead><tr><th>Control</th><th>Requirement</th><th>Tools</th><th>Phase</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td class="control-id">4.1</td><td>Image Vulnerability Scanning</td><td class="tools">Grype + Trivy (dual scan)</td><td>Phase 2 + Nightly</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">4.6</td><td>HEALTHCHECK Instructions</td><td class="tools">Container Hardening Policy</td><td>Phase 2</td><td><span class="coverage-dot full"></span>Full</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="heatmap-section">
+    <h2>DoD Container Hardening Guide v1.2 <span class="fw-badge" style="background:var(--amber-bg);color:var(--amber)">DoD</span></h2>
+    <table class="heatmap-table">
+      <thead><tr><th>Requirement</th><th>Detail</th><th>Enforcement</th><th>Phase</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td class="control-id">Non-root</td><td>All containers UID ≥ 1000</td><td class="tools">Container Hardening check</td><td>Phase 2</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">Read-only FS</td><td>Root filesystem immutable + tmpfs</td><td class="tools">Container Hardening + docker-compose</td><td>Phase 2 + Runtime</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">Drop ALL Caps</td><td>Linux capabilities dropped, specific adds only</td><td class="tools">Container Hardening + docker-compose</td><td>Phase 2 + Runtime</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">No New Privs</td><td>no-new-privileges security option</td><td class="tools">Container Hardening + docker-compose</td><td>Phase 2 + Runtime</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">Signed Images</td><td>Cosign keyless OIDC</td><td class="tools">Cosign</td><td>Phase 4</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">SBOM</td><td>SPDX 2.3 attestation</td><td class="tools">Syft + Cosign attestation</td><td>Phase 2 + 4</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">No :latest Tag</td><td>Specific version tags only</td><td class="tools">Container Hardening policy</td><td>Phase 2</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">HEALTHCHECK</td><td>Required in Dockerfile</td><td class="tools">Container Hardening policy</td><td>Phase 2</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">No Pkg Manager</td><td>APK/apt/yum removed (preferred)</td><td class="tools">Container Hardening check</td><td>Phase 2</td><td><span class="coverage-dot partial"></span>Warn-only</td></tr>
+        <tr><td class="control-id">No Shell</td><td>Distroless preferred</td><td class="tools">Container Hardening check</td><td>Phase 2</td><td><span class="coverage-dot partial"></span>Warn-only</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="heatmap-section">
+    <h2>SLSA <span class="fw-badge" style="background:var(--cyan-bg);color:var(--cyan)">Supply Chain</span></h2>
+    <table class="heatmap-table">
+      <thead><tr><th>Level</th><th>Requirement</th><th>Tools</th><th>Phase</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td class="control-id">Level 2</td><td>Build Provenance</td><td class="tools">GitHub Actions + Cosign attestation</td><td>Phase 2 + 4</td><td><span class="coverage-dot full"></span>Full</td></tr>
+        <tr><td class="control-id">Level 2</td><td>Software Bill of Materials</td><td class="tools">Syft (SPDX 2.3 + CycloneDX)</td><td>Phase 1 + 2</td><td><span class="coverage-dot full"></span>Full</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ VIEW 3: APPROVAL GATES ═══ -->
+<div class="view" id="view-3">
+  <div style="margin-bottom:20px; display:flex; gap:12px; align-items:center;">
+    <span style="font-size:12px; color:var(--light-slate);">Legend:</span>
+    <span style="font-size:11px; padding:4px 10px; border-radius:8px; background:var(--red-bg); color:var(--red); font-weight:600;">Blocking</span>
+    <span style="font-size:11px; padding:4px 10px; border-radius:8px; background:var(--amber-bg); color:var(--amber); font-weight:600;">Conditional</span>
+    <span style="font-size:11px; padding:4px 10px; border-radius:8px; background:var(--blue-glow); color:var(--blue-light); font-weight:600;">Advisory</span>
+  </div>
+
+  <div class="gates-grid">
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>SAST Check</h3>
+      <div class="gate-tools"><strong>Semgrep</strong> — OWASP Top 10, CWE Top 25, 5 custom Keystone rules. Fails on ERROR severity. SARIF uploaded to CodeQL.</div>
+      <div class="gate-footer"><span>Phase 1 • Every push + PR</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>Secrets Check</h3>
+      <div class="gate-tools"><strong>TruffleHog</strong> — Full repo history scan. Only verified secrets trigger failure (reduces false positives).</div>
+      <div class="gate-footer"><span>Phase 1 • Every push + PR</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>Malware Check</h3>
+      <div class="gate-tools"><strong>ClamAV</strong> — Zero tolerance. Any detected infection fails the entire pipeline immediately.</div>
+      <div class="gate-footer"><span>Phase 1 • Every push + PR</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>License Check</h3>
+      <div class="gate-tools"><strong>Syft SBOM + License Policy</strong> — 8 blocked licenses (GPL/AGPL/SSPL/EUPL). 7 weak copyleft warnings. Classified platform requires strict IP control.</div>
+      <div class="gate-footer"><span>Phase 1 • Every push + PR</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>Backend Image Scan</h3>
+      <div class="gate-tools"><strong>Grype</strong> (critical CVEs) + <strong>Trivy</strong> (CRITICAL+HIGH) + <strong>Container Hardening</strong> (DoD CHG v1.2). Dual scanning for defense-in-depth.</div>
+      <div class="gate-footer"><span>Phase 2 • After build</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>Frontend Image Scan</h3>
+      <div class="gate-tools"><strong>Grype</strong> + <strong>Trivy</strong> + <strong>Container Hardening</strong> — Same dual-scan + hardening validation as backend. SARIF → CodeQL.</div>
+      <div class="gate-footer"><span>Phase 2 • After build</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>Backend Tests</h3>
+      <div class="gate-tools"><strong>pytest</strong> — Runs against PostgreSQL 15 + PostGIS + Redis service containers. Minimum 80% code coverage required.</div>
+      <div class="gate-footer"><span>Phase 3 • After build</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>Frontend Tests</h3>
+      <div class="gate-tools"><strong>Vitest</strong> — React/TypeScript unit tests. Minimum 80% code coverage required.</div>
+      <div class="gate-footer"><span>Phase 3 • After build</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>DAST Check</h3>
+      <div class="gate-tools"><strong>OWASP ZAP</strong> — Spins up ephemeral stack (docker-compose.ci.yml), runs API scan via OpenAPI + full-site crawl, then tears down.</div>
+      <div class="gate-footer"><span>Phase 3 • After full stack up</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — PR</span>
+      <h3>Dependency Review</h3>
+      <div class="gate-tools"><strong>GitHub Dependency Review Action</strong> — Blocks PRs with critical-severity dependencies or banned licenses. Posts summary comment on every PR to main.</div>
+      <div class="gate-footer"><span>PR trigger only</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-blocking">
+      <span class="gate-type">Blocking — CI</span>
+      <h3>Code Quality</h3>
+      <div class="gate-tools"><strong>Ruff + mypy</strong> (backend Python) + <strong>tsc -b</strong> (frontend TypeScript). Enforces formatting, linting, and type safety.</div>
+      <div class="gate-footer"><span>Phase 1 • Every push + PR</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-conditional">
+      <span class="gate-type">Conditional — main/tags</span>
+      <h3>Image Signing</h3>
+      <div class="gate-tools"><strong>Cosign (Sigstore OIDC)</strong> — Keyless signing + SBOM attestation. Only runs on main branch and release tags. Required for production deployment.</div>
+      <div class="gate-footer"><span>Phase 4 • main + v* tags</span><span class="gate-bypass bypass-no">No Bypass</span></div>
+    </div>
+
+    <div class="gate-card gate-advisory">
+      <span class="gate-type">Advisory — Scheduled</span>
+      <h3>Nightly Vulnerability Gate</h3>
+      <div class="gate-tools"><strong>Syft + Grype + Trivy</strong> — Daily 6AM UTC rescan of latest main images. Auto-creates deduplicated GitHub Issues. Configurable severity threshold.</div>
+      <div class="gate-footer"><span>Nightly • 6AM UTC</span><span class="gate-bypass bypass-na">Advisory Only</span></div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<script>
+function switchTab(idx) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.view').forEach((v, i) => v.classList.toggle('active', i === idx));
+}
+</script>
+
+</body>
+</html>
