@@ -56,7 +56,17 @@ from app.models.report import (
     ReportSchedule,
 )
 from app.models.raw_data import RawData, SourceType, ParseStatus
-from app.models.alert import Alert, AlertType, AlertSeverity
+from app.models.alert import (
+    Alert,
+    AlertType,
+    AlertSeverity,
+    AlertEntityType,
+    RuleOperator,
+    NotificationChannel,
+    AlertRule,
+    Notification,
+    NotificationPreference,
+)
 from app.models.canonical_schema import CanonicalField
 from app.models.data_template import DataTemplate
 from app.models.tak_connection import TAKConnection, ConnectionStatus, TAKProtocol
@@ -180,6 +190,12 @@ __all__ = [
     "Alert",
     "AlertType",
     "AlertSeverity",
+    "AlertEntityType",
+    "RuleOperator",
+    "NotificationChannel",
+    "AlertRule",
+    "Notification",
+    "NotificationPreference",
     "CanonicalField",
     "DataTemplate",
     "TAKConnection",
