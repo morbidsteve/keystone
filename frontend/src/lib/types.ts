@@ -1563,3 +1563,94 @@ export interface AlertSummary {
   by_severity: { CRITICAL: number; WARNING: number; INFO: number };
   by_type: Record<string, number>;
 }
+
+// --- Fuel / POL Management ---
+
+export type FuelFacilityType = 'FARP' | 'FSP' | 'BSA_FUEL_POINT' | 'MOBILE_REFUELER' | 'BLADDER_FARM' | 'TANK_FARM' | 'DISTRIBUTED_CACHE';
+export type FuelType = 'JP8' | 'JP5' | 'DF2' | 'MOGAS' | 'OIL_ENGINE' | 'HYDRAULIC_FLUID' | 'COOLANT' | 'MIXED';
+export type FuelStorageStatus = 'OPERATIONAL' | 'DEGRADED' | 'NON_OPERATIONAL' | 'DRY';
+export type FuelTransactionType = 'RECEIPT' | 'ISSUE' | 'TRANSFER' | 'LOSS' | 'SAMPLE';
+export type OperationalTempo = 'LOW' | 'MEDIUM' | 'HIGH' | 'SURGE';
+export type ConsumptionSourceType = 'MANUAL' | 'CALCULATED' | 'TM_REFERENCE';
+
+export interface FuelStoragePoint {
+  id: number;
+  unit_id: number;
+  name: string;
+  facility_type: FuelFacilityType;
+  fuel_type: FuelType;
+  capacity_gallons: number;
+  current_gallons: number;
+  fill_percentage: number;
+  status: FuelStorageStatus;
+  latitude: number | null;
+  longitude: number | null;
+  mgrs: string | null;
+  location_description: string | null;
+  last_resupply_date: string | null;
+  next_resupply_eta: string | null;
+  equipment_id: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FuelTransaction {
+  id: number;
+  storage_point_id: number;
+  storage_point_name?: string;
+  transaction_type: FuelTransactionType;
+  fuel_type: FuelType;
+  quantity_gallons: number;
+  receiving_unit_id: number | null;
+  vehicle_bumper_number: string | null;
+  vehicle_type: string | null;
+  document_number: string | null;
+  meter_reading_before: number | null;
+  meter_reading_after: number | null;
+  notes: string | null;
+  performed_by_name?: string;
+  transaction_date: string;
+  created_at: string;
+}
+
+export interface FuelConsumptionRate {
+  id: number;
+  equipment_catalog_item_id: number;
+  equipment_name?: string;
+  fuel_type: FuelType;
+  gallons_per_hour_idle: number;
+  gallons_per_hour_tactical: number;
+  gallons_per_mile: number | null;
+  gallons_per_flight_hour: number | null;
+  source: ConsumptionSourceType;
+  notes: string | null;
+  updated_at: string;
+}
+
+export interface FuelForecast {
+  unit_id: number;
+  forecast_date: string;
+  operational_tempo: OperationalTempo;
+  projected_daily_consumption_gallons: number;
+  current_on_hand_gallons: number;
+  days_of_supply: number;
+  resupply_required_by_date: string;
+  alert: boolean;
+}
+
+export interface FuelDashboard {
+  unit_id: number;
+  storage_points: FuelStoragePoint[];
+  total_capacity_gallons: number;
+  total_on_hand_gallons: number;
+  fill_percentage: number;
+  days_of_supply: number;
+  limiting_fuel_type: string | null;
+  alert: boolean;
+  forecast: {
+    operational_tempo: OperationalTempo;
+    projected_daily_consumption: number;
+    days_of_supply: number;
+    resupply_required_by: string;
+  };
+}
