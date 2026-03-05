@@ -1,0 +1,215 @@
+import { useMemo } from 'react';
+import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import type { PMScheduleItem, PMType } from '@/lib/types';
+import { formatDate } from '@/lib/utils';
+
+interface PMScheduleTableProps {
+  schedule: PMScheduleItem[];
+}
+
+const PM_TYPE_COLORS: Record<PMType, string> = {
+  DAILY: '#06b6d4',
+  WEEKLY: '#3b82f6',
+  MONTHLY: '#8b5cf6',
+  QUARTERLY: '#f59e0b',
+  ANNUAL: '#ef4444',
+  MILEAGE: '#10b981',
+};
+
+function getStatusInfo(item: PMScheduleItem): { label: string; color: string; icon: 'overdue' | 'upcoming' | 'ok' } {
+  if (item.isOverdue) {
+    return { label: 'OVERDUE', color: 'var(--color-danger)', icon: 'overdue' };
+  }
+  // Check if due within 7 days
+  if (item.nextDue) {
+    const nextDate = new Date(item.nextDue);
+    const now = new Date();
+    const diffDays = Math.ceil((nextDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays <= 7) {
+      return { label: 'UPCOMING', color: 'var(--color-warning)', icon: 'upcoming' };
+    }
+  }
+  return { label: 'OK', color: 'var(--color-success)', icon: 'ok' };
+}
+
+export default function PMScheduleTable({ schedule }: PMScheduleTableProps) {
+  const sortedSchedule = useMemo(() => {
+    return [...schedule].sort((a, b) => {
+      // Overdue first, then by next due ascending
+      if (a.isOverdue && !b.isOverdue) return -1;
+      if (!a.isOverdue && b.isOverdue) return 1;
+      if (a.nextDue && b.nextDue) return a.nextDue.localeCompare(b.nextDue);
+      if (a.nextDue) return -1;
+      if (b.nextDue) return 1;
+      return 0;
+    });
+  }, [schedule]);
+
+  if (sortedSchedule.length === 0) {
+    return (
+      <div
+        style={{
+          padding: 40,
+          textAlign: 'center',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 11,
+          color: 'var(--color-text-muted)',
+        }}
+      >
+        No PM schedule items found
+      </div>
+    );
+  }
+
+  const columns = ['EQUIPMENT', 'TYPE', 'INTERVAL', 'LAST PERFORMED', 'NEXT DUE', 'STATUS'];
+
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <table
+        style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 11,
+        }}
+      >
+        <thead>
+          <tr>
+            {columns.map((col) => (
+              <th
+                key={col}
+                style={{
+                  padding: '10px 12px',
+                  textAlign: 'left',
+                  fontSize: 9,
+                  fontWeight: 600,
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-text-muted)',
+                  borderBottom: '1px solid var(--color-border)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {col}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedSchedule.map((item) => {
+            const status = getStatusInfo(item);
+            return (
+              <tr
+                key={item.id}
+                style={{
+                  borderLeft: item.isOverdue
+                    ? '3px solid var(--color-danger)'
+                    : '3px solid transparent',
+                  transition: 'background-color var(--transition)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                {/* Equipment */}
+                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--color-border)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <span style={{ fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                      {item.bumperNumber || '---'}
+                    </span>
+                    <span style={{ fontSize: 9, color: 'var(--color-text-muted)' }}>
+                      {item.nomenclature || '---'}
+                    </span>
+                  </div>
+                </td>
+
+                {/* Type badge */}
+                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--color-border)' }}>
+                  <span
+                    style={{
+                      fontSize: 8,
+                      fontWeight: 600,
+                      letterSpacing: '1px',
+                      padding: '2px 8px',
+                      borderRadius: 'var(--radius)',
+                      backgroundColor: `${PM_TYPE_COLORS[item.pmType]}18`,
+                      color: PM_TYPE_COLORS[item.pmType],
+                      border: `1px solid ${PM_TYPE_COLORS[item.pmType]}40`,
+                    }}
+                  >
+                    {item.pmType}
+                  </span>
+                </td>
+
+                {/* Interval */}
+                <td
+                  style={{
+                    padding: '10px 12px',
+                    borderBottom: '1px solid var(--color-border)',
+                    color: 'var(--color-text)',
+                  }}
+                >
+                  {item.pmType === 'MILEAGE'
+                    ? `${item.intervalValue.toLocaleString()} mi`
+                    : `${item.intervalValue}d`}
+                </td>
+
+                {/* Last Performed */}
+                <td
+                  style={{
+                    padding: '10px 12px',
+                    borderBottom: '1px solid var(--color-border)',
+                    color: 'var(--color-text-muted)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {item.lastPerformed ? formatDate(item.lastPerformed, 'dd MMM yyyy') : '---'}
+                </td>
+
+                {/* Next Due */}
+                <td
+                  style={{
+                    padding: '10px 12px',
+                    borderBottom: '1px solid var(--color-border)',
+                    color: item.isOverdue ? 'var(--color-danger)' : 'var(--color-text)',
+                    fontWeight: item.isOverdue ? 600 : 400,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {item.nextDue ? formatDate(item.nextDue, 'dd MMM yyyy') : '---'}
+                  {item.isOverdue && item.daysOverdue != null && item.daysOverdue > 0 && (
+                    <span style={{ fontSize: 9, marginLeft: 6, color: 'var(--color-danger)' }}>
+                      ({item.daysOverdue}d overdue)
+                    </span>
+                  )}
+                </td>
+
+                {/* Status */}
+                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--color-border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {status.icon === 'overdue' && <AlertTriangle size={12} style={{ color: status.color }} />}
+                    {status.icon === 'upcoming' && <Clock size={12} style={{ color: status.color }} />}
+                    {status.icon === 'ok' && <CheckCircle size={12} style={{ color: status.color }} />}
+                    <span
+                      style={{
+                        fontSize: 9,
+                        fontWeight: 600,
+                        letterSpacing: '1px',
+                        color: status.color,
+                      }}
+                    >
+                      {status.label}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}

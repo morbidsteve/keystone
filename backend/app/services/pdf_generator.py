@@ -7,7 +7,7 @@ with headers, tables, metadata, classification banners, and page numbers.
 import io
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from fpdf import FPDF

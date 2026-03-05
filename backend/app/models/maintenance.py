@@ -55,6 +55,20 @@ class LaborType(str, enum.Enum):
     TEST = "TEST"
 
 
+class EchelonOfMaintenance(str, enum.Enum):
+    FIRST = "FIRST"
+    SECOND = "SECOND"
+    THIRD = "THIRD"
+    FOURTH = "FOURTH"
+    FIFTH = "FIFTH"
+
+
+class MaintenanceLevel(str, enum.Enum):
+    ORGANIZATIONAL = "ORGANIZATIONAL"
+    INTERMEDIATE = "INTERMEDIATE"
+    DEPOT = "DEPOT"
+
+
 class MaintenanceWorkOrder(Base):
     __tablename__ = "maintenance_work_orders"
 
@@ -79,6 +93,16 @@ class MaintenanceWorkOrder(Base):
     completed_at = Column(DateTime(timezone=True), nullable=True)
     assigned_to = Column(String(100), nullable=True)
 
+    # Extended maintenance tracking columns
+    echelon_of_maintenance = Column(SQLEnum(EchelonOfMaintenance), nullable=True)
+    maintenance_level = Column(SQLEnum(MaintenanceLevel), nullable=True)
+    deadline_date = Column(DateTime(timezone=True), nullable=True)
+    eri_date = Column(DateTime(timezone=True), nullable=True)
+    erb_number = Column(String(50), nullable=True)
+    downtime_hours = Column(Float, nullable=True)
+    nmcs_since = Column(DateTime(timezone=True), nullable=True)
+    nmcm_since = Column(DateTime(timezone=True), nullable=True)
+
     individual_equipment = relationship(
         "Equipment",
         back_populates="work_orders",
@@ -93,6 +117,15 @@ class MaintenanceWorkOrder(Base):
         "MaintenanceLabor",
         back_populates="work_order",
         cascade="all, delete-orphan",
+    )
+    deadline_records = relationship(
+        "MaintenanceDeadline",
+        back_populates="work_order",
+    )
+    ero = relationship(
+        "EquipmentRepairOrder",
+        back_populates="work_order",
+        uselist=False,
     )
 
 

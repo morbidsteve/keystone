@@ -21,6 +21,16 @@ from app.models.maintenance import (
     PartStatus,
     MaintenanceLabor,
     LaborType,
+    EchelonOfMaintenance,
+    MaintenanceLevel,
+)
+from app.models.maintenance_schedule import (
+    PreventiveMaintenanceSchedule,
+    MaintenanceDeadline,
+    EquipmentRepairOrder,
+    PMType,
+    DeadlineReason,
+    EROStatus,
 )
 from app.models.report import Report, ReportType, ReportStatus, ReportExportDestination, AuthType
 from app.models.raw_data import RawData, SourceType, ParseStatus
@@ -128,4 +138,12 @@ __all__ = [
     "UnitReadinessSnapshot",
     "ReadinessThreshold",
     "UnitStrength",
+    "EchelonOfMaintenance",
+    "MaintenanceLevel",
+    "PreventiveMaintenanceSchedule",
+    "MaintenanceDeadline",
+    "EquipmentRepairOrder",
+    "PMType",
+    "DeadlineReason",
+    "EROStatus",
 ]
