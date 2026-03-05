@@ -2,13 +2,15 @@
 // RequisitionDetail — Detail panel for a single requisition
 // =============================================================================
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Send,
   Check,
   XCircle,
   PackageCheck,
+  Package,
+  Truck,
   Ban,
   Clock,
 } from 'lucide-react';
@@ -17,6 +19,8 @@ import {
   submitRequisition,
   approveRequisition,
   denyRequisition,
+  processRequisition,
+  shipRequisition,
   receiveRequisition,
   cancelRequisition,
 } from '@/api/requisitions';
@@ -81,6 +85,9 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
     mutationFn: () => denyRequisition(requisition.id, { reason: denyReason }),
     onSuccess: () => { setShowDenyInput(false); invalidateAll(); },
   });
+
+  const processMut = useMutation({ mutationFn: () => processRequisition(requisition.id), onSuccess: invalidateAll });
+  const shipMut = useMutation({ mutationFn: () => shipRequisition(requisition.id), onSuccess: invalidateAll });
   const receiveMut = useMutation({ mutationFn: () => receiveRequisition(requisition.id, {}), onSuccess: invalidateAll });
   const cancelMut = useMutation({ mutationFn: () => cancelRequisition(requisition.id), onSuccess: invalidateAll });
 
@@ -121,6 +128,8 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
   const canSubmit = requisition.status === 'DRAFT';
   const canApprove = requisition.status === 'SUBMITTED';
   const canDeny = requisition.status === 'SUBMITTED';
+  const canProcess = requisition.status === 'APPROVED';
+  const canShip = requisition.status === 'SOURCING';
   const canReceive = requisition.status === 'SHIPPED';
   const canCancel = ['DRAFT', 'SUBMITTED', 'APPROVED'].includes(requisition.status);
 
@@ -156,6 +165,65 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
           {requisition.status}
         </span>
       </div>
+
+      {/* Status Stepper */}
+      {requisition.status !== 'DENIED' && requisition.status !== 'CANCELED' ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, padding: '4px 0' }}>
+          {(['SUBMITTED', 'APPROVED', 'SOURCING', 'SHIPPED', 'RECEIVED'] as const).map((step, idx) => {
+            const STATUS_ORDER: Record<string, number> = {
+              DRAFT: 0, SUBMITTED: 1, APPROVED: 2, SOURCING: 3, BACKORDERED: 3, SHIPPED: 4, RECEIVED: 5, DENIED: -1, CANCELED: -1,
+            };
+            const currentIdx = STATUS_ORDER[requisition.status] ?? 0;
+            const stepIdx = STATUS_ORDER[step];
+            const isCompleted = currentIdx > stepIdx;
+            const isCurrent = currentIdx === stepIdx;
+            return (
+              <React.Fragment key={step}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 70 }}>
+                  <div
+                    style={{
+                      width: 24, height: 24, borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
+                      backgroundColor: isCompleted ? 'var(--color-success)' : isCurrent ? 'var(--color-accent)' : 'var(--color-bg-elevated)',
+                      color: isCompleted || isCurrent ? '#fff' : 'var(--color-text-muted)',
+                      border: isCurrent ? '2px solid rgba(77, 171, 247, 0.5)' : '1px solid var(--color-border)',
+                      transition: 'all var(--transition)',
+                    }}
+                  >
+                    {isCompleted ? '✓' : idx + 1}
+                  </div>
+                  <span style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 600,
+                    letterSpacing: '0.5px', marginTop: 4,
+                    color: isCompleted || isCurrent ? 'var(--color-text-bright)' : 'var(--color-text-muted)',
+                  }}>
+                    {step}
+                  </span>
+                </div>
+                {idx < 4 && (
+                  <div style={{
+                    flex: 1, height: 2, minWidth: 20,
+                    backgroundColor: isCompleted ? 'var(--color-success)' : 'var(--color-border)',
+                    marginBottom: 16,
+                    transition: 'background-color var(--transition)',
+                  }} />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      ) : (
+        <div style={{
+          padding: '6px 12px', borderRadius: 'var(--radius)',
+          backgroundColor: requisition.status === 'DENIED' ? 'rgba(255, 107, 107, 0.1)' : 'rgba(148, 163, 184, 0.1)',
+          border: `1px solid ${requisition.status === 'DENIED' ? 'rgba(255, 107, 107, 0.2)' : 'rgba(148, 163, 184, 0.2)'}`,
+          fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700,
+          color: requisition.status === 'DENIED' ? 'var(--color-danger)' : 'var(--color-text-muted)',
+        }}>
+          {requisition.status === 'DENIED' ? '✗ DENIED' : '⊗ CANCELED'}
+        </div>
+      )}
 
       {/* Info grid */}
       <div
@@ -563,6 +631,24 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
               CANCEL
             </button>
           </div>
+        )}
+        {canProcess && (
+          <button
+            style={btnStyle('var(--color-warning)')}
+            onClick={() => processMut.mutate()}
+            disabled={processMut.isPending}
+          >
+            <Package size={12} /> PROCESS
+          </button>
+        )}
+        {canShip && (
+          <button
+            style={btnStyle('#a78bfa')}
+            onClick={() => shipMut.mutate()}
+            disabled={shipMut.isPending}
+          >
+            <Truck size={12} /> SHIP
+          </button>
         )}
         {canReceive && (
           <button
