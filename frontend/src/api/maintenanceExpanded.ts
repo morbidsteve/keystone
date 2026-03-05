@@ -148,7 +148,10 @@ export async function getMaintenanceDeadlines(
 ): Promise<MaintenanceDeadline[]> {
   if (isDemoMode) {
     await mockDelay();
-    if (unitId) return MOCK_DEADLINES.filter((d) => d.unitId === unitId);
+    if (unitId) {
+      const filtered = MOCK_DEADLINES.filter((d) => d.unitId === unitId);
+      if (filtered.length > 0) return filtered;
+    }
     return MOCK_DEADLINES;
   }
   const response = await apiClient.get<MaintenanceDeadline[]>(
@@ -221,7 +224,10 @@ export async function getPMSchedule(
   if (isDemoMode) {
     await mockDelay();
     let items = [...MOCK_PM_SCHEDULE];
-    if (unitId) items = items.filter((pm) => pm.unitId === unitId);
+    if (unitId) {
+      const filtered = items.filter((pm) => pm.unitId === unitId);
+      if (filtered.length > 0) items = filtered;
+    }
     if (overdueOnly) items = items.filter((pm) => pm.isOverdue);
     return items;
   }
