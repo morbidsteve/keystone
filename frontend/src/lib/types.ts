@@ -76,6 +76,12 @@ export enum ReportType {
   MAINTENANCE_SUMMARY = 'MAINTENANCE_SUMMARY',
   MOVEMENT_SUMMARY = 'MOVEMENT_SUMMARY',
   PERSONNEL_STRENGTH = 'PERSONNEL_STRENGTH',
+  SITREP = 'SITREP',
+  SPOTREP = 'SPOTREP',
+  PERSTAT = 'PERSTAT',
+  INTSUM = 'INTSUM',
+  COMMAND_BRIEF = 'COMMAND_BRIEF',
+  AAR = 'AAR',
   CUSTOM = 'CUSTOM',
 }
 
@@ -85,6 +91,29 @@ export enum ReportStatus {
   READY = 'READY',
   FINALIZED = 'FINALIZED',
   ERROR = 'ERROR',
+  ARCHIVED = 'ARCHIVED',
+}
+
+export enum ReportFormat {
+  TEXT = 'TEXT',
+  HTML = 'HTML',
+  PDF = 'PDF',
+  JSON = 'JSON',
+}
+
+export enum ReportClassification {
+  UNCLASS = 'UNCLASS',
+  CUI = 'CUI',
+  SECRET = 'SECRET',
+  TS = 'TS',
+  TS_SCI = 'TS_SCI',
+}
+
+export enum ScheduleFrequency {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  BIWEEKLY = 'BIWEEKLY',
+  MONTHLY = 'MONTHLY',
 }
 
 // Interfaces
@@ -390,6 +419,37 @@ export interface ReportClassSummary {
     required: number;
     dos: number;
   }[];
+}
+
+export interface ReportTemplate {
+  id: number;
+  name: string;
+  report_type: string;
+  description?: string;
+  template_body: string;
+  sections: string[];
+  classification_default: string;
+  is_default: boolean;
+  created_by: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ReportSchedule {
+  id: number;
+  template_id: number;
+  unit_id: number;
+  frequency: ScheduleFrequency;
+  time_of_day?: string;
+  day_of_week?: number;
+  day_of_month?: number;
+  is_active: boolean;
+  last_generated?: string;
+  next_generation?: string;
+  auto_distribute: boolean;
+  distribution_list?: Array<{ user_id: number; role: string }>;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface RawData {

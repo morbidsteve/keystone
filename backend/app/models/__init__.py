@@ -42,7 +42,19 @@ from app.models.maintenance_schedule import (
     DeadlineReason,
     EROStatus,
 )
-from app.models.report import Report, ReportType, ReportStatus, ReportExportDestination, AuthType
+from app.models.report import (
+    Report,
+    ReportType,
+    ReportStatus,
+    ReportExportDestination,
+    AuthType,
+    ReportFormat,
+    ReportClassification,
+    ScheduleFrequency,
+    ReportSection,
+    ReportTemplate,
+    ReportSchedule,
+)
 from app.models.raw_data import RawData, SourceType, ParseStatus
 from app.models.alert import Alert, AlertType, AlertSeverity
 from app.models.canonical_schema import CanonicalField
@@ -156,6 +168,12 @@ __all__ = [
     "ReportStatus",
     "ReportExportDestination",
     "AuthType",
+    "ReportFormat",
+    "ReportClassification",
+    "ScheduleFrequency",
+    "ReportSection",
+    "ReportTemplate",
+    "ReportSchedule",
     "RawData",
     "SourceType",
     "ParseStatus",
