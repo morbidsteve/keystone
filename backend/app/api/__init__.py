@@ -26,6 +26,7 @@ from app.api.catalog import router as catalog_router
 from app.api.readiness import router as readiness_router
 from app.api.requisitions import router as requisitions_router
 from app.api.inventory import router as inventory_router
+from app.api.manning import router as manning_router
 
 api_router = APIRouter()
 
@@ -75,3 +76,4 @@ api_router.include_router(
     requisitions_router, prefix="/requisitions", tags=["Requisitions"]
 )
 api_router.include_router(inventory_router, prefix="/inventory", tags=["Inventory"])
+api_router.include_router(manning_router, prefix="/manning", tags=["Manning"])

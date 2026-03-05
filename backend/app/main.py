@@ -179,6 +179,34 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Readiness threshold seeding failed: {e}")
 
+    # 8. Seed billet structure
+    try:
+        from seed.seed_billets import seed_billets
+
+        async with async_session() as db:
+            count = await seed_billets(db)
+            await db.commit()
+            if count:
+                logger.info(f"Billet structure: {count} billets seeded.")
+            else:
+                logger.info("Billet structure already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Billet seeding failed: {e}")
+
+    # 9. Seed qualifications
+    try:
+        from seed.seed_qualifications import seed_qualifications
+
+        async with async_session() as db:
+            count = await seed_qualifications(db)
+            await db.commit()
+            if count:
+                logger.info(f"Qualifications: {count} items seeded.")
+            else:
+                logger.info("Qualifications already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Qualification seeding failed: {e}")
+
 
 app = FastAPI(
     title="KEYSTONE",
@@ -321,6 +349,13 @@ app = FastAPI(
             "description": (
                 "Unit readiness snapshots, DRRS ratings, strength tracking, "
                 "and rollup analytics."
+            ),
+        },
+        {
+            "name": "Manning",
+            "description": (
+                "Billet structure (T/O), manning snapshots, and "
+                "personnel fill tracking."
             ),
         },
     ],

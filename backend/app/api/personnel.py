@@ -10,10 +10,20 @@ from sqlalchemy.orm import selectinload
 
 from app.core.auth import get_current_user
 from app.core.exceptions import ConflictError, NotFoundError
-from app.core.permissions import get_accessible_units, require_role
+from app.core.permissions import check_unit_access, get_accessible_units, require_role
 from app.database import get_db
+from app.models.manning import Qualification
 from app.models.personnel import AmmoLoad, Personnel, PersonnelStatus, Weapon
 from app.models.user import Role, User
+from app.schemas.manning import (
+    MOSFillReport,
+    PersonnelReadinessReport,
+    QualificationCreate,
+    QualificationResponse,
+    QualificationUpdate,
+    UnitStrengthReport,
+    UpcomingLossReport,
+)
 from app.schemas.personnel import (
     AmmoLoadCreate,
     AmmoLoadResponse,
@@ -26,6 +36,7 @@ from app.schemas.personnel import (
     WeaponResponse,
     WeaponUpdate,
 )
+from app.services.personnel_analytics import PersonnelAnalyticsService
 
 router = APIRouter()
 
@@ -132,6 +143,10 @@ async def create_personnel(
     current_user: User = Depends(get_current_user),
 ):
     """Create a new personnel record with optional nested weapons/ammo."""
+    # C-1 fix: verify unit access for the target unit
+    if data.unit_id:
+        await check_unit_access(current_user, data.unit_id, db)
+
     # Check EDIPI uniqueness
     existing = await db.execute(select(Personnel).where(Personnel.edipi == data.edipi))
     if existing.scalar_one_or_none():
@@ -205,6 +220,11 @@ async def update_personnel(
         raise NotFoundError("Personnel", person_id)
 
     update_data = data.model_dump(exclude_unset=True)
+
+    # H-2 fix: if unit_id is changing, verify access to target unit
+    if "unit_id" in update_data and update_data["unit_id"] != person.unit_id:
+        await check_unit_access(current_user, update_data["unit_id"], db)
+
     for field, value in update_data.items():
         setattr(person, field, value)
 
@@ -470,4 +490,190 @@ async def delete_ammo_load(
         raise NotFoundError("AmmoLoad", ammo_id)
 
     await db.delete(ammo)
+    await db.flush()
+
+
+# --- Personnel Analytics endpoints ---
+
+
+@router.get("/strength/{unit_id}", response_model=UnitStrengthReport)
+async def get_unit_strength(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get unit strength report."""
+    await check_unit_access(current_user, unit_id, db)
+    data = await PersonnelAnalyticsService.get_unit_strength(db, unit_id)
+    return data
+
+
+@router.get("/mos-fill/{unit_id}", response_model=MOSFillReport)
+async def get_mos_fill(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get MOS fill rates for a unit."""
+    await check_unit_access(current_user, unit_id, db)
+    data = await PersonnelAnalyticsService.get_mos_fill(db, unit_id)
+    return data
+
+
+@router.get("/readiness/{unit_id}", response_model=PersonnelReadinessReport)
+async def get_personnel_readiness(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get P-rating for a unit."""
+    await check_unit_access(current_user, unit_id, db)
+    data = await PersonnelAnalyticsService.calculate_personnel_readiness(db, unit_id)
+    return data
+
+
+@router.get("/upcoming-losses/{unit_id}", response_model=UpcomingLossReport)
+async def get_upcoming_losses(
+    unit_id: int,
+    days: int = Query(90, ge=1, le=365),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get personnel with EAS within N days."""
+    await check_unit_access(current_user, unit_id, db)
+    data = await PersonnelAnalyticsService.get_upcoming_losses(db, unit_id, days)
+    return data
+
+
+# --- Qualification sub-routes ---
+
+
+@router.get(
+    "/qualifications/{person_id}",
+    response_model=List[QualificationResponse],
+)
+async def get_personnel_qualifications(
+    person_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get all qualifications for a personnel record."""
+    result = await db.execute(select(Personnel).where(Personnel.id == person_id))
+    person = result.scalar_one_or_none()
+    if not person:
+        raise NotFoundError("Personnel", person_id)
+
+    accessible = await get_accessible_units(db, current_user)
+    if person.unit_id and person.unit_id not in accessible:
+        raise NotFoundError("Personnel", person_id)
+
+    qual_result = await db.execute(
+        select(Qualification).where(Qualification.personnel_id == person_id)
+    )
+    return qual_result.scalars().all()
+
+
+@router.post(
+    "/qualifications",
+    response_model=QualificationResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def create_qualification(
+    data: QualificationCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Add a qualification to a personnel record."""
+    result = await db.execute(
+        select(Personnel).where(Personnel.id == data.personnel_id)
+    )
+    person = result.scalar_one_or_none()
+    if not person:
+        raise NotFoundError("Personnel", data.personnel_id)
+
+    accessible = await get_accessible_units(db, current_user)
+    if person.unit_id and person.unit_id not in accessible:
+        raise NotFoundError("Personnel", data.personnel_id)
+
+    qual = Qualification(**data.model_dump())
+    db.add(qual)
+    await db.flush()
+    await db.refresh(qual)
+    return qual
+
+
+@router.put(
+    "/qualifications/{qual_id}",
+    response_model=QualificationResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def update_qualification(
+    qual_id: int,
+    data: QualificationUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Update a qualification record."""
+    result = await db.execute(
+        select(Qualification).where(Qualification.id == qual_id)
+    )
+    qual = result.scalar_one_or_none()
+    if not qual:
+        raise NotFoundError("Qualification", qual_id)
+
+    # M-3 fix: verify personnel access (deny if orphaned unless ADMIN)
+    person_result = await db.execute(
+        select(Personnel).where(Personnel.id == qual.personnel_id)
+    )
+    person = person_result.scalar_one_or_none()
+    if not person or not person.unit_id:
+        if current_user.role != Role.ADMIN:
+            raise NotFoundError("Qualification", qual_id)
+    else:
+        accessible = await get_accessible_units(db, current_user)
+        if person.unit_id not in accessible:
+            raise NotFoundError("Qualification", qual_id)
+
+    update_data = data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(qual, field, value)
+
+    await db.flush()
+    await db.refresh(qual)
+    return qual
+
+
+@router.delete(
+    "/qualifications/{qual_id}",
+    status_code=204,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def delete_qualification(
+    qual_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Delete a qualification record."""
+    result = await db.execute(
+        select(Qualification).where(Qualification.id == qual_id)
+    )
+    qual = result.scalar_one_or_none()
+    if not qual:
+        raise NotFoundError("Qualification", qual_id)
+
+    # M-3 fix: verify personnel access (deny if orphaned unless ADMIN)
+    person_result = await db.execute(
+        select(Personnel).where(Personnel.id == qual.personnel_id)
+    )
+    person = person_result.scalar_one_or_none()
+    if not person or not person.unit_id:
+        if current_user.role != Role.ADMIN:
+            raise NotFoundError("Qualification", qual_id)
+    else:
+        accessible = await get_accessible_units(db, current_user)
+        if person.unit_id not in accessible:
+            raise NotFoundError("Qualification", qual_id)
+
+    await db.delete(qual)
     await db.flush()
