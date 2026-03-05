@@ -77,8 +77,8 @@ celery -A app.tasks:celery_app worker --loglevel=info
 
 ```
 app/
-  api/              # REST endpoints (18 route modules)
-  models/           # SQLAlchemy models (25+ models, 1.x Column() style)
+  api/              # REST endpoints (31 route modules)
+  models/           # SQLAlchemy models (162+ model/enum classes across 20+ model files, 1.x Column() style)
   schemas/          # Pydantic request/response schemas
   core/             # Auth, permissions, military logic
   ingestion/        # Parsers: mIRC, Excel, TAK, routes
@@ -88,7 +88,7 @@ app/
   config.py         # pydantic-settings configuration
   database.py       # SQLAlchemy async engine + session
   main.py           # FastAPI app entry point
-  tasks.py          # Celery task definitions
+  tasks/            # Celery task modules (7 task files)
 
 seed/               # Unit hierarchy (~403 units), users, sample data
 simulator/          # Mock data simulator engine (see below)
@@ -100,25 +100,38 @@ tests/              # pytest test suite
 
 All endpoints are prefixed with `/api/v1`. Authentication is via JWT bearer token.
 
-| Route Group | Base Path | Description |
-|-------------|-----------|-------------|
-| Auth | `/auth` | Login, token refresh, user management |
-| Dashboard | `/dashboard` | Commander overview, readiness, sustainability |
-| Supply | `/supply` | Supply status CRUD, class I-X tracking |
-| Equipment | `/equipment` | Fleet readiness aggregates by TAMCN |
-| Equipment Individual | `/equipment/individual` | Per-asset tracking: faults, drivers, history |
-| Maintenance | `/maintenance` | Work orders (full CRUD), parts, labor tracking |
-| Transportation | `/transportation` | Movement lifecycle, convoy manifests |
-| Personnel | `/personnel` | Personnel roster, weapons, ammo loads |
-| Map | `/map` | Geospatial: unit positions, supply points, routes, convoys |
-| Reports | `/reports` | Generate/list/finalize 7 report types |
-| Alerts | `/alerts` | Alert management and acknowledgement |
-| Ingestion | `/ingestion` | File upload: mIRC, Excel, route files |
-| Data Sources | `/data-sources` | External source config and monitoring |
-| Schema Mapping | `/schema-mapping` | Canonical field mapping for ingestion |
-| TAK | `/tak` | TAK server connections and CoT data |
-| Settings | `/settings` | System settings (classification, etc.) |
-| Units | `/units` | USMC unit hierarchy (read) |
+| Prefix | Module | Description |
+|--------|--------|-------------|
+| `/auth` | Authentication | JWT login, registration, token refresh |
+| `/dashboard` | Dashboard | Readiness overview, KPI metrics |
+| `/supply` | Supply | Class I-IX supply status, DOS tracking |
+| `/equipment` | Equipment | Fleet aggregate readiness tracking |
+| `/equipment/individual` | Equipment Individual | Per-vehicle tracking, faults, drivers |
+| `/maintenance` | Maintenance | Work orders, parts, labor tracking |
+| `/maintenance` | Maintenance Analytics | Readiness trends, MTBF calculations |
+| `/transportation` | Transportation | Movement tracking |
+| `/transportation` | Convoy Manifest | Convoy vehicle/personnel manifests |
+| `/transportation` | Convoy Planning | Convoy plans, serials, lift requests |
+| `/personnel` | Personnel | Marine roster, qualifications, weapons |
+| `/manning` | Manning | Billet structure, strength snapshots |
+| `/medical` | Medical | CASEVAC, casualty reports, MTFs, blood products |
+| `/fuel` | Fuel | Storage points, transactions, consumption, forecasting |
+| `/custody` | Custody & Accountability | Sensitive items, chain of custody, inventory, audit log |
+| `/requisitions` | Requisitions | Supply requisition workflow |
+| `/inventory` | Inventory | Inventory records, transactions |
+| `/catalog` | Catalog | Equipment, supply, ammunition catalogs |
+| `/readiness` | Readiness | Unit readiness snapshots, thresholds |
+| `/reports` | Reports | SITREP generation, templates, schedules |
+| `/alerts` | Alerts | Alert rules, severity tracking |
+| `/notifications` | Notifications | Per-user notifications, preferences |
+| `/ingestion` | Ingestion | Data upload, parsing, template mapping |
+| `/data-sources` | Data Sources | External data source management |
+| `/map` | Map | Geospatial locations, routes, supply points |
+| `/units` | Units | Unit hierarchy management |
+| `/schema-mapping` | Schema Mapping | Canonical field mapping |
+| `/tak` | TAK Integration | TAK server connections |
+| `/settings` | Settings | System configuration |
+| `/simulator` | Simulator | Exercise scenario simulation |
 
 ## Simulator
 

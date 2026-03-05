@@ -3,6 +3,7 @@
 **USMC Logistics Common Operating Picture**
 
 ![CI](https://github.com/morbidsteve/keystone/actions/workflows/ci.yml/badge.svg)
+![DSOP](https://github.com/morbidsteve/keystone/actions/workflows/dsop.yml/badge.svg)
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue)
 ![TypeScript](https://img.shields.io/badge/typescript-5.3-blue)
 ![License](https://img.shields.io/badge/license-Distribution%20A-green)
@@ -68,7 +69,7 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 ## Features
 
 ### Dashboard and Analytics
-- Commander dashboard with 30-second readiness assessment
+- Commander dashboard with 30-second readiness assessment and KPI metrics
 - Supply status aggregation across all 10 NATO supply classes (I-X)
 - Consumption rate forecasting and sustainability projections
 - Equipment readiness summaries with fleet-level aggregates
@@ -93,12 +94,69 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 - Parts management with sourcing (on-hand, ordered, cannibalized)
 - Labor tracking by type (inspection, repair, PMCS, modification)
 - Work order categories: corrective, preventive, modification, inspection
+- Maintenance analytics with readiness trends and MTBF calculations
 
-### Transportation and Convoys
+### Personnel and Manning
+- Personnel roster with status (present, deployed, leave, TAD, medical, UA)
+- Qualifications and weapons assignment tracking
+- Ammunition load tracking
+- Billet structure and strength snapshots (manning)
+- Convoy personnel assignments with roles
+
+### Transportation, Convoy Planning, and Manifests
 - Movement tracking with status lifecycle (PLANNED -> IN_TRANSIT -> COMPLETE)
 - Convoy manifest management with cargo items, vehicle allocations, personnel assignments
+- Convoy planning with serials and lift requests
 - Route planning with origin/destination and ETAs
 - Convoy roles: driver, TC, gunner, PAX, medic
+
+### Medical / CASEVAC
+- CASEVAC tracking with casualty reports
+- Medical treatment facility (MTF) management
+- Blood product inventory tracking
+
+### Fuel / POL Management
+- Fuel storage point management
+- Transaction tracking and consumption monitoring
+- Consumption forecasting
+
+### Sensitive Item Custody and Chain of Custody
+- Sensitive item tracking with chain of custody audit trail
+- Inventory management and audit logging
+
+### SITREP Reporting Engine
+- Report templates with scheduled generation
+- 7+ report types: LOGSTAT, Readiness, Supply Status, Equipment Status, Maintenance Summary, Movement Summary, Personnel Strength
+- Structured report viewer with type-specific sections, summary statistics, and tabular breakdowns
+- Draft/Final workflow with finalization tracking
+- Export to file (text/JSON) for offline distribution or higher HQ submission
+- Unit-scoped reporting with date range selection
+- Automated data aggregation from current supply, equipment, maintenance, movement, and personnel records
+
+### Notifications and Configurable Alert Rules
+- Automatic alerts: low days-of-supply, low readiness, convoy delayed, anomaly detection
+- Configurable alert rules with severity tracking
+- Three severity levels: INFO, WARNING, CRITICAL
+- Per-user notifications with preferences
+- Unit-scoped with hierarchy visibility
+- Acknowledgement tracking
+
+### Requisition Workflow Management
+- Supply requisition creation and lifecycle management
+- Approval workflows and status tracking
+
+### Inventory Management
+- Inventory records and transaction tracking
+- Stock level monitoring
+
+### Equipment, Supply, and Ammunition Catalogs
+- Equipment catalog with type definitions
+- Supply catalog for standard items
+- Ammunition catalog
+
+### Unit Readiness
+- Unit readiness snapshots with historical tracking
+- Configurable readiness thresholds
 
 ### Interactive Map
 - Leaflet-based map with three tile layers: OpenStreetMap, satellite imagery, topographic
@@ -111,32 +169,17 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 - Cursor coordinate display (lat/lon + MGRS), distance measurement tool
 - Nearby unit/asset search, context menu actions
 
-### Personnel Tracking
-- Personnel roster with status (present, deployed, leave, TAD, medical, UA)
-- Weapons assignment tracking
-- Ammunition load tracking
-- Convoy personnel assignments with roles
-
-### Report Generation
-- 7 report types: LOGSTAT, Readiness, Supply Status, Equipment Status, Maintenance Summary, Movement Summary, Personnel Strength
-- Structured report viewer with type-specific sections, summary statistics, and tabular breakdowns
-- Draft/Final workflow with finalization tracking
-- Export to file (text/JSON) for offline distribution or higher HQ submission
-- Unit-scoped reporting with date range selection
-- Automated data aggregation from current supply, equipment, maintenance, movement, and personnel records
-
-### Alert System
-- Automatic alerts: low days-of-supply, low readiness, convoy delayed, anomaly detection
-- Three severity levels: INFO, WARNING, CRITICAL
-- Unit-scoped with hierarchy visibility
-- Acknowledgement tracking
-
 ### Data Ingestion
 - **mIRC chat logs**: NLP + regex pipeline extracts supply, equipment, and convoy data from chat transcripts
 - **Excel spreadsheets**: Auto-matches known LOGSTAT templates; column mapping wizard for new formats
 - **TAK integration**: Connects to TAK servers for field-submitted logistics data via Cursor-on-Target (CoT) XML
 - **Route files**: GeoJSON, GPX, KML, KMZ import for map overlays
+- **Directory polling**: Automated ingestion from configured data directories
 - **Schema mapping**: Admin UI to map any data format to KEYSTONE's canonical schema
+
+### System-Wide Audit Logging
+- Comprehensive audit trail across all modules
+- User action tracking for accountability and compliance
 
 ### Simulator
 - Event-driven simulation engine with configurable speed multiplier
@@ -420,8 +463,8 @@ A separate **Deploy to GitHub Pages** workflow builds the frontend in demo mode 
 keystone/
 ├── backend/
 │   ├── app/
-│   │   ├── api/                # REST endpoints (18 route modules)
-│   │   ├── models/             # SQLAlchemy models (25+ models)
+│   │   ├── api/                # REST endpoints (31 route modules)
+│   │   ├── models/             # SQLAlchemy models (162+ model/enum classes across 20+ model files)
 │   │   ├── schemas/            # Pydantic request/response schemas
 │   │   ├── core/               # Auth, permissions, military logic
 │   │   ├── ingestion/          # Parsers: mIRC, Excel, TAK, routes
@@ -431,7 +474,7 @@ keystone/
 │   │   ├── config.py           # pydantic-settings configuration
 │   │   ├── database.py         # SQLAlchemy async engine + session
 │   │   ├── main.py             # FastAPI app entry point
-│   │   └── tasks.py            # Celery task definitions
+│   │   └── tasks/             # Celery task modules (7 task files)
 │   ├── seed/                   # Unit hierarchy (~403 units), users, sample data
 │   ├── simulator/              # Mock data simulator engine
 │   │   ├── cli.py              # CLI interface
@@ -446,7 +489,7 @@ keystone/
 │   └── Dockerfile              # Multi-stage, hardened (DoD CHG)
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/              # 12 route pages
+│   │   ├── pages/              # 21 route pages
 │   │   ├── components/         # UI components by domain
 │   │   │   ├── dashboard/      # Readiness cards, supply charts
 │   │   │   ├── map/            # Leaflet map, symbology, layers, overlays
@@ -463,7 +506,7 @@ keystone/
 │   ├── generate-cert.sh        # Self-signed TLS certificate generator
 │   ├── package.json
 │   ├── vite.config.ts
-│   ├── tailwind.config.js
+│   ├── tailwind.config.ts
 │   └── Dockerfile              # Multi-stage, nginx-unprivileged (DoD CHG)
 ├── scripts/
 │   ├── download-tiles.py       # Offline tile downloader for air-gapped deployments
@@ -485,25 +528,38 @@ keystone/
 
 All endpoints are prefixed with `/api/v1`. Authentication is via JWT bearer token (obtain from `/api/v1/auth/login`).
 
-| Route Group | Base Path | Description |
-|-------------|-----------|-------------|
-| **Authentication** | `/auth` | Login, token refresh, user management |
-| **Dashboard** | `/dashboard` | Commander overview, readiness summary, sustainability projections |
-| **Supply** | `/supply` | Supply status records (CRUD), class I-X tracking |
-| **Equipment** | `/equipment` | Fleet readiness aggregates by type |
-| **Equipment Individual** | `/equipment/individual` | Per-asset tracking: faults, drivers, maintenance history |
-| **Maintenance** | `/maintenance` | Work orders, parts, labor tracking |
-| **Transportation** | `/transportation` | Movement lifecycle, convoy manifests |
-| **Personnel** | `/personnel` | Personnel roster, weapons, ammo loads |
-| **Map** | `/map` | Geospatial data: unit positions, supply points, routes, convoys |
-| **Reports** | `/reports` | LOGSTAT, readiness, supply status, roll-up generation |
-| **Alerts** | `/alerts` | Alert management, acknowledgement |
-| **Ingestion** | `/ingestion` | File upload: mIRC logs, Excel, route files (GeoJSON/GPX/KML/KMZ) |
-| **Data Sources** | `/data-sources` | Data source configuration and monitoring |
-| **Schema Mapping** | `/schema-mapping` | Canonical schema field mapping for ingestion |
-| **TAK Integration** | `/tak` | TAK server connections and CoT data |
-| **Settings** | `/settings` | System settings (classification level, etc.) |
-| **Units** | `/units` | USMC unit hierarchy (read) |
+| Prefix | Module | Description |
+|--------|--------|-------------|
+| `/auth` | Authentication | JWT login, registration, token refresh |
+| `/dashboard` | Dashboard | Readiness overview, KPI metrics |
+| `/supply` | Supply | Class I-IX supply status, DOS tracking |
+| `/equipment` | Equipment | Fleet aggregate readiness tracking |
+| `/equipment/individual` | Equipment Individual | Per-vehicle tracking, faults, drivers |
+| `/maintenance` | Maintenance | Work orders, parts, labor tracking |
+| `/maintenance` | Maintenance Analytics | Readiness trends, MTBF calculations |
+| `/transportation` | Transportation | Movement tracking |
+| `/transportation` | Convoy Manifest | Convoy vehicle/personnel manifests |
+| `/transportation` | Convoy Planning | Convoy plans, serials, lift requests |
+| `/personnel` | Personnel | Marine roster, qualifications, weapons |
+| `/manning` | Manning | Billet structure, strength snapshots |
+| `/medical` | Medical | CASEVAC, casualty reports, MTFs, blood products |
+| `/fuel` | Fuel | Storage points, transactions, consumption, forecasting |
+| `/custody` | Custody & Accountability | Sensitive items, chain of custody, inventory, audit log |
+| `/requisitions` | Requisitions | Supply requisition workflow |
+| `/inventory` | Inventory | Inventory records, transactions |
+| `/catalog` | Catalog | Equipment, supply, ammunition catalogs |
+| `/readiness` | Readiness | Unit readiness snapshots, thresholds |
+| `/reports` | Reports | SITREP generation, templates, schedules |
+| `/alerts` | Alerts | Alert rules, severity tracking |
+| `/notifications` | Notifications | Per-user notifications, preferences |
+| `/ingestion` | Ingestion | Data upload, parsing, template mapping |
+| `/data-sources` | Data Sources | External data source management |
+| `/map` | Map | Geospatial locations, routes, supply points |
+| `/units` | Units | Unit hierarchy management |
+| `/schema-mapping` | Schema Mapping | Canonical field mapping |
+| `/tak` | TAK Integration | TAK server connections |
+| `/settings` | Settings | System configuration |
+| `/simulator` | Simulator | Exercise scenario simulation |
 
 Interactive API documentation is available at `/docs` (Swagger UI) and `/redoc` when the backend is running.
 

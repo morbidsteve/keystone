@@ -53,7 +53,7 @@ request and release build:
 | Tool | Purpose | Configuration |
 |------|---------|---------------|
 | **Semgrep** | Custom rule-based SAST for Python, TypeScript, JavaScript | `.github/policies/semgrep-rules.yml` |
-| **TypeScript Compiler** | Type safety enforcement (`tsc --noEmit`, `tsc -b`) | `tsconfig.json` per service |
+| **TypeScript Compiler** | Type safety enforcement (`tsc -b`) | `tsconfig.json` per service |
 
 ### Software Composition Analysis (SCA)
 

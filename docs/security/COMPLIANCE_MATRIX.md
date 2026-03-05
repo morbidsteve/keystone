@@ -49,11 +49,11 @@ The Secure Software Development Framework defines practices for secure software 
 | PW.1 | Design software to meet security requirements | Security architecture reviews | Documented in `docs/security/` |
 | PW.4 | Reuse existing, well-secured software | Dependency management with vulnerability scanning | Grype/Trivy SCA scanning |
 | PW.4.1 | Acquire well-secured software components | License and vulnerability checks | `allowed-licenses.yml`, Grype fail-on-critical |
-| PW.4.4 | Verify acquired software integrity | Dependency checksum verification | Lock files (package-lock.json, go.sum) |
+| PW.4.4 | Verify acquired software integrity | Dependency checksum verification | Lock files (package-lock.json, requirements.txt) |
 | PW.5 | Create source code adhering to secure practices | Semgrep SAST | `semgrep-rules.yml` custom rules |
-| PW.6 | Configure the build to detect security issues | Build-integrated security checks | `tsc --noEmit`, `go vet`, Semgrep in CI |
+| PW.6 | Configure the build to detect security issues | Build-integrated security checks | `tsc -b`, `ruff check`, Semgrep in CI |
 | PW.7 | Review and analyze human-readable code | PR review requirements | GitHub branch protection, required reviews |
-| PW.8 | Test executable code | Unit tests, integration tests, smoke tests | Vitest, Go test, `run-smoke-tests.sh` |
+| PW.8 | Test executable code | Unit tests, integration tests, smoke tests | Vitest, pytest, `run-smoke-tests.sh` |
 | PW.9 | Configure software to have secure settings by default | Container hardening defaults | `container-policy.yml` enforces secure defaults |
 
 ### RV: Respond to Vulnerabilities
@@ -80,13 +80,13 @@ Selected controls applicable to KEYSTONE's software supply chain and deployment.
 | AC-3 | Access Enforcement | RBAC in application, branch protection rules | Application auth middleware, GitHub branch rules |
 | AC-6 | Least Privilege | Non-root containers, dropped capabilities, minimal base images | `container-policy.yml`, `check-container-hardening.sh` |
 | AC-6(1) | Authorize Access to Security Functions | Restricted access to CI/CD secrets and signing keys | GitHub Environments, OIDC federation |
-| AC-17 | Remote Access | TLS-only communication, encrypted API endpoints | Traefik TLS configuration |
+| AC-17 | Remote Access | TLS-only communication, encrypted API endpoints | nginx TLS configuration |
 
 ### Audit and Accountability (AU)
 
 | Control | Description | Implementation | Evidence |
 |---------|-------------|----------------|----------|
-| AU-2 | Event Logging | Application audit logging, CI/CD pipeline logs | Structured logging (slog/pino), GitHub Actions logs |
+| AU-2 | Event Logging | Application audit logging, CI/CD pipeline logs | Structured logging (Python logging), GitHub Actions logs |
 | AU-3 | Content of Audit Records | Timestamp, user, action, outcome in all log entries | Structured log format with required fields |
 | AU-6 | Audit Record Review | Automated log scanning in smoke tests | `run-smoke-tests.sh` checks for ERROR/FATAL |
 | AU-12 | Audit Record Generation | All services emit structured audit events | Service-level logging configuration |
@@ -121,7 +121,7 @@ Selected controls applicable to KEYSTONE's software supply chain and deployment.
 
 | Control | Description | Implementation | Evidence |
 |---------|-------------|----------------|----------|
-| SA-11 | Developer Testing and Evaluation | Unit tests, integration tests, SAST | Vitest, Go test, Semgrep |
+| SA-11 | Developer Testing and Evaluation | Unit tests, integration tests, SAST | Vitest, pytest, Semgrep |
 | SA-11(1) | Static Code Analysis | Semgrep with custom rules | `semgrep-rules.yml` |
 | SA-12 | Supply Chain Protection | SCA, license compliance, SBOM | Grype, Trivy, `allowed-licenses.yml`, Syft |
 | SA-15 | Development Process | Documented SDLC with security gates | CI/CD pipeline enforces gates before merge |
@@ -130,8 +130,8 @@ Selected controls applicable to KEYSTONE's software supply chain and deployment.
 
 | Control | Description | Implementation | Evidence |
 |---------|-------------|----------------|----------|
-| SC-7 | Boundary Protection | Network segmentation in Docker, Traefik reverse proxy | Docker networks, Traefik configuration |
-| SC-8 | Transmission Confidentiality | TLS for all external communication | Traefik TLS termination |
+| SC-7 | Boundary Protection | Network segmentation in Docker, nginx reverse proxy | Docker networks, nginx configuration |
+| SC-8 | Transmission Confidentiality | TLS for all external communication | nginx TLS termination |
 | SC-12 | Cryptographic Key Management | Sigstore keyless signing, no long-lived keys | Cosign OIDC-based signing |
 | SC-13 | Cryptographic Protection | Standard algorithms only | TLS 1.2+, SHA-256 checksums |
 | SC-28 | Protection of Information at Rest | Read-only container root filesystems | `container-policy.yml` read_only_rootfs |
@@ -215,12 +215,12 @@ Mapping of DoD Container Hardening requirements to KEYSTONE Dockerfile and runti
 | Access Control - Unique User ID | 164.312(a)(2)(i) | Per-user authentication, no shared accounts | Application RBAC, GitHub individual accounts |
 | Access Control - Emergency Access | 164.312(a)(2)(ii) | Break-glass procedures documented | Operations runbook |
 | Access Control - Automatic Logoff | 164.312(a)(2)(iii) | Session timeout configuration | Application session management |
-| Access Control - Encryption | 164.312(a)(2)(iv) | TLS 1.2+ for all data in transit | Traefik TLS termination |
-| Audit Controls | 164.312(b) | Structured audit logging in all services | slog/pino structured logging, AU-2/AU-3 controls |
+| Access Control - Encryption | 164.312(a)(2)(iv) | TLS 1.2+ for all data in transit | nginx TLS termination |
+| Audit Controls | 164.312(b) | Structured audit logging in all services | Python logging, AU-2/AU-3 controls |
 | Integrity - Authentication of ePHI | 164.312(c)(2) | Container image signing, SBOM attestation | Cosign signatures, SHA-256 checksums |
 | Person/Entity Authentication | 164.312(d) | Multi-factor authentication support | Application auth layer |
-| Transmission Security - Integrity | 164.312(e)(2)(i) | TLS for all network communication | Traefik TLS, Docker network isolation |
-| Transmission Security - Encryption | 164.312(e)(2)(ii) | TLS 1.2+ enforced | Traefik minimum TLS version configuration |
+| Transmission Security - Integrity | 164.312(e)(2)(i) | TLS for all network communication | nginx TLS, Docker network isolation |
+| Transmission Security - Encryption | 164.312(e)(2)(ii) | TLS 1.2+ enforced | nginx minimum TLS version configuration |
 | Administrative - Security Management | 164.308(a)(1) | Automated vulnerability scanning pipeline | Full DevSecOps pipeline |
 | Administrative - Risk Analysis | 164.308(a)(1)(ii)(A) | Continuous vulnerability assessment | Grype, Trivy, Semgrep on every build |
 | Administrative - Malicious Software | 164.308(a)(5)(ii)(B) | ClamAV malware scanning | CI pipeline ClamAV step |
@@ -244,7 +244,7 @@ Supply-chain Levels for Software Artifacts (SLSA) Level 3 requirements.
 | Build - Ephemeral environment | 3 | Fresh runner per job | GitHub Actions ephemeral runners |
 | Build - Isolated | 3 | No shared state between builds | GitHub Actions job isolation |
 | Build - Parameterless | 3 | Build inputs from source only | Workflow triggered by push/PR events |
-| Build - Hermetic | 3 | Dependencies from lock files, pinned versions | `package-lock.json`, `go.sum`, pinned Docker tags |
+| Build - Hermetic | 3 | Dependencies from lock files, pinned versions | `package-lock.json`, `requirements.txt`, pinned Docker tags |
 | Provenance - Available | 1 | Provenance generated per build | GitHub Actions OIDC provenance |
 | Provenance - Authenticated | 2 | Cosign keyless signatures | Sigstore Fulcio + Rekor transparency log |
 | Provenance - Service generated | 2 | Provenance from build service, not developer | GitHub Actions generates provenance |

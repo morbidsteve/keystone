@@ -62,16 +62,26 @@ Set at build time via Vite:
 
 ```
 src/
-  pages/           # 12 route pages (Dashboard, Map, Supply, Equipment, etc.)
+  pages/           # 21 route pages (Dashboard, Map, Supply, Equipment, etc.)
   components/      # UI components organized by domain
+    catalog/       # Catalog management
+    common/        # Shared/common components
+    custody/       # Custody tracking components
     dashboard/     # Readiness cards, supply charts, Commander/S4/S3 views
-    map/           # Leaflet map, symbology, layers, overlays
+    datasources/   # Data source configuration
     equipment/     # Readiness tables, maintenance queue, work orders
-    transportation/# Convoy map, movement tracker, route planner
-    supply/        # Supply tables, class breakdowns, DOS calculator
-    reports/       # Report generator and structured viewer
-    admin/         # User management, unit tree, tile settings
+    fuel/          # Fuel management components
+    ingestion/     # Data ingestion components
     layout/        # Sidebar, header, main layout
+    map/           # Leaflet map, symbology, layers, overlays
+    medical/       # Medical tracking components
+    notifications/ # Notification components
+    personnel/     # Personnel management components
+    readiness/     # Readiness assessment components
+    reports/       # Report generator and structured viewer
+    requisitions/  # Requisition management components
+    supply/        # Supply tables, class breakdowns, DOS calculator
+    transportation/# Convoy map, movement tracker, route planner
     ui/            # Classification banner, demo banner, shared components
   api/             # API client + mock data for demo mode
   stores/          # Zustand stores (auth, dashboard, map, alerts, classification, reports)
@@ -90,11 +100,19 @@ All routes are protected by JWT authentication (redirect to `/login` if not auth
 | `/supply` | SupplyPage | Supply class tracking |
 | `/equipment` | EquipmentPage | Fleet readiness |
 | `/equipment/:id` | EquipmentDetailPage | Individual asset detail (5 tabs) |
+| `/maintenance` | MaintenanceDashboardPage | Maintenance tracking and scheduling |
+| `/requisitions` | RequisitionsPage | Requisition management |
+| `/personnel` | PersonnelPage | Personnel management |
+| `/medical` | MedicalPage | Medical tracking |
+| `/fuel` | FuelPage | Fuel management |
+| `/custody` | CustodyPage | Custody tracking |
+| `/audit` | AuditPage | Audit logging |
 | `/transportation` | TransportationPage | Convoy and movement management |
 | `/ingestion` | IngestionPage | File upload and parsing |
 | `/data-sources` | DataSourcesPage | External source configuration |
 | `/reports` | ReportsPage | Report generation and viewing |
 | `/alerts` | AlertsPage | Alert management |
+| `/readiness` | ReadinessPage | Readiness assessment |
 | `/admin` | AdminPage | System administration |
 | `/docs` | DocsPage | Interactive documentation |
 
@@ -116,5 +134,5 @@ The nginx config (`nginx.conf`) handles:
 
 - No ESLint configured -- type checking is handled by `tsc -b`
 - milsymbol requires 15-character SIDCs and `monoColor` (not `colorMode`) for hex colors
-- Tailwind config is in `tailwind.config.js`
+- Tailwind config is in `tailwind.config.ts`
 - Vite config includes tile proxy for development in `vite.config.ts`
