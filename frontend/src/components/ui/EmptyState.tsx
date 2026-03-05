@@ -5,9 +5,11 @@ interface EmptyStateProps {
   icon?: ReactNode;
   title: string;
   message?: string;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
-export default function EmptyState({ icon, title, message }: EmptyStateProps) {
+export default function EmptyState({ icon, title, message, actionLabel, onAction }: EmptyStateProps) {
   return (
     <div
       style={{
@@ -36,6 +38,27 @@ export default function EmptyState({ icon, title, message }: EmptyStateProps) {
       </div>
       {message && (
         <div style={{ fontSize: 13, opacity: 0.7 }}>{message}</div>
+      )}
+      {actionLabel && onAction && (
+        <button
+          onClick={onAction}
+          style={{
+            marginTop: 16,
+            fontFamily: 'var(--font-mono)',
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            padding: '8px 16px',
+            backgroundColor: 'var(--color-accent)',
+            color: 'var(--color-bg)',
+            border: 'none',
+            borderRadius: 'var(--radius)',
+            cursor: 'pointer',
+          }}
+        >
+          {actionLabel}
+        </button>
       )}
     </div>
   );

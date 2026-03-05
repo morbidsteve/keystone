@@ -3,8 +3,9 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { Clock, MapPin, Users } from 'lucide-react';
+import { Clock, Heart, MapPin, Users } from 'lucide-react';
 import type { CasualtyReport } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 import { CASEVACPrecedence, CasualtyReportStatus, EvacuationStatus, TriageCategory } from '@/lib/types';
 
 // ---------------------------------------------------------------------------
@@ -164,17 +165,11 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
 
   if (casualties.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
-      >
-        No active casualty reports
-      </div>
+      <EmptyState
+        icon={<Heart size={32} />}
+        title="NO CASUALTY REPORTS"
+        message="Active casualty reports will appear here"
+      />
     );
   }
 

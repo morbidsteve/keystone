@@ -4,6 +4,7 @@
 
 import { FileText } from 'lucide-react';
 import type { AuditLogEntry } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface AuditLogTableProps {
   logs: AuditLogEntry[];
@@ -64,18 +65,11 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
 
   if (logs.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          color: 'var(--color-text-muted)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-        }}
-      >
-        <FileText size={24} style={{ opacity: 0.4, marginBottom: 8 }} />
-        <div>No audit log entries found</div>
-      </div>
+      <EmptyState
+        icon={<FileText size={32} />}
+        title="NO AUDIT LOGS"
+        message="Audit log entries will appear here"
+      />
     );
   }
 

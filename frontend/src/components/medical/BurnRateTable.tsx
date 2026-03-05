@@ -3,8 +3,9 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { Activity, AlertTriangle } from 'lucide-react';
 import type { MedicalBurnRate } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -111,17 +112,11 @@ export default function BurnRateTable({ burnRates }: BurnRateTableProps) {
 
   if (burnRates.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
-      >
-        No burn rate data available
-      </div>
+      <EmptyState
+        icon={<Activity size={32} />}
+        title="NO BURN RATE DATA"
+        message="Medical supply burn rate data will appear here"
+      />
     );
   }
 

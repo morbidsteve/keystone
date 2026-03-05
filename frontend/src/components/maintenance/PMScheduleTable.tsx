@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { AlertTriangle, Calendar, CheckCircle, Clock } from 'lucide-react';
+import EmptyState from '@/components/ui/EmptyState';
 import type { PMScheduleItem, PMType } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 
@@ -47,17 +48,11 @@ export default function PMScheduleTable({ schedule }: PMScheduleTableProps) {
 
   if (sortedSchedule.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
-      >
-        No PM schedule items found
-      </div>
+      <EmptyState
+        icon={<Calendar size={32} />}
+        title="NO PM SCHEDULES"
+        message="Preventive maintenance schedules will appear here"
+      />
     );
   }
 

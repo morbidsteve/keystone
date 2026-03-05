@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 import type { MaintenanceDeadline, DeadlineReason } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface DeadlineBoardProps {
   deadlines: MaintenanceDeadline[];
@@ -54,22 +55,11 @@ export default function DeadlineBoard({ deadlines, onLift }: DeadlineBoardProps)
 
   if (groups.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 8,
-        }}
-      >
-        <CheckCircle size={24} style={{ color: 'var(--color-success)' }} />
-        No deadlined equipment
-      </div>
+      <EmptyState
+        icon={<CheckCircle size={32} />}
+        title="NO DEADLINE EQUIPMENT"
+        message="All equipment is operationally ready"
+      />
     );
   }
 

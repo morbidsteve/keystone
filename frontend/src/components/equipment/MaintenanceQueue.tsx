@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Wrench, Clock, Package, Plus } from 'lucide-react';
 import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
 import StatusDot from '@/components/ui/StatusDot';
 import { formatRelativeTime } from '@/lib/utils';
 import type { MaintenanceWorkOrder } from '@/lib/types';
@@ -110,6 +111,15 @@ export default function MaintenanceQueue() {
       }
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {workOrders.length === 0 && (
+          <EmptyState
+            icon={<Wrench size={32} />}
+            title="NO WORK ORDERS"
+            message="Create a work order to track maintenance tasks"
+            actionLabel="+ NEW WORK ORDER"
+            onAction={() => setShowCreate(true)}
+          />
+        )}
         {workOrders.map((wo) => {
           const totalLabor = wo.laborEntries.reduce((sum, l) => sum + l.hours, 0);
           return (

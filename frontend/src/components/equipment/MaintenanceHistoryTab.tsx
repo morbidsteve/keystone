@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Wrench, Package, Clock, User, ExternalLink, Plus } from 'lucide-react';
 import type { MaintenanceWorkOrder } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 import { WorkOrderStatus } from '@/lib/types';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
 import WorkOrderDetailModal from './WorkOrderDetailModal';
@@ -642,19 +643,13 @@ export default function MaintenanceHistoryTab({ workOrders, equipmentId, onRefre
 
       {/* Work Order List */}
       {sorted.length === 0 ? (
-        <div
-          style={{
-            padding: 32,
-            textAlign: 'center',
-            color: 'var(--color-text-muted)',
-            fontSize: 12,
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-          }}
-        >
-          No maintenance work orders found for this equipment.
-        </div>
+        <EmptyState
+          icon={<Wrench size={32} />}
+          title="NO WORK ORDERS"
+          message="No maintenance work orders found for this equipment"
+          actionLabel="+ NEW WORK ORDER"
+          onAction={() => setShowCreate(true)}
+        />
       ) : (
         sorted.map((wo) => (
           <WorkOrderRow key={wo.id} wo={wo} onViewDetails={setModalWO} />

@@ -4,8 +4,9 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Check, XCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Check, XCircle, Clock, AlertTriangle, ClipboardCheck } from 'lucide-react';
 import type { Requisition, RequisitionPriority } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 import { approveRequisition, denyRequisition } from '@/api/requisitions';
 
 // ---------------------------------------------------------------------------
@@ -327,17 +328,11 @@ export default function ApprovalQueue({ requisitions, onRefresh }: ApprovalQueue
 
   if (pending.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
-      >
-        No requisitions pending approval
-      </div>
+      <EmptyState
+        icon={<ClipboardCheck size={32} />}
+        title="NO PENDING APPROVALS"
+        message="Requisitions pending approval will appear here"
+      />
     );
   }
 

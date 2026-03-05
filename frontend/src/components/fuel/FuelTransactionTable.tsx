@@ -2,7 +2,9 @@
 // FuelTransactionTable — Transaction history table with type badges
 // =============================================================================
 
+import { Fuel } from 'lucide-react';
 import type { FuelTransaction } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface FuelTransactionTableProps {
   transactions: FuelTransaction[];
@@ -64,17 +66,11 @@ export default function FuelTransactionTable({ transactions }: FuelTransactionTa
 
   if (sorted.length === 0) {
     return (
-      <div
-        style={{
-          padding: 32,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          color: 'var(--color-text-muted)',
-        }}
-      >
-        No transactions found.
-      </div>
+      <EmptyState
+        icon={<Fuel size={32} />}
+        title="NO TRANSACTIONS"
+        message="Fuel transactions will appear here"
+      />
     );
   }
 

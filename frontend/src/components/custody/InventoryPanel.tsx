@@ -4,6 +4,7 @@
 
 import { ClipboardCheck } from 'lucide-react';
 import type { InventoryEvent } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface InventoryPanelProps {
   events: InventoryEvent[];
@@ -35,18 +36,11 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
 
   if (events.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          color: 'var(--color-text-muted)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-        }}
-      >
-        <ClipboardCheck size={24} style={{ opacity: 0.4, marginBottom: 8 }} />
-        <div>No inventory events found</div>
-      </div>
+      <EmptyState
+        icon={<ClipboardCheck size={32} />}
+        title="NO INVENTORY EVENTS"
+        message="Inventory events will appear here"
+      />
     );
   }
 
