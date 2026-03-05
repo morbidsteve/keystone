@@ -134,6 +134,24 @@ export enum ScheduleFrequency {
 
 // Interfaces
 
+export interface Permission {
+  id: number;
+  code: string;
+  display_name: string;
+  category: string;
+  description?: string;
+}
+
+export interface CustomRole {
+  id: number;
+  name: string;
+  description?: string;
+  is_system: boolean;
+  permissions: Permission[];
+  created_at: string;
+  updated_at: string;
+}
+
 export interface User {
   id: number;
   username: string;
@@ -142,6 +160,8 @@ export interface User {
   unit_id: number | null;
   email: string;
   is_active: boolean;
+  permissions?: string[];
+  custom_role_id?: number;
   created_at?: string;
   updated_at?: string | null;
 }

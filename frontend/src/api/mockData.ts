@@ -86,6 +86,7 @@ export const DEMO_USERS: User[] = [
     email: 'admin@keystone.usmc.mil',
     is_active: true,
     created_at: '2026-01-01T00:00:00Z',
+    permissions: ['*'],
   },
   {
     id: 2,
@@ -96,6 +97,14 @@ export const DEMO_USERS: User[] = [
     email: 'j.mitchell@keystone.usmc.mil',
     is_active: true,
     created_at: '2026-01-01T00:00:00Z',
+    permissions: [
+      'dashboard:view', 'map:view', 'supply:view', 'equipment:view',
+      'maintenance:view', 'requisitions:view', 'requisitions:approve',
+      'personnel:view', 'readiness:view', 'medical:view', 'fuel:view',
+      'custody:view', 'audit:view', 'transportation:view', 'ingestion:view',
+      'ingestion:upload', 'reports:view', 'reports:generate', 'alerts:view',
+      'alerts:acknowledge', 'docs:view',
+    ],
   },
   {
     id: 3,
@@ -106,6 +115,16 @@ export const DEMO_USERS: User[] = [
     email: 's4@keystone.usmc.mil',
     is_active: true,
     created_at: '2026-01-01T00:00:00Z',
+    permissions: [
+      'dashboard:view', 'map:view', 'supply:view', 'supply:edit',
+      'equipment:view', 'equipment:edit', 'maintenance:view', 'maintenance:create',
+      'maintenance:edit', 'requisitions:view', 'requisitions:create',
+      'requisitions:edit', 'requisitions:approve', 'readiness:view',
+      'fuel:view', 'fuel:edit', 'custody:view', 'custody:edit',
+      'transportation:view', 'transportation:edit', 'ingestion:view',
+      'ingestion:upload', 'reports:view', 'reports:generate', 'alerts:view',
+      'alerts:acknowledge', 'docs:view',
+    ],
   },
   {
     id: 4,
@@ -116,6 +135,12 @@ export const DEMO_USERS: User[] = [
     email: 's3@keystone.usmc.mil',
     is_active: true,
     created_at: '2026-01-15T00:00:00Z',
+    permissions: [
+      'dashboard:view', 'map:view', 'personnel:view', 'personnel:edit',
+      'medical:view', 'readiness:view', 'readiness:edit', 'equipment:view',
+      'transportation:view', 'transportation:edit', 'reports:view',
+      'reports:generate', 'alerts:view', 'alerts:acknowledge', 'docs:view',
+    ],
   },
   {
     id: 5,
@@ -126,6 +151,13 @@ export const DEMO_USERS: User[] = [
     email: 'operator@keystone.usmc.mil',
     is_active: true,
     created_at: '2026-02-01T00:00:00Z',
+    permissions: [
+      'dashboard:view', 'map:view', 'supply:view', 'equipment:view',
+      'maintenance:view', 'requisitions:view', 'requisitions:create',
+      'requisitions:edit', 'personnel:view', 'readiness:view', 'medical:view',
+      'fuel:view', 'custody:view', 'transportation:view', 'ingestion:view',
+      'ingestion:upload', 'reports:view', 'alerts:view', 'docs:view',
+    ],
   },
 ];
 

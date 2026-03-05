@@ -2,7 +2,7 @@
 
 import re
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -65,5 +65,6 @@ class UserResponse(UserBase):
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
+    permissions: List[str] = []
 
     model_config = ConfigDict(from_attributes=True)
