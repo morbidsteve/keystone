@@ -9,7 +9,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.exceptions import NotFoundError
-from app.core.permissions import check_unit_access, get_accessible_units
+from app.core.permissions import (
+    check_unit_access,
+    get_accessible_units,
+    require_permission,
+)
 from app.database import get_db
 from app.models.equipment import EquipmentStatus
 from app.models.user import User
@@ -62,7 +66,7 @@ async def get_equipment(
 async def create_equipment(
     data: EquipmentCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("equipment:create")),
 ):
     """Create a new equipment status record."""
     await check_unit_access(current_user, data.unit_id, db)
@@ -79,7 +83,7 @@ async def update_equipment(
     record_id: int,
     data: EquipmentUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("equipment:edit")),
 ):
     """Update an equipment status record."""
     result = await db.execute(

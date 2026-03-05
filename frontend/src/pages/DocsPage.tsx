@@ -12,6 +12,13 @@ import {
   Shield,
   Wrench,
   Settings,
+  Users,
+  Heart,
+  Fuel,
+  ShieldCheck,
+  Bell,
+  ClipboardList,
+  Truck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -21,6 +28,14 @@ type Section =
   | 'features'
   | 'equipment'
   | 'reports'
+  | 'personnel'
+  | 'medical'
+  | 'fuel'
+  | 'custody'
+  | 'notifications'
+  | 'requisitions'
+  | 'readiness'
+  | 'transportation'
   | 'admin'
   | 'deployment'
   | 'api-reference'
@@ -39,6 +54,14 @@ const navItems: NavItem[] = [
   { id: 'architecture', label: 'Architecture', icon: Layers },
   { id: 'features', label: 'Features', icon: Activity },
   { id: 'equipment', label: 'Equipment & Maint.', icon: Wrench },
+  { id: 'personnel', label: 'Personnel', icon: Users },
+  { id: 'medical', label: 'Medical', icon: Heart },
+  { id: 'fuel', label: 'Fuel Management', icon: Fuel },
+  { id: 'custody', label: 'Chain of Custody', icon: ShieldCheck },
+  { id: 'requisitions', label: 'Requisitions', icon: ClipboardList },
+  { id: 'readiness', label: 'Readiness', icon: Activity },
+  { id: 'transportation', label: 'Transportation', icon: Truck },
+  { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'reports', label: 'Reports', icon: Activity },
   { id: 'admin', label: 'Administration', icon: Settings },
   { id: 'deployment', label: 'Deployment', icon: Server },
@@ -1736,6 +1759,383 @@ docker compose up -d --build`}</CodeBlock>
 }
 
 // ---------------------------------------------------------------------------
+// SECTION: Personnel Management
+// ---------------------------------------------------------------------------
+
+function PersonnelSection() {
+  return (
+    <div>
+      <SectionHeading>Personnel Management</SectionHeading>
+
+      <Paragraph>
+        The Personnel module provides a comprehensive view of unit strength,
+        individual service member records, and personnel readiness. It supports
+        S-1 and S-3 staff in maintaining accurate accountability and planning.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Unit strength tracking with present-for-duty, TAD, leave, medical, and UA categories',
+          'Individual service member records with rank, MOS, clearance, and assignment history',
+          'EAS (End of Active Service) tracking with configurable advance warning periods',
+          'Security clearance expiration monitoring with automated alerts',
+          'Personnel status roll-ups by echelon through the unit hierarchy',
+          'Filterable and sortable personnel tables with search capabilities',
+          'Personnel summary dashboard with strength percentages and trend data',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Navigate to the PERSONNEL page from the sidebar. The summary view shows
+        overall unit strength metrics. Click on individual records to view
+        detailed service member information. Use the unit selector in the sidebar
+        to scope personnel data to a specific echelon.
+      </Paragraph>
+
+      <InfoBox title="Data Sources">
+        Personnel data can be ingested from mIRC chat logs, Excel templates,
+        or entered manually. The system monitors EAS dates and security clearance
+        expirations, generating alerts when thresholds are crossed.
+      </InfoBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SECTION: Medical Tracking
+// ---------------------------------------------------------------------------
+
+function MedicalSection() {
+  return (
+    <div>
+      <SectionHeading>Medical Tracking</SectionHeading>
+
+      <Paragraph>
+        The Medical module supports tracking of casualty events, blood product
+        inventory, medical readiness status, and MEDEVAC coordination. It
+        provides S-3 and medical staff with real-time visibility into the
+        medical posture of their units.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Casualty tracking with category classification (KIA, WIA, DOW, NBI, disease)',
+          'Blood product inventory management with expiration date monitoring',
+          'Medical readiness status tracking by unit',
+          'MEDEVAC request coordination and status tracking',
+          'Automated alerts for blood product expiration and casualty events',
+          'Medical status roll-ups by echelon',
+          'Integration with personnel records for individual medical histories',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Access the MEDICAL page from the sidebar. The dashboard view shows
+        medical readiness metrics and recent casualty events. Blood product
+        inventory displays current stock levels with color-coded expiration
+        warnings. Casualty events are logged with timestamps and linked to
+        personnel records.
+      </Paragraph>
+
+      <WarningBox title="Classification">
+        Medical data may contain sensitive PII and PHI. Ensure appropriate
+        classification markings are applied and access is restricted to
+        authorized medical and command staff.
+      </WarningBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SECTION: Fuel Management
+// ---------------------------------------------------------------------------
+
+function FuelSection() {
+  return (
+    <div>
+      <SectionHeading>Fuel Management</SectionHeading>
+
+      <Paragraph>
+        The Fuel module tracks bulk fuel (Class III) inventory, consumption
+        rates, distribution operations, and storage facility status. It provides
+        S-4 staff with the data needed to maintain fuel supply continuity across
+        the force.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Bulk fuel inventory tracking (JP-8, DF-2, MOGAS) by storage location',
+          'Real-time consumption rate monitoring with days-of-supply calculations',
+          'Fuel distribution operation tracking from source to destination',
+          'Storage facility status monitoring (capacity, condition, security)',
+          'Automated alerts when fuel levels drop below configurable thresholds',
+          'Fuel consumption trend charts with historical data',
+          'Integration with transportation module for fuel convoy tracking',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Navigate to the FUEL page from the sidebar. The overview shows current
+        fuel levels across all storage points with traffic-light status
+        indicators. Use the detailed view to track individual distribution
+        operations and consumption trends by fuel type and location.
+      </Paragraph>
+
+      <InfoBox title="Thresholds">
+        Fuel alert thresholds are configurable in the Admin settings. Default
+        thresholds follow USMC planning factors: RED below 2 days of supply,
+        AMBER below 4 days, GREEN at 4+ days.
+      </InfoBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SECTION: Chain of Custody
+// ---------------------------------------------------------------------------
+
+function CustodySection() {
+  return (
+    <div>
+      <SectionHeading>Chain of Custody</SectionHeading>
+
+      <Paragraph>
+        The Chain of Custody module tracks the transfer and accountability of
+        sensitive items, equipment, and materials that require documented
+        hand-off records. It ensures compliance with property accountability
+        regulations and provides an auditable trail.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Digital chain of custody records with timestamp and location tracking',
+          'Transfer initiation and acceptance workflow with signature capture',
+          'Sensitive item tracking (weapons, COMSEC, crypto, NVDs, optics)',
+          'Custody history audit trail with full provenance tracking',
+          'Automated notifications for pending custody transfers',
+          'Integration with equipment module for serial number and TAMCN linkage',
+          'Overdue transfer alerts when items are not receipted within SLA',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Access the CUSTODY page from the sidebar. The dashboard shows active
+        custody records, pending transfers, and recent transfer history.
+        Initiate a new transfer by selecting an item and specifying the
+        receiving party. The receiving party must acknowledge receipt to
+        complete the transfer.
+      </Paragraph>
+
+      <WarningBox title="Accountability">
+        Chain of custody records are immutable once completed. All transfers
+        are logged in the audit trail and cannot be modified or deleted. This
+        ensures regulatory compliance for sensitive item accountability.
+      </WarningBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SECTION: Notifications
+// ---------------------------------------------------------------------------
+
+function NotificationsSection() {
+  return (
+    <div>
+      <SectionHeading>Notifications</SectionHeading>
+
+      <Paragraph>
+        The Notification system delivers real-time alerts and updates to users
+        based on their role, unit assignment, and notification preferences. It
+        ensures critical logistics events are communicated promptly to the
+        appropriate personnel.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Real-time push notifications via WebSocket (Socket.IO)',
+          'Role-based notification routing (commanders see critical alerts, operators see task assignments)',
+          'Notification categories: supply alerts, equipment status, personnel changes, system events',
+          'Read/unread tracking with bulk actions',
+          'Notification preferences per user (email, in-app, or both)',
+          'Alert escalation for unacknowledged critical notifications',
+          'Integration with the Alerts module for threshold-based notifications',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Notifications appear in the header notification bell. Click to view
+        recent notifications and mark them as read. Critical notifications
+        also appear as banner alerts at the top of the page. Configure
+        notification preferences in the Admin settings.
+      </Paragraph>
+
+      <InfoBox title="Alert Integration">
+        The notification system works in conjunction with the Alerts module.
+        When an alert fires (e.g., supply drops below threshold), a notification
+        is generated and routed to users based on their role and unit assignment.
+      </InfoBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SECTION: Requisitions
+// ---------------------------------------------------------------------------
+
+function RequisitionsSection() {
+  return (
+    <div>
+      <SectionHeading>Requisitions</SectionHeading>
+
+      <Paragraph>
+        The Requisitions module manages the request, approval, and fulfillment
+        workflow for supply and equipment orders. It supports the full lifecycle
+        from initial request through commander approval to receipt of materials.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Create requisitions for supply items across all NATO supply classes',
+          'Multi-level approval workflow (requester > S-4 > commander)',
+          'Priority classification (routine, priority, immediate, flash)',
+          'Requisition status tracking (draft, submitted, approved, ordered, received, cancelled)',
+          'Linked to supply catalog for standardized item selection (NSN/NIIN lookup)',
+          'Requisition history with full audit trail',
+          'Automated alerts for pending approvals and overdue requisitions',
+          'Bulk requisition creation from supply shortfall analysis',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Navigate to the REQUISITIONS page from the sidebar. Click "New
+        Requisition" to create a request. Select items from the supply catalog,
+        specify quantities and priority, then submit for approval. Track
+        requisition status in the list view. Approvers will see pending
+        requisitions in their notification queue.
+      </Paragraph>
+
+      <InfoBox title="Permissions">
+        Creating requisitions requires the <InlineCode>requisitions:create</InlineCode>{' '}
+        permission. Approving requisitions requires <InlineCode>requisitions:approve</InlineCode>.
+        Viewers can see requisition status but cannot create or approve.
+      </InfoBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SECTION: Readiness Reporting
+// ---------------------------------------------------------------------------
+
+function ReadinessSection() {
+  return (
+    <div>
+      <SectionHeading>Readiness Reporting</SectionHeading>
+
+      <Paragraph>
+        The Readiness module provides a comprehensive view of unit combat
+        readiness across personnel, equipment, supply, and training dimensions.
+        It aggregates data from multiple modules to produce a holistic readiness
+        assessment conforming to DRRS-MC reporting standards.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Unit readiness ratings (C1-C5) based on personnel, equipment, supply, and training',
+          'Readiness roll-up tree showing ratings from company to MEF level',
+          'Trend charts showing readiness changes over time',
+          'Personnel strength tables with present-for-duty percentages',
+          'Equipment MC/NMC rates by TAMCN with mission-capable breakdowns',
+          'Supply days-of-supply metrics by class with status indicators',
+          'Configurable readiness thresholds per echelon and category',
+          'Readiness gauge visualizations with color-coded status',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Navigate to the READINESS page from the sidebar. The overview displays
+        the current readiness rating for the selected unit with breakdowns by
+        category. Use the roll-up tree to see how subordinate unit ratings
+        aggregate to higher echelons. Trend charts show readiness progression
+        over the past 30 days.
+      </Paragraph>
+
+      <InfoBox title="Rating Calculation">
+        Readiness ratings are calculated using weighted averages across
+        personnel strength, equipment availability, supply levels, and training
+        currency. The lowest-rated category determines the overall unit rating
+        per USMC readiness reporting standards.
+      </InfoBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SECTION: Transportation
+// ---------------------------------------------------------------------------
+
+function TransportationSection() {
+  return (
+    <div>
+      <SectionHeading>Transportation</SectionHeading>
+
+      <Paragraph>
+        The Transportation module manages convoy operations, route planning,
+        movement tracking, and vehicle allocation. It provides logistics staff
+        with real-time visibility into all transportation assets and ongoing
+        movements.
+      </Paragraph>
+
+      <SubHeading>Key Features</SubHeading>
+      <BulletList
+        items={[
+          'Convoy management with status tracking (planned, en route, delayed, arrived, cancelled)',
+          'Interactive route planning with GeoJSON/GPX/KML/KMZ import support',
+          'Real-time movement tracking with map overlay',
+          'Vehicle and personnel allocation per convoy',
+          'Cargo manifest management with weight and cube calculations',
+          'Throughput charts showing movement volume over time',
+          'Route distance and estimated travel time calculations',
+          'Integration with map module for route visualization and convoy positions',
+          'Movement detail modals with full manifest, vehicle, and timeline information',
+        ]}
+      />
+
+      <SubHeading>Usage</SubHeading>
+      <Paragraph>
+        Navigate to the TRANSPORTATION page from the sidebar. The movement
+        tracker shows all active and planned convoys with status indicators.
+        Use the route planner to create new convoy routes by importing route
+        files or drawing directly on the map. The convoy map provides a
+        real-time view of all convoy positions and routes.
+      </Paragraph>
+
+      <InfoBox title="Route Files">
+        KEYSTONE supports importing routes in GeoJSON, GPX, KML, and KMZ
+        formats. Routes can also be drawn directly on the interactive map
+        using the route drawing tool. All routes are stored and can be
+        reused for future convoy operations.
+      </InfoBox>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Shared table styles
 // ---------------------------------------------------------------------------
 
@@ -1768,6 +2168,14 @@ const sectionComponents: Record<Section, () => JSX.Element> = {
   architecture: ArchitectureSection,
   features: FeaturesSection,
   equipment: EquipmentSection,
+  personnel: PersonnelSection,
+  medical: MedicalSection,
+  fuel: FuelSection,
+  custody: CustodySection,
+  requisitions: RequisitionsSection,
+  readiness: ReadinessSection,
+  transportation: TransportationSection,
+  notifications: NotificationsSection,
   reports: ReportsSection,
   admin: AdminSection,
   deployment: DeploymentSection,

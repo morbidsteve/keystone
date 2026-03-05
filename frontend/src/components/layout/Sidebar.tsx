@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
   Package,
@@ -17,30 +18,43 @@ import {
   Settings,
   Shield,
   BookOpen,
+  Fuel,
+  ShieldCheck,
   X,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { isDemoMode } from '@/api/mockClient';
+import { usePermission } from '@/hooks/usePermission';
 import UnitSelector from '@/components/common/UnitSelector';
 
-const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'DASHBOARD' },
-  { to: '/map', icon: MapPin, label: 'MAP' },
-  { to: '/supply', icon: Package, label: 'SUPPLY' },
-  { to: '/equipment', icon: Wrench, label: 'EQUIPMENT' },
-  { to: '/maintenance', icon: Hammer, label: 'MAINTENANCE' },
-  { to: '/requisitions', icon: ClipboardList, label: 'REQUISITIONS' },
-  { to: '/personnel', icon: Users, label: 'PERSONNEL' },
-  { to: '/readiness', icon: Activity, label: 'READINESS' },
-  { to: '/medical', icon: Heart, label: 'MEDICAL' },
-  { to: '/transportation', icon: Truck, label: 'TRANSPORTATION' },
-  { to: '/ingestion', icon: Upload, label: 'INGESTION' },
-  { to: '/data-sources', icon: Database, label: 'DATA SOURCES' },
-  { to: '/reports', icon: FileText, label: 'REPORTS' },
-  { to: '/alerts', icon: AlertTriangle, label: 'ALERTS' },
-  { to: '/admin', icon: Settings, label: 'ADMIN' },
-  { to: '/docs', icon: BookOpen, label: 'DOCS' },
+interface NavItem {
+  to: string;
+  icon: LucideIcon;
+  label: string;
+  permission?: string;
+}
+
+const navItems: NavItem[] = [
+  { to: '/dashboard', icon: LayoutDashboard, label: 'DASHBOARD', permission: 'dashboard:view' },
+  { to: '/map', icon: MapPin, label: 'MAP', permission: 'map:view' },
+  { to: '/supply', icon: Package, label: 'SUPPLY', permission: 'supply:view' },
+  { to: '/equipment', icon: Wrench, label: 'EQUIPMENT', permission: 'equipment:view' },
+  { to: '/maintenance', icon: Hammer, label: 'MAINTENANCE', permission: 'maintenance:view' },
+  { to: '/requisitions', icon: ClipboardList, label: 'REQUISITIONS', permission: 'requisitions:view' },
+  { to: '/personnel', icon: Users, label: 'PERSONNEL', permission: 'personnel:view' },
+  { to: '/readiness', icon: Activity, label: 'READINESS', permission: 'readiness:view' },
+  { to: '/medical', icon: Heart, label: 'MEDICAL', permission: 'medical:view' },
+  { to: '/transportation', icon: Truck, label: 'TRANSPORTATION', permission: 'transportation:view' },
+  { to: '/fuel', icon: Fuel, label: 'FUEL', permission: 'fuel:view' },
+  { to: '/custody', icon: ShieldCheck, label: 'CUSTODY', permission: 'custody:view' },
+  { to: '/ingestion', icon: Upload, label: 'INGESTION', permission: 'ingestion:view' },
+  { to: '/data-sources', icon: Database, label: 'DATA SOURCES', permission: 'data_sources:view' },
+  { to: '/reports', icon: FileText, label: 'REPORTS', permission: 'reports:view' },
+  { to: '/alerts', icon: AlertTriangle, label: 'ALERTS', permission: 'alerts:view' },
+  { to: '/audit', icon: ClipboardList, label: 'AUDIT', permission: 'audit:view' },
+  { to: '/admin', icon: Settings, label: 'ADMIN', permission: 'admin:users' },
+  { to: '/docs', icon: BookOpen, label: 'DOCS', permission: 'docs:view' },
 ];
 
 interface SidebarProps {
@@ -51,6 +65,11 @@ interface SidebarProps {
 export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   const user = useAuthStore((s) => s.user);
   const { selectedUnitId, setSelectedUnitId } = useDashboardStore();
+  const { hasPermission } = usePermission();
+
+  const filteredNavItems = navItems.filter(
+    (item) => !item.permission || hasPermission(item.permission),
+  );
 
   return (
     <aside
@@ -143,7 +162,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
       {/* Navigation */}
       <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
-        {navItems.map((item) => (
+        {filteredNavItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

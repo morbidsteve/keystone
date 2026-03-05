@@ -42,4 +42,9 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
+    custom_role_id = Column(Integer, ForeignKey("custom_roles.id"), nullable=True)
+
     unit = relationship("Unit", back_populates="users")
+    custom_role = relationship(
+        "CustomRole", back_populates="users", foreign_keys=[custom_role_id]
+    )

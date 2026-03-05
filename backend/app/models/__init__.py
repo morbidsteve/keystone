@@ -160,6 +160,7 @@ from app.models.fuel import (
     FuelConsumptionRate,
     FuelForecast,
 )
+from app.models.rbac import Permission, CustomRole, role_permissions
 from app.models.custody import (
     SensitiveItem,
     SensitiveItemType,
@@ -336,4 +337,7 @@ __all__ = [
     "InventoryEvent",
     "InventoryLineItem",
     "AuditLog",
+    "Permission",
+    "CustomRole",
+    "role_permissions",
 ]

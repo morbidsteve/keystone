@@ -13,7 +13,7 @@ from app.core.auth import (
     hash_password,
     verify_password,
 )
-from app.core.permissions import require_role
+from app.core.permissions import get_user_permissions, require_role
 from app.database import get_db
 from app.models.user import Role, User
 from app.schemas.auth import (
@@ -104,9 +104,14 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     # Only include 'sub' in JWT payload
     access_token = create_access_token(data={"sub": user.username})
 
+    # Build response with effective permissions
+    perms = await get_user_permissions(db, user)
+    user_data = UserResponse.model_validate(user).model_dump()
+    user_data["permissions"] = sorted(perms)
+
     return {
         "token": access_token,
-        "user": UserResponse.model_validate(user).model_dump(),
+        "user": user_data,
     }
 
 
@@ -150,9 +155,15 @@ async def register(
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_me(current_user: User = Depends(get_current_user)):
-    """Get the current authenticated user."""
-    return current_user
+async def get_me(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get the current authenticated user with effective permissions."""
+    perms = await get_user_permissions(db, current_user)
+    user_data = UserResponse.model_validate(current_user).model_dump()
+    user_data["permissions"] = sorted(perms)
+    return user_data
 
 
 @router.get("/users", response_model=List[UserResponse])

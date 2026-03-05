@@ -9,7 +9,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.exceptions import NotFoundError
-from app.core.permissions import check_unit_access, get_accessible_units
+from app.core.permissions import (
+    check_unit_access,
+    get_accessible_units,
+    require_permission,
+)
 from app.database import get_db
 from app.models.supply import SupplyClass, SupplyStatus, SupplyStatusRecord
 from app.models.user import User
@@ -76,7 +80,7 @@ async def get_supply_record(
 async def create_supply_record(
     data: SupplyCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("supply:create")),
 ):
     """Create a new supply status record."""
     await check_unit_access(current_user, data.unit_id, db)
@@ -93,7 +97,7 @@ async def update_supply_record(
     record_id: int,
     data: SupplyUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_permission("supply:edit")),
 ):
     """Update an existing supply record."""
     result = await db.execute(
