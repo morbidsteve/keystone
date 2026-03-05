@@ -136,7 +136,10 @@ class Personnel(Base):
     duty_status = Column(SQLEnum(DutyStatus), nullable=True, default=DutyStatus.PRESENT)
 
     current_movement_id = Column(
-        Integer, ForeignKey("movements.id", ondelete="SET NULL"), nullable=True, index=True
+        Integer,
+        ForeignKey("movements.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())

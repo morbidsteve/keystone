@@ -94,4 +94,6 @@ api_router.include_router(
     custody_router, prefix="/custody", tags=["Custody & Accountability"]
 )
 api_router.include_router(rbac_router, prefix="/rbac", tags=["RBAC"])
-api_router.include_router(predictions_router, prefix="/predictions", tags=["Predictions"])
+api_router.include_router(
+    predictions_router, prefix="/predictions", tags=["Predictions"]
+)

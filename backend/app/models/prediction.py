@@ -33,15 +33,11 @@ class LogisticsRecommendation(Base):
 
     # What triggered this?
     recommendation_type = Column(String(30), nullable=False)
-    triggered_by_rule_id = Column(
-        Integer, ForeignKey("alert_rules.id"), nullable=True
-    )
+    triggered_by_rule_id = Column(Integer, ForeignKey("alert_rules.id"), nullable=True)
     triggered_by_metric = Column(String(200), nullable=True)
 
     # What's recommended?
-    target_unit_id = Column(
-        Integer, ForeignKey("units.id"), nullable=False, index=True
-    )
+    target_unit_id = Column(Integer, ForeignKey("units.id"), nullable=False, index=True)
     description = Column(Text, nullable=False)
 
     # Details
@@ -56,9 +52,7 @@ class LogisticsRecommendation(Base):
 
     # Approval workflow
     status = Column(String(20), default="PENDING", index=True)
-    assigned_to_user_id = Column(
-        Integer, ForeignKey("users.id"), nullable=True
-    )
+    assigned_to_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     assigned_to_role = Column(String(20), nullable=True)
 
     # Outcomes

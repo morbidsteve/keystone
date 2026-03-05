@@ -346,7 +346,9 @@ class MaintenanceAnalytics:
                 Personnel.mos,
                 MaintenanceLabor.labor_type,
                 func.sum(MaintenanceLabor.hours).label("hours"),
-                func.count(func.distinct(MaintenanceLabor.work_order_id)).label("wo_count"),
+                func.count(func.distinct(MaintenanceLabor.work_order_id)).label(
+                    "wo_count"
+                ),
             )
             .select_from(MaintenanceLabor)
             .join(Personnel, MaintenanceLabor.personnel_id == Personnel.id)
@@ -406,13 +408,21 @@ class MaintenanceAnalytics:
                 func.count(MaintenanceWorkOrder.id).label("total_wos"),
                 func.sum(
                     sql_case(
-                        (MaintenanceWorkOrder.category == WorkOrderCategory.CORRECTIVE, 1),
+                        (
+                            MaintenanceWorkOrder.category
+                            == WorkOrderCategory.CORRECTIVE,
+                            1,
+                        ),
                         else_=0,
                     )
                 ).label("corrective"),
                 func.sum(
                     sql_case(
-                        (MaintenanceWorkOrder.category == WorkOrderCategory.PREVENTIVE, 1),
+                        (
+                            MaintenanceWorkOrder.category
+                            == WorkOrderCategory.PREVENTIVE,
+                            1,
+                        ),
                         else_=0,
                     )
                 ).label("preventive"),
@@ -588,15 +598,17 @@ class MaintenanceAnalytics:
             elif trend == "DEGRADING":
                 score = max(0, score - 20)
 
-            results.append({
-                "equipment_type": eq_type,
-                "mtbf_days": round(mtbf, 1),
-                "mttr_hours": round(mttr, 1),
-                "mtbf_trend": trend,
-                "corrective_wos_total": len(wos),
-                "last_corrective_date": wos[-1][0].isoformat() if wos else None,
-                "health_score": score,
-            })
+            results.append(
+                {
+                    "equipment_type": eq_type,
+                    "mtbf_days": round(mtbf, 1),
+                    "mttr_hours": round(mttr, 1),
+                    "mtbf_trend": trend,
+                    "corrective_wos_total": len(wos),
+                    "last_corrective_date": wos[-1][0].isoformat() if wos else None,
+                    "health_score": score,
+                }
+            )
 
         return sorted(results, key=lambda x: x["mtbf_days"])
 

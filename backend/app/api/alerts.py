@@ -341,9 +341,7 @@ async def evaluate_alert_rule(
     return {
         "rule_id": rule_id,
         "alerts_fired": len(alerts),
-        "message": (
-            f"Rule '{rule.name}' evaluated: {len(alerts)} alert(s) fired"
-        ),
+        "message": (f"Rule '{rule.name}' evaluated: {len(alerts)} alert(s) fired"),
     }
 
 
