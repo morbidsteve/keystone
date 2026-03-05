@@ -20,6 +20,7 @@ from app.api.map import router as map_router
 from app.api.personnel import router as personnel_router
 from app.api.convoy_manifest import router as convoy_manifest_router
 from app.api.maintenance import router as maintenance_router
+from app.api.maintenance_analytics import router as maintenance_analytics_router
 from app.api.simulator import router as simulator_router
 from app.api.catalog import router as catalog_router
 from app.api.readiness import router as readiness_router
@@ -57,6 +58,11 @@ api_router.include_router(
 )
 api_router.include_router(
     maintenance_router, prefix="/maintenance", tags=["Maintenance"]
+)
+api_router.include_router(
+    maintenance_analytics_router,
+    prefix="/maintenance",
+    tags=["Maintenance Analytics"],
 )
 api_router.include_router(
     simulator_router, prefix="/simulator", tags=["Simulator"]

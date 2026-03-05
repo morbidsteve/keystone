@@ -904,3 +904,70 @@ export interface ReadinessRollup {
     limitingFactor: string | null;
   }>;
 }
+
+// Maintenance expansion types
+
+export type DeadlineReason = 'AWAITING_PARTS' | 'AWAITING_REPAIR' | 'UNSCHEDULED_MAINTENANCE' | 'SAFETY_ISSUE' | 'MODIFICATION_IN_PROGRESS' | 'PENDING_INSPECTION' | 'DEPOT_OVERHAUL';
+export type PMType = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'ANNUAL' | 'MILEAGE';
+export type EROStatus = 'SUBMITTED' | 'RECEIVED_BY_IMA' | 'IN_REPAIR' | 'AWAITING_RETURN_SHIPMENT' | 'RETURNED' | 'REJECTED';
+export type EchelonOfMaintenance = '1ST' | '2ND' | '3RD' | '4TH' | '5TH';
+export type MaintenanceLevelType = 'ORGANIZATIONAL' | 'INTERMEDIATE' | 'DEPOT';
+
+export interface MaintenanceDeadline {
+  id: number;
+  unitId: number;
+  equipmentId: number;
+  deadlineDate: string;
+  reason: DeadlineReason;
+  workOrderId: number | null;
+  liftedDate: string | null;
+  liftedBy: string | null;
+  notes: string | null;
+  // Display helpers from join
+  bumperNumber?: string;
+  nomenclature?: string;
+  daysDeadlined?: number;
+}
+
+export interface PMScheduleItem {
+  id: number;
+  unitId: number;
+  equipmentId: number;
+  pmType: PMType;
+  intervalValue: number;
+  lastPerformed: string | null;
+  nextDue: string | null;
+  isOverdue: boolean;
+  // Display helpers
+  bumperNumber?: string;
+  nomenclature?: string;
+  daysOverdue?: number;
+}
+
+export interface EquipmentRepairOrder {
+  id: number;
+  unitId: number;
+  equipmentId: number;
+  eroNumber: string;
+  submittedDate: string;
+  status: EROStatus;
+  intermediateMaintenanceActivity: string;
+  estimatedReturnDate: string | null;
+  actualReturnDate: string | null;
+  workOrderId: number | null;
+  repairDescription: string | null;
+  daysInRepair: number;
+  isReturned: boolean;
+}
+
+export interface MaintenanceAnalytics {
+  deadlineRate: number;
+  mttr: number;
+  partsFillRate: number;
+  cannibalizationRate: number;
+  manHoursLast30d: number;
+  overduePms: PMScheduleItem[];
+  deadlineEquipment: MaintenanceDeadline[];
+  topFaults: Array<{ faultDescription: string; equipmentType: string; count: number }>;
+  weeklyTrend: Array<{ weekStart: string; totalHours: number; workOrderCount: number }>;
+}

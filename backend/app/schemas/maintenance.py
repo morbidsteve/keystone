@@ -1,4 +1,4 @@
-"""Maintenance work order, parts, and labor schemas."""
+"""Maintenance work order, parts, labor, deadline, PM schedule, and ERO schemas."""
 
 from datetime import date, datetime
 from typing import List, Optional
@@ -11,6 +11,11 @@ from app.models.maintenance import (
     PartStatus,
     WorkOrderCategory,
     WorkOrderStatus,
+)
+from app.models.maintenance_schedule import (
+    DeadlineReason,
+    EROStatus,
+    PMType,
 )
 
 
@@ -142,5 +147,91 @@ class MaintenanceWorkOrderResponse(BaseModel):
 class MaintenanceWorkOrderDetailResponse(MaintenanceWorkOrderResponse):
     parts: List[MaintenancePartResponse] = []
     labor_entries: List[MaintenanceLaborResponse] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# --- MaintenanceDeadline schemas ---
+
+
+class MaintenanceDeadlineCreate(BaseModel):
+    unit_id: int
+    equipment_id: int
+    reason: DeadlineReason
+    work_order_id: Optional[int] = None
+    notes: Optional[str] = Field(None, max_length=5000)
+
+
+class MaintenanceDeadlineUpdate(BaseModel):
+    notes: Optional[str] = Field(None, max_length=5000)
+
+
+class MaintenanceDeadlineResponse(BaseModel):
+    id: int
+    unit_id: int
+    equipment_id: int
+    deadline_date: Optional[datetime] = None
+    reason: DeadlineReason
+    work_order_id: Optional[int] = None
+    lifted_date: Optional[datetime] = None
+    lifted_by: Optional[str] = None
+    notes: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# --- PreventiveMaintenanceSchedule schemas ---
+
+
+class PreventiveMaintenanceScheduleCreate(BaseModel):
+    unit_id: int
+    equipment_id: int
+    pm_type: PMType
+    interval_value: int = Field(..., ge=1)
+    last_performed: Optional[datetime] = None
+    next_due: Optional[datetime] = None
+
+
+class PreventiveMaintenanceScheduleResponse(BaseModel):
+    id: int
+    unit_id: int
+    equipment_id: int
+    pm_type: PMType
+    interval_value: int
+    last_performed: Optional[datetime] = None
+    next_due: Optional[datetime] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# --- EquipmentRepairOrder schemas ---
+
+
+class EquipmentRepairOrderCreate(BaseModel):
+    unit_id: int
+    equipment_id: int
+    ero_number: str = Field(..., max_length=50)
+    status: EROStatus = EROStatus.SUBMITTED
+    intermediate_maintenance_activity: str = Field(..., max_length=200)
+    estimated_return_date: Optional[datetime] = None
+    work_order_id: Optional[int] = None
+    repair_description: Optional[str] = Field(None, max_length=5000)
+
+
+class EquipmentRepairOrderResponse(BaseModel):
+    id: int
+    unit_id: int
+    equipment_id: int
+    ero_number: str
+    submitted_date: Optional[datetime] = None
+    status: EROStatus
+    intermediate_maintenance_activity: str
+    estimated_return_date: Optional[datetime] = None
+    actual_return_date: Optional[datetime] = None
+    work_order_id: Optional[int] = None
+    repair_description: Optional[str] = None
+    updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -1,5 +1,6 @@
 """Maintenance work order CRUD endpoints with parts and labor sub-routes."""
 
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -17,8 +18,15 @@ from app.models.maintenance import (
     MaintenanceWorkOrder,
     WorkOrderStatus,
 )
+from app.models.maintenance_schedule import (
+    MaintenanceDeadline,
+    PreventiveMaintenanceSchedule,
+)
 from app.models.user import Role, User
 from app.schemas.maintenance import (
+    MaintenanceDeadlineCreate,
+    MaintenanceDeadlineResponse,
+    MaintenanceDeadlineUpdate,
     MaintenanceLaborCreate,
     MaintenanceLaborResponse,
     MaintenanceLaborUpdate,
@@ -29,6 +37,8 @@ from app.schemas.maintenance import (
     MaintenanceWorkOrderDetailResponse,
     MaintenanceWorkOrderResponse,
     MaintenanceWorkOrderUpdate,
+    PreventiveMaintenanceScheduleCreate,
+    PreventiveMaintenanceScheduleResponse,
 )
 
 router = APIRouter()
@@ -381,3 +391,149 @@ async def delete_labor(
 
     await db.delete(labor)
     await db.flush()
+
+
+# --- Deadline routes ---
+
+
+@router.get("/deadlines", response_model=List[MaintenanceDeadlineResponse])
+async def list_deadlines(
+    unit_id: Optional[int] = Query(None),
+    active_only: bool = Query(False),
+    limit: int = Query(100, le=500),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """List maintenance deadlines filtered by unit access."""
+    accessible = await get_accessible_units(db, current_user)
+    query = select(MaintenanceDeadline).where(
+        MaintenanceDeadline.unit_id.in_(accessible)
+    )
+
+    if unit_id and unit_id in accessible:
+        query = query.where(MaintenanceDeadline.unit_id == unit_id)
+    if active_only:
+        query = query.where(MaintenanceDeadline.lifted_date.is_(None))
+
+    query = (
+        query.order_by(MaintenanceDeadline.deadline_date.desc())
+        .offset(offset)
+        .limit(limit)
+    )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.post(
+    "/deadlines",
+    response_model=MaintenanceDeadlineResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def create_deadline(
+    data: MaintenanceDeadlineCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Create a new maintenance deadline."""
+    accessible = await get_accessible_units(db, current_user)
+    if data.unit_id not in accessible:
+        raise NotFoundError("Unit", data.unit_id)
+
+    deadline = MaintenanceDeadline(**data.model_dump())
+    db.add(deadline)
+    await db.flush()
+    await db.refresh(deadline)
+    return deadline
+
+
+@router.put(
+    "/deadlines/{deadline_id}",
+    response_model=MaintenanceDeadlineResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def lift_deadline(
+    deadline_id: int,
+    data: MaintenanceDeadlineUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Lift (resolve) a maintenance deadline."""
+    result = await db.execute(
+        select(MaintenanceDeadline).where(MaintenanceDeadline.id == deadline_id)
+    )
+    deadline = result.scalar_one_or_none()
+    if not deadline:
+        raise NotFoundError("Maintenance Deadline", deadline_id)
+
+    accessible = await get_accessible_units(db, current_user)
+    if deadline.unit_id not in accessible:
+        raise NotFoundError("Maintenance Deadline", deadline_id)
+
+    deadline.lifted_date = datetime.now(timezone.utc)
+    deadline.lifted_by = current_user.username
+    if data.notes is not None:
+        deadline.notes = data.notes
+
+    await db.flush()
+    await db.refresh(deadline)
+    return deadline
+
+
+# --- PM Schedule routes ---
+
+
+@router.get(
+    "/pm-schedule", response_model=List[PreventiveMaintenanceScheduleResponse]
+)
+async def list_pm_schedules(
+    unit_id: Optional[int] = Query(None),
+    overdue_only: bool = Query(False),
+    limit: int = Query(100, le=500),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """List preventive maintenance schedules filtered by unit access."""
+    accessible = await get_accessible_units(db, current_user)
+    query = select(PreventiveMaintenanceSchedule).where(
+        PreventiveMaintenanceSchedule.unit_id.in_(accessible)
+    )
+
+    if unit_id and unit_id in accessible:
+        query = query.where(PreventiveMaintenanceSchedule.unit_id == unit_id)
+    if overdue_only:
+        now = datetime.now(timezone.utc)
+        query = query.where(PreventiveMaintenanceSchedule.next_due < now)
+
+    query = (
+        query.order_by(PreventiveMaintenanceSchedule.next_due.asc())
+        .offset(offset)
+        .limit(limit)
+    )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.post(
+    "/pm-schedule",
+    response_model=PreventiveMaintenanceScheduleResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def create_pm_schedule(
+    data: PreventiveMaintenanceScheduleCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Create a new preventive maintenance schedule."""
+    accessible = await get_accessible_units(db, current_user)
+    if data.unit_id not in accessible:
+        raise NotFoundError("Unit", data.unit_id)
+
+    pm = PreventiveMaintenanceSchedule(**data.model_dump())
+    db.add(pm)
+    await db.flush()
+    await db.refresh(pm)
+    return pm

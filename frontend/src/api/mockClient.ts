@@ -4,6 +4,8 @@
 // is enabled or when no backend URL is configured.
 // =============================================================================
 
+import { jsPDF } from 'jspdf';
+
 import type {
   LoginResponse,
   User,
@@ -704,11 +706,10 @@ export const mockApi = {
   // Report Export (PDF, API destinations)
   // -------------------------------------------------------------------------
 
-  async exportReportPdf(_reportId: string): Promise<Blob> {
+  async exportReportPdf(reportId: string): Promise<Blob> {
     await mockDelay(400);
-    // Return a minimal mock blob — in demo mode, the user will see a download trigger
-    const text = 'KEYSTONE Report PDF (Demo Mode)\n\nThis is a placeholder PDF in demo mode.';
-    return new Blob([text], { type: 'application/pdf' });
+    const report = demoReports.find((r) => r.id === reportId) || demoReports[0];
+    return buildReportPdf(report);
   },
 
   async getExportDestinations(): Promise<ExportDestination[]> {
@@ -1198,6 +1199,617 @@ export const mockApi = {
     );
   },
 };
+
+// ---------------------------------------------------------------------------
+// PDF generation helper — produces a real PDF document from report data
+// ---------------------------------------------------------------------------
+
+/** Colors used throughout the PDF */
+const PDF_COLORS = {
+  classificationRed: [180, 30, 30] as const,
+  navyBlue: [0, 42, 92] as const,
+  darkText: [30, 30, 30] as const,
+  grayText: [100, 100, 100] as const,
+  tableHeader: [0, 42, 92] as const,
+  tableHeaderText: [255, 255, 255] as const,
+  tableRowAlt: [240, 244, 248] as const,
+  statusRed: [180, 30, 30] as const,
+  statusAmber: [180, 120, 0] as const,
+  statusGreen: [0, 120, 60] as const,
+  black: [0, 0, 0] as const,
+  white: [255, 255, 255] as const,
+};
+
+type RGBColor = readonly [number, number, number];
+
+function setColor(doc: jsPDF, color: RGBColor): void {
+  doc.setTextColor(color[0], color[1], color[2]);
+}
+
+function setFillColor(doc: jsPDF, color: RGBColor): void {
+  doc.setFillColor(color[0], color[1], color[2]);
+}
+
+function setDrawColor(doc: jsPDF, color: RGBColor): void {
+  doc.setDrawColor(color[0], color[1], color[2]);
+}
+
+function statusColor(status: string): RGBColor {
+  const s = status.toUpperCase();
+  if (s === 'RED' || s === 'CRITICAL' || s === 'DEADLINED' || s === 'NMC_M' || s === 'NMC_S') return PDF_COLORS.statusRed;
+  if (s === 'AMBER' || s === 'WARNING') return PDF_COLORS.statusAmber;
+  if (s === 'GREEN' || s === 'FMC') return PDF_COLORS.statusGreen;
+  return PDF_COLORS.darkText;
+}
+
+/** Check if we need a new page, return updated y position */
+function checkPage(doc: jsPDF, y: number, needed: number): number {
+  const pageHeight = doc.internal.pageSize.getHeight();
+  if (y + needed > pageHeight - 25) {
+    doc.addPage();
+    return addClassificationBanner(doc, 10);
+  }
+  return y;
+}
+
+/** Draw the UNCLASSIFIED banner at top of page */
+function addClassificationBanner(doc: jsPDF, y: number): number {
+  const pageWidth = doc.internal.pageSize.getWidth();
+  setFillColor(doc, PDF_COLORS.classificationRed);
+  doc.rect(0, y - 6, pageWidth, 10, 'F');
+  doc.setFont('Helvetica', 'bold');
+  doc.setFontSize(10);
+  setColor(doc, PDF_COLORS.white);
+  doc.text('UNCLASSIFIED // DEMO MODE', pageWidth / 2, y + 1, { align: 'center' });
+  setColor(doc, PDF_COLORS.darkText);
+  return y + 12;
+}
+
+/** Draw the KEYSTONE footer with page number */
+function addFooter(doc: jsPDF): void {
+  const pageCount = doc.getNumberOfPages();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(8);
+    setColor(doc, PDF_COLORS.grayText);
+    doc.text(`KEYSTONE — Logistics Common Operating Picture`, 15, pageHeight - 10);
+    doc.text(`Page ${i} of ${pageCount}`, pageWidth - 15, pageHeight - 10, { align: 'right' });
+    // Bottom classification banner
+    setFillColor(doc, PDF_COLORS.classificationRed);
+    doc.rect(0, pageHeight - 6, pageWidth, 6, 'F');
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(8);
+    setColor(doc, PDF_COLORS.white);
+    doc.text('UNCLASSIFIED // DEMO MODE', pageWidth / 2, pageHeight - 2, { align: 'center' });
+  }
+}
+
+/** Draw a section header */
+function addSectionHeader(doc: jsPDF, y: number, title: string): number {
+  y = checkPage(doc, y, 16);
+  const pageWidth = doc.internal.pageSize.getWidth();
+  setFillColor(doc, PDF_COLORS.navyBlue);
+  doc.rect(15, y - 4, pageWidth - 30, 8, 'F');
+  doc.setFont('Helvetica', 'bold');
+  doc.setFontSize(10);
+  setColor(doc, PDF_COLORS.white);
+  doc.text(title, 18, y + 1.5);
+  setColor(doc, PDF_COLORS.darkText);
+  return y + 12;
+}
+
+/** Draw a key-value pair line */
+function addKeyValue(doc: jsPDF, y: number, key: string, value: string, statusVal?: string): number {
+  y = checkPage(doc, y, 8);
+  doc.setFont('Helvetica', 'bold');
+  doc.setFontSize(9);
+  setColor(doc, PDF_COLORS.darkText);
+  doc.text(`${key}:`, 18, y);
+  doc.setFont('Helvetica', 'normal');
+  if (statusVal) {
+    setColor(doc, statusColor(statusVal));
+  } else {
+    setColor(doc, PDF_COLORS.darkText);
+  }
+  doc.text(value, 70, y);
+  setColor(doc, PDF_COLORS.darkText);
+  return y + 6;
+}
+
+/** Draw a simple table with headers and rows */
+function addTable(
+  doc: jsPDF,
+  y: number,
+  headers: string[],
+  rows: string[][],
+  colWidths: number[],
+): number {
+  const startX = 18;
+  const rowHeight = 7;
+
+  // Calculate total needed height and check if we need a new page for at least header + 1 row
+  y = checkPage(doc, y, rowHeight * 2 + 4);
+
+  // Header
+  setFillColor(doc, PDF_COLORS.tableHeader);
+  const totalWidth = colWidths.reduce((s, w) => s + w, 0);
+  doc.rect(startX - 1, y - 4.5, totalWidth + 2, rowHeight, 'F');
+  doc.setFont('Helvetica', 'bold');
+  doc.setFontSize(8);
+  setColor(doc, PDF_COLORS.tableHeaderText);
+
+  let xPos = startX;
+  for (let i = 0; i < headers.length; i++) {
+    doc.text(headers[i], xPos, y);
+    xPos += colWidths[i];
+  }
+  y += rowHeight;
+
+  // Data rows
+  doc.setFont('Helvetica', 'normal');
+  doc.setFontSize(8);
+  setDrawColor(doc, [200, 200, 200]);
+
+  for (let r = 0; r < rows.length; r++) {
+    y = checkPage(doc, y, rowHeight + 2);
+
+    // Alternating row background
+    if (r % 2 === 1) {
+      setFillColor(doc, PDF_COLORS.tableRowAlt);
+      doc.rect(startX - 1, y - 4.5, totalWidth + 2, rowHeight, 'F');
+    }
+
+    xPos = startX;
+    for (let c = 0; c < rows[r].length; c++) {
+      // Color status columns
+      const cellVal = rows[r][c];
+      if (['RED', 'AMBER', 'GREEN', 'CRITICAL', 'DEADLINED'].includes(cellVal.toUpperCase())) {
+        setColor(doc, statusColor(cellVal));
+      } else {
+        setColor(doc, PDF_COLORS.darkText);
+      }
+      doc.text(cellVal, xPos, y);
+      xPos += colWidths[c];
+    }
+    y += rowHeight;
+  }
+
+  setColor(doc, PDF_COLORS.darkText);
+  return y + 4;
+}
+
+/** Draw a Record<string, number> as a two-column table */
+function addBreakdownTable(doc: jsPDF, y: number, title: string, data: Record<string, number>): number {
+  y = addSectionHeader(doc, y, title);
+  const entries = Object.entries(data);
+  if (entries.length === 0) {
+    doc.setFont('Helvetica', 'italic');
+    doc.setFontSize(9);
+    doc.text('No data available', 18, y);
+    return y + 8;
+  }
+  const headers = ['Category', 'Count'];
+  const rows = entries.map(([k, v]) => [k, String(v)]);
+  return addTable(doc, y, headers, rows, [80, 40]);
+}
+
+/** Render plain text content (for legacy reports without parsedContent) */
+function addPlainTextContent(doc: jsPDF, y: number, content: string): number {
+  doc.setFont('Helvetica', 'normal');
+  doc.setFontSize(9);
+  setColor(doc, PDF_COLORS.darkText);
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const maxWidth = pageWidth - 36;
+
+  const lines = content.split('\n');
+  for (const line of lines) {
+    if (line.trim() === '') {
+      y += 4;
+      continue;
+    }
+    // Check if line looks like a header (all caps or starts with section marker)
+    if (line === line.toUpperCase() && line.trim().length > 3 && !line.startsWith(' ')) {
+      y = checkPage(doc, y, 14);
+      y += 2;
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(10);
+      setColor(doc, PDF_COLORS.navyBlue);
+      doc.text(line, 18, y);
+      setColor(doc, PDF_COLORS.darkText);
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(9);
+      y += 7;
+    } else if (line.startsWith('CRITICAL:') || line.startsWith('RECOMMENDATION:')) {
+      y = checkPage(doc, y, 10);
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(9);
+      const prefix = line.startsWith('CRITICAL:') ? 'CRITICAL:' : 'RECOMMENDATION:';
+      setColor(doc, line.startsWith('CRITICAL:') ? PDF_COLORS.statusRed : PDF_COLORS.navyBlue);
+      doc.text(prefix, 18, y);
+      doc.setFont('Helvetica', 'normal');
+      setColor(doc, PDF_COLORS.darkText);
+      const rest = line.slice(prefix.length).trim();
+      const wrapped = doc.splitTextToSize(rest, maxWidth - 30);
+      doc.text(wrapped, 18 + doc.getTextWidth(prefix + ' '), y);
+      y += wrapped.length * 5 + 3;
+    } else {
+      y = checkPage(doc, y, 8);
+      const wrapped = doc.splitTextToSize(line, maxWidth);
+      doc.text(wrapped, 18, y);
+      y += wrapped.length * 5 + 1;
+    }
+  }
+  return y;
+}
+
+/** Render structured LOGSTAT content */
+function renderLogstat(doc: jsPDF, y: number, c: ReportContent): number {
+  // Equipment Readiness
+  if (c.equipment_readiness) {
+    y = addSectionHeader(doc, y, 'EQUIPMENT READINESS');
+    y = addKeyValue(doc, y, 'Total Possessed', String(c.equipment_readiness.total_possessed));
+    y = addKeyValue(doc, y, 'Mission Capable', String(c.equipment_readiness.total_mission_capable));
+    y = addKeyValue(doc, y, 'Readiness', `${c.equipment_readiness.readiness_pct}%`, c.equipment_readiness.status);
+    y = addKeyValue(doc, y, 'Status', c.equipment_readiness.status, c.equipment_readiness.status);
+    y += 4;
+  }
+
+  // Supply Status
+  if (c.supply_status && c.supply_status.length > 0) {
+    y = addSectionHeader(doc, y, 'SUPPLY STATUS');
+    for (const ss of c.supply_status) {
+      y = checkPage(doc, y, 20);
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(9);
+      setColor(doc, PDF_COLORS.navyBlue);
+      doc.text(`Class ${ss.class} — ${ss.class_name}`, 18, y);
+      if (ss.overall_status) {
+        setColor(doc, statusColor(ss.overall_status));
+        doc.text(`  [${ss.overall_status}]`, 18 + doc.getTextWidth(`Class ${ss.class} — ${ss.class_name}`), y);
+      }
+      setColor(doc, PDF_COLORS.darkText);
+      y += 8;
+
+      if (ss.items.length > 0) {
+        const headers = ['Item', 'On Hand', 'Required', 'DOS', 'Rate', 'Status'];
+        const rows = ss.items.map(it => [
+          it.item.length > 22 ? it.item.slice(0, 22) + '...' : it.item,
+          String(it.on_hand),
+          String(it.required),
+          it.dos.toFixed(1),
+          it.consumption_rate.toFixed(2),
+          it.status,
+        ]);
+        y = addTable(doc, y, headers, rows, [50, 22, 22, 18, 18, 20]);
+      }
+    }
+  }
+
+  // Summary line items
+  if (c.open_work_orders !== undefined) {
+    y = addSectionHeader(doc, y, 'ADDITIONAL METRICS');
+    y = addKeyValue(doc, y, 'Open Work Orders', String(c.open_work_orders));
+    if (c.active_movements !== undefined) y = addKeyValue(doc, y, 'Active Movements', String(c.active_movements));
+    if (c.personnel_strength !== undefined) y = addKeyValue(doc, y, 'Personnel Strength', String(c.personnel_strength));
+    if (c.total_supply_items !== undefined) y = addKeyValue(doc, y, 'Total Supply Items', String(c.total_supply_items));
+  }
+  return y;
+}
+
+/** Render structured READINESS content */
+function renderReadiness(doc: jsPDF, y: number, c: ReportContent): number {
+  y = addSectionHeader(doc, y, 'OVERALL READINESS');
+  if (c.overall_readiness_pct !== undefined) {
+    y = addKeyValue(doc, y, 'Readiness', `${c.overall_readiness_pct}%`, c.overall_status);
+  }
+  if (c.overall_status) y = addKeyValue(doc, y, 'Status', c.overall_status, c.overall_status);
+  if (c.total_possessed !== undefined) y = addKeyValue(doc, y, 'Total Possessed', String(c.total_possessed));
+  if (c.total_mission_capable !== undefined) y = addKeyValue(doc, y, 'Mission Capable', String(c.total_mission_capable));
+  if (c.total_nmc !== undefined) y = addKeyValue(doc, y, 'Not Mission Capable', String(c.total_nmc));
+  y += 4;
+
+  if (c.equipment_types && c.equipment_types.length > 0) {
+    y = addSectionHeader(doc, y, 'EQUIPMENT BY TYPE');
+    const headers = ['TAMCN', 'Nomenclature', 'Poss', 'MC', 'NMC-M', 'NMC-S', 'Rdns %', 'Status'];
+    const rows = c.equipment_types.map(et => [
+      et.tamcn,
+      et.nomenclature.length > 18 ? et.nomenclature.slice(0, 18) + '..' : et.nomenclature,
+      String(et.total_possessed),
+      String(et.mission_capable),
+      String(et.nmc_maintenance ?? '-'),
+      String(et.nmc_supply ?? '-'),
+      `${et.readiness_pct.toFixed(1)}%`,
+      et.status,
+    ]);
+    y = addTable(doc, y, headers, rows, [22, 38, 16, 16, 18, 18, 20, 18]);
+  }
+
+  if (c.individual_status_breakdown) {
+    y = addBreakdownTable(doc, y, 'INDIVIDUAL STATUS BREAKDOWN', c.individual_status_breakdown);
+  }
+
+  if (c.deadlined_items && c.deadlined_items.length > 0) {
+    y = addSectionHeader(doc, y, 'DEADLINED ITEMS');
+    const headers = ['Bumper #', 'Nomenclature', 'TAMCN', 'Type'];
+    const rows = c.deadlined_items.map(d => [
+      d.bumper_number,
+      d.nomenclature.length > 20 ? d.nomenclature.slice(0, 20) + '..' : d.nomenclature,
+      d.tamcn,
+      d.equipment_type.length > 18 ? d.equipment_type.slice(0, 18) + '..' : d.equipment_type,
+    ]);
+    y = addTable(doc, y, headers, rows, [30, 45, 25, 45]);
+  }
+  return y;
+}
+
+/** Render structured SUPPLY_STATUS content */
+function renderSupplyStatus(doc: jsPDF, y: number, c: ReportContent): number {
+  y = addSectionHeader(doc, y, 'SUPPLY OVERVIEW');
+  if (c.overall_health) y = addKeyValue(doc, y, 'Overall Health', c.overall_health, c.overall_health);
+  if (c.total_classes_tracked !== undefined) y = addKeyValue(doc, y, 'Classes Tracked', String(c.total_classes_tracked));
+  if (c.red_classes !== undefined) y = addKeyValue(doc, y, 'Classes RED', String(c.red_classes), 'RED');
+  if (c.amber_classes !== undefined) y = addKeyValue(doc, y, 'Classes AMBER', String(c.amber_classes), 'AMBER');
+  y += 4;
+
+  if (c.class_summaries && c.class_summaries.length > 0) {
+    y = addSectionHeader(doc, y, 'CLASS SUMMARIES');
+    const headers = ['Class', 'Name', 'Fill %', 'Avg DOS', 'Items', 'RED', 'AMBER', 'Status'];
+    const rows = c.class_summaries.map(cs => [
+      cs.supply_class,
+      cs.class_name.length > 16 ? cs.class_name.slice(0, 16) + '..' : cs.class_name,
+      `${cs.fill_rate_pct}%`,
+      cs.avg_dos.toFixed(1),
+      String(cs.item_count),
+      String(cs.red_items),
+      String(cs.amber_items),
+      cs.status,
+    ]);
+    y = addTable(doc, y, headers, rows, [16, 32, 18, 20, 18, 16, 18, 18]);
+
+    // Critical items per class
+    for (const cs of c.class_summaries) {
+      if (cs.critical_items && cs.critical_items.length > 0) {
+        y = checkPage(doc, y, 30);
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(9);
+        setColor(doc, PDF_COLORS.statusRed);
+        doc.text(`Critical Items — Class ${cs.supply_class}`, 18, y);
+        setColor(doc, PDF_COLORS.darkText);
+        y += 8;
+        const critHeaders = ['Item', 'On Hand', 'Required', 'DOS'];
+        const critRows = cs.critical_items.map(ci => [
+          ci.item.length > 30 ? ci.item.slice(0, 30) + '..' : ci.item,
+          String(ci.on_hand),
+          String(ci.required),
+          ci.dos.toFixed(1),
+        ]);
+        y = addTable(doc, y, critHeaders, critRows, [60, 25, 25, 20]);
+      }
+    }
+  }
+  return y;
+}
+
+/** Render structured EQUIPMENT_STATUS content */
+function renderEquipmentStatus(doc: jsPDF, y: number, c: ReportContent): number {
+  if (c.fleet_readiness) {
+    y = addSectionHeader(doc, y, 'FLEET READINESS');
+    y = addKeyValue(doc, y, 'Total Possessed', String(c.fleet_readiness.total_possessed));
+    y = addKeyValue(doc, y, 'Mission Capable', String(c.fleet_readiness.total_mission_capable));
+    y = addKeyValue(doc, y, 'NMC (Maintenance)', String(c.fleet_readiness.total_nmc_maintenance));
+    y = addKeyValue(doc, y, 'NMC (Supply)', String(c.fleet_readiness.total_nmc_supply));
+    y = addKeyValue(doc, y, 'Readiness', `${c.fleet_readiness.readiness_pct}%`, c.fleet_readiness.status);
+    y += 4;
+  }
+
+  if (c.fleet_by_type && c.fleet_by_type.length > 0) {
+    y = addSectionHeader(doc, y, 'FLEET BY TYPE');
+    const headers = ['TAMCN', 'Nomenclature', 'Poss', 'MC', 'NMC-M', 'NMC-S', 'Rdns %', 'Status'];
+    const rows = c.fleet_by_type.map(ft => [
+      ft.tamcn,
+      ft.nomenclature.length > 18 ? ft.nomenclature.slice(0, 18) + '..' : ft.nomenclature,
+      String(ft.total_possessed),
+      String(ft.mission_capable),
+      String(ft.nmc_maintenance ?? '-'),
+      String(ft.nmc_supply ?? '-'),
+      `${ft.readiness_pct.toFixed(1)}%`,
+      ft.status,
+    ]);
+    y = addTable(doc, y, headers, rows, [22, 38, 16, 16, 18, 18, 20, 18]);
+  }
+
+  if (c.top_deadlined_items && c.top_deadlined_items.length > 0) {
+    y = addSectionHeader(doc, y, 'TOP DEADLINED ITEMS');
+    const headers = ['Bumper #', 'Nomenclature', 'TAMCN', 'Fault'];
+    const rows = c.top_deadlined_items.map(d => [
+      d.bumper_number,
+      d.nomenclature.length > 20 ? d.nomenclature.slice(0, 20) + '..' : d.nomenclature,
+      d.tamcn,
+      (d.fault || 'N/A').length > 25 ? (d.fault || 'N/A').slice(0, 25) + '..' : (d.fault || 'N/A'),
+    ]);
+    y = addTable(doc, y, headers, rows, [30, 42, 25, 50]);
+  }
+  return y;
+}
+
+/** Render structured MAINTENANCE_SUMMARY content */
+function renderMaintenanceSummary(doc: jsPDF, y: number, c: ReportContent): number {
+  y = addSectionHeader(doc, y, 'WORK ORDER SUMMARY');
+  if (c.total_work_orders !== undefined) y = addKeyValue(doc, y, 'Total Work Orders', String(c.total_work_orders));
+  if (c.avg_completion_time_hours !== undefined) y = addKeyValue(doc, y, 'Avg Completion Time', `${c.avg_completion_time_hours} hrs`);
+  if (c.total_labor_hours !== undefined) y = addKeyValue(doc, y, 'Total Labor Hours', String(c.total_labor_hours));
+  if (c.parts_on_order !== undefined) y = addKeyValue(doc, y, 'Parts On Order', String(c.parts_on_order));
+  y += 4;
+
+  if (c.work_order_counts) {
+    y = addBreakdownTable(doc, y, 'WORK ORDERS BY STATUS', c.work_order_counts);
+  }
+
+  if (c.top_issues && c.top_issues.length > 0) {
+    y = addSectionHeader(doc, y, 'TOP MAINTENANCE ISSUES');
+    const headers = ['Equipment Type', 'Open Work Orders'];
+    const rows = c.top_issues.map(ti => [ti.equipment_type, String(ti.open_work_orders)]);
+    y = addTable(doc, y, headers, rows, [80, 40]);
+  }
+  return y;
+}
+
+/** Render structured MOVEMENT_SUMMARY content */
+function renderMovementSummary(doc: jsPDF, y: number, c: ReportContent): number {
+  y = addSectionHeader(doc, y, 'MOVEMENT OVERVIEW');
+  if (c.total_movements !== undefined) y = addKeyValue(doc, y, 'Total Movements', String(c.total_movements));
+  if (c.total_vehicles_in_transit !== undefined) y = addKeyValue(doc, y, 'Vehicles In Transit', String(c.total_vehicles_in_transit));
+  if (c.total_personnel_in_transit !== undefined) y = addKeyValue(doc, y, 'Personnel In Transit', String(c.total_personnel_in_transit));
+  y += 4;
+
+  if (c.status_counts) {
+    y = addBreakdownTable(doc, y, 'MOVEMENTS BY STATUS', c.status_counts);
+  }
+
+  if (c.recent_completions && c.recent_completions.length > 0) {
+    y = addSectionHeader(doc, y, 'RECENT COMPLETIONS');
+    const headers = ['Convoy ID', 'Origin', 'Destination', 'Vehicles', 'Arrival'];
+    const rows = c.recent_completions.map(rc => [
+      rc.convoy_id || '-',
+      rc.origin.length > 18 ? rc.origin.slice(0, 18) + '..' : rc.origin,
+      rc.destination.length > 18 ? rc.destination.slice(0, 18) + '..' : rc.destination,
+      String(rc.vehicle_count),
+      rc.arrival ? new Date(rc.arrival).toLocaleDateString() : '-',
+    ]);
+    y = addTable(doc, y, headers, rows, [28, 36, 36, 22, 28]);
+  }
+  return y;
+}
+
+/** Render structured PERSONNEL_STRENGTH content */
+function renderPersonnelStrength(doc: jsPDF, y: number, c: ReportContent): number {
+  y = addSectionHeader(doc, y, 'PERSONNEL OVERVIEW');
+  if (c.total_assigned !== undefined) y = addKeyValue(doc, y, 'Total Assigned', String(c.total_assigned));
+  if (c.total_active !== undefined) y = addKeyValue(doc, y, 'Total Active', String(c.total_active));
+  y += 4;
+
+  if (c.status_breakdown) {
+    y = addBreakdownTable(doc, y, 'STATUS BREAKDOWN', c.status_breakdown);
+  }
+  if (c.rank_breakdown) {
+    y = addBreakdownTable(doc, y, 'RANK BREAKDOWN', c.rank_breakdown);
+  }
+  if (c.mos_breakdown) {
+    y = addBreakdownTable(doc, y, 'MOS BREAKDOWN', c.mos_breakdown);
+  }
+  return y;
+}
+
+/** Build a complete PDF document for a report */
+function buildReportPdf(report: Report): Blob {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  let y = 10;
+
+  // Classification banner
+  y = addClassificationBanner(doc, y);
+  y += 4;
+
+  // Report title
+  doc.setFont('Helvetica', 'bold');
+  doc.setFontSize(16);
+  setColor(doc, PDF_COLORS.navyBlue);
+  const titleLines = doc.splitTextToSize(report.title, pageWidth - 40);
+  doc.text(titleLines, pageWidth / 2, y, { align: 'center' });
+  y += titleLines.length * 7 + 4;
+
+  // Horizontal rule
+  setDrawColor(doc, PDF_COLORS.navyBlue);
+  doc.setLineWidth(0.5);
+  doc.line(15, y, pageWidth - 15, y);
+  y += 8;
+
+  // Metadata block
+  doc.setFont('Helvetica', 'normal');
+  doc.setFontSize(10);
+  setColor(doc, PDF_COLORS.darkText);
+  y = addKeyValue(doc, y, 'Unit', report.unitName);
+  y = addKeyValue(doc, y, 'Report Type', report.type);
+  y = addKeyValue(doc, y, 'Status', report.status, report.status === 'FINALIZED' ? 'GREEN' : report.status === 'DRAFT' ? 'AMBER' : undefined);
+  y = addKeyValue(doc, y, 'Generated', new Date(report.generatedAt).toLocaleString());
+  y = addKeyValue(doc, y, 'Generated By', report.generatedBy);
+  if (report.finalizedBy) {
+    y = addKeyValue(doc, y, 'Finalized By', report.finalizedBy);
+  }
+  if (report.dateRange) {
+    const start = new Date(report.dateRange.start).toLocaleDateString();
+    const end = new Date(report.dateRange.end).toLocaleDateString();
+    y = addKeyValue(doc, y, 'Period', `${start} — ${end}`);
+  }
+  y += 6;
+
+  // Content
+  // Try structured parsedContent first, then fall back to JSON-parsed content string, then plain text
+  let structured: ReportContent | null = null;
+  if (report.parsedContent) {
+    structured = report.parsedContent;
+  } else if (report.content) {
+    try {
+      const parsed = JSON.parse(report.content) as ReportContent;
+      if (parsed && typeof parsed === 'object' && parsed.report_type) {
+        structured = parsed;
+      }
+    } catch {
+      // Not JSON — use plain text fallback
+    }
+  }
+
+  if (structured) {
+    // Route to the appropriate renderer based on report type
+    const rt = (structured.report_type || report.type || '').toUpperCase();
+    if (rt === 'LOGSTAT') {
+      y = renderLogstat(doc, y, structured);
+    } else if (rt === 'READINESS') {
+      y = renderReadiness(doc, y, structured);
+    } else if (rt === 'SUPPLY_STATUS') {
+      y = renderSupplyStatus(doc, y, structured);
+    } else if (rt === 'EQUIPMENT_STATUS') {
+      y = renderEquipmentStatus(doc, y, structured);
+    } else if (rt === 'MAINTENANCE_SUMMARY') {
+      y = renderMaintenanceSummary(doc, y, structured);
+    } else if (rt === 'MOVEMENT_SUMMARY') {
+      y = renderMovementSummary(doc, y, structured);
+    } else if (rt === 'PERSONNEL_STRENGTH') {
+      y = renderPersonnelStrength(doc, y, structured);
+    } else {
+      // Generic: render all key-value pairs we can
+      y = addSectionHeader(doc, y, 'REPORT DATA');
+      for (const [key, value] of Object.entries(structured)) {
+        if (key === 'report_type' || key === 'unit' || key === 'generated_at' || key === 'period_start' || key === 'period_end') continue;
+        if (typeof value === 'string' || typeof value === 'number') {
+          y = addKeyValue(doc, y, key.replace(/_/g, ' ').toUpperCase(), String(value));
+        }
+      }
+    }
+  } else if (report.content) {
+    // Plain text content (legacy demo reports)
+    y = addSectionHeader(doc, y, 'REPORT CONTENT');
+    y = addPlainTextContent(doc, y, report.content);
+  } else {
+    // No content at all
+    y = addSectionHeader(doc, y, 'REPORT CONTENT');
+    doc.setFont('Helvetica', 'italic');
+    doc.setFontSize(10);
+    setColor(doc, PDF_COLORS.grayText);
+    doc.text('Report content is being generated...', 18, y);
+    // suppress unused warning
+    void y;
+  }
+
+  // Footer on all pages
+  addFooter(doc);
+
+  return doc.output('blob');
+}
 
 // ---------------------------------------------------------------------------
 // Mock report content generator — builds realistic structured data
