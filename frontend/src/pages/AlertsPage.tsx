@@ -1,22 +1,24 @@
 import { useState } from 'react';
-import { AlertTriangle, AlertCircle, Info, Check, Filter, Shield, Settings, Bell, Plus, Trash2, Power } from 'lucide-react';
+import { AlertTriangle, AlertCircle, Info, Check, Filter, Shield, Settings, Bell, Plus, Trash2, Power, Lightbulb } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Card from '@/components/ui/Card';
 import StatusDot from '@/components/ui/StatusDot';
 import NotificationPreferences from '@/components/notifications/NotificationPreferences';
-import { AlertSeverity, type Alert, type AlertRule, type Notification } from '@/lib/types';
+import { AlertSeverity, type Alert, type AlertRule, type Notification, type LogisticsRecommendation } from '@/lib/types';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
-import { getAlerts, acknowledgeAlert, resolveAlert, getAlertSummary, getAlertRules, createAlertRule, updateAlertRule, deleteAlertRule } from '@/api/alerts';
+import { getAlerts, acknowledgeAlert, resolveAlert, getAlertSummary, getAlertRules, createAlertRule, updateAlertRule, deleteAlertRule, evaluateRule } from '@/api/alerts';
+import { getRecommendations, approveRecommendation, denyRecommendation } from '@/api/predictions';
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from '@/api/notifications';
 import { useDashboardStore } from '@/stores/dashboardStore';
 
-type TabKey = 'alerts' | 'rules' | 'notifications' | 'preferences';
+type TabKey = 'alerts' | 'rules' | 'notifications' | 'preferences' | 'predictions';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'alerts', label: 'ALERTS' },
   { key: 'rules', label: 'RULES' },
   { key: 'notifications', label: 'NOTIFICATIONS' },
   { key: 'preferences', label: 'PREFERENCES' },
+  { key: 'predictions', label: 'PREDICTIONS' },
 ];
 
 function getSeverityIcon(severity: AlertSeverity) {
@@ -405,9 +407,17 @@ function RulesTab() {
     },
   });
 
+  const [scopeType, setScopeType] = useState('ANY_UNIT');
+  const [metricType, setMetricType] = useState('DOS');
+  const [autoRecommend, setAutoRecommend] = useState(false);
+  const [notifyRoles, setNotifyRoles] = useState<string[]>([]);
+
   const handleCreateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const notifyRolesArr = notifyRoles.length > 0 ? notifyRoles : undefined;
+    const supplyClass = formData.get('supply_class') as string;
+    const metricItemFilter = supplyClass ? { supply_class: supplyClass } : undefined;
     createMutation.mutate({
       name: formData.get('name') as string,
       description: formData.get('description') as string,
@@ -417,8 +427,20 @@ function RulesTab() {
       operator: formData.get('operator') as AlertRule['operator'],
       threshold_value: Number(formData.get('threshold_value')),
       cooldown_minutes: Number(formData.get('cooldown_minutes') || 60),
-      is_scope_all: true,
+      is_scope_all: scopeType === 'ANY_UNIT',
       is_active: true,
+      scope_type: scopeType,
+      scope_echelon: scopeType === 'ECHELON' ? (formData.get('scope_echelon') as string) : undefined,
+      scope_unit_id: scopeType === 'SPECIFIC_UNIT' ? Number(formData.get('scope_unit_id')) : undefined,
+      include_subordinates: scopeType === 'SUBORDINATES',
+      metric_type: metricType,
+      metric_item_filter: metricItemFilter,
+      notify_roles: notifyRolesArr,
+      check_interval_minutes: Number(formData.get('check_interval_minutes') || 15),
+      auto_recommend: autoRecommend,
+      recommend_type: autoRecommend ? (formData.get('recommend_type') as string) : undefined,
+      recommend_source_unit_id: autoRecommend && formData.get('recommend_source_unit_id') ? Number(formData.get('recommend_source_unit_id')) : undefined,
+      recommend_assign_to_role: autoRecommend ? (formData.get('recommend_assign_to_role') as string) : undefined,
     });
   };
 
@@ -483,6 +505,7 @@ function RulesTab() {
       {showCreateForm && (
         <Card title="CREATE ALERT RULE">
           <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Basic Fields */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
                 <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>NAME</label>
@@ -536,6 +559,124 @@ function RulesTab() {
                 <input name="cooldown_minutes" type="number" defaultValue={60} style={inputStyle} />
               </div>
             </div>
+
+            {/* Scope Section */}
+            <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 12 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1.5px', marginBottom: 8 }}>SCOPE</div>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 8 }}>
+                {(['ANY_UNIT', 'SPECIFIC_UNIT', 'ECHELON', 'SUBORDINATES'] as const).map((st) => (
+                  <label key={st} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text)', cursor: 'pointer' }}>
+                    <input type="radio" name="scope_type_radio" checked={scopeType === st} onChange={() => setScopeType(st)} style={{ accentColor: 'var(--color-accent)' }} />
+                    {st.replace(/_/g, ' ')}
+                  </label>
+                ))}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {scopeType === 'SPECIFIC_UNIT' && (
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>UNIT ID</label>
+                    <input name="scope_unit_id" type="number" style={inputStyle} placeholder="Unit ID" />
+                  </div>
+                )}
+                {scopeType === 'ECHELON' && (
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>ECHELON</label>
+                    <select name="scope_echelon" style={inputStyle}>
+                      <option value="MEF">MEF</option>
+                      <option value="DIVISION">DIVISION</option>
+                      <option value="REGIMENT">REGIMENT</option>
+                      <option value="BATTALION">BATTALION</option>
+                      <option value="COMPANY">COMPANY</option>
+                      <option value="PLATOON">PLATOON</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Metric Type & Item Filter */}
+            <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 12 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1.5px', marginBottom: 8 }}>METRIC CONFIGURATION</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>METRIC TYPE</label>
+                  <select value={metricType} onChange={(e) => setMetricType(e.target.value)} style={inputStyle}>
+                    <option value="DOS">DOS</option>
+                    <option value="READINESS_PCT">READINESS_PCT</option>
+                    <option value="ON_HAND_QTY">ON_HAND_QTY</option>
+                    <option value="FILL_RATE">FILL_RATE</option>
+                    <option value="MAINTENANCE_BACKLOG">MAINTENANCE_BACKLOG</option>
+                    <option value="FUEL_LEVEL">FUEL_LEVEL</option>
+                  </select>
+                </div>
+                {(metricType === 'DOS' || metricType === 'ON_HAND_QTY') && (
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>SUPPLY CLASS FILTER</label>
+                    <input name="supply_class" style={inputStyle} placeholder="e.g. V, III, IX" />
+                  </div>
+                )}
+                <div>
+                  <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>CHECK INTERVAL (min)</label>
+                  <input name="check_interval_minutes" type="number" defaultValue={15} style={inputStyle} />
+                </div>
+              </div>
+            </div>
+
+            {/* Notify Roles */}
+            <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 12 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1.5px', marginBottom: 8 }}>NOTIFY ROLES</div>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                {['S4', 'CO', 'XO', 'BN_CDR'].map((role) => (
+                  <label key={role} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text)', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={notifyRoles.includes(role)}
+                      onChange={(e) => {
+                        if (e.target.checked) setNotifyRoles([...notifyRoles, role]);
+                        else setNotifyRoles(notifyRoles.filter(r => r !== role));
+                      }}
+                      style={{ accentColor: 'var(--color-accent)' }}
+                    />
+                    {role}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Auto-Recommend */}
+            <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 12 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text)', cursor: 'pointer', marginBottom: 8 }}>
+                <input type="checkbox" checked={autoRecommend} onChange={(e) => setAutoRecommend(e.target.checked)} style={{ accentColor: 'var(--color-accent)' }} />
+                AUTO-RECOMMEND ACTION
+              </label>
+              {autoRecommend && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>RECOMMEND TYPE</label>
+                    <select name="recommend_type" style={inputStyle}>
+                      <option value="RESUPPLY">RESUPPLY</option>
+                      <option value="MAINTENANCE">MAINTENANCE</option>
+                      <option value="FUEL_DELIVERY">FUEL_DELIVERY</option>
+                      <option value="PERSONNEL_MOVE">PERSONNEL_MOVE</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>SOURCE UNIT ID</label>
+                    <input name="recommend_source_unit_id" type="number" style={inputStyle} placeholder="Optional" />
+                  </div>
+                  <div>
+                    <label style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px', display: 'block', marginBottom: 4 }}>ASSIGN TO ROLE</label>
+                    <select name="recommend_assign_to_role" style={inputStyle}>
+                      <option value="S4">S4</option>
+                      <option value="CO">CO</option>
+                      <option value="XO">XO</option>
+                      <option value="BN_CDR">BN_CDR</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button
                 type="button"
@@ -582,6 +723,8 @@ function RulesTab() {
                 <th style={thStyle}>NAME</th>
                 <th style={thStyle}>TYPE</th>
                 <th style={thStyle}>SEVERITY</th>
+                <th style={thStyle}>SCOPE</th>
+                <th style={thStyle}>METRIC TYPE</th>
                 <th style={thStyle}>METRIC</th>
                 <th style={thStyle}>CONDITION</th>
                 <th style={thStyle}>COOLDOWN</th>
@@ -604,6 +747,8 @@ function RulesTab() {
                       {rule.severity}
                     </span>
                   </td>
+                  <td style={tdStyle}>{rule.scope_type || (rule.is_scope_all ? 'ANY_UNIT' : 'SPECIFIC')}</td>
+                  <td style={tdStyle}>{rule.metric_type || '--'}</td>
                   <td style={tdStyle}>{rule.metric}</td>
                   <td style={tdStyle}>{OPERATOR_LABELS[rule.operator] || rule.operator} {rule.threshold_value}</td>
                   <td style={tdStyle}>{rule.cooldown_minutes}m</td>
@@ -866,6 +1011,361 @@ function NotificationsTab() {
 }
 
 // ============================================================================
+// Predictions Tab
+// ============================================================================
+
+const RECOMMENDATION_TYPE_COLORS: Record<string, string> = {
+  RESUPPLY: 'var(--color-info)',
+  MAINTENANCE: 'var(--color-warning)',
+  FUEL_DELIVERY: '#eab308',
+  PERSONNEL_MOVE: 'var(--color-success, #22c55e)',
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  PENDING: 'var(--color-warning)',
+  APPROVED: 'var(--color-success, #22c55e)',
+  DENIED: 'var(--color-danger)',
+  EXECUTED: 'var(--color-accent)',
+  EXPIRED: 'var(--color-text-muted)',
+};
+
+function PredictionsTab() {
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [denyNotes, setDenyNotes] = useState<Record<number, string>>({});
+  const queryClient = useQueryClient();
+
+  const { data: recommendations = [] } = useQuery<LogisticsRecommendation[]>({
+    queryKey: ['predictions', statusFilter === 'ALL' ? undefined : statusFilter],
+    queryFn: () => getRecommendations(statusFilter === 'ALL' ? undefined : statusFilter),
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: ({ id, notes }: { id: number; notes?: string }) => approveRecommendation(id, notes),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['predictions'] }); },
+  });
+
+  const denyMutation = useMutation({
+    mutationFn: ({ id, notes }: { id: number; notes?: string }) => denyRecommendation(id, notes),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['predictions'] }); },
+  });
+
+  const pendingCount = recommendations.filter(r => r.status === 'PENDING').length;
+  const approvedCount = recommendations.filter(r => r.status === 'APPROVED').length;
+  const deniedCount = recommendations.filter(r => r.status === 'DENIED').length;
+
+  const badgeStyle = (color: string): React.CSSProperties => ({
+    display: 'inline-block',
+    padding: '2px 8px',
+    borderRadius: 'var(--radius)',
+    fontFamily: 'var(--font-mono)',
+    fontSize: 9,
+    letterSpacing: '1px',
+    fontWeight: 600,
+    color: '#fff',
+    backgroundColor: color,
+  });
+
+  const filterBtnStyle = (active: boolean): React.CSSProperties => ({
+    padding: '6px 12px',
+    backgroundColor: active ? 'var(--color-accent)' : 'transparent',
+    border: active ? 'none' : '1px solid var(--color-border)',
+    borderRadius: 'var(--radius)',
+    color: active ? '#fff' : 'var(--color-text-muted)',
+    fontFamily: 'var(--font-mono)',
+    fontSize: 10,
+    letterSpacing: '1px',
+    cursor: 'pointer',
+    transition: 'all var(--transition)',
+  });
+
+  const miniThStyle: React.CSSProperties = {
+    padding: '4px 8px',
+    textAlign: 'left',
+    fontWeight: 600,
+    fontSize: 9,
+    letterSpacing: '1px',
+    color: 'var(--color-text-muted)',
+    borderBottom: '1px solid var(--color-border)',
+  };
+
+  const miniTdStyle: React.CSSProperties = {
+    padding: '4px 8px',
+    fontSize: 10,
+    color: 'var(--color-text)',
+    borderBottom: '1px solid var(--color-border)',
+  };
+
+  return (
+    <>
+      {/* Summary Cards */}
+      <div className="grid-responsive-4col">
+        {[
+          { label: 'TOTAL', value: recommendations.length, color: 'var(--color-text-bright)' },
+          { label: 'PENDING', value: pendingCount, color: 'var(--color-warning)' },
+          { label: 'APPROVED', value: approvedCount, color: 'var(--color-success, #22c55e)' },
+          { label: 'DENIED', value: deniedCount, color: 'var(--color-danger)' },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius)',
+              padding: '12px 16px',
+              textAlign: 'center',
+            }}
+          >
+            <div className="section-header" style={{ marginBottom: 4 }}>{stat.label}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: stat.color }}>
+              {stat.value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter Buttons */}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {['ALL', 'PENDING', 'APPROVED', 'DENIED', 'EXECUTED'].map((s) => (
+          <button key={s} onClick={() => setStatusFilter(s)} style={filterBtnStyle(statusFilter === s)}>
+            {s}
+          </button>
+        ))}
+      </div>
+
+      {/* Recommendation Cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {recommendations.length === 0 ? (
+          <Card title="PREDICTIONS">
+            <div style={{ padding: 24, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)' }}>
+              No recommendations found
+            </div>
+          </Card>
+        ) : (
+          recommendations.map((rec) => (
+            <Card key={rec.id} title={`REC-${String(rec.id).padStart(4, '0')}`}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {/* Header row: badges + description */}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={badgeStyle(RECOMMENDATION_TYPE_COLORS[rec.recommendation_type] || 'var(--color-text-muted)')}>
+                    {rec.recommendation_type.replace(/_/g, ' ')}
+                  </span>
+                  <span style={badgeStyle(STATUS_COLORS[rec.status] || 'var(--color-text-muted)')}>
+                    {rec.status}
+                  </span>
+                  {rec.assigned_to_role && (
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1px' }}>
+                      ASSIGNED: {rec.assigned_to_role}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--color-text-bright)', lineHeight: 1.5 }}>
+                  {rec.description}
+                </div>
+
+                {rec.triggered_by_metric && (
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-warning)' }}>
+                    TRIGGER: {rec.triggered_by_metric}
+                  </div>
+                )}
+
+                {/* Items Table */}
+                {rec.recommended_items && rec.recommended_items.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1.5px', marginBottom: 4 }}>ITEMS</div>
+                    <div style={{ overflowX: 'auto' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--font-mono)' }}>
+                        <thead>
+                          <tr>
+                            {Object.keys(rec.recommended_items[0]).map((key) => (
+                              <th key={key} style={miniThStyle}>{key.toUpperCase().replace(/_/g, ' ')}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rec.recommended_items.map((item: any, idx: number) => (
+                            <tr key={idx}>
+                              {Object.values(item).map((val: any, vidx: number) => (
+                                <td key={vidx} style={miniTdStyle}>{typeof val === 'number' ? val.toLocaleString() : String(val)}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Vehicles */}
+                {rec.recommended_vehicles && rec.recommended_vehicles.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1.5px', marginBottom: 4 }}>VEHICLES</div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {rec.recommended_vehicles.map((v: any, idx: number) => (
+                        <div key={idx} style={{
+                          padding: '6px 10px',
+                          backgroundColor: 'var(--color-bg)',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: 'var(--radius)',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 10,
+                          color: 'var(--color-text)',
+                        }}>
+                          {v.vehicle_type} <span style={{ color: v.status === 'FMC' ? 'var(--color-success, #22c55e)' : 'var(--color-danger)', fontSize: 9 }}>{v.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Personnel */}
+                {rec.recommended_personnel && rec.recommended_personnel.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '1.5px', marginBottom: 4 }}>PERSONNEL</div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {rec.recommended_personnel.map((p: any, idx: number) => (
+                        <div key={idx} style={{
+                          padding: '6px 10px',
+                          backgroundColor: 'var(--color-bg)',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: 'var(--radius)',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 10,
+                          color: 'var(--color-text)',
+                        }}>
+                          {p.rank} {p.name} <span style={{ color: 'var(--color-text-muted)', fontSize: 9 }}>({p.role})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Estimates */}
+                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                  {rec.estimated_cost != null && (
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+                      COST: <span style={{ color: 'var(--color-text-bright)' }}>${rec.estimated_cost.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {rec.estimated_weight != null && (
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+                      WEIGHT: <span style={{ color: 'var(--color-text-bright)' }}>{rec.estimated_weight.toLocaleString()} lbs</span>
+                    </div>
+                  )}
+                  {rec.estimated_duration && (
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+                      DURATION: <span style={{ color: 'var(--color-text-bright)' }}>{rec.estimated_duration}</span>
+                    </div>
+                  )}
+                  {rec.recommended_source && (
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+                      SOURCE: <span style={{ color: 'var(--color-text-bright)' }}>{rec.recommended_source}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Notes */}
+                {rec.notes && (
+                  <div style={{
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--color-bg)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    color: 'var(--color-text-muted)',
+                    fontStyle: 'italic',
+                  }}>
+                    {rec.notes}
+                  </div>
+                )}
+
+                {rec.decided_at && (
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+                    Decided {formatRelativeTime(rec.decided_at)}
+                  </div>
+                )}
+
+                {/* Action Buttons for PENDING */}
+                {rec.status === 'PENDING' && (
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', borderTop: '1px solid var(--color-border)', paddingTop: 10 }}>
+                    <input
+                      type="text"
+                      placeholder="Notes (optional)"
+                      value={denyNotes[rec.id] || ''}
+                      onChange={(e) => setDenyNotes({ ...denyNotes, [rec.id]: e.target.value })}
+                      style={{
+                        flex: 1,
+                        minWidth: 150,
+                        padding: '6px 10px',
+                        backgroundColor: 'var(--color-bg)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius)',
+                        color: 'var(--color-text)',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 10,
+                      }}
+                    />
+                    <button
+                      onClick={() => approveMutation.mutate({ id: rec.id, notes: denyNotes[rec.id] })}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        padding: '6px 14px',
+                        backgroundColor: 'var(--color-success, #22c55e)',
+                        border: 'none',
+                        borderRadius: 'var(--radius)',
+                        color: '#fff',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 10,
+                        letterSpacing: '1px',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition)',
+                      }}
+                    >
+                      <Check size={12} />
+                      APPROVE & EXECUTE
+                    </button>
+                    <button
+                      onClick={() => denyMutation.mutate({ id: rec.id, notes: denyNotes[rec.id] })}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        padding: '6px 14px',
+                        backgroundColor: 'transparent',
+                        border: '1px solid var(--color-danger)',
+                        borderRadius: 'var(--radius)',
+                        color: 'var(--color-danger)',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 10,
+                        letterSpacing: '1px',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition)',
+                      }}
+                    >
+                      DENY
+                    </button>
+                  </div>
+                )}
+
+                {/* Timestamp */}
+                {rec.created_at && (
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+                    Created {formatRelativeTime(rec.created_at)}
+                  </div>
+                )}
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+    </>
+  );
+}
+
+// ============================================================================
 // Main AlertsPage with Tabs
 // ============================================================================
 
@@ -916,6 +1416,7 @@ export default function AlertsPage() {
             {tab.key === 'rules' && <Settings size={10} />}
             {tab.key === 'notifications' && <Bell size={10} />}
             {tab.key === 'preferences' && <Shield size={10} />}
+            {tab.key === 'predictions' && <Lightbulb size={10} />}
             {tab.label}
           </button>
         ))}
@@ -926,6 +1427,7 @@ export default function AlertsPage() {
       {activeTab === 'rules' && <RulesTab />}
       {activeTab === 'notifications' && <NotificationsTab />}
       {activeTab === 'preferences' && <NotificationPreferences />}
+      {activeTab === 'predictions' && <PredictionsTab />}
     </div>
   );
 }

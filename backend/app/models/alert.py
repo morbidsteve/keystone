@@ -14,10 +14,42 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
+from sqlalchemy.types import JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.database import Base
+
+
+class MetricType(str, enum.Enum):
+    DOS = "DOS"
+    READINESS_PCT = "READINESS_PCT"
+    ON_HAND_QTY = "ON_HAND_QTY"
+    FILL_RATE = "FILL_RATE"
+    MAINTENANCE_BACKLOG = "MAINTENANCE_BACKLOG"
+    FUEL_LEVEL = "FUEL_LEVEL"
+
+
+class ScopeType(str, enum.Enum):
+    ANY_UNIT = "ANY_UNIT"
+    SPECIFIC_UNIT = "SPECIFIC_UNIT"
+    ECHELON = "ECHELON"
+    SUBORDINATES = "SUBORDINATES"
+
+
+class RecommendationType(str, enum.Enum):
+    RESUPPLY = "RESUPPLY"
+    MAINTENANCE = "MAINTENANCE"
+    FUEL_DELIVERY = "FUEL_DELIVERY"
+    PERSONNEL_MOVE = "PERSONNEL_MOVE"
+
+
+class RecommendationStatus(str, enum.Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    DENIED = "DENIED"
+    EXECUTED = "EXECUTED"
+    EXPIRED = "EXPIRED"
 
 
 class AlertType(str, enum.Enum):
@@ -100,6 +132,10 @@ class Alert(Base):
     escalated_to = Column(Integer, ForeignKey("users.id"), nullable=True)
     escalated_at = Column(DateTime(timezone=True), nullable=True)
 
+    # Rule linkage
+    rule_id = Column(Integer, ForeignKey("alert_rules.id"), nullable=True)
+    metric_value = Column(Float, nullable=True)
+
     # Metadata
     auto_generated = Column(Boolean, default=True)
 
@@ -134,7 +170,27 @@ class AlertRule(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
+    # Advanced scoping
+    scope_type = Column(String(20), default="ANY_UNIT")
+    scope_echelon = Column(String(10), nullable=True)
+    include_subordinates = Column(Boolean, default=False)
+
+    # Advanced metric
+    metric_type = Column(String(30), nullable=True)  # MetricType
+    metric_item_filter = Column(JSON, nullable=True)  # {supply_class, tamcn, ...}
+
+    # Notification targets
+    notify_roles = Column(JSON, nullable=True)  # ["S4", "CO", ...]
+    check_interval_minutes = Column(Integer, default=15)
+
+    # Predictive logistics
+    auto_recommend = Column(Boolean, default=False)
+    recommend_type = Column(String(30), nullable=True)
+    recommend_source_unit_id = Column(Integer, ForeignKey("units.id"), nullable=True)
+    recommend_assign_to_role = Column(String(20), nullable=True)
+
     scope_unit = relationship("Unit", foreign_keys=[scope_unit_id])
+    recommend_source_unit = relationship("Unit", foreign_keys=[recommend_source_unit_id])
 
 
 class Notification(Base):

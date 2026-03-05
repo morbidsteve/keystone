@@ -33,6 +33,7 @@ from app.api.notifications import router as notifications_router
 from app.api.fuel import router as fuel_router
 from app.api.custody import router as custody_router
 from app.api.rbac import router as rbac_router
+from app.api.predictions import router as predictions_router
 
 api_router = APIRouter()
 
@@ -93,3 +94,4 @@ api_router.include_router(
     custody_router, prefix="/custody", tags=["Custody & Accountability"]
 )
 api_router.include_router(rbac_router, prefix="/rbac", tags=["RBAC"])
+api_router.include_router(predictions_router, prefix="/predictions", tags=["Predictions"])

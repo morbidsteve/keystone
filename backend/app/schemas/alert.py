@@ -2,7 +2,7 @@
 
 import math
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -22,6 +22,12 @@ VALID_METRICS = {
     "eas_days_remaining",
     "fuel_level_pct",
     "ammo_vs_rsr_pct",
+    "DOS",
+    "READINESS_PCT",
+    "ON_HAND_QTY",
+    "FILL_RATE",
+    "MAINTENANCE_BACKLOG",
+    "FUEL_LEVEL",
 }
 
 
@@ -84,6 +90,25 @@ class AlertRuleCreate(BaseModel):
     cooldown_minutes: int = Field(60, ge=1, le=1440)
     is_active: bool = True
 
+    # Advanced scoping
+    scope_type: Optional[str] = "ANY_UNIT"
+    scope_echelon: Optional[str] = None
+    include_subordinates: bool = False
+
+    # Advanced metric
+    metric_type: Optional[str] = None
+    metric_item_filter: Optional[Any] = None
+
+    # Notification targets
+    notify_roles: Optional[List[str]] = None
+    check_interval_minutes: int = Field(15, ge=1, le=1440)
+
+    # Predictive logistics
+    auto_recommend: bool = False
+    recommend_type: Optional[str] = None
+    recommend_source_unit_id: Optional[int] = None
+    recommend_assign_to_role: Optional[str] = None
+
     @field_validator("threshold_value")
     @classmethod
     def validate_threshold(cls, v: float) -> float:
@@ -128,6 +153,25 @@ class AlertRuleUpdate(BaseModel):
     cooldown_minutes: Optional[int] = Field(None, ge=1, le=1440)
     is_active: Optional[bool] = None
 
+    # Advanced scoping
+    scope_type: Optional[str] = None
+    scope_echelon: Optional[str] = None
+    include_subordinates: Optional[bool] = None
+
+    # Advanced metric
+    metric_type: Optional[str] = None
+    metric_item_filter: Optional[Any] = None
+
+    # Notification targets
+    notify_roles: Optional[List[str]] = None
+    check_interval_minutes: Optional[int] = Field(None, ge=1, le=1440)
+
+    # Predictive logistics
+    auto_recommend: Optional[bool] = None
+    recommend_type: Optional[str] = None
+    recommend_source_unit_id: Optional[int] = None
+    recommend_assign_to_role: Optional[str] = None
+
     @field_validator("threshold_value")
     @classmethod
     def validate_threshold(cls, v: Optional[float]) -> Optional[float]:
@@ -153,6 +197,25 @@ class AlertRuleResponse(BaseModel):
     created_by: int
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+    # Advanced scoping
+    scope_type: Optional[str] = "ANY_UNIT"
+    scope_echelon: Optional[str] = None
+    include_subordinates: bool = False
+
+    # Advanced metric
+    metric_type: Optional[str] = None
+    metric_item_filter: Optional[Any] = None
+
+    # Notification targets
+    notify_roles: Optional[List[str]] = None
+    check_interval_minutes: int = 15
+
+    # Predictive logistics
+    auto_recommend: bool = False
+    recommend_type: Optional[str] = None
+    recommend_source_unit_id: Optional[int] = None
+    recommend_assign_to_role: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
