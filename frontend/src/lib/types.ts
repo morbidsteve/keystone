@@ -1011,7 +1011,77 @@ export interface ReadinessRollup {
     cRating: string;
     overallReadinessPct: number;
     limitingFactor: string | null;
+    echelonLabel?: string;
   }>;
+}
+
+// Readiness drill-down types
+
+export interface EquipmentDetailItem {
+  tamcn: string;
+  nomenclature: string;
+  totalPossessed: number;
+  missionCapable: number;
+  nmcM: number;
+  nmcS: number;
+  readinessPct: number;
+}
+
+export interface EquipmentDetailResponse {
+  unitId: number;
+  snapshotDate: string;
+  overallReadinessPct: number;
+  rRating: string;
+  equipmentItems: EquipmentDetailItem[];
+  summaryByCategory: Record<string, number> | null;
+}
+
+export interface SupplyDetailItem {
+  supplyClass: string;
+  description: string;
+  onHand: number;
+  required: number;
+  dos: number;
+  status: string;
+}
+
+export interface SupplyDetailResponse {
+  unitId: number;
+  snapshotDate: string;
+  overallReadinessPct: number;
+  sRating: string;
+  supplyItems: SupplyDetailItem[];
+  dosByClass: Record<string, number> | null;
+}
+
+export interface MOSShortfall {
+  mos: string;
+  mosTitle: string;
+  authorized: number;
+  assigned: number;
+  shortfall: number;
+}
+
+export interface PersonnelDetailResponse {
+  unitId: number;
+  snapshotDate: string;
+  overallReadinessPct: number;
+  pRating: string;
+  authorizedTotal: number;
+  assignedTotal: number;
+  fillRatePct: number;
+  mosShortfalls: MOSShortfall[];
+  keyBilletVacancies: Record<string, any>[] | null;
+}
+
+export interface TrainingDetailResponse {
+  unitId: number;
+  snapshotDate: string;
+  overallReadinessPct: number;
+  tRating: string;
+  qualificationCurrencyRates: Record<string, number> | null;
+  upcomingExpirations: Record<string, any>[] | null;
+  combatReadinessStats: Record<string, number> | null;
 }
 
 // Maintenance expansion types

@@ -19,12 +19,21 @@ from app.models.readiness_snapshot import UnitReadinessSnapshot
 from app.models.unit import Unit
 from app.models.unit_strength import UnitStrength
 from app.models.user import User
+from app.models.equipment import EquipmentStatus
+from app.models.supply import SupplyStatusRecord
 from app.schemas.readiness import (
+    EquipmentDetailItem,
+    EquipmentDetailResponse,
+    MOSShortfall,
+    PersonnelDetailResponse,
     ReadinessDashboardResponse,
     ReadinessRollupResponse,
     ReadinessSnapshotResponse,
     ReadinessTrendResponse,
     SnapshotCreateRequest,
+    SupplyDetailItem,
+    SupplyDetailResponse,
+    TrainingDetailResponse,
     UnitDashboardEntry,
     UnitStrengthResponse,
     UnitStrengthUpdateRequest,
@@ -154,6 +163,243 @@ async def update_unit_strength(
     await db.flush()
     await db.refresh(record)
     return record
+
+
+# --- Drill-Down Detail Endpoints ---
+# These MUST be defined before the /{unit_id} catch-all route.
+
+
+@router.get("/{unit_id}/equipment-detail", response_model=EquipmentDetailResponse)
+async def get_equipment_detail(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get detailed equipment readiness breakdown for a unit."""
+    await check_unit_access(current_user, unit_id, db)
+
+    # Verify unit exists
+    unit_result = await db.execute(select(Unit).where(Unit.id == unit_id))
+    unit = unit_result.scalar_one_or_none()
+    if not unit:
+        raise NotFoundError("Unit", unit_id)
+
+    # Get latest snapshot for ratings
+    snap_result = await db.execute(
+        select(UnitReadinessSnapshot)
+        .where(UnitReadinessSnapshot.unit_id == unit_id)
+        .order_by(UnitReadinessSnapshot.snapshot_date.desc())
+        .limit(1)
+    )
+    snapshot = snap_result.scalar_one_or_none()
+    if not snapshot:
+        raise NotFoundError("Readiness snapshot", unit_id)
+
+    # Get equipment status records sorted by readiness (worst first)
+    eq_result = await db.execute(
+        select(EquipmentStatus)
+        .where(EquipmentStatus.unit_id == unit_id)
+        .order_by(EquipmentStatus.readiness_pct.asc())
+    )
+    records = eq_result.scalars().all()
+
+    equipment_items = [
+        EquipmentDetailItem(
+            tamcn=r.tamcn,
+            nomenclature=r.nomenclature,
+            total_possessed=r.total_possessed,
+            mission_capable=r.mission_capable,
+            nmc_m=r.not_mission_capable_maintenance,
+            nmc_s=r.not_mission_capable_supply,
+            readiness_pct=r.readiness_pct,
+        )
+        for r in records
+    ]
+
+    return EquipmentDetailResponse(
+        unit_id=unit_id,
+        snapshot_date=snapshot.snapshot_date.isoformat()
+        if snapshot.snapshot_date
+        else "",
+        overall_readiness_pct=snapshot.equipment_readiness_pct or 0.0,
+        r_rating=snapshot.r_rating,
+        equipment_items=equipment_items,
+    )
+
+
+@router.get("/{unit_id}/supply-detail", response_model=SupplyDetailResponse)
+async def get_supply_detail(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get detailed supply readiness breakdown for a unit."""
+    await check_unit_access(current_user, unit_id, db)
+
+    # Verify unit exists
+    unit_result = await db.execute(select(Unit).where(Unit.id == unit_id))
+    unit = unit_result.scalar_one_or_none()
+    if not unit:
+        raise NotFoundError("Unit", unit_id)
+
+    # Get latest snapshot for ratings
+    snap_result = await db.execute(
+        select(UnitReadinessSnapshot)
+        .where(UnitReadinessSnapshot.unit_id == unit_id)
+        .order_by(UnitReadinessSnapshot.snapshot_date.desc())
+        .limit(1)
+    )
+    snapshot = snap_result.scalar_one_or_none()
+    if not snapshot:
+        raise NotFoundError("Readiness snapshot", unit_id)
+
+    # Get supply status records sorted by DOS (worst first)
+    sup_result = await db.execute(
+        select(SupplyStatusRecord)
+        .where(SupplyStatusRecord.unit_id == unit_id)
+        .order_by(SupplyStatusRecord.dos.asc())
+    )
+    records = sup_result.scalars().all()
+
+    supply_items = []
+    for r in records:
+        # Determine status based on DOS thresholds
+        if r.dos >= 10:
+            status_str = "GREEN"
+        elif r.dos >= 5:
+            status_str = "AMBER"
+        else:
+            status_str = "RED"
+
+        supply_items.append(
+            SupplyDetailItem(
+                supply_class=r.supply_class.value,
+                description=r.item_description,
+                on_hand=r.on_hand_qty,
+                required=r.required_qty,
+                dos=r.dos,
+                status=status_str,
+            )
+        )
+
+    return SupplyDetailResponse(
+        unit_id=unit_id,
+        snapshot_date=snapshot.snapshot_date.isoformat()
+        if snapshot.snapshot_date
+        else "",
+        overall_readiness_pct=snapshot.supply_readiness_pct or 0.0,
+        s_rating=snapshot.s_rating,
+        supply_items=supply_items,
+    )
+
+
+@router.get("/{unit_id}/personnel-detail", response_model=PersonnelDetailResponse)
+async def get_personnel_detail(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get detailed personnel readiness breakdown for a unit."""
+    await check_unit_access(current_user, unit_id, db)
+
+    # Verify unit exists
+    unit_result = await db.execute(select(Unit).where(Unit.id == unit_id))
+    unit = unit_result.scalar_one_or_none()
+    if not unit:
+        raise NotFoundError("Unit", unit_id)
+
+    # Get latest snapshot for ratings
+    snap_result = await db.execute(
+        select(UnitReadinessSnapshot)
+        .where(UnitReadinessSnapshot.unit_id == unit_id)
+        .order_by(UnitReadinessSnapshot.snapshot_date.desc())
+        .limit(1)
+    )
+    snapshot = snap_result.scalar_one_or_none()
+    if not snapshot:
+        raise NotFoundError("Readiness snapshot", unit_id)
+
+    # Get latest unit strength record
+    str_result = await db.execute(
+        select(UnitStrength)
+        .where(UnitStrength.unit_id == unit_id)
+        .order_by(UnitStrength.reported_at.desc())
+        .limit(1)
+    )
+    strength = str_result.scalar_one_or_none()
+
+    authorized_total = strength.total_authorized if strength else 0
+    assigned_total = strength.total_assigned if strength else 0
+    fill_rate_pct = strength.fill_pct if strength else 0.0
+
+    # Parse MOS shortfalls from JSON
+    mos_shortfalls_list: list[MOSShortfall] = []
+    if strength and strength.mos_shortfalls:
+        raw_shortfalls = strength.mos_shortfalls
+        if isinstance(raw_shortfalls, list):
+            for sf in raw_shortfalls:
+                if isinstance(sf, dict):
+                    mos_shortfalls_list.append(
+                        MOSShortfall(
+                            mos=sf.get("mos", ""),
+                            mos_title=sf.get("mos_title", ""),
+                            authorized=sf.get("authorized", 0),
+                            assigned=sf.get("assigned", 0),
+                            shortfall=sf.get("shortfall", 0),
+                        )
+                    )
+
+    return PersonnelDetailResponse(
+        unit_id=unit_id,
+        snapshot_date=snapshot.snapshot_date.isoformat()
+        if snapshot.snapshot_date
+        else "",
+        overall_readiness_pct=snapshot.personnel_fill_pct or 0.0,
+        p_rating=snapshot.p_rating,
+        authorized_total=authorized_total,
+        assigned_total=assigned_total,
+        fill_rate_pct=fill_rate_pct,
+        mos_shortfalls=mos_shortfalls_list,
+    )
+
+
+@router.get("/{unit_id}/training-detail", response_model=TrainingDetailResponse)
+async def get_training_detail(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get detailed training readiness breakdown for a unit."""
+    await check_unit_access(current_user, unit_id, db)
+
+    # Verify unit exists
+    unit_result = await db.execute(select(Unit).where(Unit.id == unit_id))
+    unit = unit_result.scalar_one_or_none()
+    if not unit:
+        raise NotFoundError("Unit", unit_id)
+
+    # Get latest snapshot for ratings
+    snap_result = await db.execute(
+        select(UnitReadinessSnapshot)
+        .where(UnitReadinessSnapshot.unit_id == unit_id)
+        .order_by(UnitReadinessSnapshot.snapshot_date.desc())
+        .limit(1)
+    )
+    snapshot = snap_result.scalar_one_or_none()
+    if not snapshot:
+        raise NotFoundError("Readiness snapshot", unit_id)
+
+    return TrainingDetailResponse(
+        unit_id=unit_id,
+        snapshot_date=snapshot.snapshot_date.isoformat()
+        if snapshot.snapshot_date
+        else "",
+        overall_readiness_pct=snapshot.training_readiness_pct or 0.0,
+        t_rating=snapshot.t_rating,
+        qualification_currency_rates={"note": "Training module not yet implemented"},
+        upcoming_expirations=[],
+        combat_readiness_stats={"note": "Training module not yet implemented"},
+    )
 
 
 @router.get("/{unit_id}", response_model=ReadinessSnapshotResponse)

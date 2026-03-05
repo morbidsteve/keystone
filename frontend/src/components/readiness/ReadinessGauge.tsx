@@ -4,11 +4,16 @@
 
 import RatingBadge from './RatingBadge';
 
+type DrillDownDomain = 'equipment' | 'supply' | 'personnel' | 'training';
+type GaugeDomain = DrillDownDomain | 'overall';
+
 interface ReadinessGaugeProps {
   percentage: number;
   rating?: string;
   size?: number;
   label?: string;
+  domain?: GaugeDomain;
+  onDrillDown?: (domain: DrillDownDomain) => void;
 }
 
 function getGaugeColor(pct: number): string {
@@ -23,6 +28,8 @@ export default function ReadinessGauge({
   rating,
   size = 80,
   label,
+  domain,
+  onDrillDown,
 }: ReadinessGaugeProps) {
   const color = getGaugeColor(percentage);
   const strokeWidth = 6;
@@ -30,13 +37,30 @@ export default function ReadinessGauge({
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percentage / 100) * circumference;
 
+  const drillDownDomain = domain && domain !== 'overall' ? domain : null;
+  const isClickable = !!(drillDownDomain && onDrillDown);
+
   return (
     <div
+      onClick={() => {
+        if (drillDownDomain && onDrillDown) {
+          onDrillDown(drillDownDomain);
+        }
+      }}
       style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         gap: 6,
+        cursor: isClickable ? 'pointer' : 'default',
+        opacity: 1,
+        transition: 'opacity var(--transition)',
+      }}
+      onMouseEnter={(e) => {
+        if (isClickable) e.currentTarget.style.opacity = '0.8';
+      }}
+      onMouseLeave={(e) => {
+        if (isClickable) e.currentTarget.style.opacity = '1';
       }}
     >
       <div style={{ position: 'relative', width: size, height: size }}>

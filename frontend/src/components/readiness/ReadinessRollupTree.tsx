@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import RatingBadge from './RatingBadge';
+import { useDashboardStore } from '@/stores/dashboardStore';
 import type { ReadinessRollup } from '@/lib/types';
 
 interface ReadinessRollupTreeProps {
@@ -36,8 +37,17 @@ interface SubordinateRowProps {
 
 function SubordinateRow({ sub }: SubordinateRowProps) {
   const [expanded, setExpanded] = useState(false);
+  const setSelectedUnitId = useDashboardStore((s) => s.setSelectedUnitId);
   const borderColor = getBorderColor(sub.cRating);
-  const pctColor = getTextColor(sub.overallReadinessPct);
+  const hasPct = sub.overallReadinessPct != null;
+  const pctColor = hasPct ? getTextColor(sub.overallReadinessPct) : 'var(--color-text-muted)';
+
+  const handleRowClick = () => {
+    if (sub.limitingFactor) {
+      setExpanded(!expanded);
+    }
+    setSelectedUnitId(String(sub.unitId));
+  };
 
   return (
     <div
@@ -47,20 +57,18 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
       }}
     >
       <div
-        onClick={() => sub.limitingFactor && setExpanded(!expanded)}
+        onClick={handleRowClick}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: 10,
           padding: '10px 12px',
           backgroundColor: 'var(--color-bg-elevated)',
-          cursor: sub.limitingFactor ? 'pointer' : 'default',
+          cursor: 'pointer',
           transition: 'background-color var(--transition)',
         }}
         onMouseEnter={(e) => {
-          if (sub.limitingFactor) {
-            e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
-          }
+          e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = 'var(--color-bg-elevated)';
@@ -73,7 +81,7 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
           ) : null}
         </span>
 
-        {/* Unit name */}
+        {/* Unit name + echelon label */}
         <span
           style={{
             flex: 1,
@@ -84,6 +92,18 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
           }}
         >
           {sub.unitName}
+          {sub.echelonLabel && (
+            <span
+              style={{
+                fontWeight: 400,
+                fontSize: 10,
+                color: 'var(--color-text-muted)',
+                marginLeft: 6,
+              }}
+            >
+              ({sub.echelonLabel})
+            </span>
+          )}
         </span>
 
         {/* Rating badge */}
@@ -100,7 +120,7 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
             textAlign: 'right',
           }}
         >
-          {Math.round(sub.overallReadinessPct)}%
+          {hasPct ? `${Math.round(sub.overallReadinessPct)}%` : 'N/A'}
         </span>
       </div>
 
