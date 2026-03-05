@@ -28,16 +28,16 @@ class MovementCreate(MovementBase):
 
 class MovementUpdate(BaseModel):
     unit_id: Optional[int] = None
-    convoy_id: Optional[str] = None
-    origin: Optional[str] = None
-    destination: Optional[str] = None
+    convoy_id: Optional[str] = Field(None, max_length=50)
+    origin: Optional[str] = Field(None, max_length=100)
+    destination: Optional[str] = Field(None, max_length=100)
     departure_time: Optional[datetime] = None
     eta: Optional[datetime] = None
     actual_arrival: Optional[datetime] = None
-    vehicle_count: Optional[int] = None
-    cargo_description: Optional[str] = None
+    vehicle_count: Optional[int] = Field(None, ge=0)
+    cargo_description: Optional[str] = Field(None, max_length=500)
     status: Optional[MovementStatus] = None
-    source: Optional[str] = None
+    source: Optional[str] = Field(None, max_length=100)
 
 
 class MovementResponse(MovementBase):

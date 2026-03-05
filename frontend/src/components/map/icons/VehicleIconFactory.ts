@@ -43,11 +43,17 @@ function getStatusColor(status: VehicleStatus | string): string {
   }
 }
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 export function createVehicleIcon(options: VehicleIconOptions): L.DivIcon {
   const { type, status, heading, bumperNumber, isLead } = options;
   const color = getStatusColor(status);
   const svgTemplate = VEHICLE_SVGS[type] || VEHICLE_SVGS.HMMWV;
   const svgContent = svgTemplate.split('STATUS_COLOR').join(color);
+  const safeBumper = escapeHtml(bumperNumber);
+  const safeHeading = Number(heading) || 0;
 
   const leadGlow = isLead ? `box-shadow: 0 0 8px 2px ${color}80;` : '';
 
@@ -68,7 +74,7 @@ export function createVehicleIcon(options: VehicleIconOptions): L.DivIcon {
         <div style="
           width: 32px;
           height: 24px;
-          transform: rotate(${heading}deg);
+          transform: rotate(${safeHeading}deg);
           filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
           ${leadGlow}
           border-radius: 3px;
@@ -90,7 +96,7 @@ export function createVehicleIcon(options: VehicleIconOptions): L.DivIcon {
           font-family: 'JetBrains Mono', monospace;
           letter-spacing: 0.5px;
         ">
-          ${bumperNumber}
+          ${safeBumper}
         </div>
       </div>
     `,
