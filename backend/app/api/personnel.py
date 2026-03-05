@@ -1,6 +1,7 @@
 """Personnel directory CRUD endpoints."""
 
 import json
+from datetime import date
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
@@ -13,7 +14,15 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.core.permissions import check_unit_access, get_accessible_units, require_role
 from app.database import get_db
 from app.models.manning import Qualification
-from app.models.personnel import AmmoLoad, Personnel, PersonnelStatus, Weapon
+from app.models.personnel import (
+    AmmoLoad,
+    ConvoyPersonnel,
+    PayGrade,
+    Personnel,
+    PersonnelStatus,
+    Weapon,
+)
+from app.models.transportation import VEHICLE_LICENSE_REQUIREMENTS
 from app.models.user import Role, User
 from app.schemas.manning import (
     MOSFillReport,
@@ -35,6 +44,10 @@ from app.schemas.personnel import (
     WeaponCreate,
     WeaponResponse,
     WeaponUpdate,
+)
+from app.schemas.transportation import (
+    QualifiedPersonnelItem,
+    QualifiedPersonnelResponse,
 )
 from app.services.personnel_analytics import PersonnelAnalyticsService
 
@@ -105,6 +118,150 @@ async def search_personnel(
     )
     result = await db.execute(query)
     return result.scalars().all()
+
+
+@router.get("/qualified", response_model=QualifiedPersonnelResponse)
+async def get_qualified_personnel(
+    role: str = Query(...),
+    vehicle_tamcn: str = Query(...),
+    unit_id: Optional[int] = Query(None),
+    exclude_movement_id: Optional[int] = Query(None),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Return personnel qualified for a given convoy role and vehicle type."""
+    accessible = await get_accessible_units(db, current_user)
+
+    # Build base query for active personnel
+    query = (
+        select(Personnel)
+        .where(
+            Personnel.unit_id.in_(accessible),
+            Personnel.status == PersonnelStatus.ACTIVE,
+        )
+        .options(selectinload(Personnel.qualifications))
+    )
+
+    if unit_id and unit_id in accessible:
+        query = query.where(Personnel.unit_id == unit_id)
+
+    result = await db.execute(query)
+    all_personnel = result.scalars().all()
+
+    # Determine required qualifications based on role
+    role_upper = role.upper()
+    vehicle_license = VEHICLE_LICENSE_REQUIREMENTS.get(vehicle_tamcn)
+    required_qualifications: list[str] = []
+    today = date.today()
+
+    # E5+ pay grades
+    e5_plus = {
+        PayGrade.E5, PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+    }
+    # E6+ pay grades
+    e6_plus = {
+        PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+    }
+    # Officer / warrant pay grades
+    officer_grades = {
+        PayGrade.W1, PayGrade.W2, PayGrade.W3, PayGrade.W4, PayGrade.W5,
+        PayGrade.O1, PayGrade.O2, PayGrade.O3, PayGrade.O4, PayGrade.O5,
+        PayGrade.O6, PayGrade.O7, PayGrade.O8, PayGrade.O9, PayGrade.O10,
+    }
+
+    def has_current_qual(person: Personnel, qual_name: str) -> bool:
+        """Check if personnel has a current, non-expired qualification."""
+        for q in person.qualifications:
+            if (
+                q.qualification_name == qual_name
+                and q.is_current
+                and (q.expiration_date is None or q.expiration_date >= today)
+            ):
+                return True
+        return False
+
+    # Determine which personnel are already assigned to the given movement
+    assigned_personnel_ids: set[int] = set()
+    if exclude_movement_id:
+        cp_result = await db.execute(
+            select(ConvoyPersonnel.personnel_id).where(
+                ConvoyPersonnel.movement_id == exclude_movement_id
+            )
+        )
+        assigned_personnel_ids = {row[0] for row in cp_result.all()}
+
+    qualified: list[QualifiedPersonnelItem] = []
+
+    for person in all_personnel:
+        is_qualified = False
+
+        if role_upper in ("DRIVER", "A_DRIVER"):
+            required_qualifications = ["MILITARY_DRIVER"]
+            if vehicle_license:
+                required_qualifications.append(vehicle_license)
+            is_qualified = has_current_qual(person, "MILITARY_DRIVER") and (
+                vehicle_license is None or has_current_qual(person, vehicle_license)
+            )
+
+        elif role_upper == "TC":
+            required_qualifications = ["MILITARY_DRIVER"]
+            if vehicle_license:
+                required_qualifications.append(vehicle_license)
+            is_qualified = (
+                person.pay_grade in e5_plus
+                and has_current_qual(person, "MILITARY_DRIVER")
+                and (
+                    vehicle_license is None
+                    or has_current_qual(person, vehicle_license)
+                )
+            )
+
+        elif role_upper == "VC":
+            required_qualifications = ["E6+ or Officer"]
+            is_qualified = person.pay_grade in (e6_plus | officer_grades)
+
+        elif role_upper == "GUNNER":
+            required_qualifications = ["WEAPONS_QUAL"]
+            is_qualified = has_current_qual(person, "WEAPONS_QUAL")
+
+        elif role_upper == "MEDIC":
+            required_qualifications = ["MOS 8404 or TCCC"]
+            is_qualified = person.mos == "8404" or has_current_qual(person, "TCCC")
+
+        elif role_upper == "PAX":
+            required_qualifications = []
+            is_qualified = True
+
+        if is_qualified:
+            qual_dicts = [
+                {
+                    "id": q.id,
+                    "qualification_name": q.qualification_name,
+                    "qualification_type": q.qualification_type,
+                    "is_current": q.is_current,
+                    "expiration_date": str(q.expiration_date) if q.expiration_date else None,
+                }
+                for q in person.qualifications
+            ]
+            qualified.append(
+                QualifiedPersonnelItem(
+                    id=person.id,
+                    edipi=person.edipi,
+                    rank=person.rank,
+                    first_name=person.first_name,
+                    last_name=person.last_name,
+                    mos=person.mos,
+                    pay_grade=person.pay_grade.value if person.pay_grade else None,
+                    is_assigned_to_movement=person.id in assigned_personnel_ids,
+                    qualifications=qual_dicts,
+                )
+            )
+
+    return QualifiedPersonnelResponse(
+        personnel=qualified,
+        total=len(qualified),
+        required_qualifications=required_qualifications,
+    )
 
 
 @router.get("/{person_id}", response_model=PersonnelResponse)

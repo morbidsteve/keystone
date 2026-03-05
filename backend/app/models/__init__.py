@@ -11,7 +11,7 @@ from app.models.equipment import (
     FaultSeverity,
     EquipmentDriverAssignment,
 )
-from app.models.transportation import Movement, MovementStatus
+from app.models.transportation import Movement, MovementStatus, ConvoyCargo, VEHICLE_LICENSE_REQUIREMENTS
 from app.models.convoy_planning import (
     ConvoyPlan,
     ConvoySerial,
@@ -350,4 +350,6 @@ __all__ = [
     "RecommendationType",
     "LogisticsRecommendation",
     "RecommendationStatus",
+    "ConvoyCargo",
+    "VEHICLE_LICENSE_REQUIREMENTS",
 ]

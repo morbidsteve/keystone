@@ -1,19 +1,38 @@
 """Transportation / movement CRUD endpoints."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.core.auth import get_current_user
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import BadRequestError, NotFoundError
 from app.core.permissions import check_unit_access, get_accessible_units, require_role
 from app.database import get_db
-from app.models.transportation import Movement, MovementStatus
+from app.models.personnel import (
+    ConvoyPersonnel,
+    ConvoyVehicle,
+    Personnel,
+)
+from app.models.transportation import (
+    ConvoyCargo,
+    Movement,
+    MovementStatus,
+    VEHICLE_LICENSE_REQUIREMENTS,
+)
 from app.models.user import Role, User
-from app.schemas.transportation import MovementCreate, MovementResponse, MovementUpdate
+from app.schemas.transportation import (
+    ConvoyCargoCreate,
+    ConvoyCargoResponse,
+    MovementCreate,
+    MovementResponse,
+    MovementUpdate,
+    ValidateAssignmentRequest,
+    ValidateAssignmentResponse,
+)
 
 router = APIRouter()
 
@@ -155,9 +174,219 @@ async def update_movement(
     if "unit_id" in update_data and update_data["unit_id"] != record.unit_id:
         await check_unit_access(current_user, update_data["unit_id"], db)
 
+    old_status = record.status
     for field, value in update_data.items():
         setattr(record, field, value)
+
+    # Personnel tracking: propagate status changes to assigned personnel
+    new_status = record.status
+    if old_status != new_status:
+        if new_status == MovementStatus.EN_ROUTE:
+            # Set current_movement_id for all assigned personnel
+            cp_result = await db.execute(
+                select(ConvoyPersonnel.personnel_id).where(
+                    ConvoyPersonnel.movement_id == record_id
+                )
+            )
+            personnel_ids = [row[0] for row in cp_result.all()]
+            if personnel_ids:
+                await db.execute(
+                    update(Personnel)
+                    .where(Personnel.id.in_(personnel_ids))
+                    .values(current_movement_id=record_id)
+                )
+
+        elif new_status == MovementStatus.COMPLETE:
+            # Clear current_movement_id for all personnel on this movement
+            await db.execute(
+                update(Personnel)
+                .where(Personnel.current_movement_id == record_id)
+                .values(current_movement_id=None)
+            )
 
     await db.flush()
     await db.refresh(record)
     return record
+
+
+# --- Assignment validation ---
+
+
+@router.post(
+    "/validate-assignment",
+    response_model=ValidateAssignmentResponse,
+)
+async def validate_assignment(
+    data: ValidateAssignmentRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Validate if a personnel can be assigned to a role on a vehicle."""
+    # Load personnel with qualifications
+    result = await db.execute(
+        select(Personnel)
+        .where(Personnel.id == data.personnel_id)
+        .options(selectinload(Personnel.qualifications))
+    )
+    person = result.scalar_one_or_none()
+    if not person:
+        raise NotFoundError("Personnel", data.personnel_id)
+
+    # Verify user has access to the personnel's unit
+    accessible = await get_accessible_units(db, current_user)
+    if person.unit_id not in accessible:
+        raise NotFoundError("Personnel", data.personnel_id)
+
+    # Validate role against ConvoyRole enum
+    valid_roles = {"DRIVER", "A_DRIVER", "GUNNER", "TC", "VC", "MEDIC", "PAX"}
+    if data.role.upper() not in valid_roles:
+        raise BadRequestError(f"Invalid role: {data.role}. Must be one of {', '.join(sorted(valid_roles))}")
+
+    # Check if already assigned to another vehicle in this movement
+    cp_result = await db.execute(
+        select(ConvoyPersonnel).where(
+            ConvoyPersonnel.movement_id == data.movement_id,
+            ConvoyPersonnel.personnel_id == data.personnel_id,
+        )
+    )
+    existing = cp_result.scalar_one_or_none()
+    assigned_to_other = existing is not None
+
+    today = date.today()
+    missing: list[str] = []
+    role_upper = data.role.upper()
+    vehicle_license = VEHICLE_LICENSE_REQUIREMENTS.get(data.vehicle_tamcn)
+
+    def has_qual(qual_name: str) -> bool:
+        for q in person.qualifications:
+            if (
+                q.qualification_name == qual_name
+                and q.is_current
+                and (q.expiration_date is None or q.expiration_date >= today)
+            ):
+                return True
+        return False
+
+    from app.models.personnel import PayGrade
+
+    e5_plus = {
+        PayGrade.E5, PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+    }
+    e6_plus = {
+        PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+    }
+    officer_grades = {
+        PayGrade.W1, PayGrade.W2, PayGrade.W3, PayGrade.W4, PayGrade.W5,
+        PayGrade.O1, PayGrade.O2, PayGrade.O3, PayGrade.O4, PayGrade.O5,
+        PayGrade.O6, PayGrade.O7, PayGrade.O8, PayGrade.O9, PayGrade.O10,
+    }
+
+    if role_upper in ("DRIVER", "A_DRIVER"):
+        if not has_qual("MILITARY_DRIVER"):
+            missing.append("MILITARY_DRIVER")
+        if vehicle_license and not has_qual(vehicle_license):
+            missing.append(vehicle_license)
+
+    elif role_upper == "TC":
+        if person.pay_grade not in e5_plus:
+            missing.append("E5+ pay grade required")
+        if not has_qual("MILITARY_DRIVER"):
+            missing.append("MILITARY_DRIVER")
+        if vehicle_license and not has_qual(vehicle_license):
+            missing.append(vehicle_license)
+
+    elif role_upper == "VC":
+        if person.pay_grade not in (e6_plus | officer_grades):
+            missing.append("E6+ or Officer pay grade required")
+
+    elif role_upper == "GUNNER":
+        if not has_qual("WEAPONS_QUAL"):
+            missing.append("WEAPONS_QUAL")
+
+    elif role_upper == "MEDIC":
+        if person.mos != "8404" and not has_qual("TCCC"):
+            missing.append("MOS 8404 or TCCC certification")
+
+    # PAX has no requirements
+
+    valid = len(missing) == 0
+    reason = "Qualified" if valid else f"Missing: {', '.join(missing)}"
+    if assigned_to_other and valid:
+        reason = "Qualified but already assigned to a vehicle in this movement"
+
+    return ValidateAssignmentResponse(
+        valid=valid,
+        reason=reason,
+        missing_qualifications=missing,
+        assigned_to_other_vehicle=assigned_to_other,
+    )
+
+
+# --- Convoy Cargo endpoints ---
+
+
+@router.get(
+    "/{movement_id}/cargo",
+    response_model=List[ConvoyCargoResponse],
+)
+async def list_movement_cargo(
+    movement_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """List cargo for a movement."""
+    result = await db.execute(select(Movement).where(Movement.id == movement_id))
+    movement = result.scalar_one_or_none()
+    if not movement:
+        raise NotFoundError("Movement", movement_id)
+
+    await check_unit_access(current_user, movement.unit_id, db)
+
+    cargo_result = await db.execute(
+        select(ConvoyCargo)
+        .where(ConvoyCargo.movement_id == movement_id)
+        .order_by(ConvoyCargo.id)
+    )
+    return cargo_result.scalars().all()
+
+
+@router.post(
+    "/{movement_id}/cargo",
+    response_model=ConvoyCargoResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def add_movement_cargo(
+    movement_id: int,
+    data: ConvoyCargoCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Add cargo to a movement."""
+    result = await db.execute(select(Movement).where(Movement.id == movement_id))
+    movement = result.scalar_one_or_none()
+    if not movement:
+        raise NotFoundError("Movement", movement_id)
+
+    await check_unit_access(current_user, movement.unit_id, db)
+
+    # Verify convoy vehicle belongs to this movement
+    cv_result = await db.execute(
+        select(ConvoyVehicle).where(
+            ConvoyVehicle.id == data.convoy_vehicle_id,
+            ConvoyVehicle.movement_id == movement_id,
+        )
+    )
+    if not cv_result.scalar_one_or_none():
+        raise BadRequestError(
+            f"Convoy vehicle {data.convoy_vehicle_id} not found in movement {movement_id}"
+        )
+
+    cargo = ConvoyCargo(
+        movement_id=movement_id,
+        **data.model_dump(),
+    )
+    db.add(cargo)
+    await db.flush()
+    await db.refresh(cargo)
+    return cargo

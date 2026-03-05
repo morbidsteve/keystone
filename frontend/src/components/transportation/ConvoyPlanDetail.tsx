@@ -3,12 +3,14 @@
 // =============================================================================
 
 import { useState } from 'react';
-import { ArrowLeft, Clock, MapPin, Radio, ShieldAlert, Cross } from 'lucide-react';
+import { ArrowLeft, Clock, MapPin, Radio, ShieldAlert, Cross, Users } from 'lucide-react';
 import type { ConvoyPlan, ConvoyPlanStatus, RiskAssessmentLevel, ManifestEntry, LocationInventoryItem } from '@/lib/types';
 import Card from '@/components/ui/Card';
 import OriginInventoryTable from '@/components/transportation/OriginInventoryTable';
 import ManifestSummary from '@/components/transportation/ManifestSummary';
 import AddToManifestModal from '@/components/transportation/AddToManifestModal';
+import PersonnelAssignmentModal from '@/components/transportation/PersonnelAssignmentModal';
+import ConvoyManifestView from '@/components/transportation/ConvoyManifestView';
 
 // ---------------------------------------------------------------------------
 // Badge helpers (duplicated for isolation; could be shared in a util)
@@ -78,6 +80,8 @@ export default function ConvoyPlanDetail({
   const [manifest, setManifest] = useState<ManifestEntry[]>([]);
   const [selectedItem, setSelectedItem] = useState<LocationInventoryItem | null>(null);
   const [editingEntry, setEditingEntry] = useState<ManifestEntry | null>(null);
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [assignVehicle, setAssignVehicle] = useState<{id: number; tamcn: string; vehicleType: string; bumperNumber: string} | null>(null);
 
   const handleAddToManifest = (entry: ManifestEntry) => {
     setManifest(prev => {
@@ -212,6 +216,29 @@ export default function ConvoyPlanDetail({
             }}
           >
             MARCH TABLE
+          </button>
+          <button
+            onClick={() => {
+              setAssignVehicle({ id: 1, tamcn: 'D1100', vehicleType: 'HMMWV M1151', bumperNumber: 'S1-V1' });
+              setAssignModalOpen(true);
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '5px 12px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 9,
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+              color: 'var(--color-accent)',
+              backgroundColor: 'rgba(77, 171, 247, 0.1)',
+              border: '1px solid var(--color-accent)',
+              borderRadius: 'var(--radius)',
+              cursor: 'pointer',
+            }}
+          >
+            <Users size={11} /> ASSIGN CREW
           </button>
           {plan.status === 'DRAFT' && (
             <button
@@ -385,6 +412,11 @@ export default function ConvoyPlanDetail({
         </div>
       </Card>
 
+      {/* Manifest */}
+      <Card title="MANIFEST">
+        <ConvoyManifestView movementId={plan.movement_id ?? 0} />
+      </Card>
+
       {/* Contingencies */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
         <Card>
@@ -439,6 +471,20 @@ export default function ConvoyPlanDetail({
         existingEntry={editingEntry}
         onClose={() => { setSelectedItem(null); setEditingEntry(null); }}
         onAdd={handleAddToManifest}
+      />
+
+      {/* Personnel Assignment Modal */}
+      <PersonnelAssignmentModal
+        isOpen={assignModalOpen && assignVehicle != null}
+        onClose={() => { setAssignModalOpen(false); setAssignVehicle(null); }}
+        vehicleId={assignVehicle?.id ?? 0}
+        vehicleTamcn={assignVehicle?.tamcn ?? 'D1100'}
+        vehicleType={assignVehicle?.vehicleType ?? 'HMMWV'}
+        bumperNumber={assignVehicle?.bumperNumber ?? ''}
+        movementId={plan.movement_id ?? 0}
+        onSave={(assignments) => {
+          console.log('Personnel assignments saved:', assignments);
+        }}
       />
     </div>
   );

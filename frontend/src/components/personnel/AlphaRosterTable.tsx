@@ -286,6 +286,7 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                   )}
                 </th>
               ))}
+              <th style={{ ...headerStyle, width: 85, cursor: 'default' }}>LOCATION</th>
               <th style={{ ...headerStyle, width: 90, textAlign: 'center' }}>ACTIONS</th>
             </tr>
           </thead>
@@ -350,6 +351,38 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                 </td>
                 <td style={{ ...cellStyle, fontWeight: 600, color: (p.cft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
                   {p.cft_score ?? '—'}
+                </td>
+                <td style={cellStyle}>
+                  {p.current_movement_id ? (
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '1px 6px',
+                        borderRadius: 2,
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 9,
+                        fontWeight: 600,
+                        letterSpacing: '0.5px',
+                        color: '#fb923c',
+                        backgroundColor: 'rgba(251, 146, 60, 0.15)',
+                        border: '1px solid rgba(251, 146, 60, 0.4)',
+                        cursor: 'pointer',
+                      }}
+                      title={`Movement #${p.current_movement_id}`}
+                    >
+                      EN ROUTE
+                    </span>
+                  ) : (
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 9,
+                        color: 'var(--color-text-muted)',
+                      }}
+                    >
+                      PRESENT
+                    </span>
+                  )}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
                   <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>

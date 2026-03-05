@@ -3,6 +3,7 @@
 import enum
 
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     Enum as SQLEnum,
@@ -67,5 +68,56 @@ class Movement(Base):
     convoy_personnel = relationship(
         "ConvoyPersonnel", back_populates="movement", cascade="all, delete-orphan"
     )
+    convoy_cargo = relationship(
+        "ConvoyCargo", back_populates="movement", cascade="all, delete-orphan"
+    )
     convoy_plan = relationship("ConvoyPlan")
     convoy_serial = relationship("ConvoySerial")
+
+
+VEHICLE_LICENSE_REQUIREMENTS = {
+    "D1100": "HMMWV_LICENSE",
+    "D1149": "HMMWV_LICENSE",
+    "D0090": "MTVR_LICENSE",
+    "D0091": "MTVR_LICENSE",
+    "E0846": "JLTV_LICENSE",
+    "E0847": "JLTV_LICENSE",
+    "E0811": "LVSR_LICENSE",
+    "L0071": "LAV_LICENSE",
+    "P0072": "ACV_LICENSE",
+}
+
+
+class ConvoyCargo(Base):
+    __tablename__ = "convoy_cargo"
+
+    id = Column(Integer, primary_key=True, index=True)
+    movement_id = Column(
+        Integer,
+        ForeignKey("movements.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    convoy_vehicle_id = Column(
+        Integer,
+        ForeignKey("convoy_vehicles.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    supply_catalog_item_id = Column(
+        Integer, ForeignKey("supply_catalog.id"), nullable=True
+    )
+    equipment_catalog_item_id = Column(
+        Integer, ForeignKey("equipment_catalog.id"), nullable=True
+    )
+    description = Column(String(200), nullable=True)
+    quantity = Column(Integer, nullable=False, default=1)
+    weight_lbs = Column(Float, nullable=True)
+    is_hazmat = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    movement = relationship("Movement", back_populates="convoy_cargo")
+    convoy_vehicle = relationship("ConvoyVehicle", back_populates="cargo")
+    supply_catalog_item = relationship("SupplyCatalogItem")
+    equipment_catalog_item = relationship("EquipmentCatalogItem")

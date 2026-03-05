@@ -14,6 +14,10 @@ import type {
   QualStatusData,
   PersonnelReadinessData,
   EASRecord,
+  QualifiedPersonnelItem,
+  QualifiedPersonnelResponse,
+  ValidateAssignmentRequest,
+  ValidateAssignmentResponse,
 } from '@/lib/types';
 
 // ---------------------------------------------------------------------------
@@ -438,4 +442,253 @@ export async function deleteQualification(id: number): Promise<void> {
     return;
   }
   await apiClient.delete(`/personnel/qualifications/${id}`);
+}
+
+// ---------------------------------------------------------------------------
+// Transportation Personnel Assignment & Certification Verification
+// ---------------------------------------------------------------------------
+
+// Mock qualification records keyed to MOCK_PERSONNEL ids
+const MOCK_QUALIFICATIONS: {
+  personnel_id: number;
+  qualification_type: string;
+  qualification_name: string;
+  is_current: boolean;
+  expiration_date: string | null;
+}[] = [
+  // Officers/SNCOs (ids 1-5): MILITARY_DRIVER + HMMWV_LICENSE + MTVR_LICENSE
+  { personnel_id: 1, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(365) },
+  { personnel_id: 1, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(365) },
+  { personnel_id: 1, qualification_type: 'MTVR_LICENSE', qualification_name: 'MTVR Operator License', is_current: true, expiration_date: dateStr(300) },
+
+  { personnel_id: 2, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(400) },
+  { personnel_id: 2, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(400) },
+  { personnel_id: 2, qualification_type: 'MTVR_LICENSE', qualification_name: 'MTVR Operator License', is_current: true, expiration_date: dateStr(350) },
+
+  { personnel_id: 3, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(320) },
+  { personnel_id: 3, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(320) },
+  { personnel_id: 3, qualification_type: 'MTVR_LICENSE', qualification_name: 'MTVR Operator License', is_current: true, expiration_date: dateStr(280) },
+
+  { personnel_id: 4, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(350) },
+  { personnel_id: 4, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(350) },
+  { personnel_id: 4, qualification_type: 'MTVR_LICENSE', qualification_name: 'MTVR Operator License', is_current: true, expiration_date: dateStr(310) },
+
+  { personnel_id: 5, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(380) },
+  { personnel_id: 5, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(380) },
+  { personnel_id: 5, qualification_type: 'MTVR_LICENSE', qualification_name: 'MTVR Operator License', is_current: true, expiration_date: dateStr(340) },
+
+  // NCOs with drivers_license_military: true (ids 8, 9, 10, 11, 13, 16, 22): MILITARY_DRIVER + HMMWV_LICENSE
+  { personnel_id: 8, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(290) },
+  { personnel_id: 8, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(290) },
+
+  { personnel_id: 9, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(260) },
+  { personnel_id: 9, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(260) },
+
+  { personnel_id: 10, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(270) },
+  { personnel_id: 10, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(270) },
+
+  { personnel_id: 11, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(240) },
+  { personnel_id: 11, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(240) },
+
+  { personnel_id: 13, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(250) },
+  { personnel_id: 13, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(250) },
+
+  { personnel_id: 16, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(230) },
+  { personnel_id: 16, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(230) },
+
+  { personnel_id: 22, qualification_type: 'MILITARY_DRIVER', qualification_name: 'Military Driver License', is_current: true, expiration_date: dateStr(275) },
+  { personnel_id: 22, qualification_type: 'HMMWV_LICENSE', qualification_name: 'HMMWV Operator License', is_current: true, expiration_date: dateStr(275) },
+
+  // WEAPONS_QUAL for E5-E7 (ids 8, 9, 10, 11, 12) and id 13 (FDC Chief)
+  { personnel_id: 8, qualification_type: 'WEAPONS_QUAL', qualification_name: 'Crew-Served Weapons Qualification', is_current: true, expiration_date: dateStr(180) },
+  { personnel_id: 9, qualification_type: 'WEAPONS_QUAL', qualification_name: 'Crew-Served Weapons Qualification', is_current: true, expiration_date: dateStr(200) },
+  { personnel_id: 10, qualification_type: 'WEAPONS_QUAL', qualification_name: 'Crew-Served Weapons Qualification', is_current: true, expiration_date: dateStr(190) },
+  { personnel_id: 11, qualification_type: 'WEAPONS_QUAL', qualification_name: 'Crew-Served Weapons Qualification', is_current: true, expiration_date: dateStr(210) },
+  { personnel_id: 12, qualification_type: 'WEAPONS_QUAL', qualification_name: 'Crew-Served Weapons Qualification', is_current: true, expiration_date: dateStr(195) },
+  { personnel_id: 13, qualification_type: 'WEAPONS_QUAL', qualification_name: 'Crew-Served Weapons Qualification', is_current: true, expiration_date: dateStr(185) },
+
+  // TCCC for personnel 14 (Cpl Clark)
+  { personnel_id: 14, qualification_type: 'TCCC', qualification_name: 'Tactical Combat Casualty Care', is_current: true, expiration_date: dateStr(150) },
+];
+
+// Vehicle license requirements by TAMCN
+const VEHICLE_LICENSE_REQUIREMENTS: Record<string, string> = {
+  'D1100': 'HMMWV_LICENSE', 'D1149': 'HMMWV_LICENSE',
+  'D0090': 'MTVR_LICENSE', 'D0091': 'MTVR_LICENSE',
+  'E0846': 'JLTV_LICENSE', 'E0847': 'JLTV_LICENSE',
+  'E0811': 'LVSR_LICENSE',
+  'L0071': 'LAV_LICENSE',
+  'P0072': 'ACV_LICENSE',
+};
+
+// Pay grade sets for role eligibility
+const E5_PLUS = ['E5', 'E6', 'E7', 'E8', 'E9', 'W1', 'W2', 'W3', 'W4', 'W5'];
+const E6_PLUS_OR_OFFICER = ['E6', 'E7', 'E8', 'E9', 'W1', 'W2', 'W3', 'W4', 'W5', 'O1', 'O2', 'O3', 'O4', 'O5', 'O6', 'O7', 'O8', 'O9', 'O10'];
+
+function getPersonnelQuals(personnelId: number) {
+  return MOCK_QUALIFICATIONS.filter((q) => q.personnel_id === personnelId);
+}
+
+function hasCurrentQual(personnelId: number, qualType: string): boolean {
+  const now = new Date();
+  return MOCK_QUALIFICATIONS.some(
+    (q) =>
+      q.personnel_id === personnelId &&
+      q.qualification_type === qualType &&
+      q.is_current &&
+      (!q.expiration_date || new Date(q.expiration_date) > now),
+  );
+}
+
+export async function getQualifiedPersonnel(
+  role: string,
+  vehicleTamcn: string,
+  excludeMovementId?: number,
+): Promise<QualifiedPersonnelResponse> {
+  if (isDemoMode) {
+    await mockDelay();
+
+    const requiredLicense = VEHICLE_LICENSE_REQUIREMENTS[vehicleTamcn];
+    const requiredQualifications: string[] = [];
+    const activePers = MOCK_PERSONNEL.filter((p) => p.status === 'ACTIVE');
+
+    let filtered: typeof MOCK_PERSONNEL;
+
+    switch (role) {
+      case 'DRIVER':
+      case 'A_DRIVER':
+        requiredQualifications.push('MILITARY_DRIVER');
+        if (requiredLicense) requiredQualifications.push(requiredLicense);
+        filtered = activePers.filter(
+          (p) =>
+            hasCurrentQual(p.id, 'MILITARY_DRIVER') &&
+            (!requiredLicense || hasCurrentQual(p.id, requiredLicense)),
+        );
+        break;
+      case 'TC':
+        requiredQualifications.push('MILITARY_DRIVER');
+        if (requiredLicense) requiredQualifications.push(requiredLicense);
+        filtered = activePers.filter(
+          (p) =>
+            p.pay_grade !== null &&
+            E5_PLUS.includes(p.pay_grade) &&
+            hasCurrentQual(p.id, 'MILITARY_DRIVER') &&
+            (!requiredLicense || hasCurrentQual(p.id, requiredLicense)),
+        );
+        break;
+      case 'VC':
+        filtered = activePers.filter(
+          (p) => p.pay_grade !== null && E6_PLUS_OR_OFFICER.includes(p.pay_grade),
+        );
+        break;
+      case 'GUNNER':
+        requiredQualifications.push('WEAPONS_QUAL');
+        filtered = activePers.filter((p) => hasCurrentQual(p.id, 'WEAPONS_QUAL'));
+        break;
+      case 'MEDIC':
+        requiredQualifications.push('TCCC');
+        filtered = activePers.filter(
+          (p) => p.mos === '8404' || hasCurrentQual(p.id, 'TCCC'),
+        );
+        break;
+      case 'PAX':
+      default:
+        filtered = [...activePers];
+        break;
+    }
+
+    const personnel: QualifiedPersonnelItem[] = filtered.map((p) => ({
+      id: p.id,
+      edipi: p.edipi,
+      rank: p.rank,
+      first_name: p.first_name,
+      last_name: p.last_name,
+      mos: p.mos,
+      pay_grade: p.pay_grade,
+      is_assigned_to_movement: false,
+      qualifications: getPersonnelQuals(p.id).map((q) => ({
+        qualification_type: q.qualification_type,
+        qualification_name: q.qualification_name,
+        is_current: q.is_current,
+        expiration_date: q.expiration_date,
+      })),
+    }));
+
+    return {
+      personnel,
+      total: personnel.length,
+      required_qualifications: requiredQualifications,
+    };
+  }
+
+  const response = await apiClient.get<{ data: QualifiedPersonnelResponse }>(
+    '/transportation/qualified-personnel',
+    { params: { role, vehicle_tamcn: vehicleTamcn, exclude_movement_id: excludeMovementId } },
+  );
+  return response.data.data;
+}
+
+export async function validateAssignment(
+  request: ValidateAssignmentRequest,
+): Promise<ValidateAssignmentResponse> {
+  if (isDemoMode) {
+    await mockDelay();
+
+    const person = MOCK_PERSONNEL.find((p) => p.id === request.personnel_id);
+    if (!person) {
+      return { valid: false, reason: 'Personnel not found', missing_qualifications: [], assigned_to_other_vehicle: false };
+    }
+    if (person.status !== 'ACTIVE') {
+      return { valid: false, reason: `Personnel status is ${person.status}, not ACTIVE`, missing_qualifications: [], assigned_to_other_vehicle: false };
+    }
+
+    const missingQuals: string[] = [];
+    const requiredLicense = VEHICLE_LICENSE_REQUIREMENTS[request.vehicle_tamcn];
+
+    switch (request.role) {
+      case 'DRIVER':
+      case 'A_DRIVER':
+        if (!hasCurrentQual(person.id, 'MILITARY_DRIVER')) missingQuals.push('MILITARY_DRIVER');
+        if (requiredLicense && !hasCurrentQual(person.id, requiredLicense)) missingQuals.push(requiredLicense);
+        break;
+      case 'TC':
+        if (!person.pay_grade || !E5_PLUS.includes(person.pay_grade)) {
+          return { valid: false, reason: 'TC must be E5 or above', missing_qualifications: [], assigned_to_other_vehicle: false };
+        }
+        if (!hasCurrentQual(person.id, 'MILITARY_DRIVER')) missingQuals.push('MILITARY_DRIVER');
+        if (requiredLicense && !hasCurrentQual(person.id, requiredLicense)) missingQuals.push(requiredLicense);
+        break;
+      case 'VC':
+        if (!person.pay_grade || !E6_PLUS_OR_OFFICER.includes(person.pay_grade)) {
+          return { valid: false, reason: 'VC must be E6+ or Officer', missing_qualifications: [], assigned_to_other_vehicle: false };
+        }
+        break;
+      case 'GUNNER':
+        if (!hasCurrentQual(person.id, 'WEAPONS_QUAL')) missingQuals.push('WEAPONS_QUAL');
+        break;
+      case 'MEDIC':
+        if (person.mos !== '8404' && !hasCurrentQual(person.id, 'TCCC')) missingQuals.push('TCCC');
+        break;
+      case 'PAX':
+      default:
+        break;
+    }
+
+    if (missingQuals.length > 0) {
+      return {
+        valid: false,
+        reason: `Missing required qualifications: ${missingQuals.join(', ')}`,
+        missing_qualifications: missingQuals,
+        assigned_to_other_vehicle: false,
+      };
+    }
+
+    return { valid: true, reason: 'Personnel meets all requirements', missing_qualifications: [], assigned_to_other_vehicle: false };
+  }
+
+  const response = await apiClient.post<{ data: ValidateAssignmentResponse }>(
+    '/transportation/validate-assignment',
+    request,
+  );
+  return response.data.data;
 }
