@@ -235,6 +235,20 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Qualification seeding failed: {e}")
 
+    # 10. Seed maintenance work orders
+    try:
+        from seed.seed_maintenance import seed_maintenance
+
+        async with async_session() as db:
+            count = await seed_maintenance(db)
+            await db.commit()
+            if count:
+                logger.info(f"Maintenance: {count} work orders seeded.")
+            else:
+                logger.info("Maintenance data already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Maintenance seeding failed: {e}")
+
 
 app = FastAPI(
     title="KEYSTONE",

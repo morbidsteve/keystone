@@ -189,6 +189,7 @@ export default function CreateWorkOrderModal({
           onSubmit={handleSubmit}
           style={{
             flex: 1,
+            minHeight: 0,
             overflowY: 'auto',
             padding: 16,
             display: 'flex',
@@ -378,7 +379,7 @@ export default function CreateWorkOrderModal({
             CANCEL
           </button>
           <button
-            type="submit"
+            type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
             style={{
