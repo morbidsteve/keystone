@@ -244,8 +244,12 @@ class ReadinessService:
 
         Gets the latest snapshot for each subordinate and averages.
         """
-        # Get subordinate units
-        result = await db.execute(select(Unit).where(Unit.parent_id == parent_unit_id))
+        # Get subordinate units ordered by echelon and name
+        result = await db.execute(
+            select(Unit)
+            .where(Unit.parent_id == parent_unit_id)
+            .order_by(Unit.echelon, Unit.name)
+        )
         subordinates = result.scalars().all()
 
         if not subordinates:
@@ -283,6 +287,7 @@ class ReadinessService:
                 "unit_id": sub.id,
                 "unit_name": sub.name,
                 "abbreviation": sub.abbreviation,
+                "echelon_label": sub.echelon.value if sub.echelon else "CUSTOM",
             }
 
             if snapshot:
@@ -298,6 +303,7 @@ class ReadinessService:
                     if snapshot.snapshot_date
                     else None
                 )
+                sub_info["limiting_factor"] = snapshot.limiting_factor
 
                 totals["overall"] += snapshot.overall_readiness_pct or 0
                 totals["equipment"] += snapshot.equipment_readiness_pct or 0
@@ -307,6 +313,7 @@ class ReadinessService:
             else:
                 sub_info["overall_readiness_pct"] = None
                 sub_info["snapshot_date"] = None
+                sub_info["limiting_factor"] = None
 
             sub_data.append(sub_info)
 

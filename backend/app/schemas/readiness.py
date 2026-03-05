@@ -51,6 +51,8 @@ class SubordinateReadiness(BaseModel):
     training_readiness_pct: Optional[float] = None
     c_rating: Optional[str] = None
     snapshot_date: Optional[str] = None
+    echelon_label: Optional[str] = None
+    limiting_factor: Optional[str] = None
 
 
 class ReadinessAverages(BaseModel):
@@ -90,6 +92,76 @@ class ReadinessDashboardResponse(BaseModel):
 class SnapshotCreateRequest(BaseModel):
     notes: Optional[str] = None
     is_official: bool = False
+
+
+# --- Drill-Down Detail Schemas ---
+
+
+class EquipmentDetailItem(BaseModel):
+    tamcn: str
+    nomenclature: str
+    total_possessed: int
+    mission_capable: int
+    nmc_m: int
+    nmc_s: int
+    readiness_pct: float
+
+
+class EquipmentDetailResponse(BaseModel):
+    unit_id: int
+    snapshot_date: str
+    overall_readiness_pct: float
+    r_rating: str
+    equipment_items: List[EquipmentDetailItem]
+    summary_by_category: Optional[dict] = None
+
+
+class SupplyDetailItem(BaseModel):
+    supply_class: str
+    description: str
+    on_hand: float
+    required: float
+    dos: float
+    status: str
+
+
+class SupplyDetailResponse(BaseModel):
+    unit_id: int
+    snapshot_date: str
+    overall_readiness_pct: float
+    s_rating: str
+    supply_items: List[SupplyDetailItem]
+    dos_by_class: Optional[dict] = None
+
+
+class MOSShortfall(BaseModel):
+    mos: str
+    mos_title: str
+    authorized: int
+    assigned: int
+    shortfall: int
+
+
+class PersonnelDetailResponse(BaseModel):
+    unit_id: int
+    snapshot_date: str
+    overall_readiness_pct: float
+    p_rating: str
+    authorized_total: int
+    assigned_total: int
+    fill_rate_pct: float
+    mos_shortfalls: List[MOSShortfall]
+    key_billet_vacancies: Optional[List[dict]] = None
+
+
+class TrainingDetailResponse(BaseModel):
+    unit_id: int
+    snapshot_date: str
+    overall_readiness_pct: float
+    t_rating: str
+    qualification_currency_rates: Optional[dict] = None
+    upcoming_expirations: Optional[List[dict]] = None
+    combat_readiness_stats: Optional[dict] = None
 
 
 # --- Unit Strength ---

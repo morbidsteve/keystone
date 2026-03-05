@@ -13,6 +13,7 @@ import ReadinessTrendChart from '@/components/readiness/ReadinessTrendChart';
 import StrengthTable from '@/components/readiness/StrengthTable';
 import ReadinessRollupTree from '@/components/readiness/ReadinessRollupTree';
 import RatingBadge from '@/components/readiness/RatingBadge';
+import DrillDownPanel from '@/components/readiness/DrillDownPanel';
 import {
   getReadinessSnapshot,
   getReadinessHistory,
@@ -44,17 +45,12 @@ const TREND_RANGES = [
 // Unit name lookup
 // ---------------------------------------------------------------------------
 
-const UNIT_NAMES: Record<number, string> = {
-  1: 'I MEF',
-  2: '1st MarDiv',
-  3: '1st Marines',
-  4: '1/1',
-  5: '2/1',
-};
-
-function getUnitName(id: number): string {
-  return UNIT_NAMES[id] ?? `Unit ${id}`;
+function getUnitName(id: number, dashboardUnits?: Array<{ unitId: number; unitName: string }>): string {
+  const found = dashboardUnits?.find((u) => u.unitId === id);
+  return found?.unitName ?? `Unit ${id}`;
 }
+
+type DrillDownDomain = 'equipment' | 'supply' | 'personnel' | 'training';
 
 // ---------------------------------------------------------------------------
 // Page Component
@@ -64,6 +60,7 @@ export default function ReadinessPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [trendDays, setTrendDays] = useState(30);
   const [showComponents, setShowComponents] = useState(false);
+  const [activeDrillDown, setActiveDrillDown] = useState<DrillDownDomain | null>(null);
 
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
@@ -131,10 +128,10 @@ export default function ReadinessPage() {
     }));
   }, [history]);
 
-  // ESC key to close any future modals
+  // ESC key to close drill-down panel
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
-      // placeholder for modal close
+      setActiveDrillDown(null);
     }
   }, []);
 
@@ -188,7 +185,7 @@ export default function ReadinessPage() {
       ) : snapshot ? (
         <>
           {/* 5 Gauges */}
-          <Card title={`READINESS \u2014 ${getUnitName(numericUnitId)}`}>
+          <Card title={`READINESS \u2014 ${getUnitName(numericUnitId, dashboard?.units)}`}>
             <div
               style={{
                 display: 'flex',
@@ -203,33 +200,52 @@ export default function ReadinessPage() {
                 rating={snapshot.cRating}
                 size={90}
                 label="Overall"
+                domain="overall"
+                onDrillDown={setActiveDrillDown}
               />
               <ReadinessGauge
                 percentage={snapshot.equipmentReadinessPct ?? 0}
                 rating={snapshot.rRating}
                 size={80}
                 label="Equipment"
+                domain="equipment"
+                onDrillDown={setActiveDrillDown}
               />
               <ReadinessGauge
                 percentage={snapshot.supplyReadinessPct ?? 0}
                 rating={snapshot.sRating}
                 size={80}
                 label="Supply"
+                domain="supply"
+                onDrillDown={setActiveDrillDown}
               />
               <ReadinessGauge
                 percentage={snapshot.personnelFillPct ?? 0}
                 rating={snapshot.pRating}
                 size={80}
                 label="Personnel"
+                domain="personnel"
+                onDrillDown={setActiveDrillDown}
               />
               <ReadinessGauge
                 percentage={snapshot.trainingReadinessPct ?? 0}
                 rating={snapshot.tRating}
                 size={80}
                 label="Training"
+                domain="training"
+                onDrillDown={setActiveDrillDown}
               />
             </div>
           </Card>
+
+          {/* Drill-down detail panel */}
+          {activeDrillDown && (
+            <DrillDownPanel
+              unitId={numericUnitId}
+              domain={activeDrillDown}
+              onClose={() => setActiveDrillDown(null)}
+            />
+          )}
 
           {/* Limiting factor alert banner */}
           {snapshot.limitingFactor && (
@@ -314,14 +330,15 @@ export default function ReadinessPage() {
                 }}
               >
                 {[
-                  { label: 'COMBINED', rating: snapshot.cRating, pct: snapshot.overallReadinessPct },
-                  { label: 'EQUIPMENT', rating: snapshot.rRating, pct: snapshot.equipmentReadinessPct },
-                  { label: 'SUPPLY', rating: snapshot.sRating, pct: snapshot.supplyReadinessPct },
-                  { label: 'PERSONNEL', rating: snapshot.pRating, pct: snapshot.personnelFillPct },
-                  { label: 'TRAINING', rating: snapshot.tRating, pct: snapshot.trainingReadinessPct },
+                  { label: 'COMBINED', rating: snapshot.cRating, pct: snapshot.overallReadinessPct, domain: null as DrillDownDomain | null },
+                  { label: 'EQUIPMENT', rating: snapshot.rRating, pct: snapshot.equipmentReadinessPct, domain: 'equipment' as DrillDownDomain | null },
+                  { label: 'SUPPLY', rating: snapshot.sRating, pct: snapshot.supplyReadinessPct, domain: 'supply' as DrillDownDomain | null },
+                  { label: 'PERSONNEL', rating: snapshot.pRating, pct: snapshot.personnelFillPct, domain: 'personnel' as DrillDownDomain | null },
+                  { label: 'TRAINING', rating: snapshot.tRating, pct: snapshot.trainingReadinessPct, domain: 'training' as DrillDownDomain | null },
                 ].map((item) => (
                   <div
                     key={item.label}
+                    onClick={() => item.domain && setActiveDrillDown(item.domain)}
                     style={{
                       padding: 12,
                       backgroundColor: 'var(--color-bg)',
@@ -330,6 +347,14 @@ export default function ReadinessPage() {
                       display: 'flex',
                       flexDirection: 'column',
                       gap: 8,
+                      cursor: item.domain ? 'pointer' : 'default',
+                      transition: 'background-color var(--transition)',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (item.domain) e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-bg)';
                     }}
                   >
                     <span
@@ -524,7 +549,7 @@ export default function ReadinessPage() {
             renderLoadingSkeleton()
           ) : rollup && rollup.subordinates.length > 0 ? (
             <ReadinessRollupTree
-              parentUnitName={getUnitName(numericUnitId)}
+              parentUnitName={getUnitName(numericUnitId, dashboard?.units)}
               subordinates={rollup.subordinates}
               avgOverallPct={rollup.avgOverallReadinessPct}
             />

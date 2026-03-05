@@ -238,16 +238,26 @@ export async function getReadinessRollup(
     // Unit 2 (1st MarDiv) rolls up 3,4,5
     // Unit 3 (1st Marines) rolls up 4,5
     // Otherwise just return self
-    const childConfigs: UnitReadinessConfig[] = [];
-    if (unitId === 1) {
-      childConfigs.push(...UNIT_CONFIGS.filter((c) => c.unitId >= 2));
-    } else if (unitId === 2) {
-      childConfigs.push(...UNIT_CONFIGS.filter((c) => c.unitId >= 3));
-    } else if (unitId === 3) {
-      childConfigs.push(...UNIT_CONFIGS.filter((c) => c.unitId >= 4 && c.unitId <= 5));
-    } else {
-      childConfigs.push(getConfig(unitId));
-    }
+    // Direct children only (USMC hierarchy)
+    // Unit 1 (I MEF) -> Unit 2 (1st MarDiv), Unit 3 (1st Marines)
+    // Unit 2 (1st MarDiv) -> Unit 3 (1st Marines)
+    // Unit 3 (1st Marines) -> Unit 4 (1/1), Unit 5 (2/1)
+    const DIRECT_CHILDREN: Record<number, number[]> = {
+      1: [2, 3],
+      2: [3],
+      3: [4, 5],
+    };
+
+    const ECHELON_LABELS: Record<number, string> = {
+      1: 'MEF',
+      2: 'DIV',
+      3: 'REGT',
+      4: 'BN',
+      5: 'BN',
+    };
+
+    const childIds = DIRECT_CHILDREN[unitId] ?? [];
+    const childConfigs = childIds.map((id) => getConfig(id));
 
     const subs = childConfigs.map((c) => ({
       unitId: c.unitId,
@@ -255,6 +265,7 @@ export async function getReadinessRollup(
       cRating: c.cRating,
       overallReadinessPct: c.overallPct,
       limitingFactor: c.limitingFactor,
+      echelonLabel: ECHELON_LABELS[c.unitId] ?? undefined,
     }));
 
     const avg = (arr: number[]) =>
@@ -355,5 +366,137 @@ export async function updateUnitStrength(
     `/readiness/${unitId}/strength`,
     data,
   );
+  return response.data.data;
+}
+
+// ---------------------------------------------------------------------------
+// Drill-down detail API functions
+// ---------------------------------------------------------------------------
+
+import type {
+  EquipmentDetailResponse,
+  SupplyDetailResponse,
+  PersonnelDetailResponse,
+  TrainingDetailResponse,
+} from '@/lib/types';
+
+export async function getEquipmentDetail(unitId: number): Promise<EquipmentDetailResponse> {
+  if (isDemoMode) {
+    await mockDelay();
+    const cfg = getConfig(unitId);
+    return {
+      unitId,
+      snapshotDate: dateStr(0),
+      overallReadinessPct: cfg.equipmentPct,
+      rRating: cfg.rRating,
+      equipmentItems: [
+        { tamcn: 'E0846', nomenclature: 'HMMWV M1151', totalPossessed: 24, missionCapable: 21, nmcM: 2, nmcS: 1, readinessPct: 87.5 },
+        { tamcn: 'E0854', nomenclature: 'MTVR MK23', totalPossessed: 18, missionCapable: 15, nmcM: 2, nmcS: 1, readinessPct: 83.3 },
+        { tamcn: 'E0889', nomenclature: 'LAV-25', totalPossessed: 14, missionCapable: 11, nmcM: 2, nmcS: 1, readinessPct: 78.6 },
+        { tamcn: 'E1090', nomenclature: 'M777A2 Howitzer', totalPossessed: 6, missionCapable: 5, nmcM: 1, nmcS: 0, readinessPct: 83.3 },
+        { tamcn: 'E2010', nomenclature: 'AN/PRC-117G Radio', totalPossessed: 48, missionCapable: 46, nmcM: 1, nmcS: 1, readinessPct: 95.8 },
+        { tamcn: 'E0910', nomenclature: 'JLTV M-ATV', totalPossessed: 12, missionCapable: 11, nmcM: 0, nmcS: 1, readinessPct: 91.7 },
+        { tamcn: 'E0866', nomenclature: 'LVS MK48', totalPossessed: 8, missionCapable: 7, nmcM: 1, nmcS: 0, readinessPct: 87.5 },
+        { tamcn: 'E1350', nomenclature: 'MEP-813A Generator', totalPossessed: 6, missionCapable: 6, nmcM: 0, nmcS: 0, readinessPct: 100 },
+      ].sort((a, b) => a.readinessPct - b.readinessPct),
+      summaryByCategory: { 'Vehicles': 85, 'Weapons': 83, 'Comms': 96, 'Engineering': 100 },
+    };
+  }
+  const response = await apiClient.get<{ data: EquipmentDetailResponse }>(`/readiness/${unitId}/equipment-detail`);
+  return response.data.data;
+}
+
+export async function getSupplyDetail(unitId: number): Promise<SupplyDetailResponse> {
+  if (isDemoMode) {
+    await mockDelay();
+    const cfg = getConfig(unitId);
+    return {
+      unitId,
+      snapshotDate: dateStr(0),
+      overallReadinessPct: cfg.supplyPct,
+      sRating: cfg.sRating,
+      supplyItems: [
+        { supplyClass: 'CL III', description: 'Bulk Fuel (JP-8)', onHand: 8500, required: 15000, dos: 2.7, status: 'RED' },
+        { supplyClass: 'CL III', description: 'MOGAS', onHand: 1200, required: 3000, dos: 2.0, status: 'RED' },
+        { supplyClass: 'CL IX', description: 'Repair Parts (Ground)', onHand: 36, required: 64, dos: 4.2, status: 'RED' },
+        { supplyClass: 'CL I', description: 'MRE Cases', onHand: 9800, required: 13500, dos: 4.5, status: 'RED' },
+        { supplyClass: 'CL V', description: '5.56mm Ball', onHand: 850, required: 1100, dos: 6.2, status: 'AMBER' },
+        { supplyClass: 'CL VIII', description: 'Medical Consumables', onHand: 878, required: 1140, dos: 18.5, status: 'GREEN' },
+        { supplyClass: 'CL II', description: 'Clothing & Equipment', onHand: 2730, required: 3100, dos: 45, status: 'GREEN' },
+        { supplyClass: 'CL VII', description: 'Major End Items', onHand: 100, required: 112, dos: 350, status: 'GREEN' },
+      ].sort((a, b) => a.dos - b.dos),
+      dosByClass: { 'CL I': 4.5, 'CL II': 45, 'CL III': 2.4, 'CL V': 6.2, 'CL VII': 350, 'CL VIII': 18.5, 'CL IX': 4.2 },
+    };
+  }
+  const response = await apiClient.get<{ data: SupplyDetailResponse }>(`/readiness/${unitId}/supply-detail`);
+  return response.data.data;
+}
+
+export async function getPersonnelDetail(unitId: number): Promise<PersonnelDetailResponse> {
+  if (isDemoMode) {
+    await mockDelay();
+    const cfg = getConfig(unitId);
+    const isLargeUnit = unitId <= 2;
+    const authTotal = isLargeUnit ? 3380 : 862;
+    const fillRatio = cfg.personnelPct / 100;
+    const assignedTotal = Math.round(authTotal * fillRatio);
+    return {
+      unitId,
+      snapshotDate: dateStr(0),
+      overallReadinessPct: cfg.personnelPct,
+      pRating: cfg.pRating,
+      authorizedTotal: authTotal,
+      assignedTotal,
+      fillRatePct: Math.round(fillRatio * 1000) / 10,
+      mosShortfalls: cfg.overallPct < 85
+        ? [
+            { mos: '0311', mosTitle: 'Rifleman', authorized: 180, assigned: 162, shortfall: 18 },
+            { mos: '0331', mosTitle: 'Machine Gunner', authorized: 36, assigned: 28, shortfall: 8 },
+            { mos: '0352', mosTitle: 'Anti-tank Missileman', authorized: 24, assigned: 18, shortfall: 6 },
+            { mos: '0621', mosTitle: 'Radio Operator', authorized: 18, assigned: 14, shortfall: 4 },
+            { mos: '3521', mosTitle: 'Automotive Mechanic', authorized: 12, assigned: 8, shortfall: 4 },
+          ]
+        : [
+            { mos: '3521', mosTitle: 'Automotive Mechanic', authorized: 12, assigned: 10, shortfall: 2 },
+            { mos: '0621', mosTitle: 'Radio Operator', authorized: 18, assigned: 16, shortfall: 2 },
+          ],
+      keyBilletVacancies: null,
+    };
+  }
+  const response = await apiClient.get<{ data: PersonnelDetailResponse }>(`/readiness/${unitId}/personnel-detail`);
+  return response.data.data;
+}
+
+export async function getTrainingDetail(unitId: number): Promise<TrainingDetailResponse> {
+  if (isDemoMode) {
+    await mockDelay();
+    const cfg = getConfig(unitId);
+    return {
+      unitId,
+      snapshotDate: dateStr(0),
+      overallReadinessPct: cfg.trainingPct,
+      tRating: cfg.tRating,
+      qualificationCurrencyRates: {
+        'Annual Rifle Qual': 94.2,
+        'PFT': 92.5,
+        'CFT': 88.0,
+        'CBRN Awareness': 85.3,
+        'Swim Qual': 91.0,
+        'First Aid/CLS': 78.5,
+      },
+      upcomingExpirations: [
+        { qualification: 'Annual Rifle Qual', count: 12, dueWithin: '30 days' },
+        { qualification: 'CBRN Awareness', count: 8, dueWithin: '30 days' },
+        { qualification: 'First Aid/CLS', count: 15, dueWithin: '60 days' },
+      ],
+      combatReadinessStats: {
+        'Range Qualification': 95,
+        'PFT Pass Rate': 92,
+        'CFT Pass Rate': 88,
+        'MCMAP Belt Currency': 82,
+      },
+    };
+  }
+  const response = await apiClient.get<{ data: TrainingDetailResponse }>(`/readiness/${unitId}/training-detail`);
   return response.data.data;
 }
