@@ -1275,6 +1275,7 @@ export interface PersonnelRecord {
   swim_qual: SwimQual | null; security_clearance: SecurityClearanceLevel | null;
   clearance_expiry: string | null; drivers_license_military: boolean;
   duty_status: DutyStatusType; status: string;
+  current_movement_id?: number | null;
 }
 
 export interface BilletRecord {
@@ -1366,6 +1367,7 @@ export interface ConvoyPlan {
   created_at: string;
   updated_at: string;
   serials: ConvoySerial[];
+  movement_id?: number | null;
 }
 
 export interface MarchTableData {
@@ -1916,4 +1918,70 @@ export interface ManifestEntry {
   special_handling?: string;
   weight_lbs?: number;
   added_at: string;
+}
+
+// --- Transportation Personnel Assignment & Certification Verification ---
+
+export type QualificationType =
+  | 'MILITARY_DRIVER' | 'HMMWV_LICENSE' | 'MTVR_LICENSE' | 'JLTV_LICENSE'
+  | 'LVSR_LICENSE' | 'LAV_LICENSE' | 'ACV_LICENSE' | 'WEAPONS_QUAL' | 'TCCC' | 'MOS_8404';
+
+export interface ConvoyCargoItem {
+  id: number;
+  movement_id: number;
+  convoy_vehicle_id: number;
+  description: string | null;
+  quantity: number;
+  weight_lbs: number | null;
+  is_hazmat: boolean;
+  supply_catalog_item_id: number | null;
+  equipment_catalog_item_id: number | null;
+}
+
+export interface QualifiedPersonnelItem {
+  id: number;
+  edipi: string;
+  rank: string | null;
+  first_name: string;
+  last_name: string;
+  mos: string | null;
+  pay_grade: string | null;
+  is_assigned_to_movement: boolean;
+  qualifications: { qualification_type: string; qualification_name: string; is_current: boolean; expiration_date: string | null }[];
+}
+
+export interface QualifiedPersonnelResponse {
+  personnel: QualifiedPersonnelItem[];
+  total: number;
+  required_qualifications: string[];
+}
+
+export interface ValidateAssignmentRequest {
+  personnel_id: number;
+  role: string;
+  vehicle_tamcn: string;
+  movement_id: number;
+}
+
+export interface ValidateAssignmentResponse {
+  valid: boolean;
+  reason: string;
+  missing_qualifications: string[];
+  assigned_to_other_vehicle: boolean;
+}
+
+export interface FullManifestVehicle {
+  convoy_vehicle_id: number;
+  bumper_number: string;
+  vehicle_type: string;
+  tamcn: string;
+  personnel: { role: string; id: number; rank: string; name: string }[];
+  cargo: ConvoyCargoItem[];
+  total_cargo_weight: number;
+}
+
+export interface FullManifestResponse {
+  movement_id: number;
+  convoy_id: string;
+  vehicles: FullManifestVehicle[];
 }

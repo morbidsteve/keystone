@@ -135,12 +135,17 @@ class Personnel(Base):
     drivers_license_military = Column(Boolean, default=False)
     duty_status = Column(SQLEnum(DutyStatus), nullable=True, default=DutyStatus.PRESENT)
 
+    current_movement_id = Column(
+        Integer, ForeignKey("movements.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     unit = relationship("Unit", back_populates="personnel")
+    current_movement = relationship("Movement", foreign_keys=[current_movement_id])
     weapons = relationship(
         "Weapon", back_populates="personnel", cascade="all, delete-orphan"
     )
@@ -213,6 +218,9 @@ class ConvoyVehicle(Base):
     )
     assigned_personnel = relationship(
         "ConvoyPersonnel", back_populates="convoy_vehicle", cascade="all, delete-orphan"
+    )
+    cargo = relationship(
+        "ConvoyCargo", back_populates="convoy_vehicle", cascade="all, delete-orphan"
     )
 
 

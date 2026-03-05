@@ -12,6 +12,9 @@ import type {
   Movement,
   MovementHistoryRecord,
   LocationInventoryItem,
+  ConvoyCargoItem,
+  FullManifestResponse,
+  FullManifestVehicle,
 } from '@/lib/types';
 import { MovementStatus } from '@/lib/types';
 
@@ -1109,6 +1112,100 @@ const MOCK_INVENTORY: LocationInventoryItem[] = [
   { item_id: 'eq-011', item_type: 'equipment', nomenclature: 'ACOG TA31RCO Rifle Scope', nsn: '1240-01-412-6608', category: 'EQUIPMENT', available_qty: 100, weight_lbs: 0.97, status: 'SERVICEABLE' },
   { item_id: 'eq-012', item_type: 'equipment', nomenclature: 'PVS-14 Night Vision Monocular', nsn: '5855-01-432-0524', category: 'EQUIPMENT', available_qty: 40, weight_lbs: 0.77, status: 'SERVICEABLE' },
 ];
+
+// ---------------------------------------------------------------------------
+// Transportation Personnel Assignment — Manifest & Cargo
+// ---------------------------------------------------------------------------
+
+// In-memory mock cargo store
+let MOCK_CONVOY_CARGO: ConvoyCargoItem[] = [
+  { id: 1, movement_id: 1, convoy_vehicle_id: 1, description: 'MRE Cases (Class I)', quantity: 20, weight_lbs: 450, is_hazmat: false, supply_catalog_item_id: null, equipment_catalog_item_id: null },
+  { id: 2, movement_id: 1, convoy_vehicle_id: 1, description: '5.56mm Ammo Cans (Class V)', quantity: 8, weight_lbs: 216, is_hazmat: true, supply_catalog_item_id: null, equipment_catalog_item_id: null },
+  { id: 3, movement_id: 1, convoy_vehicle_id: 2, description: 'Water Cans (Class I)', quantity: 30, weight_lbs: 840, is_hazmat: false, supply_catalog_item_id: null, equipment_catalog_item_id: null },
+];
+let nextCargoId = 4;
+
+export async function getMovementManifest(movementId: number): Promise<FullManifestResponse> {
+  if (isDemoMode) {
+    await mockDelay();
+
+    // Find a convoy plan that could correspond to this movement
+    const plan = MOCK_CONVOY_PLANS.find((p) => p.id === movementId) ?? MOCK_CONVOY_PLANS[0];
+    const convoyId = `CVY-2026-${String(plan.id).padStart(3, '0')}`;
+
+    // Build vehicles from the plan's serials
+    const vehicles: FullManifestVehicle[] = [];
+    let vehicleCounter = 1;
+
+    for (const serial of plan.serials) {
+      for (let v = 0; v < Math.min(serial.vehicle_count, 3); v++) {
+        const cvId = vehicleCounter;
+        const cargo = MOCK_CONVOY_CARGO.filter(
+          (c) => c.movement_id === movementId && c.convoy_vehicle_id === cvId,
+        );
+        vehicles.push({
+          convoy_vehicle_id: cvId,
+          bumper_number: `${serial.serial_number}-V${v + 1}`,
+          vehicle_type: v === 0 ? 'HMMWV M1151' : 'MTVR MK23',
+          tamcn: v === 0 ? 'D1100' : 'D0090',
+          personnel: [],
+          cargo,
+          total_cargo_weight: cargo.reduce((sum, c) => sum + (c.weight_lbs ?? 0), 0),
+        });
+        vehicleCounter++;
+      }
+    }
+
+    return {
+      movement_id: movementId,
+      convoy_id: convoyId,
+      vehicles,
+    };
+  }
+
+  const response = await apiClient.get<{ data: FullManifestResponse }>(
+    `/transportation/movements/${movementId}/manifest`,
+  );
+  return response.data.data;
+}
+
+export async function addConvoyCargo(
+  movementId: number,
+  cargo: Omit<ConvoyCargoItem, 'id' | 'movement_id'>,
+): Promise<ConvoyCargoItem> {
+  if (isDemoMode) {
+    await mockDelay();
+    const record: ConvoyCargoItem = {
+      id: nextCargoId++,
+      movement_id: movementId,
+      ...cargo,
+    };
+    MOCK_CONVOY_CARGO = [...MOCK_CONVOY_CARGO, record];
+    return record;
+  }
+
+  const response = await apiClient.post<{ data: ConvoyCargoItem }>(
+    `/transportation/movements/${movementId}/cargo`,
+    cargo,
+  );
+  return response.data.data;
+}
+
+export async function removeConvoyCargo(movementId: number, cargoId: number): Promise<void> {
+  if (isDemoMode) {
+    await mockDelay();
+    MOCK_CONVOY_CARGO = MOCK_CONVOY_CARGO.filter(
+      (c) => !(c.id === cargoId && c.movement_id === movementId),
+    );
+    return;
+  }
+
+  await apiClient.delete(`/transportation/movements/${movementId}/cargo/${cargoId}`);
+}
+
+// ---------------------------------------------------------------------------
+// Location Inventory (for manifest building)
+// ---------------------------------------------------------------------------
 
 export async function getLocationInventory(
   _location: string,
