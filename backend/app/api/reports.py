@@ -421,7 +421,9 @@ async def export_report_pdf(
         content=content,
     )
 
-    safe_title = "".join(c for c in report.title if c.isalnum() or c in " -_").strip()
+    safe_title = "".join(
+        c for c in str(report.title) if c.isalnum() or c in " -_"
+    ).strip()
     filename = f"{safe_title or 'report'}.pdf"
 
     return Response(

@@ -40,9 +40,7 @@ class PredictionEngine:
         if rec_type == "RESUPPLY":
             rec = await self._build_resupply(rule, target_unit, metric_desc)
         elif rec_type == "MAINTENANCE":
-            rec = await self._build_maintenance(
-                rule, target_unit, metric_desc
-            )
+            rec = await self._build_maintenance(rule, target_unit, metric_desc)
         elif rec_type == "FUEL_DELIVERY":
             rec = await self._build_fuel(rule, target_unit, metric_desc)
         elif rec_type == "PERSONNEL_MOVE":
@@ -54,8 +52,7 @@ class PredictionEngine:
             self.db.add(rec)
             await self.db.flush()
             logger.info(
-                f"Generated {rec_type} recommendation {rec.id} for "
-                f"alert rule {rule.id}"
+                f"Generated {rec_type} recommendation {rec.id} for alert rule {rule.id}"
             )
 
         return rec
@@ -99,9 +96,7 @@ class PredictionEngine:
             triggered_by_metric=metric_desc,
             target_unit_id=unit.id,
             description=f"Address maintenance backlog at {unit.name}",
-            recommended_items=[
-                {"category": "Open work orders", "count": 0}
-            ],
+            recommended_items=[{"category": "Open work orders", "count": 0}],
             status="PENDING",
             assigned_to_role=rule.recommend_assign_to_role or "CO",
             expires_at=datetime.now(timezone.utc) + timedelta(days=7),
@@ -124,9 +119,7 @@ class PredictionEngine:
             target_unit_id=unit.id,
             description=f"Deliver fuel to {unit.name} from {source_name}",
             recommended_source=source_name,
-            recommended_items=[
-                {"fuel_type": "JP-8", "quantity": 0, "unit": "gallons"}
-            ],
+            recommended_items=[{"fuel_type": "JP-8", "quantity": 0, "unit": "gallons"}],
             status="PENDING",
             assigned_to_role=rule.recommend_assign_to_role or "S4",
             expires_at=datetime.now(timezone.utc) + timedelta(hours=12),

@@ -11,7 +11,12 @@ from app.models.equipment import (
     FaultSeverity,
     EquipmentDriverAssignment,
 )
-from app.models.transportation import Movement, MovementStatus, ConvoyCargo, VEHICLE_LICENSE_REQUIREMENTS
+from app.models.transportation import (
+    Movement,
+    MovementStatus,
+    ConvoyCargo,
+    VEHICLE_LICENSE_REQUIREMENTS,
+)
 from app.models.convoy_planning import (
     ConvoyPlan,
     ConvoySerial,

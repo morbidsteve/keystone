@@ -117,7 +117,7 @@ class ReadinessService:
         if not strength:
             return 0.0, "No personnel strength data available"
 
-        pct = strength.fill_pct
+        pct = float(strength.fill_pct)
 
         limiting_text = None
         if pct < 90 and strength.mos_shortfalls:

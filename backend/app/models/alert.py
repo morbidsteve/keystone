@@ -190,7 +190,9 @@ class AlertRule(Base):
     recommend_assign_to_role = Column(String(20), nullable=True)
 
     scope_unit = relationship("Unit", foreign_keys=[scope_unit_id])
-    recommend_source_unit = relationship("Unit", foreign_keys=[recommend_source_unit_id])
+    recommend_source_unit = relationship(
+        "Unit", foreign_keys=[recommend_source_unit_id]
+    )
 
 
 class Notification(Base):

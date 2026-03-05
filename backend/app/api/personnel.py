@@ -156,17 +156,36 @@ async def get_qualified_personnel(
 
     # E5+ pay grades
     e5_plus = {
-        PayGrade.E5, PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+        PayGrade.E5,
+        PayGrade.E6,
+        PayGrade.E7,
+        PayGrade.E8,
+        PayGrade.E9,
     }
     # E6+ pay grades
     e6_plus = {
-        PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+        PayGrade.E6,
+        PayGrade.E7,
+        PayGrade.E8,
+        PayGrade.E9,
     }
     # Officer / warrant pay grades
     officer_grades = {
-        PayGrade.W1, PayGrade.W2, PayGrade.W3, PayGrade.W4, PayGrade.W5,
-        PayGrade.O1, PayGrade.O2, PayGrade.O3, PayGrade.O4, PayGrade.O5,
-        PayGrade.O6, PayGrade.O7, PayGrade.O8, PayGrade.O9, PayGrade.O10,
+        PayGrade.W1,
+        PayGrade.W2,
+        PayGrade.W3,
+        PayGrade.W4,
+        PayGrade.W5,
+        PayGrade.O1,
+        PayGrade.O2,
+        PayGrade.O3,
+        PayGrade.O4,
+        PayGrade.O5,
+        PayGrade.O6,
+        PayGrade.O7,
+        PayGrade.O8,
+        PayGrade.O9,
+        PayGrade.O10,
     }
 
     def has_current_qual(person: Personnel, qual_name: str) -> bool:
@@ -211,8 +230,7 @@ async def get_qualified_personnel(
                 person.pay_grade in e5_plus
                 and has_current_qual(person, "MILITARY_DRIVER")
                 and (
-                    vehicle_license is None
-                    or has_current_qual(person, vehicle_license)
+                    vehicle_license is None or has_current_qual(person, vehicle_license)
                 )
             )
 
@@ -239,7 +257,9 @@ async def get_qualified_personnel(
                     "qualification_name": q.qualification_name,
                     "qualification_type": q.qualification_type,
                     "is_current": q.is_current,
-                    "expiration_date": str(q.expiration_date) if q.expiration_date else None,
+                    "expiration_date": str(q.expiration_date)
+                    if q.expiration_date
+                    else None,
                 }
                 for q in person.qualifications
             ]

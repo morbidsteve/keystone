@@ -87,8 +87,7 @@ class RuleEngine:
                         await engine.generate_recommendation(rule, alert)
                 except Exception as e:
                     logger.error(
-                        f"Failed to generate recommendation for rule "
-                        f"{rule.id}: {e}"
+                        f"Failed to generate recommendation for rule {rule.id}: {e}"
                     )
 
         return alerts_generated
@@ -132,18 +131,14 @@ class RuleEngine:
 
     async def _get_subordinate_units(self, parent_id: int) -> List[Unit]:
         """Recursively get all subordinate units."""
-        result = await self.db.execute(
-            select(Unit).where(Unit.parent_id == parent_id)
-        )
+        result = await self.db.execute(select(Unit).where(Unit.parent_id == parent_id))
         children = list(result.scalars().all())
         all_subs = list(children)
         for child in children:
             all_subs.extend(await self._get_subordinate_units(child.id))
         return all_subs
 
-    async def _get_metric_value(
-        self, rule: AlertRule, unit: Unit
-    ) -> Optional[float]:
+    async def _get_metric_value(self, rule: AlertRule, unit: Unit) -> Optional[float]:
         """Query the database for the metric value."""
         metric = rule.metric_type or rule.metric
 
@@ -166,14 +161,12 @@ class RuleEngine:
             records = result.scalars().all()
             if not records:
                 return None
-            return sum(r.dos for r in records) / len(records)
+            return float(sum(r.dos for r in records) / len(records))
 
         elif metric in ("READINESS_PCT", "equipment_readiness_pct"):
             from app.models.equipment import EquipmentStatus
 
-            query = select(EquipmentStatus).where(
-                EquipmentStatus.unit_id == unit.id
-            )
+            query = select(EquipmentStatus).where(EquipmentStatus.unit_id == unit.id)
             result = await self.db.execute(query)
             records = result.scalars().all()
             if not records:
@@ -207,30 +200,22 @@ class RuleEngine:
 
         elif metric in ("FUEL_LEVEL", "fuel_level_pct"):
             try:
-                from app.models.fuel import FuelStorage
+                from app.models.fuel import FuelStoragePoint
 
                 result = await self.db.execute(
-                    select(FuelStorage).where(
-                        FuelStorage.unit_id == unit.id
-                    )
+                    select(FuelStoragePoint).where(FuelStoragePoint.unit_id == unit.id)
                 )
                 storage = result.scalar_one_or_none()
                 if not storage or not storage.capacity_gallons:
                     return None
-                return (
-                    storage.current_gallons
-                    / storage.capacity_gallons
-                    * 100
-                )
+                return storage.current_gallons / storage.capacity_gallons * 100
             except Exception:
                 return None
 
         return None
 
     @staticmethod
-    def _check_condition(
-        operator: str, actual: float, threshold: float
-    ) -> bool:
+    def _check_condition(operator: str, actual: float, threshold: float) -> bool:
         """Check if operator(actual, threshold) is true."""
         ops = {
             "LT": lambda a, t: a < t,
@@ -244,9 +229,7 @@ class RuleEngine:
         return fn(actual, threshold) if fn else False
 
     @staticmethod
-    def _format_message(
-        rule: AlertRule, unit: Unit, metric_value: float
-    ) -> str:
+    def _format_message(rule: AlertRule, unit: Unit, metric_value: float) -> str:
         """Format a human-readable alert message."""
         metric_name = rule.metric_type or rule.metric
         op_symbols = {
