@@ -12,6 +12,16 @@ from app.models.equipment import (
     EquipmentDriverAssignment,
 )
 from app.models.transportation import Movement, MovementStatus
+from app.models.convoy_planning import (
+    ConvoyPlan,
+    ConvoySerial,
+    LiftRequest,
+    ConvoyPlanStatus,
+    RiskAssessmentLevel,
+    LiftRequestPriority,
+    LiftRequestStatus,
+    CargoType,
+)
 from app.models.maintenance import (
     MaintenanceWorkOrder,
     WorkOrderStatus,
@@ -190,4 +200,12 @@ __all__ = [
     "BilletStructure",
     "ManningSnapshot",
     "Qualification",
+    "ConvoyPlan",
+    "ConvoySerial",
+    "LiftRequest",
+    "ConvoyPlanStatus",
+    "RiskAssessmentLevel",
+    "LiftRequestPriority",
+    "LiftRequestStatus",
+    "CargoType",
 ]

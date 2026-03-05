@@ -1138,3 +1138,117 @@ export interface EASRecord {
   rank: string; mos: string; pay_grade: string | null; billet: string | null;
   eaos: string; days_until_eas: number;
 }
+
+// --- Transportation & Movement Expansion ---
+export type ConvoyPlanStatus = 'DRAFT' | 'APPROVED' | 'EXECUTING' | 'COMPLETE' | 'CANCELED';
+export type RiskAssessmentLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'EXTREME';
+export type LiftRequestPriority = 'ROUTINE' | 'PRIORITY' | 'EMERGENCY';
+export type LiftRequestStatus = 'REQUESTED' | 'APPROVED' | 'SCHEDULED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELED';
+export type CargoType = 'PERSONNEL' | 'EQUIPMENT' | 'SUPPLY' | 'MIXED';
+
+export interface ConvoySerial {
+  id: number;
+  convoy_plan_id: number;
+  serial_number: string;
+  serial_commander_id: number | null;
+  serial_commander_name?: string;
+  vehicle_count: number;
+  pax_count: number;
+  march_order: number;
+  march_speed_kph: number;
+  catch_up_speed_kph: number;
+  interval_meters: number;
+  created_at: string;
+}
+
+export interface ConvoyPlan {
+  id: number;
+  name: string;
+  unit_id: number;
+  created_by: number;
+  status: ConvoyPlanStatus;
+  route_name: string | null;
+  route_description: string | null;
+  total_distance_km: number | null;
+  estimated_duration_hours: number | null;
+  route_primary: string | null;
+  route_alternate: string | null;
+  departure_time_planned: string | null;
+  sp_time: string | null;
+  rp_time: string | null;
+  brief_time: string | null;
+  rehearsal_time: string | null;
+  movement_credit_number: string | null;
+  convoy_commander_id: number | null;
+  risk_assessment_level: RiskAssessmentLevel | null;
+  comm_plan: string | null;
+  recovery_plan: string | null;
+  medevac_plan: string | null;
+  created_at: string;
+  updated_at: string;
+  serials: ConvoySerial[];
+}
+
+export interface MarchTableData {
+  sp_time: string;
+  rp_time: string;
+  checkpoints: Array<{
+    name: string;
+    distance_km: number;
+    cumulative_distance_km: number;
+    time: string;
+    speed_kph: number;
+  }>;
+  total_distance_km: number;
+  total_duration_hours: number;
+  march_speed_kph: number;
+  catch_up_speed_kph: number;
+  fuel_estimate?: {
+    total_gallons: number;
+    total_liters: number;
+    per_vehicle_gallons: number;
+  };
+}
+
+export interface LiftRequest {
+  id: number;
+  requesting_unit_id: number;
+  requesting_unit_name?: string;
+  supporting_unit_id: number | null;
+  supporting_unit_name?: string;
+  cargo_type: CargoType;
+  cargo_description: string;
+  weight_lbs: number | null;
+  cube_ft: number | null;
+  pax_count: number;
+  hazmat: boolean;
+  priority: LiftRequestPriority;
+  required_delivery_date: string;
+  status: LiftRequestStatus;
+  pickup_location: string;
+  pickup_lat: number | null;
+  pickup_lon: number | null;
+  delivery_location: string;
+  delivery_lat: number | null;
+  delivery_lon: number | null;
+  assigned_movement_id: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MovementHistoryRecord {
+  id: number;
+  convoy_id: string | null;
+  origin: string;
+  destination: string;
+  departure_time: string | null;
+  eta: string | null;
+  actual_arrival: string | null;
+  vehicle_count: number;
+  cargo_description: string | null;
+  status: string;
+  on_time: boolean;
+  duration_hours: number | null;
+  average_speed_kph: number | null;
+  convoy_plan_name?: string;
+}
