@@ -28,6 +28,7 @@ from app.api.requisitions import router as requisitions_router
 from app.api.inventory import router as inventory_router
 from app.api.manning import router as manning_router
 from app.api.convoy_planning import router as convoy_planning_router
+from app.api.medical import router as medical_router
 
 api_router = APIRouter()
 
@@ -81,3 +82,4 @@ api_router.include_router(manning_router, prefix="/manning", tags=["Manning"])
 api_router.include_router(
     convoy_planning_router, prefix="/transportation", tags=["Convoy Planning"]
 )
+api_router.include_router(medical_router, prefix="/medical", tags=["Medical"])

@@ -1252,3 +1252,174 @@ export interface MovementHistoryRecord {
   average_speed_kph: number | null;
   convoy_plan_name?: string;
 }
+
+// Medical / CASEVAC
+export enum CASEVACPrecedence {
+  URGENT_SURGICAL = 'URGENT_SURGICAL',
+  URGENT = 'URGENT',
+  PRIORITY = 'PRIORITY',
+  ROUTINE = 'ROUTINE',
+  CONVENIENCE = 'CONVENIENCE',
+}
+
+export enum TriageCategory {
+  IMMEDIATE = 'IMMEDIATE',
+  DELAYED = 'DELAYED',
+  MINIMAL = 'MINIMAL',
+  EXPECTANT = 'EXPECTANT',
+}
+
+export enum CasualtyReportStatus {
+  REPORTED = 'REPORTED',
+  ACKNOWLEDGED = 'ACKNOWLEDGED',
+  DISPATCHED = 'DISPATCHED',
+  EVACUATING = 'EVACUATING',
+  AT_MTF = 'AT_MTF',
+  CLOSED = 'CLOSED',
+}
+
+export enum EvacuationStatus {
+  PENDING = 'PENDING',
+  IN_TRANSIT = 'IN_TRANSIT',
+  AT_FACILITY = 'AT_FACILITY',
+  TREATED = 'TREATED',
+  RTD = 'RTD',
+}
+
+export enum MTFType {
+  BAS = 'BAS',
+  STP = 'STP',
+  FRSS = 'FRSS',
+  ROLE2 = 'ROLE2',
+  ROLE2E = 'ROLE2E',
+  ROLE3 = 'ROLE3',
+  ROLE4 = 'ROLE4',
+}
+
+export enum MTFStatus {
+  OPERATIONAL = 'OPERATIONAL',
+  DEGRADED = 'DEGRADED',
+  NON_OPERATIONAL = 'NON_OPERATIONAL',
+}
+
+export enum BloodProductType {
+  WHOLE_BLOOD = 'WHOLE_BLOOD',
+  PRBC = 'PRBC',
+  FFP = 'FFP',
+  PLATELETS = 'PLATELETS',
+  CRYO = 'CRYO',
+  ALBUMIN = 'ALBUMIN',
+}
+
+export enum BloodTypeEnum {
+  O_NEG = 'O_NEG',
+  O_POS = 'O_POS',
+  A_NEG = 'A_NEG',
+  A_POS = 'A_POS',
+  B_NEG = 'B_NEG',
+  B_POS = 'B_POS',
+  AB_NEG = 'AB_NEG',
+  AB_POS = 'AB_POS',
+}
+
+export interface CasualtyReport {
+  id: number;
+  casualty_id: string;
+  unit_id: number;
+  personnel_id: number | null;
+  incident_datetime: string;
+  reported_datetime: string;
+  location_lat: number;
+  location_lon: number;
+  location_mgrs: string | null;
+  location_description: string | null;
+  precedence: CASEVACPrecedence;
+  number_of_patients: number;
+  special_equipment_required: string;
+  security_at_pickup: string;
+  patient_type: string;
+  marking_method: string;
+  nationality_status: string;
+  nbc_contamination: boolean;
+  mechanism_of_injury: string | null;
+  injuries_description: string | null;
+  triage_category: TriageCategory | null;
+  tccc_interventions: Record<string, unknown> | null;
+  status: CasualtyReportStatus;
+  transport_method: string | null;
+  evacuation_status: EvacuationStatus | null;
+  receiving_facility_id: number | null;
+  pickup_time: string | null;
+  arrival_at_facility_time: string | null;
+  remarks: string | null;
+  logs: CasualtyLog[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CasualtyLog {
+  id: number;
+  casualty_report_id: number;
+  event_type: string;
+  event_time: string;
+  notes: string | null;
+}
+
+export interface MedicalFacility {
+  id: number;
+  name: string;
+  facility_type: MTFType;
+  callsign: string | null;
+  unit_id: number | null;
+  location_lat: number;
+  location_lon: number;
+  location_mgrs: string | null;
+  capacity: number;
+  current_census: number;
+  status: MTFStatus;
+  surgical_capability: boolean;
+  blood_bank: boolean;
+  vent_capacity: number;
+  contact_freq: string | null;
+  physician_staffing: number;
+  pa_staffing: number;
+  medic_staffing: number;
+  surgical_tech_staffing: number;
+}
+
+export interface BloodProductRecord {
+  id: number;
+  facility_id: number;
+  product_type: BloodProductType;
+  blood_type: BloodTypeEnum;
+  units_on_hand: number;
+  units_used_24h: number;
+  expiration_date: string | null;
+  walking_blood_bank_donors: number;
+}
+
+export interface MedicalBurnRate {
+  id: number;
+  unit_id: number;
+  supply_catalog_item_id: number;
+  supply_name: string;
+  period_start: string;
+  period_end: string;
+  quantity_used: number;
+  quantity_on_hand: number;
+  days_of_supply: number | null;
+  burn_rate_per_day: number;
+  projected_exhaustion_date: string | null;
+}
+
+export interface PERSTATMedical {
+  unit_id: number;
+  total_strength: number;
+  effective_strength: number;
+  medical_holds: number;
+  active_casualties: number;
+  triage_breakdown: Record<string, number>;
+  tccc_cert_rate_pct: number;
+  blood_type_distribution: Record<string, number>;
+  timestamp: string;
+}
