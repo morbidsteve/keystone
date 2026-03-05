@@ -971,3 +971,109 @@ export interface MaintenanceAnalytics {
   topFaults: Array<{ faultDescription: string; equipmentType: string; count: number }>;
   weeklyTrend: Array<{ weekStart: string; totalHours: number; workOrderCount: number }>;
 }
+
+// --- Requisition & Supply Chain ---
+
+export type RequisitionStatus =
+  | 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'DENIED'
+  | 'SOURCING' | 'BACKORDERED' | 'SHIPPED' | 'RECEIVED' | 'CANCELED';
+
+export type RequisitionPriority = '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12' | '13' | '14' | '15';
+
+export type ApprovalAction = 'APPROVE' | 'DENY' | 'RETURN';
+
+export type TransactionType = 'RECEIPT' | 'ISSUE' | 'TURN_IN' | 'ADJUSTMENT' | 'TRANSFER' | 'LOSS';
+
+export interface RequisitionApprovalRecord {
+  id: number;
+  approver_id: number;
+  approver_name?: string;
+  action: ApprovalAction;
+  comments: string | null;
+  action_date: string;
+}
+
+export interface RequisitionStatusHistoryRecord {
+  id: number;
+  old_status: RequisitionStatus | null;
+  new_status: RequisitionStatus;
+  changed_by_id: number;
+  changed_by_name?: string;
+  changed_at: string;
+  notes: string | null;
+}
+
+export interface Requisition {
+  id: number;
+  requisition_number: string;
+  unit_id: number;
+  requested_by_id: number;
+  requested_by_name?: string;
+  approved_by_id: number | null;
+  supply_catalog_item_id: number | null;
+  ammo_catalog_item_id: number | null;
+  equipment_catalog_item_id: number | null;
+  nsn: string | null;
+  dodic: string | null;
+  nomenclature: string;
+  quantity_requested: number;
+  quantity_approved: number | null;
+  quantity_issued: number | null;
+  unit_of_issue: string;
+  priority: RequisitionPriority;
+  status: RequisitionStatus;
+  justification: string | null;
+  denial_reason: string | null;
+  document_number: string | null;
+  created_at: string;
+  updated_at: string;
+  submitted_at: string | null;
+  approved_at: string | null;
+  shipped_at: string | null;
+  received_at: string | null;
+  estimated_delivery_date: string | null;
+  actual_delivery_date: string | null;
+  approvals?: RequisitionApprovalRecord[];
+  status_history?: RequisitionStatusHistoryRecord[];
+}
+
+export interface InventoryRecord {
+  id: number;
+  unit_id: number;
+  location: string;
+  nsn: string | null;
+  nomenclature: string;
+  unit_of_issue: string;
+  quantity_on_hand: number;
+  quantity_on_order: number;
+  quantity_due_out: number;
+  reorder_point: number | null;
+  reorder_quantity: number | null;
+  lot_number: string | null;
+  expiration_date: string | null;
+  condition_code: string;
+  last_inventory_date: string;
+}
+
+export interface InventoryTransaction {
+  id: number;
+  inventory_record_id: number;
+  transaction_type: TransactionType;
+  quantity: number;
+  requisition_id: number | null;
+  performed_by_id: number;
+  transaction_date: string;
+  document_number: string | null;
+  notes: string | null;
+}
+
+export interface LowStockAlert {
+  inventory_record_id: number;
+  unit_id: number;
+  location: string;
+  nomenclature: string;
+  quantity_on_hand: number;
+  reorder_point: number;
+  quantity_below: number;
+  last_inventory_date: string;
+}
