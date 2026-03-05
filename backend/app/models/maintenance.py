@@ -99,7 +99,9 @@ class MaintenanceWorkOrder(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True), nullable=True)
     assigned_to = Column(String(100), nullable=True)
-    assigned_to_id = Column(Integer, ForeignKey("personnel.id"), nullable=True, index=True)
+    assigned_to_id = Column(
+        Integer, ForeignKey("personnel.id"), nullable=True, index=True
+    )
     assigned_to_user = relationship("Personnel", foreign_keys=[assigned_to_id])
     team_assignments = relationship(
         "WorkOrderAssignment",
@@ -202,7 +204,9 @@ class WorkOrderAssignment(Base):
         nullable=False,
         index=True,
     )
-    role = Column(SQLEnum(AssignmentRole), nullable=False, default=AssignmentRole.SUPPORT)
+    role = Column(
+        SQLEnum(AssignmentRole), nullable=False, default=AssignmentRole.SUPPORT
+    )
     assigned_at = Column(DateTime(timezone=True), server_default=func.now())
     unassigned_at = Column(DateTime(timezone=True), nullable=True)
 

@@ -38,14 +38,10 @@ async def list_recommendations(
     if status:
         query = query.where(LogisticsRecommendation.status == status)
     if target_unit_id:
-        query = query.where(
-            LogisticsRecommendation.target_unit_id == target_unit_id
-        )
+        query = query.where(LogisticsRecommendation.target_unit_id == target_unit_id)
     result = await db.execute(query)
     recs = result.scalars().all()
-    return [
-        LogisticsRecommendationResponse.model_validate(r) for r in recs
-    ]
+    return [LogisticsRecommendationResponse.model_validate(r) for r in recs]
 
 
 @router.get(

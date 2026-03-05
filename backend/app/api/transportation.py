@@ -241,7 +241,9 @@ async def validate_assignment(
     # Validate role against ConvoyRole enum
     valid_roles = {"DRIVER", "A_DRIVER", "GUNNER", "TC", "VC", "MEDIC", "PAX"}
     if data.role.upper() not in valid_roles:
-        raise BadRequestError(f"Invalid role: {data.role}. Must be one of {', '.join(sorted(valid_roles))}")
+        raise BadRequestError(
+            f"Invalid role: {data.role}. Must be one of {', '.join(sorted(valid_roles))}"
+        )
 
     # Check if already assigned to another vehicle in this movement
     cp_result = await db.execute(
@@ -271,15 +273,34 @@ async def validate_assignment(
     from app.models.personnel import PayGrade
 
     e5_plus = {
-        PayGrade.E5, PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+        PayGrade.E5,
+        PayGrade.E6,
+        PayGrade.E7,
+        PayGrade.E8,
+        PayGrade.E9,
     }
     e6_plus = {
-        PayGrade.E6, PayGrade.E7, PayGrade.E8, PayGrade.E9,
+        PayGrade.E6,
+        PayGrade.E7,
+        PayGrade.E8,
+        PayGrade.E9,
     }
     officer_grades = {
-        PayGrade.W1, PayGrade.W2, PayGrade.W3, PayGrade.W4, PayGrade.W5,
-        PayGrade.O1, PayGrade.O2, PayGrade.O3, PayGrade.O4, PayGrade.O5,
-        PayGrade.O6, PayGrade.O7, PayGrade.O8, PayGrade.O9, PayGrade.O10,
+        PayGrade.W1,
+        PayGrade.W2,
+        PayGrade.W3,
+        PayGrade.W4,
+        PayGrade.W5,
+        PayGrade.O1,
+        PayGrade.O2,
+        PayGrade.O3,
+        PayGrade.O4,
+        PayGrade.O5,
+        PayGrade.O6,
+        PayGrade.O7,
+        PayGrade.O8,
+        PayGrade.O9,
+        PayGrade.O10,
     }
 
     if role_upper in ("DRIVER", "A_DRIVER"):
