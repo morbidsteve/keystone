@@ -63,3 +63,11 @@ export async function deleteAlertRule(id: number): Promise<void> {
   if (isDemoMode) return;
   await apiClient.delete(`/alerts/rules/${id}`);
 }
+
+export async function evaluateRule(ruleId: number): Promise<{ triggered: boolean; message: string }> {
+  if (isDemoMode) {
+    return { triggered: true, message: `Rule ${ruleId} evaluated — threshold breached, alert generated.` };
+  }
+  const res = await apiClient.post(`/alerts/rules/${ruleId}/evaluate`);
+  return res.data;
+}

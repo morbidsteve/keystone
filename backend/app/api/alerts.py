@@ -256,6 +256,17 @@ async def create_alert_rule(
         cooldown_minutes=body.cooldown_minutes,
         is_active=body.is_active,
         created_by=current_user.id,
+        scope_type=body.scope_type,
+        scope_echelon=body.scope_echelon,
+        include_subordinates=body.include_subordinates,
+        metric_type=body.metric_type,
+        metric_item_filter=body.metric_item_filter,
+        notify_roles=body.notify_roles,
+        check_interval_minutes=body.check_interval_minutes,
+        auto_recommend=body.auto_recommend,
+        recommend_type=body.recommend_type,
+        recommend_source_unit_id=body.recommend_source_unit_id,
+        recommend_assign_to_role=body.recommend_assign_to_role,
     )
     db.add(rule)
     await db.flush()
@@ -288,6 +299,17 @@ async def update_alert_rule(
         "scope_unit_id",
         "cooldown_minutes",
         "is_active",
+        "scope_type",
+        "scope_echelon",
+        "include_subordinates",
+        "metric_type",
+        "metric_item_filter",
+        "notify_roles",
+        "check_interval_minutes",
+        "auto_recommend",
+        "recommend_type",
+        "recommend_source_unit_id",
+        "recommend_assign_to_role",
     }
     update_data = body.model_dump(exclude_unset=True)
     for field, value in update_data.items():
@@ -297,6 +319,32 @@ async def update_alert_rule(
     await db.flush()
     await db.refresh(rule)
     return AlertRuleResponse.model_validate(rule)
+
+
+@router.post("/rules/{rule_id}/evaluate")
+async def evaluate_alert_rule(
+    rule_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role([Role.ADMIN])),
+):
+    """Manually trigger evaluation of a specific alert rule (admin only)."""
+    result = await db.execute(select(AlertRule).where(AlertRule.id == rule_id))
+    rule = result.scalar_one_or_none()
+    if not rule:
+        raise NotFoundError("AlertRule", rule_id)
+
+    from app.services.rule_engine import RuleEngine
+
+    engine = RuleEngine(db)
+    alerts = await engine.evaluate_rule(rule_id)
+
+    return {
+        "rule_id": rule_id,
+        "alerts_fired": len(alerts),
+        "message": (
+            f"Rule '{rule.name}' evaluated: {len(alerts)} alert(s) fired"
+        ),
+    }
 
 
 @router.delete("/rules/{rule_id}", status_code=204)

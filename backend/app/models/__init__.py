@@ -66,7 +66,12 @@ from app.models.alert import (
     AlertRule,
     Notification,
     NotificationPreference,
+    MetricType,
+    ScopeType,
+    RecommendationType,
 )
+from app.models.prediction import LogisticsRecommendation
+from app.models.prediction import RecommendationStatus
 from app.models.canonical_schema import CanonicalField
 from app.models.data_template import DataTemplate
 from app.models.tak_connection import TAKConnection, ConnectionStatus, TAKProtocol
@@ -340,4 +345,9 @@ __all__ = [
     "Permission",
     "CustomRole",
     "role_permissions",
+    "MetricType",
+    "ScopeType",
+    "RecommendationType",
+    "LogisticsRecommendation",
+    "RecommendationStatus",
 ]

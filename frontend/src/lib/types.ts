@@ -1625,6 +1625,45 @@ export interface AlertRule {
   created_by: number;
   created_at?: string;
   updated_at?: string;
+  // Advanced fields
+  scope_type?: string;
+  scope_echelon?: string;
+  include_subordinates?: boolean;
+  metric_type?: string;
+  metric_item_filter?: Record<string, any>;
+  notify_roles?: string[];
+  check_interval_minutes?: number;
+  auto_recommend?: boolean;
+  recommend_type?: string;
+  recommend_source_unit_id?: number;
+  recommend_assign_to_role?: string;
+}
+
+export interface LogisticsRecommendation {
+  id: number;
+  recommendation_type: string;
+  triggered_by_rule_id?: number;
+  triggered_by_metric?: string;
+  target_unit_id: number;
+  description: string;
+  recommended_items?: any[];
+  recommended_source?: string;
+  recommended_vehicles?: any[];
+  recommended_personnel?: any[];
+  recommended_route?: string;
+  estimated_weight?: number;
+  estimated_cost?: number;
+  estimated_duration?: string;
+  status: 'PENDING' | 'APPROVED' | 'DENIED' | 'EXECUTED' | 'EXPIRED';
+  assigned_to_user_id?: number;
+  assigned_to_role?: string;
+  generated_movement_id?: number;
+  generated_requisition_id?: number;
+  created_at?: string;
+  decided_at?: string;
+  decided_by?: number;
+  notes?: string;
+  expires_at?: string;
 }
 
 export interface Notification {
