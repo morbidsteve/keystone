@@ -56,6 +56,10 @@ class Movement(Base):
     source = Column(String(50), nullable=True)
     raw_data_id = Column(Integer, ForeignKey("raw_data.id"), nullable=True)
 
+    convoy_plan_id = Column(Integer, ForeignKey("convoy_plans.id"), nullable=True)
+    convoy_serial_id = Column(Integer, ForeignKey("convoy_serials.id"), nullable=True)
+    march_table_data = Column(Text, nullable=True)
+
     unit = relationship("Unit", back_populates="movements")
     convoy_vehicles = relationship(
         "ConvoyVehicle", back_populates="movement", cascade="all, delete-orphan"
@@ -63,3 +67,5 @@ class Movement(Base):
     convoy_personnel = relationship(
         "ConvoyPersonnel", back_populates="movement", cascade="all, delete-orphan"
     )
+    convoy_plan = relationship("ConvoyPlan")
+    convoy_serial = relationship("ConvoySerial")

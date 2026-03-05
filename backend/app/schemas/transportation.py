@@ -44,5 +44,8 @@ class MovementResponse(MovementBase):
     id: int
     reported_at: datetime
     raw_data_id: Optional[int] = None
+    convoy_plan_id: Optional[int] = None
+    convoy_serial_id: Optional[int] = None
+    march_table_data: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
