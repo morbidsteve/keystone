@@ -215,6 +215,7 @@ async def update_movement(
 @router.post(
     "/validate-assignment",
     response_model=ValidateAssignmentResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
 )
 async def validate_assignment(
     data: ValidateAssignmentRequest,
