@@ -21,6 +21,7 @@ from app.api.personnel import router as personnel_router
 from app.api.convoy_manifest import router as convoy_manifest_router
 from app.api.maintenance import router as maintenance_router
 from app.api.simulator import router as simulator_router
+from app.api.catalog import router as catalog_router
 
 api_router = APIRouter()
 
@@ -59,3 +60,4 @@ api_router.include_router(
 api_router.include_router(
     simulator_router, prefix="/simulator", tags=["Simulator"]
 )
+api_router.include_router(catalog_router, prefix="/catalog", tags=["Catalog"])

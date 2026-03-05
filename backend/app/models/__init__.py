@@ -55,6 +55,9 @@ from app.models.personnel import (
     ConvoyPersonnel,
     ConvoyRole,
 )
+from app.models.catalog_equipment import EquipmentCatalogItem
+from app.models.catalog_supply import SupplyCatalogItem
+from app.models.catalog_ammunition import AmmunitionCatalogItem
 
 __all__ = [
     "User",
@@ -117,4 +120,7 @@ __all__ = [
     "ConvoyVehicle",
     "ConvoyPersonnel",
     "ConvoyRole",
+    "EquipmentCatalogItem",
+    "SupplyCatalogItem",
+    "AmmunitionCatalogItem",
 ]
