@@ -47,10 +47,13 @@ import type {
   ExportDestinationCreate,
   ExportDestinationUpdate,
   ApiExportResponse,
+  ReportTemplate,
+  ReportSchedule,
 } from '@/lib/types';
 
 import {
   ReportType,
+  ScheduleFrequency,
   WorkOrderStatus,
   SupplyStatus,
 } from '@/lib/types';
@@ -138,6 +141,18 @@ let demoWorkOrders = [...DEMO_WORK_ORDERS];
 let demoIndividualEquipment = [...DEMO_INDIVIDUAL_EQUIPMENT];
 let demoFaults = [...DEMO_EQUIPMENT_FAULTS];
 let demoDriverAssignments = [...DEMO_DRIVER_ASSIGNMENTS];
+
+let demoTemplates: ReportTemplate[] = [
+  { id: 1, name: 'Default LOGSTAT', report_type: 'LOGSTAT', description: 'Standard logistics status template', template_body: '...', sections: ['HEADER', 'LOGISTICS_SUMMARY', 'SUPPLY_CLASS_I', 'SUPPLY_CLASS_III', 'EQUIPMENT_STATUS', 'FOOTER'], classification_default: 'CUI', is_default: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 2, name: 'Daily SITREP', report_type: 'SITREP', description: 'Daily situation report template', template_body: '...', sections: ['HEADER', 'SITUATION', 'PERSONNEL_STRENGTH', 'LOGISTICS_SUMMARY', 'EQUIPMENT_STATUS', 'MAINTENANCE_STATUS', 'COMMANDER_ASSESSMENT', 'FOOTER'], classification_default: 'CUI', is_default: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 3, name: 'Weekly PERSTAT', report_type: 'PERSTAT', description: 'Weekly personnel status template', template_body: '...', sections: ['HEADER', 'PERSONNEL_STRENGTH', 'FOOTER'], classification_default: 'CUI', is_default: false, created_by: 1, created_at: '2026-01-20T00:00:00Z' },
+];
+
+let demoSchedules: ReportSchedule[] = [
+  { id: 1, template_id: 1, unit_id: 3, frequency: ScheduleFrequency.DAILY, time_of_day: '06:00', is_active: true, auto_distribute: true, last_generated: '2026-03-04T06:00:00Z', next_generation: '2026-03-05T06:00:00Z', created_at: '2026-02-01T00:00:00Z' },
+  { id: 2, template_id: 2, unit_id: 3, frequency: ScheduleFrequency.DAILY, time_of_day: '18:00', is_active: true, auto_distribute: false, last_generated: '2026-03-04T18:00:00Z', next_generation: '2026-03-05T18:00:00Z', created_at: '2026-02-01T00:00:00Z' },
+  { id: 3, template_id: 3, unit_id: 3, frequency: ScheduleFrequency.WEEKLY, time_of_day: '08:00', day_of_week: 0, is_active: true, auto_distribute: true, created_at: '2026-02-15T00:00:00Z' },
+];
 
 // ---------------------------------------------------------------------------
 // Helper: hierarchical unit filtering — walks the unit tree to find
@@ -761,6 +776,261 @@ export const mockApi = {
         };
       }),
     };
+  },
+
+  // -------------------------------------------------------------------------
+  // SITREP / PERSTAT / SPOTREP Quick Generation
+  // -------------------------------------------------------------------------
+
+  async generateSitrep(unitId: number, periodHours?: number): Promise<Report> {
+    await mockDelay(800);
+    const unit = DEMO_UNITS.find((u) => u.id === String(unitId));
+    const unitName = unit?.abbreviation || 'Unknown';
+    const now = new Date();
+    const period = periodHours || 24;
+    const periodStart = new Date(now.getTime() - period * 3600000);
+    const content = [
+      `SITREP`,
+      `DTG: ${now.toISOString()}`,
+      `FROM: ${unitName}`,
+      `PERIOD: ${periodStart.toISOString()} TO ${now.toISOString()}`,
+      ``,
+      `1. SITUATION: Unit continues operations in AO. No significant enemy activity.`,
+      ``,
+      `2. PERSONNEL STRENGTH:`,
+      `   AUTHORIZED: 847  ASSIGNED: 812  PRESENT: 789`,
+      `   CASUALTIES LAST ${period}H: 0`,
+      ``,
+      `3. LOGISTICS SUMMARY:`,
+      `   CLASS I: GREEN (7 DOS)`,
+      `   CLASS III: AMBER (4 DOS)`,
+      `   CLASS V: GREEN (8 DOS)`,
+      `   CLASS IX: AMBER (3 DOS)`,
+      ``,
+      `4. EQUIPMENT STATUS:`,
+      `   TOTAL POSSESSED: 156  MC: 136  NMC: 20`,
+      `   READINESS: 87%`,
+      ``,
+      `5. MAINTENANCE:`,
+      `   OPEN WORK ORDERS: 12  DEADLINED: 3`,
+      ``,
+      `6. COMMANDER'S ASSESSMENT:`,
+      `   Unit maintains combat readiness. Class III resupply requested.`,
+      `   No significant issues to report.`,
+    ].join('\n');
+
+    const report: Report = {
+      id: 'rpt-sitrep-' + Date.now(),
+      type: ReportType.SITREP,
+      title: `SITREP - ${unitName} - ${now.toLocaleDateString()}`,
+      unitId: String(unitId),
+      unitName,
+      dateRange: { start: periodStart.toISOString(), end: now.toISOString() },
+      status: 'READY' as ReportStatus,
+      content,
+      generatedBy: 'Demo User',
+      generatedAt: now.toISOString(),
+    };
+    demoReports = [report, ...demoReports];
+    return report;
+  },
+
+  async generatePerstat(unitId: number): Promise<Report> {
+    await mockDelay(800);
+    const unit = DEMO_UNITS.find((u) => u.id === String(unitId));
+    const unitName = unit?.abbreviation || 'Unknown';
+    const now = new Date();
+    const content = [
+      `PERSTAT`,
+      `DTG: ${now.toISOString()}`,
+      `FROM: ${unitName}`,
+      ``,
+      `1. STRENGTH:`,
+      `   AUTHORIZED OFFICERS: 42   ASSIGNED: 39`,
+      `   AUTHORIZED ENLISTED: 805  ASSIGNED: 773`,
+      `   TOTAL AUTHORIZED: 847     TOTAL ASSIGNED: 812`,
+      `   FILL RATE: 95.9%`,
+      ``,
+      `2. DUTY STATUS:`,
+      `   PRESENT FOR DUTY: 789`,
+      `   LEAVE: 8`,
+      `   TDY/TAD: 6`,
+      `   MEDICAL (LIMDU): 5`,
+      `   UA: 0`,
+      `   ATTACHED: 4`,
+      `   DETACHED: 0`,
+      ``,
+      `3. MOS SHORTFALLS:`,
+      `   0311 (RIFLEMAN): AUTH 180, ASGD 172, SHORT 8`,
+      `   0352 (ANTI-TANK): AUTH 24, ASGD 20, SHORT 4`,
+      `   0621 (RADIO OPER): AUTH 36, ASGD 33, SHORT 3`,
+      ``,
+      `4. REMARKS:`,
+      `   No significant personnel issues.`,
+    ].join('\n');
+
+    const report: Report = {
+      id: 'rpt-perstat-' + Date.now(),
+      type: ReportType.PERSTAT,
+      title: `PERSTAT - ${unitName} - ${now.toLocaleDateString()}`,
+      unitId: String(unitId),
+      unitName,
+      dateRange: { start: now.toISOString(), end: now.toISOString() },
+      status: 'READY' as ReportStatus,
+      content,
+      generatedBy: 'Demo User',
+      generatedAt: now.toISOString(),
+    };
+    demoReports = [report, ...demoReports];
+    return report;
+  },
+
+  async generateSpotrep(unitId: number, data: { title: string; situation_text: string; classification?: string }): Promise<Report> {
+    await mockDelay(800);
+    const unit = DEMO_UNITS.find((u) => u.id === String(unitId));
+    const unitName = unit?.abbreviation || 'Unknown';
+    const now = new Date();
+    const classification = data.classification || 'CUI';
+    const content = [
+      `CLASSIFICATION: ${classification}`,
+      `SPOTREP`,
+      `DTG: ${now.toISOString()}`,
+      `FROM: ${unitName}`,
+      ``,
+      `LINE 1 - DATE/TIME: ${now.toISOString()}`,
+      `LINE 2 - UNIT: ${unitName}`,
+      `LINE 3 - SIZE/ACTIVITY: SEE BELOW`,
+      `LINE 4 - LOCATION: AO ${unitName}`,
+      `LINE 5 - EQUIPMENT: N/A`,
+      `LINE 6 - NARRATIVE:`,
+      `   ${data.situation_text}`,
+      ``,
+      `TITLE: ${data.title}`,
+      ``,
+      `ASSESSMENT: Situation under observation. No immediate action required.`,
+    ].join('\n');
+
+    const report: Report = {
+      id: 'rpt-spotrep-' + Date.now(),
+      type: ReportType.SPOTREP,
+      title: data.title || `SPOTREP - ${unitName} - ${now.toLocaleDateString()}`,
+      unitId: String(unitId),
+      unitName,
+      dateRange: { start: now.toISOString(), end: now.toISOString() },
+      status: 'READY' as ReportStatus,
+      content,
+      generatedBy: 'Demo User',
+      generatedAt: now.toISOString(),
+    };
+    demoReports = [report, ...demoReports];
+    return report;
+  },
+
+  async generateRollup(unitId: number, reportType?: string): Promise<Report> {
+    await mockDelay(1000);
+    const unit = DEMO_UNITS.find((u) => u.id === String(unitId));
+    const unitName = unit?.abbreviation || 'Unknown';
+    const now = new Date();
+    const rType = reportType || 'SITREP';
+    const content = [
+      `${rType} ROLLUP`,
+      `DTG: ${now.toISOString()}`,
+      `FROM: ${unitName} (ROLLUP OF SUBORDINATE UNITS)`,
+      ``,
+      `1. SUBORDINATE REPORTS AGGREGATED: 3`,
+      `   - 1/1 BN: SUBMITTED`,
+      `   - 2/1 BN: SUBMITTED`,
+      `   - 3/1 BN: SUBMITTED`,
+      ``,
+      `2. COMBINED STRENGTH: 2,431 / 2,541 (95.7%)`,
+      ``,
+      `3. COMBINED LOGISTICS:`,
+      `   CLASS I: GREEN  CLASS III: AMBER  CLASS V: GREEN  CLASS IX: AMBER`,
+      ``,
+      `4. COMBINED EQUIPMENT: 468 POSS / 407 MC (87.0%)`,
+      ``,
+      `5. COMMANDER'S ASSESSMENT:`,
+      `   Regiment maintains combat readiness across all battalions.`,
+      `   Class III resupply priority for 1/1 and 3/1 BN.`,
+    ].join('\n');
+
+    const report: Report = {
+      id: 'rpt-rollup-' + Date.now(),
+      type: rType as ReportType,
+      title: `${rType} ROLLUP - ${unitName} - ${now.toLocaleDateString()}`,
+      unitId: String(unitId),
+      unitName,
+      dateRange: { start: now.toISOString(), end: now.toISOString() },
+      status: 'READY' as ReportStatus,
+      content,
+      generatedBy: 'Demo User',
+      generatedAt: now.toISOString(),
+    };
+    demoReports = [report, ...demoReports];
+    return report;
+  },
+
+  // -------------------------------------------------------------------------
+  // Templates
+  // -------------------------------------------------------------------------
+
+  async getTemplates(): Promise<ReportTemplate[]> {
+    await mockDelay();
+    return [...demoTemplates];
+  },
+
+  async createTemplate(data: Omit<ReportTemplate, 'id' | 'created_by' | 'created_at' | 'updated_at'>): Promise<ReportTemplate> {
+    await mockDelay();
+    const template: ReportTemplate = {
+      ...data,
+      id: Date.now(),
+      created_by: 1,
+      created_at: new Date().toISOString(),
+    };
+    demoTemplates.push(template);
+    return template;
+  },
+
+  async updateTemplate(id: number, data: Partial<ReportTemplate>): Promise<ReportTemplate> {
+    await mockDelay();
+    demoTemplates = demoTemplates.map((t) =>
+      t.id === id ? { ...t, ...data, updated_at: new Date().toISOString() } as ReportTemplate : t,
+    );
+    return demoTemplates.find((t) => t.id === id) || demoTemplates[0];
+  },
+
+  async deleteTemplate(id: number): Promise<void> {
+    await mockDelay();
+    demoTemplates = demoTemplates.filter((t) => t.id !== id);
+  },
+
+  // -------------------------------------------------------------------------
+  // Schedules
+  // -------------------------------------------------------------------------
+
+  async getSchedules(_unitId?: number): Promise<ReportSchedule[]> {
+    await mockDelay();
+    let schedules = [...demoSchedules];
+    if (_unitId) {
+      schedules = schedules.filter((s) => s.unit_id === _unitId);
+    }
+    return schedules;
+  },
+
+  async createSchedule(data: Omit<ReportSchedule, 'id' | 'last_generated' | 'next_generation' | 'created_at' | 'updated_at'>): Promise<ReportSchedule> {
+    await mockDelay();
+    const schedule: ReportSchedule = {
+      ...data,
+      id: Date.now(),
+      created_at: new Date().toISOString(),
+    };
+    demoSchedules.push(schedule);
+    return schedule;
+  },
+
+  async deleteSchedule(id: number): Promise<void> {
+    await mockDelay();
+    demoSchedules = demoSchedules.filter((s) => s.id !== id);
   },
 
   // -------------------------------------------------------------------------
