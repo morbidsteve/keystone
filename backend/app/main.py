@@ -193,6 +193,34 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Billet seeding failed: {e}")
 
+    # 8b. Seed personnel roster
+    try:
+        from seed.seed_personnel import seed_personnel
+
+        async with async_session() as db:
+            count = await seed_personnel(db)
+            await db.commit()
+            if count:
+                logger.info(f"Personnel: {count} Marines seeded.")
+            else:
+                logger.info("Personnel already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Personnel seeding failed: {e}")
+
+    # 8c. Seed billet assignments (personnel -> billets)
+    try:
+        from seed.seed_personnel import seed_billet_assignments
+
+        async with async_session() as db:
+            count = await seed_billet_assignments(db)
+            await db.commit()
+            if count:
+                logger.info(f"Billet assignments: {count} billets filled.")
+            else:
+                logger.info("Billet assignments already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Billet assignment seeding failed: {e}")
+
     # 9. Seed qualifications
     try:
         from seed.seed_qualifications import seed_qualifications
