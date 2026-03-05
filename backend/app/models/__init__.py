@@ -160,6 +160,23 @@ from app.models.fuel import (
     FuelConsumptionRate,
     FuelForecast,
 )
+from app.models.custody import (
+    SensitiveItem,
+    SensitiveItemType,
+    SecurityClassification,
+    ItemConditionCode,
+    SensitiveItemStatus,
+    TransferType,
+    InventoryType,
+    InventoryStatus,
+    DiscrepancyType,
+    AuditAction,
+    AuditEntityType,
+    CustodyTransfer,
+    InventoryEvent,
+    InventoryLineItem,
+    AuditLog,
+)
 
 __all__ = [
     "User",
@@ -304,4 +321,19 @@ __all__ = [
     "FuelTransaction",
     "FuelConsumptionRate",
     "FuelForecast",
+    "SensitiveItem",
+    "SensitiveItemType",
+    "SecurityClassification",
+    "ItemConditionCode",
+    "SensitiveItemStatus",
+    "TransferType",
+    "InventoryType",
+    "InventoryStatus",
+    "DiscrepancyType",
+    "AuditAction",
+    "AuditEntityType",
+    "CustodyTransfer",
+    "InventoryEvent",
+    "InventoryLineItem",
+    "AuditLog",
 ]

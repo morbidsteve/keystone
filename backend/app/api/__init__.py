@@ -31,6 +31,7 @@ from app.api.convoy_planning import router as convoy_planning_router
 from app.api.medical import router as medical_router
 from app.api.notifications import router as notifications_router
 from app.api.fuel import router as fuel_router
+from app.api.custody import router as custody_router
 
 api_router = APIRouter()
 
@@ -87,3 +88,4 @@ api_router.include_router(
 api_router.include_router(medical_router, prefix="/medical", tags=["Medical"])
 api_router.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
 api_router.include_router(fuel_router, prefix="/fuel", tags=["Fuel"])
+api_router.include_router(custody_router, prefix="/custody", tags=["Custody & Accountability"])
