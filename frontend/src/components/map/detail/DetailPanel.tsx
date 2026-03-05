@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import type React from 'react';
 import { X } from 'lucide-react';
 import { useMapStore } from '@/stores/mapStore';
-import type { MapUnit, MapConvoy, MapSupplyPoint, MapRoute, MapAlert } from '@/api/map';
+import type { MapUnit, MapConvoy, MapSupplyPoint, MapRoute, MapAlert, ConvoyVehicleDetail } from '@/api/map';
 import { UnitDetailPanel } from './UnitDetailPanel';
 import { ConvoyDetailPanel } from './ConvoyDetailPanel';
 import { SupplyPointDetailPanel } from './SupplyPointDetailPanel';
@@ -21,6 +21,10 @@ function getEntityTitle(entity: { type: string; data: unknown }): string {
       return (entity.data as MapRoute).name;
     case 'alert':
       return (entity.data as MapAlert).alert_type.replace(/_/g, ' ');
+    case 'convoy_vehicle': {
+      const v = entity.data as ConvoyVehicleDetail & { convoyName?: string };
+      return `${v.call_sign} — ${v.vehicle_type}`;
+    }
     default:
       return 'Details';
   }
@@ -47,6 +51,10 @@ function getEntitySubtitle(entity: { type: string; data: unknown }): string | nu
     case 'alert': {
       const alert = entity.data as MapAlert;
       return alert.severity;
+    }
+    case 'convoy_vehicle': {
+      const v = entity.data as ConvoyVehicleDetail & { convoyName?: string };
+      return v.convoyName || v.bumper_number;
     }
     default:
       return null;
@@ -81,6 +89,8 @@ export function DetailPanel() {
         return <RouteDetailPanel data={selectedEntity.data as MapRoute} />;
       case 'alert':
         return <AlertDetailPanel data={selectedEntity.data as MapAlert} />;
+      case 'convoy_vehicle':
+        return <VehicleDetailContent data={selectedEntity.data as ConvoyVehicleDetail} />;
       default:
         return null;
     }
@@ -111,6 +121,48 @@ export function DetailPanel() {
 
       {/* Content */}
       <div style={panelStyles.content}>{renderContent()}</div>
+    </div>
+  );
+}
+
+function VehicleDetailContent({ data }: { data: ConvoyVehicleDetail }) {
+  return (
+    <div style={{ fontSize: 11, lineHeight: 1.6 }}>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: '#94a3b8', marginBottom: 4, textTransform: 'uppercase' as const }}>VEHICLE INFO</div>
+        <div><span style={{ color: '#64748b' }}>BUMPER:</span> {data.bumper_number}</div>
+        <div><span style={{ color: '#64748b' }}>TAMCN:</span> {data.tamcn}</div>
+        <div><span style={{ color: '#64748b' }}>STATUS:</span> <span style={{ color: data.status === 'MOVING' ? '#22c55e' : data.status === 'STOPPED' ? '#eab308' : '#ef4444', fontWeight: 600 }}>{data.status}</span></div>
+        <div><span style={{ color: '#64748b' }}>SPEED:</span> {data.speed_kph} KPH</div>
+        <div><span style={{ color: '#64748b' }}>HEADING:</span> {data.heading}°</div>
+      </div>
+
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: '#94a3b8', marginBottom: 4, textTransform: 'uppercase' as const }}>CREW ({data.crew.length})</div>
+        {data.crew.map((p) => (
+          <div key={p.personnel_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+            <span><span style={{ color: '#94a3b8' }}>{p.rank}</span> {p.name}</span>
+            <span style={{ fontSize: 9, color: '#4dabf7' }}>{p.role}</span>
+          </div>
+        ))}
+        {data.crew.length === 0 && <div style={{ color: '#64748b', fontStyle: 'italic' }}>None assigned</div>}
+      </div>
+
+      <div>
+        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1.5px', color: '#94a3b8', marginBottom: 4, textTransform: 'uppercase' as const }}>CARGO ({data.cargo.length})</div>
+        {data.cargo.map((c) => (
+          <div key={c.item_id} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+            <span>{c.item_name} <span style={{ color: '#64748b', fontSize: 9 }}>CL {c.supply_class}</span></span>
+            <span style={{ color: '#4dabf7' }}>{c.quantity} {c.uom}</span>
+          </div>
+        ))}
+        {data.cargo.length === 0 && <div style={{ color: '#64748b', fontStyle: 'italic' }}>No cargo</div>}
+        {data.cargo.length > 0 && (
+          <div style={{ marginTop: 6, paddingTop: 6, borderTop: '1px solid rgba(255,255,255,0.08)', fontWeight: 700, textAlign: 'right' as const }}>
+            {data.cargo.reduce((s, c) => s + c.total_weight_kg, 0).toLocaleString()} kg total
+          </div>
+        )}
+      </div>
     </div>
   );
 }

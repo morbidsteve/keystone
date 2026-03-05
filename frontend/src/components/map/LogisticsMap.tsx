@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { MapData } from '@/api/map';
+import type { MapData, ConvoyMovementDetail } from '@/api/map';
 import { useMapStore } from '@/stores/mapStore';
 import MapControls from './MapControls';
 import MapLegend from './MapLegend';
@@ -26,6 +26,7 @@ interface LayerState {
   supplyOverlay: boolean;
   convoys: boolean;
   convoyRoutes: boolean;
+  convoyVehicles: boolean;
   supplyPoints: boolean;
   routes: boolean;
   alerts: boolean;
@@ -33,6 +34,7 @@ interface LayerState {
 
 interface LogisticsMapProps {
   data: MapData;
+  convoyMovements: ConvoyMovementDetail[];
   height?: string;
 }
 
@@ -60,7 +62,7 @@ const TILE_ATTRIBUTIONS: Record<string, string> = {
   topo: '&copy; OpenTopoMap',
 };
 
-export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProps) {
+export default function LogisticsMap({ data, convoyMovements, height = '100%' }: LogisticsMapProps) {
   const detailPanelOpen = useMapStore((s) => s.detailPanelOpen);
 
   const [layers, setLayers] = useState<LayerState>({
@@ -68,6 +70,7 @@ export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProp
     supplyOverlay: true,
     convoys: true,
     convoyRoutes: true,
+    convoyVehicles: true,
     supplyPoints: true,
     routes: true,
     alerts: true,
@@ -112,7 +115,12 @@ export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProp
           {layers.routes && <RouteLayer routes={data.routes} />}
 
           {layers.convoys && (
-            <ConvoyLayer convoys={data.convoys} showRoutes={layers.convoyRoutes} />
+            <ConvoyLayer
+              convoys={data.convoys}
+              convoyMovements={convoyMovements}
+              showRoutes={layers.convoyRoutes}
+              showVehicles={layers.convoyVehicles}
+            />
           )}
 
           {layers.supplyPoints && (
@@ -204,6 +212,13 @@ export default function LogisticsMap({ data, height = '100%' }: LogisticsMapProp
         }
         .keystone-popup .leaflet-popup-close-button:hover {
           color: var(--color-text-bright) !important;
+        }
+        .convoy-vehicle-icon {
+          cursor: pointer;
+          transition: filter 0.15s ease;
+        }
+        .convoy-vehicle-icon:hover {
+          filter: brightness(1.3) drop-shadow(0 0 6px rgba(255,255,255,0.4)) !important;
         }
       `}</style>
     </div>

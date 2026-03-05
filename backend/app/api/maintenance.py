@@ -16,6 +16,7 @@ from app.models.maintenance import (
     MaintenanceLabor,
     MaintenancePart,
     MaintenanceWorkOrder,
+    WorkOrderAssignment,
     WorkOrderStatus,
 )
 from app.models.maintenance_schedule import (
@@ -39,6 +40,8 @@ from app.schemas.maintenance import (
     MaintenanceWorkOrderUpdate,
     PreventiveMaintenanceScheduleCreate,
     PreventiveMaintenanceScheduleResponse,
+    WorkOrderAssignmentCreate,
+    WorkOrderAssignmentResponse,
 )
 
 router = APIRouter()
@@ -535,3 +538,74 @@ async def create_pm_schedule(
     await db.flush()
     await db.refresh(pm)
     return pm
+
+
+# --- Team Assignment routes ---
+
+
+@router.get("/{wo_id}/team", response_model=List[WorkOrderAssignmentResponse])
+async def list_team_assignments(
+    wo_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """List team assignments for a work order."""
+    await _get_work_order_for_sub(wo_id, db, current_user)
+    result = await db.execute(
+        select(WorkOrderAssignment).where(
+            WorkOrderAssignment.work_order_id == wo_id,
+            WorkOrderAssignment.unassigned_at.is_(None),
+        )
+    )
+    return result.scalars().all()
+
+
+@router.post(
+    "/{wo_id}/team",
+    response_model=WorkOrderAssignmentResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def assign_team_member(
+    wo_id: int,
+    data: WorkOrderAssignmentCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Assign a team member to a work order."""
+    await _get_work_order_for_sub(wo_id, db, current_user)
+    assignment = WorkOrderAssignment(
+        work_order_id=wo_id,
+        personnel_id=data.personnel_id,
+        role=data.role,
+    )
+    db.add(assignment)
+    await db.flush()
+    await db.refresh(assignment)
+    return assignment
+
+
+@router.delete(
+    "/{wo_id}/team/{assignment_id}",
+    status_code=204,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def unassign_team_member(
+    wo_id: int,
+    assignment_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Remove a team member from a work order."""
+    await _get_work_order_for_sub(wo_id, db, current_user)
+    result = await db.execute(
+        select(WorkOrderAssignment).where(
+            WorkOrderAssignment.id == assignment_id,
+            WorkOrderAssignment.work_order_id == wo_id,
+        )
+    )
+    assignment = result.scalar_one_or_none()
+    if not assignment:
+        raise NotFoundError("Assignment", assignment_id)
+    assignment.unassigned_at = datetime.now(timezone.utc)
+    await db.flush()

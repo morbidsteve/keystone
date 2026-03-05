@@ -5,6 +5,7 @@ interface LayerState {
   supplyOverlay: boolean;
   convoys: boolean;
   convoyRoutes: boolean;
+  convoyVehicles: boolean;
   supplyPoints: boolean;
   routes: boolean;
   alerts: boolean;
@@ -139,6 +140,7 @@ export default function MapLegend({ layers }: MapLegendProps) {
     layers.units ||
     layers.supplyOverlay ||
     layers.convoys ||
+    layers.convoyVehicles ||
     layers.supplyPoints ||
     layers.routes ||
     layers.alerts;
@@ -250,6 +252,15 @@ export default function MapLegend({ layers }: MapLegendProps) {
               <LegendDot color="#40c057" label="EN ROUTE" />
               <LegendDot color="#fab005" label="DELAYED" />
               <LegendDot color="#868e96" label="PLANNED" />
+            </LegendSection>
+          )}
+
+          {/* Vehicle status */}
+          {layers.convoyVehicles && (
+            <LegendSection title="VEHICLE STATUS">
+              <LegendDot color="#22c55e" label="MOVING / FMC" />
+              <LegendDot color="#eab308" label="STOPPED" />
+              <LegendDot color="#ef4444" label="NMC / BREAKDOWN" />
             </LegendSection>
           )}
 

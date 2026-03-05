@@ -7,11 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.equipment import Equipment, EquipmentAssetStatus, EquipmentFault
 from app.models.maintenance import (
+    LaborType,
     MaintenanceLabor,
     MaintenancePart,
     MaintenanceWorkOrder,
     PartSource,
     PartStatus,
+    WorkOrderCategory,
     WorkOrderStatus,
 )
 from app.models.maintenance_schedule import (
@@ -315,6 +317,288 @@ class MaintenanceAnalytics:
             ],
             "total_faults": total_faults,
         }
+
+    async def get_personnel_workload(self, days: int = 30) -> list[dict]:
+        """Top 10 personnel by labor hours with breakdown by labor type."""
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+
+        # Get work order IDs in window
+        wo_result = await self.db.execute(
+            select(MaintenanceWorkOrder.id).where(
+                MaintenanceWorkOrder.unit_id == self.unit_id,
+                MaintenanceWorkOrder.created_at >= cutoff,
+            )
+        )
+        wo_ids = [row[0] for row in wo_result.all()]
+        if not wo_ids:
+            return []
+
+        # Get labor entries with personnel info
+        from app.models.personnel import Personnel
+
+        result = await self.db.execute(
+            select(
+                Personnel.id,
+                Personnel.edipi,
+                Personnel.first_name,
+                Personnel.last_name,
+                Personnel.rank,
+                Personnel.mos,
+                MaintenanceLabor.labor_type,
+                func.sum(MaintenanceLabor.hours).label("hours"),
+                func.count(func.distinct(MaintenanceLabor.work_order_id)).label("wo_count"),
+            )
+            .select_from(MaintenanceLabor)
+            .join(Personnel, MaintenanceLabor.personnel_id == Personnel.id)
+            .where(MaintenanceLabor.work_order_id.in_(wo_ids))
+            .group_by(
+                Personnel.id,
+                Personnel.edipi,
+                Personnel.first_name,
+                Personnel.last_name,
+                Personnel.rank,
+                Personnel.mos,
+                MaintenanceLabor.labor_type,
+            )
+        )
+        rows = result.all()
+
+        # Aggregate by personnel
+        personnel_map: dict[int, dict] = {}
+        for row in rows:
+            pid = row[0]
+            if pid not in personnel_map:
+                personnel_map[pid] = {
+                    "personnel_id": pid,
+                    "edipi": row[1],
+                    "first_name": row[2],
+                    "last_name": row[3],
+                    "rank": row[4],
+                    "mos": row[5],
+                    "total_hours": 0.0,
+                    "work_order_count": 0,
+                    "labor_breakdown": {lt.value: 0.0 for lt in LaborType},
+                }
+            personnel_map[pid]["total_hours"] += float(row[7] or 0)
+            personnel_map[pid]["work_order_count"] = max(
+                personnel_map[pid]["work_order_count"], int(row[8] or 0)
+            )
+            if row[6]:
+                personnel_map[pid]["labor_breakdown"][row[6].value] = float(row[7] or 0)
+
+        result_list = list(personnel_map.values())
+        for p in result_list:
+            p["avg_hours_per_wo"] = round(
+                p["total_hours"] / max(p["work_order_count"], 1), 1
+            )
+            p["total_hours"] = round(p["total_hours"], 1)
+
+        return sorted(result_list, key=lambda x: x["total_hours"], reverse=True)[:10]
+
+    async def get_equipment_reliability(self, days: int = 90) -> list[dict]:
+        """Top 10 equipment types by WO count, corrective vs preventive."""
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        from sqlalchemy import case as sql_case
+
+        result = await self.db.execute(
+            select(
+                Equipment.equipment_type,
+                func.count(MaintenanceWorkOrder.id).label("total_wos"),
+                func.sum(
+                    sql_case(
+                        (MaintenanceWorkOrder.category == WorkOrderCategory.CORRECTIVE, 1),
+                        else_=0,
+                    )
+                ).label("corrective"),
+                func.sum(
+                    sql_case(
+                        (MaintenanceWorkOrder.category == WorkOrderCategory.PREVENTIVE, 1),
+                        else_=0,
+                    )
+                ).label("preventive"),
+            )
+            .select_from(MaintenanceWorkOrder)
+            .outerjoin(
+                Equipment,
+                MaintenanceWorkOrder.individual_equipment_id == Equipment.id,
+            )
+            .where(
+                MaintenanceWorkOrder.unit_id == self.unit_id,
+                MaintenanceWorkOrder.created_at >= cutoff,
+            )
+            .group_by(Equipment.equipment_type)
+            .order_by(func.count(MaintenanceWorkOrder.id).desc())
+            .limit(10)
+        )
+        rows = result.all()
+
+        return [
+            {
+                "equipment_type": row[0] or "UNKNOWN",
+                "total_wos": int(row[1] or 0),
+                "corrective_count": int(row[2] or 0),
+                "preventive_count": int(row[3] or 0),
+                "corrective_pct": round(
+                    int(row[2] or 0) / max(int(row[1] or 0), 1) * 100, 1
+                ),
+                "preventive_pct": round(
+                    int(row[3] or 0) / max(int(row[1] or 0), 1) * 100, 1
+                ),
+            }
+            for row in rows
+        ]
+
+    async def get_parts_failure_analysis(self, days: int = 90) -> list[dict]:
+        """Top 10 parts by replacement frequency and cost."""
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+
+        wo_result = await self.db.execute(
+            select(MaintenanceWorkOrder.id).where(
+                MaintenanceWorkOrder.unit_id == self.unit_id,
+                MaintenanceWorkOrder.created_at >= cutoff,
+            )
+        )
+        wo_ids = [row[0] for row in wo_result.all()]
+        if not wo_ids:
+            return []
+
+        result = await self.db.execute(
+            select(
+                MaintenancePart.part_number,
+                MaintenancePart.nomenclature,
+                MaintenancePart.nsn,
+                func.count(MaintenancePart.id).label("count"),
+                func.sum(MaintenancePart.quantity).label("total_qty"),
+                func.avg(MaintenancePart.unit_cost).label("avg_cost"),
+            )
+            .where(MaintenancePart.work_order_id.in_(wo_ids))
+            .group_by(
+                MaintenancePart.part_number,
+                MaintenancePart.nomenclature,
+                MaintenancePart.nsn,
+            )
+            .order_by(func.count(MaintenancePart.id).desc())
+            .limit(10)
+        )
+        rows = result.all()
+
+        return [
+            {
+                "part_number": row[0],
+                "nomenclature": row[1],
+                "nsn": row[2] or "N/A",
+                "replacement_count": int(row[3] or 0),
+                "total_quantity": int(row[4] or 0),
+                "avg_cost_per_part": round(float(row[5] or 0), 2),
+                "total_cost": round(float(row[4] or 0) * float(row[5] or 0), 2),
+            }
+            for row in rows
+        ]
+
+    async def get_mtbf_mttr(self) -> list[dict]:
+        """MTBF and MTTR by equipment type using Python datetime math."""
+        equip_result = await self.db.execute(
+            select(Equipment.id, Equipment.equipment_type).where(
+                Equipment.unit_id == self.unit_id
+            )
+        )
+        equipment_rows = equip_result.all()
+
+        # Group by equipment_type
+        type_wos: dict[str, list] = {}
+        for eq_id, eq_type in equipment_rows:
+            wo_result = await self.db.execute(
+                select(
+                    MaintenanceWorkOrder.created_at,
+                    MaintenanceWorkOrder.completed_at,
+                )
+                .where(
+                    MaintenanceWorkOrder.individual_equipment_id == eq_id,
+                    MaintenanceWorkOrder.category == WorkOrderCategory.CORRECTIVE,
+                )
+                .order_by(MaintenanceWorkOrder.created_at.asc())
+            )
+            wos = wo_result.all()
+            key = eq_type or "UNKNOWN"
+            if key not in type_wos:
+                type_wos[key] = []
+            type_wos[key].extend(wos)
+
+        results = []
+        for eq_type, wos in type_wos.items():
+            if len(wos) < 2:
+                continue
+
+            # Sort by created_at
+            wos.sort(key=lambda x: x[0])
+
+            # MTBF
+            intervals = []
+            for i in range(1, len(wos)):
+                delta = (wos[i][0] - wos[i - 1][0]).total_seconds() / 86400
+                if delta > 0:
+                    intervals.append(delta)
+            mtbf = sum(intervals) / len(intervals) if intervals else 0
+
+            # MTTR
+            mttr_samples = []
+            for created, completed in wos:
+                if completed:
+                    hours = (completed - created).total_seconds() / 3600
+                    if hours > 0:
+                        mttr_samples.append(hours)
+            mttr = sum(mttr_samples) / len(mttr_samples) if mttr_samples else 0
+
+            # Trend: last 30 days vs previous 30 days
+            now = datetime.now(timezone.utc)
+            cutoff_30 = now - timedelta(days=30)
+            cutoff_60 = now - timedelta(days=60)
+            recent = [w for w in wos if w[0] >= cutoff_30]
+            older = [w for w in wos if cutoff_60 <= w[0] < cutoff_30]
+
+            trend = "STABLE"
+            if len(recent) > 1 and len(older) > 1:
+                recent_intervals = []
+                for i in range(1, len(recent)):
+                    d = (recent[i][0] - recent[i - 1][0]).total_seconds() / 86400
+                    if d > 0:
+                        recent_intervals.append(d)
+                older_intervals = []
+                for i in range(1, len(older)):
+                    d = (older[i][0] - older[i - 1][0]).total_seconds() / 86400
+                    if d > 0:
+                        older_intervals.append(d)
+                if recent_intervals and older_intervals:
+                    r_avg = sum(recent_intervals) / len(recent_intervals)
+                    o_avg = sum(older_intervals) / len(older_intervals)
+                    if r_avg > o_avg * 1.1:
+                        trend = "IMPROVING"
+                    elif r_avg < o_avg * 0.9:
+                        trend = "DEGRADING"
+
+            # Health score
+            if mtbf > 90:
+                score = 100
+            elif mtbf > 30:
+                score = 60
+            else:
+                score = 30
+            if trend == "IMPROVING":
+                score = min(100, score + 20)
+            elif trend == "DEGRADING":
+                score = max(0, score - 20)
+
+            results.append({
+                "equipment_type": eq_type,
+                "mtbf_days": round(mtbf, 1),
+                "mttr_hours": round(mttr, 1),
+                "mtbf_trend": trend,
+                "corrective_wos_total": len(wos),
+                "last_corrective_date": wos[-1][0].isoformat() if wos else None,
+                "health_score": score,
+            })
+
+        return sorted(results, key=lambda x: x["mtbf_days"])
 
     async def get_comprehensive_analytics(self) -> dict:
         """Bundle all analytics into a single response."""

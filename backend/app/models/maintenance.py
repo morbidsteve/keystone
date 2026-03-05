@@ -12,6 +12,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -69,6 +70,12 @@ class MaintenanceLevel(str, enum.Enum):
     DEPOT = "DEPOT"
 
 
+class AssignmentRole(str, enum.Enum):
+    LEAD = "LEAD"
+    SUPPORT = "SUPPORT"
+    INSPECT = "INSPECT"
+
+
 class MaintenanceWorkOrder(Base):
     __tablename__ = "maintenance_work_orders"
 
@@ -92,6 +99,13 @@ class MaintenanceWorkOrder(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     completed_at = Column(DateTime(timezone=True), nullable=True)
     assigned_to = Column(String(100), nullable=True)
+    assigned_to_id = Column(Integer, ForeignKey("personnel.id"), nullable=True, index=True)
+    assigned_to_user = relationship("Personnel", foreign_keys=[assigned_to_id])
+    team_assignments = relationship(
+        "WorkOrderAssignment",
+        back_populates="work_order",
+        cascade="all, delete-orphan",
+    )
 
     # Extended maintenance tracking columns
     echelon_of_maintenance = Column(SQLEnum(EchelonOfMaintenance), nullable=True)
@@ -170,3 +184,31 @@ class MaintenanceLabor(Base):
 
     work_order = relationship("MaintenanceWorkOrder", back_populates="labor_entries")
     personnel = relationship("Personnel")
+
+
+class WorkOrderAssignment(Base):
+    __tablename__ = "work_order_assignments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    work_order_id = Column(
+        Integer,
+        ForeignKey("maintenance_work_orders.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    personnel_id = Column(
+        Integer,
+        ForeignKey("personnel.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    role = Column(SQLEnum(AssignmentRole), nullable=False, default=AssignmentRole.SUPPORT)
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now())
+    unassigned_at = Column(DateTime(timezone=True), nullable=True)
+
+    work_order = relationship("MaintenanceWorkOrder", back_populates="team_assignments")
+    personnel = relationship("Personnel")
+
+    __table_args__ = (
+        UniqueConstraint("work_order_id", "personnel_id", name="uq_wo_personnel"),
+    )

@@ -6,6 +6,7 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.maintenance import (
+    AssignmentRole,
     LaborType,
     PartSource,
     PartStatus,
@@ -104,6 +105,7 @@ class MaintenanceWorkOrderCreate(BaseModel):
     actual_hours: Optional[float] = Field(None, ge=0)
     location: Optional[str] = Field(None, max_length=100)
     assigned_to: Optional[str] = Field(None, max_length=100)
+    assigned_to_id: Optional[int] = None
 
 
 class MaintenanceWorkOrderUpdate(BaseModel):
@@ -121,6 +123,7 @@ class MaintenanceWorkOrderUpdate(BaseModel):
     location: Optional[str] = Field(None, max_length=100)
     completed_at: Optional[datetime] = None
     assigned_to: Optional[str] = Field(None, max_length=100)
+    assigned_to_id: Optional[int] = None
 
 
 class MaintenanceWorkOrderResponse(BaseModel):
@@ -140,6 +143,7 @@ class MaintenanceWorkOrderResponse(BaseModel):
     created_at: datetime
     completed_at: Optional[datetime] = None
     assigned_to: Optional[str] = None
+    assigned_to_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -233,5 +237,24 @@ class EquipmentRepairOrderResponse(BaseModel):
     work_order_id: Optional[int] = None
     repair_description: Optional[str] = None
     updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# --- WorkOrderAssignment schemas ---
+
+
+class WorkOrderAssignmentCreate(BaseModel):
+    personnel_id: int
+    role: AssignmentRole = AssignmentRole.SUPPORT
+
+
+class WorkOrderAssignmentResponse(BaseModel):
+    id: int
+    work_order_id: int
+    personnel_id: int
+    role: AssignmentRole
+    assigned_at: Optional[datetime] = None
+    unassigned_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)

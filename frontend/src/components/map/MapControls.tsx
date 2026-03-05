@@ -5,6 +5,7 @@ interface LayerState {
   supplyOverlay: boolean;
   convoys: boolean;
   convoyRoutes: boolean;
+  convoyVehicles: boolean;
   supplyPoints: boolean;
   routes: boolean;
   alerts: boolean;
@@ -24,6 +25,7 @@ const layerConfig: { key: keyof LayerState; label: string; icon: string }[] = [
   { key: 'supplyOverlay', label: 'SUPPLY STATUS', icon: '\u25A3' },
   { key: 'convoys', label: 'CONVOYS', icon: '\u25B6' },
   { key: 'convoyRoutes', label: 'CONVOY ROUTES', icon: '\u2500' },
+  { key: 'convoyVehicles', label: 'VEHICLE ICONS', icon: '\u2618' },
   { key: 'supplyPoints', label: 'SUPPLY POINTS', icon: '\u25C6' },
   { key: 'routes', label: 'MSR / ASR', icon: '\u2550' },
   { key: 'alerts', label: 'ALERTS', icon: '\u26A0' },
