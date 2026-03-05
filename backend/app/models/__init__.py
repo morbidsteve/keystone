@@ -148,6 +148,18 @@ from app.models.medical import (
     MedicalSupplyBurnRate,
     BloodProduct,
 )
+from app.models.fuel import (
+    FuelFacilityType,
+    FuelType,
+    FuelStorageStatus,
+    FuelTransactionType,
+    ConsumptionSource,
+    OperationalTempo,
+    FuelStoragePoint,
+    FuelTransaction,
+    FuelConsumptionRate,
+    FuelForecast,
+)
 
 __all__ = [
     "User",
@@ -282,4 +294,14 @@ __all__ = [
     "MedicalTreatmentFacility",
     "MedicalSupplyBurnRate",
     "BloodProduct",
+    "FuelFacilityType",
+    "FuelType",
+    "FuelStorageStatus",
+    "FuelTransactionType",
+    "ConsumptionSource",
+    "OperationalTempo",
+    "FuelStoragePoint",
+    "FuelTransaction",
+    "FuelConsumptionRate",
+    "FuelForecast",
 ]
