@@ -24,6 +24,8 @@ from app.api.maintenance_analytics import router as maintenance_analytics_router
 from app.api.simulator import router as simulator_router
 from app.api.catalog import router as catalog_router
 from app.api.readiness import router as readiness_router
+from app.api.requisitions import router as requisitions_router
+from app.api.inventory import router as inventory_router
 
 api_router = APIRouter()
 
@@ -69,3 +71,7 @@ api_router.include_router(
 )
 api_router.include_router(catalog_router, prefix="/catalog", tags=["Catalog"])
 api_router.include_router(readiness_router, prefix="/readiness", tags=["Readiness"])
+api_router.include_router(
+    requisitions_router, prefix="/requisitions", tags=["Requisitions"]
+)
+api_router.include_router(inventory_router, prefix="/inventory", tags=["Inventory"])

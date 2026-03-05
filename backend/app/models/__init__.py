@@ -70,6 +70,21 @@ from app.models.catalog_supply import SupplyCatalogItem
 from app.models.catalog_ammunition import AmmunitionCatalogItem
 from app.models.readiness_snapshot import UnitReadinessSnapshot, ReadinessThreshold
 from app.models.unit_strength import UnitStrength
+from app.models.requisition import (
+    Requisition,
+    RequisitionLineItem,
+    RequisitionApproval,
+    RequisitionStatusHistory,
+    RequisitionStatus,
+    ApprovalAction,
+    RequisitionPriority,
+    ConditionCode,
+)
+from app.models.inventory import (
+    InventoryRecord,
+    InventoryTransaction,
+    TransactionType,
+)
 
 __all__ = [
     "User",
@@ -138,6 +153,17 @@ __all__ = [
     "UnitReadinessSnapshot",
     "ReadinessThreshold",
     "UnitStrength",
+    "Requisition",
+    "RequisitionLineItem",
+    "RequisitionApproval",
+    "RequisitionStatusHistory",
+    "RequisitionStatus",
+    "ApprovalAction",
+    "RequisitionPriority",
+    "ConditionCode",
+    "InventoryRecord",
+    "InventoryTransaction",
+    "TransactionType",
     "EchelonOfMaintenance",
     "MaintenanceLevel",
     "PreventiveMaintenanceSchedule",

@@ -1,0 +1,260 @@
+// =============================================================================
+// RequisitionTable — Sortable table of requisitions with expandable detail rows
+// =============================================================================
+
+import { useState, useMemo } from 'react';
+import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
+import type { Requisition, RequisitionStatus, RequisitionPriority } from '@/lib/types';
+import RequisitionDetail from './RequisitionDetail';
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function priorityLabel(p: RequisitionPriority): string {
+  if (p === '01') return 'ROUTINE';
+  if (p === '02') return 'URGENT';
+  if (p === '03') return 'EMERGENCY';
+  return `PRI ${p}`;
+}
+
+function priorityColor(p: RequisitionPriority): string {
+  if (p === '03') return 'var(--color-danger)';
+  if (p === '02') return 'var(--color-warning)';
+  if (p === '01') return 'var(--color-success)';
+  return 'var(--color-text-muted)';
+}
+
+function statusColor(s: RequisitionStatus): string {
+  switch (s) {
+    case 'DRAFT': return 'var(--color-text-muted)';
+    case 'SUBMITTED': return 'var(--color-accent)';
+    case 'APPROVED': return 'var(--color-success)';
+    case 'DENIED': return 'var(--color-danger)';
+    case 'SOURCING': return 'var(--color-warning)';
+    case 'BACKORDERED': return '#c084fc';
+    case 'SHIPPED': return '#a78bfa';
+    case 'RECEIVED': return 'var(--color-success)';
+    case 'CANCELED': return 'var(--color-text-muted)';
+    default: return 'var(--color-text-muted)';
+  }
+}
+
+type SortField = 'requisition_number' | 'nomenclature' | 'quantity_requested' | 'quantity_approved' | 'priority' | 'status' | 'created_at';
+type SortDir = 'asc' | 'desc';
+
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+
+interface RequisitionTableProps {
+  requisitions: Requisition[];
+  onRefresh?: () => void;
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+export default function RequisitionTable({ requisitions, onRefresh }: RequisitionTableProps) {
+  const [sortField, setSortField] = useState<SortField>('created_at');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDir('asc');
+    }
+  };
+
+  const sorted = useMemo(() => {
+    const copy = [...requisitions];
+    copy.sort((a, b) => {
+      const aVal = a[sortField];
+      const bVal = b[sortField];
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return 1;
+      if (bVal == null) return -1;
+      const cmp = typeof aVal === 'number' && typeof bVal === 'number'
+        ? aVal - bVal
+        : String(aVal).localeCompare(String(bVal));
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+    return copy;
+  }, [requisitions, sortField, sortDir]);
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return null;
+    return sortDir === 'asc'
+      ? <ChevronUp size={10} style={{ marginLeft: 2 }} />
+      : <ChevronDown size={10} style={{ marginLeft: 2 }} />;
+  };
+
+  const headerStyle: React.CSSProperties = {
+    padding: '8px 10px',
+    fontFamily: 'var(--font-mono)',
+    fontSize: 9,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '1.5px',
+    color: 'var(--color-text-muted)',
+    borderBottom: '1px solid var(--color-border)',
+    cursor: 'pointer',
+    userSelect: 'none',
+    whiteSpace: 'nowrap',
+    textAlign: 'left',
+  };
+
+  const cellStyle: React.CSSProperties = {
+    padding: '8px 10px',
+    fontFamily: 'var(--font-mono)',
+    fontSize: 11,
+    color: 'var(--color-text)',
+    borderBottom: '1px solid var(--color-border)',
+    whiteSpace: 'nowrap',
+  };
+
+  if (requisitions.length === 0) {
+    return (
+      <div
+        style={{
+          padding: 40,
+          textAlign: 'center',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 11,
+          color: 'var(--color-text-muted)',
+        }}
+      >
+        No requisitions found
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            <th style={{ ...headerStyle, width: 24 }} />
+            <th style={headerStyle} onClick={() => handleSort('requisition_number')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>REQ # <SortIcon field="requisition_number" /></span>
+            </th>
+            <th style={headerStyle} onClick={() => handleSort('nomenclature')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>NOMENCLATURE <SortIcon field="nomenclature" /></span>
+            </th>
+            <th style={headerStyle} onClick={() => handleSort('quantity_requested')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>QTY REQ <SortIcon field="quantity_requested" /></span>
+            </th>
+            <th style={headerStyle} onClick={() => handleSort('quantity_approved')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>QTY APPR <SortIcon field="quantity_approved" /></span>
+            </th>
+            <th style={headerStyle} onClick={() => handleSort('priority')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>PRIORITY <SortIcon field="priority" /></span>
+            </th>
+            <th style={headerStyle} onClick={() => handleSort('status')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>STATUS <SortIcon field="status" /></span>
+            </th>
+            <th style={headerStyle} onClick={() => handleSort('created_at')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>CREATED <SortIcon field="created_at" /></span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map((req) => {
+            const isExpanded = expandedId === req.id;
+            return (
+              <tr key={req.id} style={{ cursor: 'pointer' }}>
+                <td colSpan={8} style={{ padding: 0, border: 'none' }}>
+                  <div
+                    onClick={() => setExpandedId(isExpanded ? null : req.id)}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '24px 130px 1fr 80px 80px 100px 110px 90px',
+                      alignItems: 'center',
+                      backgroundColor: isExpanded ? 'var(--color-bg-hover)' : 'transparent',
+                      transition: 'background-color var(--transition)',
+                    }}
+                  >
+                    <div style={{ ...cellStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <ChevronRight
+                        size={12}
+                        style={{
+                          color: 'var(--color-text-muted)',
+                          transform: isExpanded ? 'rotate(90deg)' : 'none',
+                          transition: 'transform var(--transition)',
+                        }}
+                      />
+                    </div>
+                    <div style={{ ...cellStyle, color: 'var(--color-accent)', fontWeight: 600 }}>
+                      {req.requisition_number}
+                    </div>
+                    <div style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {req.nomenclature}
+                    </div>
+                    <div style={{ ...cellStyle, textAlign: 'right' }}>
+                      {req.quantity_requested.toLocaleString()}
+                    </div>
+                    <div style={{ ...cellStyle, textAlign: 'right' }}>
+                      {req.quantity_approved != null ? req.quantity_approved.toLocaleString() : '--'}
+                    </div>
+                    <div style={cellStyle}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 6px',
+                          borderRadius: 2,
+                          fontSize: 9,
+                          fontWeight: 700,
+                          letterSpacing: '0.5px',
+                          color: priorityColor(req.priority),
+                          border: `1px solid ${priorityColor(req.priority)}`,
+                          backgroundColor: `color-mix(in srgb, ${priorityColor(req.priority)} 10%, transparent)`,
+                        }}
+                      >
+                        {priorityLabel(req.priority)}
+                      </span>
+                    </div>
+                    <div style={cellStyle}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 6px',
+                          borderRadius: 2,
+                          fontSize: 9,
+                          fontWeight: 700,
+                          letterSpacing: '0.5px',
+                          color: statusColor(req.status),
+                          border: `1px solid ${statusColor(req.status)}`,
+                          backgroundColor: `color-mix(in srgb, ${statusColor(req.status)} 10%, transparent)`,
+                        }}
+                      >
+                        {req.status}
+                      </span>
+                    </div>
+                    <div style={{ ...cellStyle, fontSize: 10, color: 'var(--color-text-muted)' }}>
+                      {new Date(req.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <div
+                      style={{
+                        borderTop: '1px solid var(--color-border)',
+                        borderBottom: '1px solid var(--color-border)',
+                        backgroundColor: 'var(--color-bg)',
+                      }}
+                    >
+                      <RequisitionDetail requisition={req} onRefresh={onRefresh} />
+                    </div>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
