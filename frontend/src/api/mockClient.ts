@@ -24,6 +24,8 @@ import type {
   EquipmentDriverAssignment,
   Movement,
   Alert,
+  AlertRule,
+  AlertSummary,
   Report,
   ReportContent,
   RawData,
@@ -153,6 +155,44 @@ let demoSchedules: ReportSchedule[] = [
   { id: 2, template_id: 2, unit_id: 3, frequency: ScheduleFrequency.DAILY, time_of_day: '18:00', is_active: true, auto_distribute: false, last_generated: '2026-03-04T18:00:00Z', next_generation: '2026-03-05T18:00:00Z', created_at: '2026-02-01T00:00:00Z' },
   { id: 3, template_id: 3, unit_id: 3, frequency: ScheduleFrequency.WEEKLY, time_of_day: '08:00', day_of_week: 0, is_active: true, auto_distribute: true, created_at: '2026-02-15T00:00:00Z' },
 ];
+
+// ---------------------------------------------------------------------------
+// Mock alert rules
+// ---------------------------------------------------------------------------
+
+const MOCK_ALERT_RULES: AlertRule[] = [
+  { id: 1, name: 'Supply DOS < 3 Days (Critical)', description: 'Alert when supply DOS drops below 3 days', alert_type: 'LOW_DOS', severity: 'CRITICAL', metric: 'supply_dos', operator: 'LT', threshold_value: 3, is_scope_all: true, cooldown_minutes: 60, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 2, name: 'Supply DOS < 5 Days (Warning)', description: 'Alert when supply DOS drops below 5 days', alert_type: 'LOW_DOS', severity: 'WARNING', metric: 'supply_dos', operator: 'LT', threshold_value: 5, is_scope_all: true, cooldown_minutes: 120, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 3, name: 'Equipment Readiness < 70% (Critical)', description: 'Alert when equipment readiness drops below 70%', alert_type: 'LOW_READINESS', severity: 'CRITICAL', metric: 'equipment_readiness_pct', operator: 'LT', threshold_value: 70, is_scope_all: true, cooldown_minutes: 60, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 4, name: 'Equipment Readiness < 85% (Warning)', alert_type: 'LOW_READINESS', severity: 'WARNING', metric: 'equipment_readiness_pct', operator: 'LT', threshold_value: 85, is_scope_all: true, cooldown_minutes: 120, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 5, name: 'PM Overdue > 7 Days (Warning)', description: 'PM overdue by more than 7 days', alert_type: 'PM_OVERDUE', severity: 'WARNING', metric: 'pm_overdue_days', operator: 'GT', threshold_value: 7, is_scope_all: true, cooldown_minutes: 180, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 6, name: 'Personnel Fill < 80% (Warning)', description: 'Unit fill below 80%', alert_type: 'STRENGTH_BELOW_THRESHOLD', severity: 'WARNING', metric: 'personnel_strength_pct', operator: 'LT', threshold_value: 80, is_scope_all: true, cooldown_minutes: 240, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+];
+
+// Exported mock functions for alerts
+export function mockGetAlertSummary(_unitId?: string): AlertSummary {
+  return { total_active: 5, by_severity: { CRITICAL: 2, WARNING: 2, INFO: 1 }, by_type: { LOW_DOS: 1, LOW_READINESS: 1, CONVOY_DELAYED: 1, PM_OVERDUE: 1, EQUIPMENT_DEADLINED: 1 } };
+}
+
+export function mockResolveAlert(id: string): void {
+  demoAlerts = demoAlerts.map((a) =>
+    a.id === id ? { ...a, resolved: true, resolvedBy: 'Demo User', resolvedAt: new Date().toISOString() } : a,
+  );
+}
+
+export function mockGetAlertRules(): AlertRule[] { return [...MOCK_ALERT_RULES]; }
+
+export function mockCreateAlertRule(data: Partial<AlertRule>): AlertRule {
+  const rule = { id: MOCK_ALERT_RULES.length + 1, ...data, created_by: 1, created_at: new Date().toISOString() } as AlertRule;
+  MOCK_ALERT_RULES.push(rule);
+  return rule;
+}
+
+export function mockUpdateAlertRule(id: number, data: Partial<AlertRule>): AlertRule {
+  const idx = MOCK_ALERT_RULES.findIndex(r => r.id === id);
+  if (idx >= 0) Object.assign(MOCK_ALERT_RULES[idx], data);
+  return MOCK_ALERT_RULES[idx];
+}
 
 // ---------------------------------------------------------------------------
 // Helper: hierarchical unit filtering — walks the unit tree to find
