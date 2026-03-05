@@ -7,6 +7,7 @@ import { isDemoMode } from './mockClient';
 import type {
   PersonnelRecord,
   BilletRecord,
+  QualificationRecord,
   ManningSnapshotRecord,
   UnitStrengthData,
   MOSFillData,
@@ -36,7 +37,7 @@ const mockDelay = (ms = 150 + Math.random() * 150): Promise<void> =>
 // Mock Personnel Data (~25 records)
 // ---------------------------------------------------------------------------
 
-const MOCK_PERSONNEL: PersonnelRecord[] = [
+let MOCK_PERSONNEL: PersonnelRecord[] = [
   { id: 1, edipi: '1234567890', first_name: 'James', last_name: 'Richardson', rank: 'LtCol', unit_id: 4, mos: '0302', pay_grade: 'O5', billet: 'BN CDR', date_of_rank: '2024-06-01', eaos: '2028-06-01', pme_complete: true, rifle_qual: 'EXPERT', rifle_qual_date: '2025-09-15', pft_score: 285, pft_date: '2025-10-01', cft_score: 290, cft_date: '2025-10-01', swim_qual: 'CWS1', security_clearance: 'SECRET', clearance_expiry: '2030-01-01', drivers_license_military: true, duty_status: 'PRESENT', status: 'ACTIVE' },
   { id: 2, edipi: '1234567891', first_name: 'Michael', last_name: 'Torres', rank: 'Maj', unit_id: 4, mos: '0302', pay_grade: 'O4', billet: 'XO', date_of_rank: '2023-08-01', eaos: '2027-08-01', pme_complete: true, rifle_qual: 'EXPERT', rifle_qual_date: '2025-09-15', pft_score: 278, pft_date: '2025-10-01', cft_score: 275, cft_date: '2025-10-01', swim_qual: 'CWS1', security_clearance: 'SECRET', clearance_expiry: '2029-05-01', drivers_license_military: true, duty_status: 'PRESENT', status: 'ACTIVE' },
   { id: 3, edipi: '1234567892', first_name: 'Robert', last_name: 'Jenkins', rank: 'SgtMaj', unit_id: 4, mos: '0369', pay_grade: 'E9', billet: 'BN SGTMAJ', date_of_rank: '2023-01-01', eaos: '2027-01-01', pme_complete: true, rifle_qual: 'EXPERT', rifle_qual_date: '2025-09-10', pft_score: 270, pft_date: '2025-10-01', cft_score: 268, cft_date: '2025-10-01', swim_qual: 'CWS1', security_clearance: 'SECRET', clearance_expiry: '2029-03-01', drivers_license_military: true, duty_status: 'PRESENT', status: 'ACTIVE' },
@@ -68,7 +69,7 @@ const MOCK_PERSONNEL: PersonnelRecord[] = [
 // Mock Billet Data (~15 records)
 // ---------------------------------------------------------------------------
 
-const MOCK_BILLETS: BilletRecord[] = [
+let MOCK_BILLETS: BilletRecord[] = [
   { id: 1, unit_id: 4, billet_id_code: 'BN-001', billet_title: 'BATTALION COMMANDER', mos_required: '0302', rank_required: 'LtCol', is_key_billet: true, is_filled: true, filled_by_id: 1, filled_by_name: 'LtCol Richardson', filled_date: '2024-06-15' },
   { id: 2, unit_id: 4, billet_id_code: 'BN-002', billet_title: 'EXECUTIVE OFFICER', mos_required: '0302', rank_required: 'Maj', is_key_billet: true, is_filled: true, filled_by_id: 2, filled_by_name: 'Maj Torres', filled_date: '2023-09-01' },
   { id: 3, unit_id: 4, billet_id_code: 'BN-003', billet_title: 'BN SERGEANT MAJOR', mos_required: '0369', rank_required: 'SgtMaj', is_key_billet: true, is_filled: true, filled_by_id: 3, filled_by_name: 'SgtMaj Jenkins', filled_date: '2023-02-01' },
@@ -271,4 +272,170 @@ export async function getManningSnapshots(unitId: number): Promise<ManningSnapsh
   }
   const response = await apiClient.get<{ data: ManningSnapshotRecord[] }>(`/units/${unitId}/manning-snapshots`);
   return response.data.data;
+}
+
+// ---------------------------------------------------------------------------
+// Personnel CRUD
+// ---------------------------------------------------------------------------
+
+let mockQualifications: QualificationRecord[] = [];
+
+export async function getPersonnelDetail(id: number): Promise<PersonnelRecord> {
+  if (isDemoMode) {
+    await mockDelay();
+    const found = MOCK_PERSONNEL.find((p) => p.id === id);
+    if (!found) throw new Error(`Personnel ${id} not found`);
+    return { ...found };
+  }
+  const response = await apiClient.get<{ data: PersonnelRecord }>(`/personnel/${id}`);
+  return response.data.data;
+}
+
+export async function createPersonnel(data: Partial<PersonnelRecord>): Promise<PersonnelRecord> {
+  if (isDemoMode) {
+    await mockDelay();
+    const maxId = MOCK_PERSONNEL.reduce((m, p) => Math.max(m, p.id), 0);
+    const record: PersonnelRecord = {
+      id: maxId + 1,
+      edipi: data.edipi ?? '',
+      first_name: data.first_name ?? '',
+      last_name: data.last_name ?? '',
+      rank: data.rank ?? null,
+      unit_id: data.unit_id ?? null,
+      mos: data.mos ?? null,
+      pay_grade: data.pay_grade ?? null,
+      billet: data.billet ?? null,
+      date_of_rank: data.date_of_rank ?? null,
+      eaos: data.eaos ?? null,
+      pme_complete: data.pme_complete ?? false,
+      rifle_qual: data.rifle_qual ?? null,
+      rifle_qual_date: data.rifle_qual_date ?? null,
+      pft_score: data.pft_score ?? null,
+      pft_date: data.pft_date ?? null,
+      cft_score: data.cft_score ?? null,
+      cft_date: data.cft_date ?? null,
+      swim_qual: data.swim_qual ?? null,
+      security_clearance: data.security_clearance ?? null,
+      clearance_expiry: data.clearance_expiry ?? null,
+      drivers_license_military: data.drivers_license_military ?? false,
+      duty_status: data.duty_status ?? 'PRESENT',
+      status: data.status ?? 'ACTIVE',
+    };
+    MOCK_PERSONNEL = [...MOCK_PERSONNEL, record];
+    return record;
+  }
+  const response = await apiClient.post<{ data: PersonnelRecord }>('/personnel', data);
+  return response.data.data;
+}
+
+export async function updatePersonnel(id: number, data: Partial<PersonnelRecord>): Promise<PersonnelRecord> {
+  if (isDemoMode) {
+    await mockDelay();
+    const idx = MOCK_PERSONNEL.findIndex((p) => p.id === id);
+    if (idx === -1) throw new Error(`Personnel ${id} not found`);
+    const updated = { ...MOCK_PERSONNEL[idx], ...data, id };
+    MOCK_PERSONNEL = MOCK_PERSONNEL.map((p) => (p.id === id ? updated : p));
+    return updated;
+  }
+  const response = await apiClient.put<{ data: PersonnelRecord }>(`/personnel/${id}`, data);
+  return response.data.data;
+}
+
+export async function deletePersonnel(id: number): Promise<void> {
+  if (isDemoMode) {
+    await mockDelay();
+    MOCK_PERSONNEL = MOCK_PERSONNEL.filter((p) => p.id !== id);
+    return;
+  }
+  await apiClient.delete(`/personnel/${id}`);
+}
+
+// ---------------------------------------------------------------------------
+// Billet CRUD
+// ---------------------------------------------------------------------------
+
+export async function createBillet(data: Partial<BilletRecord>): Promise<BilletRecord> {
+  if (isDemoMode) {
+    await mockDelay();
+    const maxId = MOCK_BILLETS.reduce((m, b) => Math.max(m, b.id), 0);
+    const record: BilletRecord = {
+      id: maxId + 1,
+      unit_id: data.unit_id ?? 4,
+      billet_id_code: data.billet_id_code ?? '',
+      billet_title: data.billet_title ?? '',
+      mos_required: data.mos_required ?? null,
+      rank_required: data.rank_required ?? null,
+      is_key_billet: data.is_key_billet ?? false,
+      is_filled: data.is_filled ?? false,
+      filled_by_id: data.filled_by_id ?? null,
+      filled_by_name: data.filled_by_name,
+      filled_date: data.filled_date ?? null,
+    };
+    MOCK_BILLETS = [...MOCK_BILLETS, record];
+    return record;
+  }
+  const response = await apiClient.post<{ data: BilletRecord }>('/manning/billets', data);
+  return response.data.data;
+}
+
+export async function updateBillet(id: number, data: Partial<BilletRecord>): Promise<BilletRecord> {
+  if (isDemoMode) {
+    await mockDelay();
+    const idx = MOCK_BILLETS.findIndex((b) => b.id === id);
+    if (idx === -1) throw new Error(`Billet ${id} not found`);
+    const updated = { ...MOCK_BILLETS[idx], ...data, id };
+    MOCK_BILLETS = MOCK_BILLETS.map((b) => (b.id === id ? updated : b));
+    return updated;
+  }
+  const response = await apiClient.put<{ data: BilletRecord }>(`/manning/billets/${id}`, data);
+  return response.data.data;
+}
+
+export async function deleteBillet(id: number): Promise<void> {
+  if (isDemoMode) {
+    await mockDelay();
+    MOCK_BILLETS = MOCK_BILLETS.filter((b) => b.id !== id);
+    return;
+  }
+  await apiClient.delete(`/manning/billets/${id}`);
+}
+
+// ---------------------------------------------------------------------------
+// Qualification CRUD
+// ---------------------------------------------------------------------------
+
+export async function createQualification(data: {
+  personnel_id: number;
+  qualification_type: string;
+  qualification_name: string;
+  date_achieved: string;
+  expiration_date?: string;
+  is_current?: boolean;
+}): Promise<QualificationRecord> {
+  if (isDemoMode) {
+    await mockDelay();
+    const maxId = mockQualifications.reduce((m, q) => Math.max(m, q.id), 0);
+    const record: QualificationRecord = {
+      id: maxId + 1,
+      personnel_id: data.personnel_id,
+      qualification_type: data.qualification_type,
+      qualification_name: data.qualification_name,
+      date_achieved: data.date_achieved,
+      expiration_date: data.expiration_date ?? null,
+      is_current: data.is_current ?? true,
+    };
+    mockQualifications = [...mockQualifications, record];
+    return record;
+  }
+  const response = await apiClient.post<{ data: QualificationRecord }>('/personnel/qualifications', data);
+  return response.data.data;
+}
+
+export async function deleteQualification(id: number): Promise<void> {
+  if (isDemoMode) {
+    await mockDelay();
+    mockQualifications = mockQualifications.filter((q) => q.id !== id);
+    return;
+  }
+  await apiClient.delete(`/personnel/qualifications/${id}`);
 }

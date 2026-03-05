@@ -3,12 +3,15 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { Search, Users } from 'lucide-react';
+import { Search, Users, Plus } from 'lucide-react';
 import type { PersonnelRecord, RifleQual, DutyStatusType } from '@/lib/types';
 import EmptyState from '@/components/ui/EmptyState';
+import AddEditPersonnelModal from './AddEditPersonnelModal';
+import { deletePersonnel } from '@/api/personnel';
 
 interface AlphaRosterTableProps {
   personnel: PersonnelRecord[];
+  onRefresh?: () => void;
 }
 
 type SortKey =
@@ -67,10 +70,36 @@ function dutyStatusColor(status: DutyStatusType): string {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function AlphaRosterTable({ personnel }: AlphaRosterTableProps) {
+export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTableProps) {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('last_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [showModal, setShowModal] = useState(false);
+  const [editingMarine, setEditingMarine] = useState<PersonnelRecord | null>(null);
+
+  const handleAdd = () => {
+    setEditingMarine(null);
+    setShowModal(true);
+  };
+
+  const handleEdit = (p: PersonnelRecord) => {
+    setEditingMarine(p);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (p: PersonnelRecord) => {
+    if (!window.confirm(`Delete ${p.rank ?? ''} ${p.last_name}, ${p.first_name}? This cannot be undone.`)) return;
+    try {
+      await deletePersonnel(p.id);
+      onRefresh?.();
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
+  };
+
+  const handleSaved = () => {
+    onRefresh?.();
+  };
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -157,33 +186,57 @@ export default function AlphaRosterTable({ personnel }: AlphaRosterTableProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      {/* Search */}
-      <div style={{ position: 'relative', maxWidth: 320 }}>
-        <Search
-          size={14}
+      {/* Search + Add */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ position: 'relative', maxWidth: 320, flex: 1 }}>
+          <Search
+            size={14}
+            style={{
+              position: 'absolute',
+              left: 10,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: 'var(--color-text-muted)',
+            }}
+          />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name, EDIPI, MOS, billet..."
+            style={{
+              width: '100%',
+              padding: '7px 10px 7px 30px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              color: 'var(--color-text)',
+              backgroundColor: 'var(--color-bg)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius)',
+            }}
+          />
+        </div>
+        <button
+          onClick={handleAdd}
           style={{
-            position: 'absolute',
-            left: 10,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: 'var(--color-text-muted)',
-          }}
-        />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search name, EDIPI, MOS, billet..."
-          style={{
-            width: '100%',
-            padding: '7px 10px 7px 30px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            padding: '6px 12px',
             fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text)',
-            backgroundColor: 'var(--color-bg)',
-            border: '1px solid var(--color-border)',
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: '1px',
+            color: 'var(--color-accent)',
+            backgroundColor: 'transparent',
+            border: '1px solid var(--color-accent)',
             borderRadius: 'var(--radius)',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
           }}
-        />
+        >
+          <Plus size={12} />
+          ADD MARINE
+        </button>
       </div>
 
       {/* Count */}
@@ -233,6 +286,7 @@ export default function AlphaRosterTable({ personnel }: AlphaRosterTableProps) {
                   )}
                 </th>
               ))}
+              <th style={{ ...headerStyle, width: 90, textAlign: 'center' }}>ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -297,12 +351,57 @@ export default function AlphaRosterTable({ personnel }: AlphaRosterTableProps) {
                 <td style={{ ...cellStyle, fontWeight: 600, color: (p.cft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
                   {p.cft_score ?? '—'}
                 </td>
+                <td style={{ ...cellStyle, textAlign: 'center' }}>
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                    <button
+                      onClick={() => handleEdit(p)}
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 9,
+                        fontWeight: 600,
+                        letterSpacing: '0.5px',
+                        color: 'var(--color-accent)',
+                        background: 'none',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 2,
+                        padding: '2px 6px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      EDIT
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p)}
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 9,
+                        fontWeight: 600,
+                        letterSpacing: '0.5px',
+                        color: '#f87171',
+                        background: 'none',
+                        border: '1px solid rgba(248,113,113,0.3)',
+                        borderRadius: 2,
+                        padding: '2px 6px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      DEL
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       )}
+
+      <AddEditPersonnelModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSaved={handleSaved}
+        initialData={editingMarine}
+      />
     </div>
   );
 }

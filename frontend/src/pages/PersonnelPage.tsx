@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import Card from '@/components/ui/Card';
 import AlphaRosterTable from '@/components/personnel/AlphaRosterTable';
@@ -43,6 +43,7 @@ type TabKey = (typeof TABS)[number]['key'];
 export default function PersonnelPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('roster');
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
+  const queryClient = useQueryClient();
 
   const numericUnitId = useMemo(() => {
     if (!selectedUnitId) return 4; // default to 1/1 Bn
@@ -128,6 +129,18 @@ export default function PersonnelPage() {
     queryFn: () => getUpcomingLosses(numericUnitId, 90),
     enabled: activeTab === 'eas',
   });
+
+  // -------------------------------------------------------------------------
+  // Refresh callbacks
+  // -------------------------------------------------------------------------
+
+  const refreshPersonnel = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['personnel-list'] });
+  }, [queryClient]);
+
+  const refreshBillets = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['personnel-billets'] });
+  }, [queryClient]);
 
   // -------------------------------------------------------------------------
   // ESC handler
@@ -347,7 +360,7 @@ export default function PersonnelPage() {
           {personnelLoading ? (
             renderLoadingSkeleton()
           ) : (
-            <AlphaRosterTable personnel={personnel ?? []} />
+            <AlphaRosterTable personnel={personnel ?? []} onRefresh={refreshPersonnel} />
           )}
         </Card>
       )}
@@ -379,7 +392,7 @@ export default function PersonnelPage() {
           {billetsLoading ? (
             renderLoadingSkeleton()
           ) : (
-            <BilletTracker billets={billets ?? []} />
+            <BilletTracker billets={billets ?? []} onRefresh={refreshBillets} personnel={personnel ?? []} />
           )}
         </Card>
       )}
