@@ -114,15 +114,17 @@ class FuelTransactionCreate(BaseModel):
         qty = self.quantity_gallons
         if txn_type == FuelTransactionType.RECEIPT and qty <= 0:
             raise ValueError("RECEIPT quantity_gallons must be positive")
-        if txn_type in (
-            FuelTransactionType.ISSUE,
-            FuelTransactionType.LOSS,
-            FuelTransactionType.SAMPLE,
-            FuelTransactionType.TRANSFER,
-        ) and qty >= 0:
-            raise ValueError(
-                f"{txn_type.value} quantity_gallons must be negative"
+        if (
+            txn_type
+            in (
+                FuelTransactionType.ISSUE,
+                FuelTransactionType.LOSS,
+                FuelTransactionType.SAMPLE,
+                FuelTransactionType.TRANSFER,
             )
+            and qty >= 0
+        ):
+            raise ValueError(f"{txn_type.value} quantity_gallons must be negative")
         return self
 
 

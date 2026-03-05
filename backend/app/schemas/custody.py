@@ -31,7 +31,9 @@ class SensitiveItemCreate(BaseModel):
     nomenclature: str = Field(..., max_length=200)
     nsn: Optional[str] = Field(None, max_length=15)
     tamcn: Optional[str] = Field(None, max_length=20)
-    security_classification: SecurityClassification = SecurityClassification.UNCLASSIFIED
+    security_classification: SecurityClassification = (
+        SecurityClassification.UNCLASSIFIED
+    )
     condition_code: ItemConditionCode = ItemConditionCode.A
     status: SensitiveItemStatus = SensitiveItemStatus.ON_HAND
     current_holder_id: Optional[int] = None

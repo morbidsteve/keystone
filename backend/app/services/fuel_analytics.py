@@ -84,7 +84,8 @@ class FuelAnalyticsService:
                 continue
             rate_result = await db.execute(
                 select(FuelConsumptionRate).where(
-                    FuelConsumptionRate.equipment_catalog_item_id == equip.catalog_item_id
+                    FuelConsumptionRate.equipment_catalog_item_id
+                    == equip.catalog_item_id
                 )
             )
             rate = rate_result.scalar_one_or_none()
@@ -149,7 +150,9 @@ class FuelAnalyticsService:
                     "longitude": p.longitude,
                     "mgrs": p.mgrs,
                     "last_resupply_date": (
-                        p.last_resupply_date.isoformat() if p.last_resupply_date else None
+                        p.last_resupply_date.isoformat()
+                        if p.last_resupply_date
+                        else None
                     ),
                     "next_resupply_eta": (
                         p.next_resupply_eta.isoformat() if p.next_resupply_eta else None

@@ -280,9 +280,7 @@ async def approve_convoy_plan(
     }
     is_valid, errors = validate_convoy_plan(plan_dict)
     if not is_valid:
-        raise BadRequestError(
-            f"Plan validation failed: {'; '.join(errors)}"
-        )
+        raise BadRequestError(f"Plan validation failed: {'; '.join(errors)}")
 
     plan.status = ConvoyPlanStatus.APPROVED
     await db.flush()
@@ -446,9 +444,7 @@ async def get_lift_request(
     current_user: User = Depends(get_current_user),
 ):
     """Get a single lift request."""
-    result = await db.execute(
-        select(LiftRequest).where(LiftRequest.id == request_id)
-    )
+    result = await db.execute(select(LiftRequest).where(LiftRequest.id == request_id))
     lift = result.scalar_one_or_none()
     if lift is None:
         raise NotFoundError("LiftRequest", request_id)
@@ -474,9 +470,7 @@ async def update_lift_request(
     current_user: User = Depends(get_current_user),
 ):
     """Update a lift request."""
-    result = await db.execute(
-        select(LiftRequest).where(LiftRequest.id == request_id)
-    )
+    result = await db.execute(select(LiftRequest).where(LiftRequest.id == request_id))
     lift = result.scalar_one_or_none()
     if lift is None:
         raise NotFoundError("LiftRequest", request_id)
@@ -504,9 +498,7 @@ async def approve_lift_request(
     current_user: User = Depends(get_current_user),
 ):
     """Approve a REQUESTED lift request and assign supporting unit."""
-    result = await db.execute(
-        select(LiftRequest).where(LiftRequest.id == request_id)
-    )
+    result = await db.execute(select(LiftRequest).where(LiftRequest.id == request_id))
     lift = result.scalar_one_or_none()
     if lift is None:
         raise NotFoundError("LiftRequest", request_id)
@@ -526,6 +518,7 @@ async def approve_lift_request(
 
     # M-4 fix: validate supporting unit exists and user has access
     from app.models.unit import Unit
+
     unit_result = await db.execute(
         select(Unit.id).where(Unit.id == data.supporting_unit_id)
     )
@@ -551,9 +544,7 @@ async def assign_lift_request(
     current_user: User = Depends(get_current_user),
 ):
     """Assign an APPROVED lift request to a movement (SCHEDULED)."""
-    result = await db.execute(
-        select(LiftRequest).where(LiftRequest.id == request_id)
-    )
+    result = await db.execute(select(LiftRequest).where(LiftRequest.id == request_id))
     lift = result.scalar_one_or_none()
     if lift is None:
         raise NotFoundError("LiftRequest", request_id)
@@ -599,9 +590,7 @@ async def cancel_lift_request(
     current_user: User = Depends(get_current_user),
 ):
     """Cancel a lift request."""
-    result = await db.execute(
-        select(LiftRequest).where(LiftRequest.id == request_id)
-    )
+    result = await db.execute(select(LiftRequest).where(LiftRequest.id == request_id))
     lift = result.scalar_one_or_none()
     if lift is None:
         raise NotFoundError("LiftRequest", request_id)

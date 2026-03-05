@@ -615,9 +615,7 @@ async def update_qualification(
     current_user: User = Depends(get_current_user),
 ):
     """Update a qualification record."""
-    result = await db.execute(
-        select(Qualification).where(Qualification.id == qual_id)
-    )
+    result = await db.execute(select(Qualification).where(Qualification.id == qual_id))
     qual = result.scalar_one_or_none()
     if not qual:
         raise NotFoundError("Qualification", qual_id)
@@ -655,9 +653,7 @@ async def delete_qualification(
     current_user: User = Depends(get_current_user),
 ):
     """Delete a qualification record."""
-    result = await db.execute(
-        select(Qualification).where(Qualification.id == qual_id)
-    )
+    result = await db.execute(select(Qualification).where(Qualification.id == qual_id))
     qual = result.scalar_one_or_none()
     if not qual:
         raise NotFoundError("Qualification", qual_id)

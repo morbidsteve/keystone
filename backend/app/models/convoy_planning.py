@@ -88,9 +88,7 @@ class ConvoyPlan(Base):
     rehearsal_time = Column(DateTime(timezone=True), nullable=True)
 
     movement_credit_number = Column(String(50), nullable=True)
-    convoy_commander_id = Column(
-        Integer, ForeignKey("personnel.id"), nullable=True
-    )
+    convoy_commander_id = Column(Integer, ForeignKey("personnel.id"), nullable=True)
 
     status = Column(
         SQLEnum(ConvoyPlanStatus),
@@ -125,9 +123,7 @@ class ConvoySerial(Base):
         Integer, ForeignKey("convoy_plans.id", ondelete="CASCADE"), nullable=False
     )
     serial_number = Column(String(10), nullable=False)
-    serial_commander_id = Column(
-        Integer, ForeignKey("personnel.id"), nullable=True
-    )
+    serial_commander_id = Column(Integer, ForeignKey("personnel.id"), nullable=True)
     vehicle_count = Column(Integer, nullable=False, default=0)
     pax_count = Column(Integer, nullable=False, default=0)
     march_order = Column(Integer, nullable=True)
@@ -149,12 +145,8 @@ class LiftRequest(Base):
     )
 
     id = Column(Integer, primary_key=True, index=True)
-    requesting_unit_id = Column(
-        Integer, ForeignKey("units.id"), nullable=False
-    )
-    supporting_unit_id = Column(
-        Integer, ForeignKey("units.id"), nullable=True
-    )
+    requesting_unit_id = Column(Integer, ForeignKey("units.id"), nullable=False)
+    supporting_unit_id = Column(Integer, ForeignKey("units.id"), nullable=True)
 
     cargo_type = Column(SQLEnum(CargoType), nullable=False)
     cargo_description = Column(Text, nullable=True)
@@ -182,19 +174,13 @@ class LiftRequest(Base):
     delivery_lat = Column(Float, nullable=True)
     delivery_lon = Column(Float, nullable=True)
 
-    assigned_movement_id = Column(
-        Integer, ForeignKey("movements.id"), nullable=True
-    )
+    assigned_movement_id = Column(Integer, ForeignKey("movements.id"), nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    requesting_unit = relationship(
-        "Unit", foreign_keys=[requesting_unit_id]
-    )
-    supporting_unit = relationship(
-        "Unit", foreign_keys=[supporting_unit_id]
-    )
+    requesting_unit = relationship("Unit", foreign_keys=[requesting_unit_id])
+    supporting_unit = relationship("Unit", foreign_keys=[supporting_unit_id])
     assigned_movement = relationship("Movement", foreign_keys=[assigned_movement_id])

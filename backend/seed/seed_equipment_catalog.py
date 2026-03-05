@@ -1801,9 +1801,7 @@ async def seed_equipment_catalog(db: AsyncSession) -> int:
         tamcn = item_data.get("tamcn")
         if tamcn:
             result = await db.execute(
-                select(EquipmentCatalogItem).where(
-                    EquipmentCatalogItem.tamcn == tamcn
-                )
+                select(EquipmentCatalogItem).where(EquipmentCatalogItem.tamcn == tamcn)
             )
             if result.scalar_one_or_none():
                 continue

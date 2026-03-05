@@ -133,9 +133,7 @@ class Personnel(Base):
     security_clearance = Column(SQLEnum(SecurityClearance), nullable=True)
     clearance_expiry = Column(Date, nullable=True)
     drivers_license_military = Column(Boolean, default=False)
-    duty_status = Column(
-        SQLEnum(DutyStatus), nullable=True, default=DutyStatus.PRESENT
-    )
+    duty_status = Column(SQLEnum(DutyStatus), nullable=True, default=DutyStatus.PRESENT)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(

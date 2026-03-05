@@ -188,9 +188,7 @@ class CasualtyReport(Base):
         Integer, ForeignKey("personnel.id"), nullable=True, index=True
     )
     unit_id = Column(Integer, ForeignKey("units.id"), nullable=False, index=True)
-    reported_by_user_id = Column(
-        Integer, ForeignKey("users.id"), nullable=False
-    )
+    reported_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     # Incident
     incident_datetime = Column(DateTime(timezone=True), nullable=False)
@@ -230,9 +228,7 @@ class CasualtyReport(Base):
     # Injury detail
     mechanism_of_injury = Column(String(200), nullable=True)
     injuries_description = Column(Text, nullable=True)
-    triage_category = Column(
-        SQLEnum(TriageCategory), nullable=True
-    )
+    triage_category = Column(SQLEnum(TriageCategory), nullable=True)
 
     # TCCC interventions (JSON string for SQLite compat)
     tccc_interventions = Column(Text, nullable=True)
@@ -297,9 +293,7 @@ class CasualtyLog(Base):
     event_time = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    recorded_by_user_id = Column(
-        Integer, ForeignKey("users.id"), nullable=False
-    )
+    recorded_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     notes = Column(Text, nullable=True)
 
     casualty_report = relationship("CasualtyReport", back_populates="logs")
@@ -313,9 +307,7 @@ class MedicalTreatmentFacility(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
-    facility_type = Column(
-        SQLEnum(MedicalTreatmentFacilityType), nullable=False
-    )
+    facility_type = Column(SQLEnum(MedicalTreatmentFacilityType), nullable=False)
     callsign = Column(String(30), nullable=True)
     unit_id = Column(Integer, ForeignKey("units.id"), nullable=True, index=True)
 
@@ -327,9 +319,7 @@ class MedicalTreatmentFacility(Base):
     # Capacity
     capacity = Column(Integer, nullable=True)
     current_census = Column(Integer, nullable=False, default=0)
-    status = Column(
-        SQLEnum(MTFStatus), nullable=False, default=MTFStatus.OPERATIONAL
-    )
+    status = Column(SQLEnum(MTFStatus), nullable=False, default=MTFStatus.OPERATIONAL)
 
     # Capabilities
     surgical = Column(Boolean, nullable=False, default=False)
@@ -402,7 +392,9 @@ class MedicalSupplyBurnRate(Base):
 
     # Relationships
     unit = relationship("Unit", foreign_keys=[unit_id])
-    supply_item = relationship("SupplyCatalogItem", foreign_keys=[supply_catalog_item_id])
+    supply_item = relationship(
+        "SupplyCatalogItem", foreign_keys=[supply_catalog_item_id]
+    )
 
 
 class BloodProduct(Base):
@@ -430,4 +422,6 @@ class BloodProduct(Base):
     )
 
     # Relationships
-    facility = relationship("MedicalTreatmentFacility", back_populates="blood_inventory")
+    facility = relationship(
+        "MedicalTreatmentFacility", back_populates="blood_inventory"
+    )

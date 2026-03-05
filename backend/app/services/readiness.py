@@ -64,8 +64,7 @@ class ReadinessService:
             # Identify lowest-readiness equipment type
             worst = min(records, key=lambda r: r.readiness_pct)
             limiting_text = (
-                f"{worst.nomenclature} ({worst.tamcn}): "
-                f"{worst.readiness_pct:.0f}% MC"
+                f"{worst.nomenclature} ({worst.tamcn}): {worst.readiness_pct:.0f}% MC"
             )
 
         return pct, limiting_text
@@ -79,9 +78,7 @@ class ReadinessService:
         Items with >= 10 days of supply are considered ready.
         """
         result = await db.execute(
-            select(SupplyStatusRecord).where(
-                SupplyStatusRecord.unit_id == unit_id
-            )
+            select(SupplyStatusRecord).where(SupplyStatusRecord.unit_id == unit_id)
         )
         records = result.scalars().all()
 
@@ -242,17 +239,13 @@ class ReadinessService:
         return snapshot
 
     @staticmethod
-    async def roll_up_readiness(
-        parent_unit_id: int, db: AsyncSession
-    ) -> dict:
+    async def roll_up_readiness(parent_unit_id: int, db: AsyncSession) -> dict:
         """Roll up readiness from subordinate units.
 
         Gets the latest snapshot for each subordinate and averages.
         """
         # Get subordinate units
-        result = await db.execute(
-            select(Unit).where(Unit.parent_id == parent_unit_id)
-        )
+        result = await db.execute(select(Unit).where(Unit.parent_id == parent_unit_id))
         subordinates = result.scalars().all()
 
         if not subordinates:
@@ -323,13 +316,9 @@ class ReadinessService:
             "unit_id": parent_unit_id,
             "num_subordinates": len(subordinates),
             "avg_overall_readiness_pct": round(totals["overall"] / divisor, 1),
-            "avg_equipment_readiness_pct": round(
-                totals["equipment"] / divisor, 1
-            ),
+            "avg_equipment_readiness_pct": round(totals["equipment"] / divisor, 1),
             "avg_supply_readiness_pct": round(totals["supply"] / divisor, 1),
             "avg_personnel_fill_pct": round(totals["personnel"] / divisor, 1),
-            "avg_training_readiness_pct": round(
-                totals["training"] / divisor, 1
-            ),
+            "avg_training_readiness_pct": round(totals["training"] / divisor, 1),
             "subordinates": sub_data,
         }

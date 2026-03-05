@@ -20,9 +20,7 @@ class UnitStrength(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     unit_id = Column(Integer, ForeignKey("units.id"), nullable=False, index=True)
-    reported_at = Column(
-        DateTime(timezone=True), server_default=func.now(), index=True
-    )
+    reported_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
 
     # Officer strength
     authorized_officers = Column(Integer, nullable=False, default=0)

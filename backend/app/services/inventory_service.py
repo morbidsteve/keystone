@@ -58,9 +58,7 @@ async def record_transaction(
     """Record an inventory transaction and update the associated record's quantities."""
     # Fetch the inventory record
     result = await db.execute(
-        select(InventoryRecord).where(
-            InventoryRecord.id == data.inventory_record_id
-        )
+        select(InventoryRecord).where(InventoryRecord.id == data.inventory_record_id)
     )
     record = result.scalar_one_or_none()
     if record is None:
@@ -89,9 +87,7 @@ async def record_transaction(
             )
         record.quantity_on_hand = (record.quantity_on_hand or 0) - data.quantity
     elif data.transaction_type == TransactionType.LOSS:
-        record.quantity_on_hand = max(
-            0, (record.quantity_on_hand or 0) - data.quantity
-        )
+        record.quantity_on_hand = max(0, (record.quantity_on_hand or 0) - data.quantity)
 
     transaction = InventoryTransaction(
         inventory_record_id=data.inventory_record_id,
@@ -107,9 +103,7 @@ async def record_transaction(
     return transaction
 
 
-async def get_low_stock_items(
-    db: AsyncSession, unit_id: int
-) -> List[LowStockAlert]:
+async def get_low_stock_items(db: AsyncSession, unit_id: int) -> List[LowStockAlert]:
     """Return inventory items where quantity_on_hand is below reorder_point."""
     result = await db.execute(
         select(InventoryRecord).where(

@@ -540,7 +540,7 @@ _SUPPLY_CATALOG: list[dict] = [
     {
         "nsn": "6510-01-562-3325",
         "nomenclature": "BANDAGE, ELASTIC (ISRAELI)",
-        "common_name": "Israeli Bandage 6\"",
+        "common_name": 'Israeli Bandage 6"',
         "supply_class": "VIII",
         "unit_of_issue": "EA",
         "category": "Bandage",
@@ -644,7 +644,7 @@ _SUPPLY_CATALOG: list[dict] = [
     {
         "nsn": "2530-01-576-4020",
         "nomenclature": "TIRE, PNEUMATIC, JLTV",
-        "common_name": "JLTV Tire 37\"",
+        "common_name": 'JLTV Tire 37"',
         "supply_class": "IX",
         "unit_of_issue": "EA",
         "category": "Tire",

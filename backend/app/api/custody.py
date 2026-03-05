@@ -91,9 +91,7 @@ async def list_sensitive_items(
     if status is not None:
         query = query.where(SensitiveItem.status == status)
 
-    query = (
-        query.order_by(SensitiveItem.nomenclature).offset(offset).limit(limit)
-    )
+    query = query.order_by(SensitiveItem.nomenclature).offset(offset).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -105,9 +103,7 @@ async def get_sensitive_item(
     current_user: User = Depends(get_current_user),
 ):
     """Get a single sensitive item by ID."""
-    result = await db.execute(
-        select(SensitiveItem).where(SensitiveItem.id == item_id)
-    )
+    result = await db.execute(select(SensitiveItem).where(SensitiveItem.id == item_id))
     item = result.scalar_one_or_none()
     if not item:
         raise NotFoundError("SensitiveItem", item_id)
@@ -169,9 +165,7 @@ async def update_sensitive_item(
     current_user: User = Depends(get_current_user),
 ):
     """Update a sensitive item (allowlisted fields only)."""
-    result = await db.execute(
-        select(SensitiveItem).where(SensitiveItem.id == item_id)
-    )
+    result = await db.execute(select(SensitiveItem).where(SensitiveItem.id == item_id))
     item = result.scalar_one_or_none()
     if not item:
         raise NotFoundError("SensitiveItem", item_id)
@@ -200,8 +194,14 @@ async def update_sensitive_item(
             entity_type=AuditEntityType.SENSITIVE_ITEM,
             description=f"Classification changed for item {item_id}",
             entity_id=item_id,
-            old_value={"security_classification": str(old_classification) if old_classification else None},
-            new_value={"security_classification": update_data["security_classification"]},
+            old_value={
+                "security_classification": str(old_classification)
+                if old_classification
+                else None
+            },
+            new_value={
+                "security_classification": update_data["security_classification"]
+            },
         )
 
     for field, value in update_data.items():
@@ -240,9 +240,7 @@ async def update_item_status(
     current_user: User = Depends(get_current_user),
 ):
     """Update the status of a sensitive item (e.g., flag as MISSING)."""
-    result = await db.execute(
-        select(SensitiveItem).where(SensitiveItem.id == item_id)
-    )
+    result = await db.execute(select(SensitiveItem).where(SensitiveItem.id == item_id))
     item = result.scalar_one_or_none()
     if not item:
         raise NotFoundError("SensitiveItem", item_id)
@@ -440,9 +438,7 @@ async def list_inventory_events(
     if status is not None:
         query = query.where(InventoryEvent.status == status)
 
-    query = (
-        query.order_by(InventoryEvent.created_at.desc()).offset(offset).limit(limit)
-    )
+    query = query.order_by(InventoryEvent.created_at.desc()).offset(offset).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -549,15 +545,23 @@ async def verify_line_item(
 
     # Prevent silent re-verification
     if line.verified and data.verified:
-        raise BadRequestError("Line item already verified. Use update to change verification.")
+        raise BadRequestError(
+            "Line item already verified. Use update to change verification."
+        )
 
     # Update event counters (idempotent — only increment on state transitions)
     # Only increment if changing from unverified to verified
     if data.verified and not line.verified:
         event.items_verified = (event.items_verified or 0) + 1
     # Only increment discrepancy if not previously a discrepancy
-    if data.discrepancy_type is not None and data.discrepancy_type != DiscrepancyType.NONE:
-        if line.discrepancy_type is None or line.discrepancy_type == DiscrepancyType.NONE:
+    if (
+        data.discrepancy_type is not None
+        and data.discrepancy_type != DiscrepancyType.NONE
+    ):
+        if (
+            line.discrepancy_type is None
+            or line.discrepancy_type == DiscrepancyType.NONE
+        ):
             event.discrepancies_found = (event.discrepancies_found or 0) + 1
 
     # Update verification data

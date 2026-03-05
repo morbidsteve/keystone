@@ -5,7 +5,12 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.report import ReportClassification, ReportStatus, ReportType, ScheduleFrequency
+from app.models.report import (
+    ReportClassification,
+    ReportStatus,
+    ReportType,
+    ScheduleFrequency,
+)
 
 
 class ReportBase(BaseModel):

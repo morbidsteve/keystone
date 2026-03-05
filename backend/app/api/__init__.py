@@ -72,9 +72,7 @@ api_router.include_router(
     prefix="/maintenance",
     tags=["Maintenance Analytics"],
 )
-api_router.include_router(
-    simulator_router, prefix="/simulator", tags=["Simulator"]
-)
+api_router.include_router(simulator_router, prefix="/simulator", tags=["Simulator"])
 api_router.include_router(catalog_router, prefix="/catalog", tags=["Catalog"])
 api_router.include_router(readiness_router, prefix="/readiness", tags=["Readiness"])
 api_router.include_router(
@@ -86,6 +84,10 @@ api_router.include_router(
     convoy_planning_router, prefix="/transportation", tags=["Convoy Planning"]
 )
 api_router.include_router(medical_router, prefix="/medical", tags=["Medical"])
-api_router.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
+api_router.include_router(
+    notifications_router, prefix="/notifications", tags=["Notifications"]
+)
 api_router.include_router(fuel_router, prefix="/fuel", tags=["Fuel"])
-api_router.include_router(custody_router, prefix="/custody", tags=["Custody & Accountability"])
+api_router.include_router(
+    custody_router, prefix="/custody", tags=["Custody & Accountability"]
+)

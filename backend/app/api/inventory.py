@@ -114,6 +114,7 @@ async def create_inventory_transaction(
     # H-2 fix: verify unit access for the target inventory record
     from sqlalchemy import select as sa_select
     from app.models.inventory import InventoryRecord
+
     result = await db.execute(
         sa_select(InventoryRecord.unit_id).where(
             InventoryRecord.id == data.inventory_record_id
@@ -122,6 +123,7 @@ async def create_inventory_transaction(
     unit_id = result.scalar_one_or_none()
     if unit_id is None:
         from app.core.exceptions import NotFoundError
+
         raise NotFoundError("InventoryRecord", data.inventory_record_id)
     await check_unit_access(current_user, unit_id, db)
     return await record_transaction(db, current_user, data)

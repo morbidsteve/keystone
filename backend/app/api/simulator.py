@@ -45,6 +45,7 @@ def _get_scenario_module():
     """Lazily import the simulator.scenario module."""
     try:
         from simulator.scenario import get_scenario, list_scenarios
+
         return get_scenario, list_scenarios
     except ImportError as exc:
         raise HTTPException(
@@ -57,6 +58,7 @@ def _get_areas_module():
     """Lazily import the simulator areas_of_operation module."""
     try:
         from simulator.areas_of_operation import SCENARIO_AO
+
         return SCENARIO_AO
     except ImportError:
         return {}
@@ -66,6 +68,7 @@ def _get_cli_categories():
     """Return scenario category mapping from the CLI module."""
     try:
         from simulator.cli import _SCENARIO_CATEGORIES
+
         return _SCENARIO_CATEGORIES
     except ImportError:
         return []
@@ -97,15 +100,17 @@ async def list_all_scenarios():
     for s in raw:
         duration_str = s["duration"]  # e.g. "168 hours"
         hours = float(duration_str.replace(" hours", ""))
-        results.append({
-            "name": s["name"],
-            "display_name": s["display_name"],
-            "description": s["description"],
-            "duration_days": round(hours / 24, 1),
-            "phase_count": int(s["phases"]),
-            "unit_count": int(s["units"]),
-            "category": category_map.get(s["name"], "Other"),
-        })
+        results.append(
+            {
+                "name": s["name"],
+                "display_name": s["display_name"],
+                "description": s["description"],
+                "duration_days": round(hours / 24, 1),
+                "phase_count": int(s["phases"]),
+                "unit_count": int(s["units"]),
+                "category": category_map.get(s["name"], "Other"),
+            }
+        )
 
     return results
 
@@ -125,21 +130,25 @@ async def get_scenario_detail(name: str):
 
     phases = []
     for p in scenario.phases:
-        phases.append({
-            "name": p.name,
-            "offset_h": p.start_offset_hours,
-            "duration_h": p.duration_hours,
-            "tempo": p.tempo,
-            "description": p.description,
-        })
+        phases.append(
+            {
+                "name": p.name,
+                "offset_h": p.start_offset_hours,
+                "duration_h": p.duration_hours,
+                "tempo": p.tempo,
+                "description": p.description,
+            }
+        )
 
     units = []
     for u in scenario.units:
-        units.append({
-            "name": u.unit_name,
-            "type": u.echelon,
-            "callsign": u.callsigns[0] if u.callsigns else u.abbreviation,
-        })
+        units.append(
+            {
+                "name": u.unit_name,
+                "type": u.echelon,
+                "callsign": u.callsigns[0] if u.callsigns else u.abbreviation,
+            }
+        )
 
     ao_info = None
     ao_data = scenario_ao.get(name)
@@ -188,7 +197,8 @@ async def start_simulation(req: StartRequest):
     # Launch as a subprocess using python -m simulator run
     cmd = [
         sys.executable,
-        "-m", "simulator",
+        "-m",
+        "simulator",
         "run",
         f"--scenario={req.scenario_name}",
         f"--speed={req.speed}",
@@ -259,6 +269,7 @@ async def pause_simulation():
         raise HTTPException(status_code=409, detail="No simulation is running.")
 
     import signal
+
     try:
         _sim_process.send_signal(signal.SIGSTOP)
         _sim_meta["status"] = "paused"
@@ -280,6 +291,7 @@ async def resume_simulation():
         raise HTTPException(status_code=409, detail="No simulation is running.")
 
     import signal
+
     try:
         _sim_process.send_signal(signal.SIGCONT)
         _sim_meta["status"] = "running"

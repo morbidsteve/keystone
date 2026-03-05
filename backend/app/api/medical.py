@@ -81,9 +81,7 @@ async def list_casualties(
 ):
     """List casualty reports filtered by accessible units."""
     accessible = await get_accessible_units(db, current_user)
-    query = select(CasualtyReport).where(
-        CasualtyReport.unit_id.in_(accessible)
-    )
+    query = select(CasualtyReport).where(CasualtyReport.unit_id.in_(accessible))
 
     if unit_id and unit_id in accessible:
         query = query.where(CasualtyReport.unit_id == unit_id)
@@ -470,9 +468,7 @@ async def update_blood_product(
     current_user: User = Depends(get_current_user),
 ):
     """Update a blood product record."""
-    result = await db.execute(
-        select(BloodProduct).where(BloodProduct.id == product_id)
-    )
+    result = await db.execute(select(BloodProduct).where(BloodProduct.id == product_id))
     product = result.scalar_one_or_none()
     if not product:
         raise NotFoundError("BloodProduct", product_id)

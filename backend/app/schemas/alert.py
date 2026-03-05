@@ -15,8 +15,12 @@ from app.models.alert import (
 )
 
 VALID_METRICS = {
-    "supply_dos", "equipment_readiness_pct", "pm_overdue_days",
-    "personnel_strength_pct", "eas_days_remaining", "fuel_level_pct",
+    "supply_dos",
+    "equipment_readiness_pct",
+    "pm_overdue_days",
+    "personnel_strength_pct",
+    "eas_days_remaining",
+    "fuel_level_pct",
     "ammo_vs_rsr_pct",
 }
 

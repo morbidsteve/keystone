@@ -104,7 +104,9 @@ class Alert(Base):
     auto_generated = Column(Boolean, default=True)
 
     acknowledged_at = Column(DateTime(timezone=True), nullable=True)
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     unit = relationship("Unit", back_populates="alerts")
     notifications = relationship("Notification", back_populates="alert")
@@ -128,7 +130,9 @@ class AlertRule(Base):
     is_active = Column(Boolean, default=True, index=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     scope_unit = relationship("Unit", foreign_keys=[scope_unit_id])
 
@@ -162,4 +166,6 @@ class NotificationPreference(Base):
 
     user = relationship("User", backref="notification_preferences")
 
-    __table_args__ = (UniqueConstraint("user_id", "alert_type", name="uq_user_alert_type"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "alert_type", name="uq_user_alert_type"),
+    )

@@ -98,9 +98,7 @@ class EquipmentRepairOrder(Base):
     )
     ero_number = Column(String(50), unique=True, nullable=False)
     submitted_date = Column(DateTime(timezone=True), server_default=func.now())
-    status = Column(
-        SQLEnum(EROStatus), nullable=False, default=EROStatus.SUBMITTED
-    )
+    status = Column(SQLEnum(EROStatus), nullable=False, default=EROStatus.SUBMITTED)
     intermediate_maintenance_activity = Column(String(200), nullable=False)
     estimated_return_date = Column(DateTime(timezone=True), nullable=True)
     actual_return_date = Column(DateTime(timezone=True), nullable=True)

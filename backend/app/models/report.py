@@ -104,7 +104,9 @@ class Report(Base):
     # --- New columns for SITREP expansion ---
     template_id = Column(Integer, ForeignKey("report_templates.id"), nullable=True)
     format = Column(SQLEnum(ReportFormat), default=ReportFormat.TEXT)
-    classification = Column(SQLEnum(ReportClassification), default=ReportClassification.UNCLASS)
+    classification = Column(
+        SQLEnum(ReportClassification), default=ReportClassification.UNCLASS
+    )
     distribution_list = Column(JSON, nullable=True)
     auto_generated = Column(Boolean, default=False)
     schedule_id = Column(Integer, ForeignKey("report_schedules.id"), nullable=True)
@@ -113,8 +115,12 @@ class Report(Base):
     finalized_by = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # --- Relationships ---
-    template = relationship("ReportTemplate", back_populates="reports", foreign_keys=[template_id])
-    schedule = relationship("ReportSchedule", back_populates="reports", foreign_keys=[schedule_id])
+    template = relationship(
+        "ReportTemplate", back_populates="reports", foreign_keys=[template_id]
+    )
+    schedule = relationship(
+        "ReportSchedule", back_populates="reports", foreign_keys=[schedule_id]
+    )
     child_reports = relationship(
         "Report",
         backref="parent_report",
@@ -156,9 +162,13 @@ class ReportTemplate(Base):
     is_default = Column(Boolean, default=False)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
-    reports = relationship("Report", back_populates="template", foreign_keys="Report.template_id")
+    reports = relationship(
+        "Report", back_populates="template", foreign_keys="Report.template_id"
+    )
 
 
 class ReportSchedule(Base):
@@ -168,7 +178,9 @@ class ReportSchedule(Base):
     template_id = Column(Integer, ForeignKey("report_templates.id"), nullable=False)
     unit_id = Column(Integer, ForeignKey("units.id"), nullable=False, index=True)
     frequency = Column(SQLEnum(ScheduleFrequency), nullable=False)
-    time_of_day = Column(String(5), nullable=True)  # HH:MM format (avoid Time for SQLite compat)
+    time_of_day = Column(
+        String(5), nullable=True
+    )  # HH:MM format (avoid Time for SQLite compat)
     day_of_week = Column(Integer, nullable=True)
     day_of_month = Column(Integer, nullable=True)
     is_active = Column(Boolean, default=True, index=True)
@@ -177,8 +189,12 @@ class ReportSchedule(Base):
     auto_distribute = Column(Boolean, default=False)
     distribution_list = Column(JSON, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     template = relationship("ReportTemplate")
     unit = relationship("Unit")
-    reports = relationship("Report", back_populates="schedule", foreign_keys="Report.schedule_id")
+    reports = relationship(
+        "Report", back_populates="schedule", foreign_keys="Report.schedule_id"
+    )

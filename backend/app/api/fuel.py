@@ -55,25 +55,21 @@ async def list_storage_points(
 ):
     """List fuel storage points filtered by accessible units."""
     accessible = await get_accessible_units(db, current_user)
-    query = select(FuelStoragePoint).where(
-        FuelStoragePoint.unit_id.in_(accessible)
-    )
+    query = select(FuelStoragePoint).where(FuelStoragePoint.unit_id.in_(accessible))
 
     if unit_id is not None:
         if unit_id not in accessible:
             raise NotFoundError("Unit", unit_id)
         query = query.where(FuelStoragePoint.unit_id == unit_id)
 
-    query = (
-        query.order_by(FuelStoragePoint.name)
-        .offset(offset)
-        .limit(limit)
-    )
+    query = query.order_by(FuelStoragePoint.name).offset(offset).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
 
 
-@router.get("/storage-points/{storage_point_id}", response_model=FuelStoragePointResponse)
+@router.get(
+    "/storage-points/{storage_point_id}", response_model=FuelStoragePointResponse
+)
 async def get_storage_point(
     storage_point_id: int,
     db: AsyncSession = Depends(get_db),

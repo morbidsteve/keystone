@@ -34,9 +34,7 @@ class EquipmentStatus(Base):
     reported_at = Column(DateTime(timezone=True), server_default=func.now())
     source = Column(String(50), nullable=True)
     raw_data_id = Column(Integer, ForeignKey("raw_data.id"), nullable=True)
-    catalog_item_id = Column(
-        Integer, ForeignKey("equipment_catalog.id"), nullable=True
-    )
+    catalog_item_id = Column(Integer, ForeignKey("equipment_catalog.id"), nullable=True)
 
     unit = relationship("Unit", back_populates="equipment_statuses")
 

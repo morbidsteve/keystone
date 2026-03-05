@@ -106,7 +106,9 @@ class FuelStoragePoint(Base):
     # Audit
     updated_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     unit = relationship("Unit")
     transactions = relationship("FuelTransaction", back_populates="storage_point")
@@ -116,7 +118,9 @@ class FuelTransaction(Base):
     __tablename__ = "fuel_transactions"
 
     id = Column(Integer, primary_key=True, index=True)
-    storage_point_id = Column(Integer, ForeignKey("fuel_storage_points.id"), nullable=False, index=True)
+    storage_point_id = Column(
+        Integer, ForeignKey("fuel_storage_points.id"), nullable=False, index=True
+    )
     transaction_type = Column(SQLEnum(FuelTransactionType), nullable=False)
     fuel_type = Column(SQLEnum(FuelType), nullable=False)
     quantity_gallons = Column(Float, nullable=False)
@@ -142,7 +146,9 @@ class FuelConsumptionRate(Base):
     __tablename__ = "fuel_consumption_rates"
 
     id = Column(Integer, primary_key=True, index=True)
-    equipment_catalog_item_id = Column(Integer, ForeignKey("equipment_catalog.id"), nullable=False)
+    equipment_catalog_item_id = Column(
+        Integer, ForeignKey("equipment_catalog.id"), nullable=False
+    )
     fuel_type = Column(SQLEnum(FuelType), nullable=False)
 
     gallons_per_hour_idle = Column(Float, default=0.0)
@@ -155,12 +161,16 @@ class FuelConsumptionRate(Base):
 
     updated_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     equipment = relationship("EquipmentCatalogItem")
 
     __table_args__ = (
-        UniqueConstraint("equipment_catalog_item_id", "fuel_type", name="uc_equipment_fuel_rate"),
+        UniqueConstraint(
+            "equipment_catalog_item_id", "fuel_type", name="uc_equipment_fuel_rate"
+        ),
     )
 
 

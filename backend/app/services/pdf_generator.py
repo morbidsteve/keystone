@@ -145,7 +145,12 @@ def _format_dt(val: Optional[str]) -> str:
         return str(val)
 
 
-def _add_table(pdf: FPDF, headers: List[str], rows: List[List[str]], col_widths: Optional[List[float]] = None):
+def _add_table(
+    pdf: FPDF,
+    headers: List[str],
+    rows: List[List[str]],
+    col_widths: Optional[List[float]] = None,
+):
     """Draw a simple table."""
     if not rows:
         return
@@ -199,7 +204,11 @@ def _render_logstat(pdf: FPDF, content: Dict[str, Any]):
     # Key metrics
     _section_heading(pdf, "Key Metrics")
     eq = content.get("equipment_readiness", {})
-    _stat_line(pdf, "Equipment Readiness", f"{eq.get('readiness_pct', 0)}% ({eq.get('status', 'N/A')})")
+    _stat_line(
+        pdf,
+        "Equipment Readiness",
+        f"{eq.get('readiness_pct', 0)}% ({eq.get('status', 'N/A')})",
+    )
     _stat_line(pdf, "Total Possessed", eq.get("total_possessed", 0))
     _stat_line(pdf, "Mission Capable", eq.get("total_mission_capable", 0))
     _stat_line(pdf, "Open Work Orders", content.get("open_work_orders", 0))
@@ -214,12 +223,14 @@ def _render_logstat(pdf: FPDF, content: Dict[str, Any]):
         headers = ["CLASS", "NAME", "ITEMS", "STATUS"]
         rows = []
         for s in supply:
-            rows.append([
-                s.get("class", ""),
-                s.get("class_name", ""),
-                str(len(s.get("items", []))),
-                s.get("overall_status", "N/A"),
-            ])
+            rows.append(
+                [
+                    s.get("class", ""),
+                    s.get("class_name", ""),
+                    str(len(s.get("items", []))),
+                    s.get("overall_status", "N/A"),
+                ]
+            )
         _add_table(pdf, headers, rows, [20, 60, 30, 30])
 
 
@@ -234,26 +245,44 @@ def _render_readiness(pdf: FPDF, content: Dict[str, Any]):
     eq_types = content.get("equipment_types", [])
     if eq_types:
         _section_heading(pdf, "Equipment by Type")
-        headers = ["TAMCN", "NOMENCLATURE", "POSS", "MC", "NMC-M", "NMC-S", "RATE", "STATUS"]
+        headers = [
+            "TAMCN",
+            "NOMENCLATURE",
+            "POSS",
+            "MC",
+            "NMC-M",
+            "NMC-S",
+            "RATE",
+            "STATUS",
+        ]
         rows = []
         for e in eq_types:
-            rows.append([
-                e.get("tamcn", ""),
-                e.get("nomenclature", ""),
-                str(e.get("total_possessed", 0)),
-                str(e.get("mission_capable", 0)),
-                str(e.get("nmc_maintenance", "-")),
-                str(e.get("nmc_supply", "-")),
-                f"{e.get('readiness_pct', 0)}%",
-                e.get("status", ""),
-            ])
+            rows.append(
+                [
+                    e.get("tamcn", ""),
+                    e.get("nomenclature", ""),
+                    str(e.get("total_possessed", 0)),
+                    str(e.get("mission_capable", 0)),
+                    str(e.get("nmc_maintenance", "-")),
+                    str(e.get("nmc_supply", "-")),
+                    f"{e.get('readiness_pct', 0)}%",
+                    e.get("status", ""),
+                ]
+            )
         _add_table(pdf, headers, rows, [20, 40, 15, 15, 18, 18, 18, 22])
 
     deadlined = content.get("deadlined_items", [])
     if deadlined:
         _section_heading(pdf, "Deadlined Items")
         headers = ["BUMPER", "TYPE", "TAMCN"]
-        rows = [[d.get("bumper_number", ""), d.get("equipment_type", ""), d.get("tamcn", "")] for d in deadlined]
+        rows = [
+            [
+                d.get("bumper_number", ""),
+                d.get("equipment_type", ""),
+                d.get("tamcn", ""),
+            ]
+            for d in deadlined
+        ]
         _add_table(pdf, headers, rows, [40, 60, 40])
 
 
@@ -267,19 +296,30 @@ def _render_supply_status(pdf: FPDF, content: Dict[str, Any]):
     summaries = content.get("class_summaries", [])
     if summaries:
         _section_heading(pdf, "Class Breakdown")
-        headers = ["CLASS", "NAME", "ON HAND", "REQUIRED", "FILL%", "AVG DOS", "RED", "STATUS"]
+        headers = [
+            "CLASS",
+            "NAME",
+            "ON HAND",
+            "REQUIRED",
+            "FILL%",
+            "AVG DOS",
+            "RED",
+            "STATUS",
+        ]
         rows = []
         for c in summaries:
-            rows.append([
-                c.get("supply_class", ""),
-                c.get("class_name", ""),
-                str(c.get("total_on_hand", 0)),
-                str(c.get("total_required", 0)),
-                f"{c.get('fill_rate_pct', 0)}%",
-                str(c.get("avg_dos", 0)),
-                str(c.get("red_items", 0)),
-                c.get("status", ""),
-            ])
+            rows.append(
+                [
+                    c.get("supply_class", ""),
+                    c.get("class_name", ""),
+                    str(c.get("total_on_hand", 0)),
+                    str(c.get("total_required", 0)),
+                    f"{c.get('fill_rate_pct', 0)}%",
+                    str(c.get("avg_dos", 0)),
+                    str(c.get("red_items", 0)),
+                    c.get("status", ""),
+                ]
+            )
         _add_table(pdf, headers, rows, [18, 40, 22, 22, 18, 20, 14, 22])
 
         # Critical items
@@ -290,13 +330,15 @@ def _render_supply_status(pdf: FPDF, content: Dict[str, Any]):
             rows = []
             for c in summaries:
                 for ci in c.get("critical_items", []):
-                    rows.append([
-                        c.get("supply_class", ""),
-                        ci.get("item", ""),
-                        str(ci.get("on_hand", 0)),
-                        str(ci.get("required", 0)),
-                        str(ci.get("dos", 0)),
-                    ])
+                    rows.append(
+                        [
+                            c.get("supply_class", ""),
+                            ci.get("item", ""),
+                            str(ci.get("on_hand", 0)),
+                            str(ci.get("required", 0)),
+                            str(ci.get("dos", 0)),
+                        ]
+                    )
             _add_table(pdf, headers, rows, [20, 60, 25, 25, 25])
 
 
@@ -304,7 +346,11 @@ def _render_equipment_status(pdf: FPDF, content: Dict[str, Any]):
     fr = content.get("fleet_readiness", {})
     if fr:
         _section_heading(pdf, "Fleet Readiness")
-        _stat_line(pdf, "Readiness", f"{fr.get('readiness_pct', 0)}% ({fr.get('status', 'N/A')})")
+        _stat_line(
+            pdf,
+            "Readiness",
+            f"{fr.get('readiness_pct', 0)}% ({fr.get('status', 'N/A')})",
+        )
         _stat_line(pdf, "Total Possessed", fr.get("total_possessed", 0))
         _stat_line(pdf, "Mission Capable", fr.get("total_mission_capable", 0))
         _stat_line(pdf, "NMC Maintenance", fr.get("total_nmc_maintenance", 0))
@@ -313,24 +359,38 @@ def _render_equipment_status(pdf: FPDF, content: Dict[str, Any]):
     fleet = content.get("fleet_by_type", [])
     if fleet:
         _section_heading(pdf, "Fleet by Type")
-        headers = ["TAMCN", "NOMENCLATURE", "POSS", "MC", "NMC-M", "NMC-S", "RATE", "STATUS"]
+        headers = [
+            "TAMCN",
+            "NOMENCLATURE",
+            "POSS",
+            "MC",
+            "NMC-M",
+            "NMC-S",
+            "RATE",
+            "STATUS",
+        ]
         rows = []
         for e in fleet:
-            rows.append([
-                e.get("tamcn", ""),
-                e.get("nomenclature", ""),
-                str(e.get("total_possessed", 0)),
-                str(e.get("mission_capable", 0)),
-                str(e.get("nmc_maintenance", "-")),
-                str(e.get("nmc_supply", "-")),
-                f"{e.get('readiness_pct', 0)}%",
-                e.get("status", ""),
-            ])
+            rows.append(
+                [
+                    e.get("tamcn", ""),
+                    e.get("nomenclature", ""),
+                    str(e.get("total_possessed", 0)),
+                    str(e.get("mission_capable", 0)),
+                    str(e.get("nmc_maintenance", "-")),
+                    str(e.get("nmc_supply", "-")),
+                    f"{e.get('readiness_pct', 0)}%",
+                    e.get("status", ""),
+                ]
+            )
         _add_table(pdf, headers, rows, [20, 40, 15, 15, 18, 18, 18, 22])
 
     breakdown = content.get("individual_status_breakdown", {})
     if breakdown:
-        _section_heading(pdf, f"Individual Equipment Status ({content.get('individual_total', 0)} total)")
+        _section_heading(
+            pdf,
+            f"Individual Equipment Status ({content.get('individual_total', 0)} total)",
+        )
         for status, count in breakdown.items():
             _stat_line(pdf, _status_str(status), count)
 
@@ -354,7 +414,9 @@ def _render_equipment_status(pdf: FPDF, content: Dict[str, Any]):
 def _render_maintenance_summary(pdf: FPDF, content: Dict[str, Any]):
     _section_heading(pdf, "Maintenance Overview")
     _stat_line(pdf, "Total Work Orders", content.get("total_work_orders", 0))
-    _stat_line(pdf, "Avg Completion Time", f"{content.get('avg_completion_time_hours', 0)}h")
+    _stat_line(
+        pdf, "Avg Completion Time", f"{content.get('avg_completion_time_hours', 0)}h"
+    )
     _stat_line(pdf, "Total Labor Hours", content.get("total_labor_hours", 0))
     _stat_line(pdf, "Parts on Order", content.get("parts_on_order", 0))
 
@@ -368,7 +430,10 @@ def _render_maintenance_summary(pdf: FPDF, content: Dict[str, Any]):
     if top_issues:
         _section_heading(pdf, "Top Maintenance Issues")
         headers = ["EQUIPMENT TYPE", "OPEN WOs"]
-        rows = [[i.get("equipment_type", ""), str(i.get("open_work_orders", 0))] for i in top_issues]
+        rows = [
+            [i.get("equipment_type", ""), str(i.get("open_work_orders", 0))]
+            for i in top_issues
+        ]
         _add_table(pdf, headers, rows, [100, 40])
 
 
@@ -376,7 +441,9 @@ def _render_movement_summary(pdf: FPDF, content: Dict[str, Any]):
     _section_heading(pdf, "Movement Overview")
     _stat_line(pdf, "Total Movements", content.get("total_movements", 0))
     _stat_line(pdf, "Vehicles in Transit", content.get("total_vehicles_in_transit", 0))
-    _stat_line(pdf, "Personnel in Transit", content.get("total_personnel_in_transit", 0))
+    _stat_line(
+        pdf, "Personnel in Transit", content.get("total_personnel_in_transit", 0)
+    )
 
     sc = content.get("status_counts", {})
     if sc:
@@ -405,7 +472,9 @@ def _render_personnel_strength(pdf: FPDF, content: Dict[str, Any]):
     _section_heading(pdf, "Personnel Overview")
     _stat_line(pdf, "Total Assigned", content.get("total_assigned", 0))
     _stat_line(pdf, "Total Active", content.get("total_active", 0))
-    inactive = (content.get("total_assigned", 0) or 0) - (content.get("total_active", 0) or 0)
+    inactive = (content.get("total_assigned", 0) or 0) - (
+        content.get("total_active", 0) or 0
+    )
     _stat_line(pdf, "Inactive", inactive)
 
     sb = content.get("status_breakdown", {})
@@ -418,26 +487,40 @@ def _render_personnel_strength(pdf: FPDF, content: Dict[str, Any]):
     if rb:
         _section_heading(pdf, "By Rank")
         headers = ["RANK", "COUNT"]
-        rows = sorted([[r, str(c)] for r, c in rb.items()], key=lambda x: int(x[1]), reverse=True)
+        rows = sorted(
+            [[r, str(c)] for r, c in rb.items()], key=lambda x: int(x[1]), reverse=True
+        )
         _add_table(pdf, headers, rows, [80, 40])
 
     mb = content.get("mos_breakdown", {})
     if mb:
         _section_heading(pdf, "By MOS")
         headers = ["MOS", "COUNT"]
-        rows = sorted([[m, str(c)] for m, c in mb.items()], key=lambda x: int(x[1]), reverse=True)
+        rows = sorted(
+            [[m, str(c)] for m, c in mb.items()], key=lambda x: int(x[1]), reverse=True
+        )
         _add_table(pdf, headers, rows, [80, 40])
 
 
 def _render_generic(pdf: FPDF, content: Dict[str, Any]):
     """Fallback renderer: dump all key-value pairs."""
     _section_heading(pdf, "Report Data")
-    skip_keys = {"report_type", "unit", "generated_at", "dtg", "as_of", "period_start", "period_end"}
+    skip_keys = {
+        "report_type",
+        "unit",
+        "generated_at",
+        "dtg",
+        "as_of",
+        "period_start",
+        "period_end",
+    }
     for key, val in content.items():
         if key in skip_keys:
             continue
         if isinstance(val, (dict, list)):
-            _stat_line(pdf, key.replace("_", " ").title(), json.dumps(val, default=str)[:200])
+            _stat_line(
+                pdf, key.replace("_", " ").title(), json.dumps(val, default=str)[:200]
+            )
         else:
             _stat_line(pdf, key.replace("_", " ").title(), str(val))
 

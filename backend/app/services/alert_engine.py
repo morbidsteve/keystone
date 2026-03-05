@@ -51,7 +51,9 @@ class AlertEngine:
         for rule in rules:
             # Check cooldown period
             if rule.last_fired_at:
-                cooldown_end = rule.last_fired_at + timedelta(minutes=rule.cooldown_minutes)
+                cooldown_end = rule.last_fired_at + timedelta(
+                    minutes=rule.cooldown_minutes
+                )
                 if datetime.now(timezone.utc) < cooldown_end:
                     logger.debug("Rule %s is in cooldown, skipping", rule.name)
                     continue
@@ -81,7 +83,9 @@ class AlertEngine:
             elif metric in ("personnel_strength", "strength_pct", "fill_pct"):
                 alerts = await AlertEngine.check_personnel_thresholds(db, units, rule)
             else:
-                logger.warning("Unknown metric '%s' for rule %s", rule.metric, rule.name)
+                logger.warning(
+                    "Unknown metric '%s' for rule %s", rule.metric, rule.name
+                )
                 continue
 
             if alerts:
@@ -242,15 +246,15 @@ class AlertEngine:
         unit_map = {u.id: u for u in units}
 
         result = await db.execute(
-            select(SupplyStatusRecord).where(
-                SupplyStatusRecord.unit_id.in_(unit_ids)
-            )
+            select(SupplyStatusRecord).where(SupplyStatusRecord.unit_id.in_(unit_ids))
         )
         records = result.scalars().all()
 
         for record in records:
             actual = record.dos
-            if actual is not None and AlertEngine._compare_value(actual, rule.operator, rule.threshold_value):
+            if actual is not None and AlertEngine._compare_value(
+                actual, rule.operator, rule.threshold_value
+            ):
                 unit = unit_map.get(record.unit_id)
                 if unit:
                     alert = await AlertEngine.fire_alert(
@@ -277,16 +281,16 @@ class AlertEngine:
         unit_map = {u.id: u for u in units}
 
         result = await db.execute(
-            select(EquipmentStatus).where(
-                EquipmentStatus.unit_id.in_(unit_ids)
-            )
+            select(EquipmentStatus).where(EquipmentStatus.unit_id.in_(unit_ids))
         )
         records = result.scalars().all()
 
         for record in records:
             # Use the pre-computed readiness_pct field
             actual = record.readiness_pct
-            if actual is not None and AlertEngine._compare_value(actual, rule.operator, rule.threshold_value):
+            if actual is not None and AlertEngine._compare_value(
+                actual, rule.operator, rule.threshold_value
+            ):
                 unit = unit_map.get(record.unit_id)
                 if unit:
                     alert = await AlertEngine.fire_alert(
@@ -337,7 +341,9 @@ class AlertEngine:
 
             strength_pct = (active / total) * 100.0
 
-            if AlertEngine._compare_value(strength_pct, rule.operator, rule.threshold_value):
+            if AlertEngine._compare_value(
+                strength_pct, rule.operator, rule.threshold_value
+            ):
                 unit = unit_map.get(uid)
                 if unit:
                     alert = await AlertEngine.fire_alert(

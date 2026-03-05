@@ -484,9 +484,7 @@ async def lift_deadline(
 # --- PM Schedule routes ---
 
 
-@router.get(
-    "/pm-schedule", response_model=List[PreventiveMaintenanceScheduleResponse]
-)
+@router.get("/pm-schedule", response_model=List[PreventiveMaintenanceScheduleResponse])
 async def list_pm_schedules(
     unit_id: Optional[int] = Query(None),
     overdue_only: bool = Query(False),

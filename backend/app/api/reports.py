@@ -151,7 +151,9 @@ async def generate_report(
 # ---------------------------------------------------------------------------
 
 
-@router.post("/generate/sitrep/{unit_id}", response_model=ReportDetailResponse, status_code=201)
+@router.post(
+    "/generate/sitrep/{unit_id}", response_model=ReportDetailResponse, status_code=201
+)
 async def generate_sitrep(
     unit_id: int,
     period_hours: int = Query(24, ge=1, le=720),
@@ -170,7 +172,9 @@ async def generate_sitrep(
     return report
 
 
-@router.post("/generate/perstat/{unit_id}", response_model=ReportDetailResponse, status_code=201)
+@router.post(
+    "/generate/perstat/{unit_id}", response_model=ReportDetailResponse, status_code=201
+)
 async def generate_perstat(
     unit_id: int,
     db: AsyncSession = Depends(get_db),
@@ -185,7 +189,9 @@ async def generate_perstat(
     return report
 
 
-@router.post("/generate/spotrep/{unit_id}", response_model=ReportDetailResponse, status_code=201)
+@router.post(
+    "/generate/spotrep/{unit_id}", response_model=ReportDetailResponse, status_code=201
+)
 async def generate_spotrep(
     unit_id: int,
     body: SpotrepCreate,
@@ -207,7 +213,9 @@ async def generate_spotrep(
     return report
 
 
-@router.post("/generate/rollup/{unit_id}", response_model=ReportDetailResponse, status_code=201)
+@router.post(
+    "/generate/rollup/{unit_id}", response_model=ReportDetailResponse, status_code=201
+)
 async def generate_rollup(
     unit_id: int,
     report_type: ReportType = Query(ReportType.SITREP),
@@ -223,7 +231,9 @@ async def generate_rollup(
     return report
 
 
-@router.post("/generate/from-template", response_model=ReportDetailResponse, status_code=201)
+@router.post(
+    "/generate/from-template", response_model=ReportDetailResponse, status_code=201
+)
 async def generate_from_template(
     template_id: int = Query(...),
     unit_id: int = Query(...),
@@ -371,7 +381,10 @@ async def distribute_report(
         raise NotFoundError("Report", report_id)
 
     await check_unit_access(current_user, report.unit_id, db)
-    return {"message": f"Report {report_id} distribution initiated", "report_id": report_id}
+    return {
+        "message": f"Report {report_id} distribution initiated",
+        "report_id": report_id,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -474,7 +487,9 @@ async def update_export_destination(
 ):
     """Update an export destination. Admin only."""
     result = await db.execute(
-        select(ReportExportDestination).where(ReportExportDestination.id == destination_id)
+        select(ReportExportDestination).where(
+            ReportExportDestination.id == destination_id
+        )
     )
     dest = result.scalar_one_or_none()
     if not dest:
@@ -497,7 +512,9 @@ async def delete_export_destination(
 ):
     """Delete an export destination. Admin only."""
     result = await db.execute(
-        select(ReportExportDestination).where(ReportExportDestination.id == destination_id)
+        select(ReportExportDestination).where(
+            ReportExportDestination.id == destination_id
+        )
     )
     dest = result.scalar_one_or_none()
     if not dest:
@@ -553,7 +570,9 @@ async def export_report_to_api(
         "report_id": report.id,
         "title": report.title,
         "report_type": report.report_type.value if report.report_type else None,
-        "generated_at": report.generated_at.isoformat() if report.generated_at else None,
+        "generated_at": report.generated_at.isoformat()
+        if report.generated_at
+        else None,
         "status": report.status.value if report.status else None,
         "content": report_content,
     }
@@ -683,7 +702,9 @@ async def update_template(
 
     # Only the template creator or an ADMIN can modify templates
     if template.created_by != current_user.id and current_user.role != Role.ADMIN:
-        raise BadRequestError("Only the template creator or an ADMIN can modify this template")
+        raise BadRequestError(
+            "Only the template creator or an ADMIN can modify this template"
+        )
 
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
@@ -710,7 +731,9 @@ async def delete_template(
 
     # Only the template creator or an ADMIN can delete templates
     if template.created_by != current_user.id and current_user.role != Role.ADMIN:
-        raise BadRequestError("Only the template creator or an ADMIN can delete this template")
+        raise BadRequestError(
+            "Only the template creator or an ADMIN can delete this template"
+        )
 
     await db.delete(template)
     await db.flush()

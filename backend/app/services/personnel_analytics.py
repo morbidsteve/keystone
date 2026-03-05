@@ -18,9 +18,7 @@ class PersonnelAnalyticsService:
     """Compute personnel analytics: strength, MOS fill, qualifications, readiness."""
 
     @staticmethod
-    async def get_unit_strength(
-        db: AsyncSession, unit_id: int
-    ) -> Dict[str, Any]:
+    async def get_unit_strength(db: AsyncSession, unit_id: int) -> Dict[str, Any]:
         """Counts by status/duty_status, fill rate vs billets."""
         # Get all personnel assigned to the unit
         result = await db.execute(
@@ -73,9 +71,7 @@ class PersonnelAnalyticsService:
         }
 
     @staticmethod
-    async def get_mos_fill(
-        db: AsyncSession, unit_id: int
-    ) -> Dict[str, Any]:
+    async def get_mos_fill(db: AsyncSession, unit_id: int) -> Dict[str, Any]:
         """T/O required vs assigned by MOS."""
         # Get billet MOS requirements
         billet_result = await db.execute(
@@ -94,10 +90,12 @@ class PersonnelAnalyticsService:
 
         # Get assigned personnel MOS counts
         personnel_result = await db.execute(
-            select(Personnel.mos, func.count(Personnel.id)).where(
+            select(Personnel.mos, func.count(Personnel.id))
+            .where(
                 Personnel.unit_id == unit_id,
                 Personnel.status != PersonnelStatus.INACTIVE,
-            ).group_by(Personnel.mos)
+            )
+            .group_by(Personnel.mos)
         )
         assigned_by_mos: Dict[str, int] = {}
         for row in personnel_result.all():
@@ -112,14 +110,18 @@ class PersonnelAnalyticsService:
             assigned = assigned_by_mos.get(mos, 0)
             filled = mos_filled.get(mos, 0)
             shortfall = max(required - assigned, 0)
-            mos_fill.append({
-                "mos": mos,
-                "required": required,
-                "assigned": assigned,
-                "filled_billets": filled,
-                "shortfall": shortfall,
-                "fill_pct": round(assigned / required * 100, 1) if required > 0 else 0.0,
-            })
+            mos_fill.append(
+                {
+                    "mos": mos,
+                    "required": required,
+                    "assigned": assigned,
+                    "filled_billets": filled,
+                    "shortfall": shortfall,
+                    "fill_pct": round(assigned / required * 100, 1)
+                    if required > 0
+                    else 0.0,
+                }
+            )
 
         return {
             "unit_id": unit_id,
@@ -153,20 +155,20 @@ class PersonnelAnalyticsService:
         one_year_ago = today - timedelta(days=365)
 
         rifle_qualified = sum(
-            1 for p in personnel_list
-            if p.rifle_qual and p.rifle_qual.value != "UNQUAL"
+            1 for p in personnel_list if p.rifle_qual and p.rifle_qual.value != "UNQUAL"
         )
         pft_current = sum(
-            1 for p in personnel_list
+            1
+            for p in personnel_list
             if p.pft_score is not None and p.pft_date and p.pft_date >= one_year_ago
         )
         cft_current = sum(
-            1 for p in personnel_list
+            1
+            for p in personnel_list
             if p.cft_score is not None and p.cft_date and p.cft_date >= one_year_ago
         )
         swim_qualified = sum(
-            1 for p in personnel_list
-            if p.swim_qual and p.swim_qual.value != "UNQUAL"
+            1 for p in personnel_list if p.swim_qual and p.swim_qual.value != "UNQUAL"
         )
 
         return {
@@ -187,26 +189,30 @@ class PersonnelAnalyticsService:
         cutoff = today + timedelta(days=days)
 
         result = await db.execute(
-            select(Personnel).where(
+            select(Personnel)
+            .where(
                 Personnel.unit_id == unit_id,
                 Personnel.status != PersonnelStatus.INACTIVE,
                 Personnel.eaos.isnot(None),
                 Personnel.eaos <= cutoff,
                 Personnel.eaos >= today,
-            ).order_by(Personnel.eaos)
+            )
+            .order_by(Personnel.eaos)
         )
         personnel_list = result.scalars().all()
 
         losses: List[Dict[str, Any]] = []
         for p in personnel_list:
-            losses.append({
-                "personnel_id": p.id,
-                "name": f"{p.last_name}, {p.first_name}",
-                "rank": p.rank,
-                "mos": p.mos,
-                "eaos": p.eaos.isoformat() if p.eaos else None,
-                "days_remaining": (p.eaos - today).days if p.eaos else None,
-            })
+            losses.append(
+                {
+                    "personnel_id": p.id,
+                    "name": f"{p.last_name}, {p.first_name}",
+                    "rank": p.rank,
+                    "mos": p.mos,
+                    "eaos": p.eaos.isoformat() if p.eaos else None,
+                    "days_remaining": (p.eaos - today).days if p.eaos else None,
+                }
+            )
 
         return {
             "unit_id": unit_id,
@@ -230,13 +236,15 @@ class PersonnelAnalyticsService:
 
         vacancies: List[Dict[str, Any]] = []
         for b in vacancies_list:
-            vacancies.append({
-                "billet_id": b.id,
-                "billet_id_code": b.billet_id_code,
-                "billet_title": b.billet_title,
-                "mos_required": b.mos_required,
-                "rank_required": b.rank_required,
-            })
+            vacancies.append(
+                {
+                    "billet_id": b.id,
+                    "billet_id_code": b.billet_id_code,
+                    "billet_title": b.billet_title,
+                    "mos_required": b.mos_required,
+                    "rank_required": b.rank_required,
+                }
+            )
 
         return {
             "unit_id": unit_id,

@@ -38,9 +38,7 @@ async def readiness_dashboard(
     """Get readiness dashboard for all accessible units."""
     accessible = await get_accessible_units(db, current_user)
 
-    result = await db.execute(
-        select(Unit).where(Unit.id.in_(accessible))
-    )
+    result = await db.execute(select(Unit).where(Unit.id.in_(accessible)))
     units = result.scalars().all()
 
     entries: List[UnitDashboardEntry] = []

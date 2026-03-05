@@ -117,7 +117,9 @@ class SitrepGeneratorService:
         )
         alerts = alert_result.scalars().all()
 
-        pers_readiness = round(active_pers / total_pers * 100, 1) if total_pers > 0 else 0.0
+        pers_readiness = (
+            round(active_pers / total_pers * 100, 1) if total_pers > 0 else 0.0
+        )
 
         content = (
             f"SITUATION REPORT (SITREP)\n"
@@ -329,7 +331,9 @@ class SitrepGeneratorService:
         max_cls = ReportClassification.UNCLASS
         for cr in child_reports:
             cr_cls = cr.classification or ReportClassification.UNCLASS
-            if _CLASSIFICATION_ORDER.get(cr_cls, 0) > _CLASSIFICATION_ORDER.get(max_cls, 0):
+            if _CLASSIFICATION_ORDER.get(cr_cls, 0) > _CLASSIFICATION_ORDER.get(
+                max_cls, 0
+            ):
                 max_cls = cr_cls
 
         content = (
@@ -397,7 +401,11 @@ class SitrepGeneratorService:
         jinja_tpl = env.from_string(template.template_body)
 
         render_data = {
-            "unit": {"name": unit.name, "abbreviation": unit.abbreviation, "uic": unit.uic},
+            "unit": {
+                "name": unit.name,
+                "abbreviation": unit.abbreviation,
+                "uic": unit.uic,
+            },
             "dtg": now.strftime("%d%H%MZ%b%y").upper(),
             "generated_at": now.isoformat(),
             **(data or {}),

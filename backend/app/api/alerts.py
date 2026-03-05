@@ -212,9 +212,7 @@ async def escalate_alert(
     # target must be an ADMIN or belong to a unit accessible to the current user.
     if target_user.role != Role.ADMIN:
         if target_user.unit_id not in accessible:
-            raise BadRequestError(
-                "Target user is not within your accessible units"
-            )
+            raise BadRequestError("Target user is not within your accessible units")
 
     alert.escalated = True
     alert.escalated_to = body.escalate_to_user_id
@@ -233,9 +231,7 @@ async def list_alert_rules(
     current_user: User = Depends(require_role([Role.ADMIN])),
 ):
     """List all alert rules (admin only)."""
-    result = await db.execute(
-        select(AlertRule).order_by(AlertRule.created_at.desc())
-    )
+    result = await db.execute(select(AlertRule).order_by(AlertRule.created_at.desc()))
     rules = result.scalars().all()
     return [AlertRuleResponse.model_validate(r) for r in rules]
 
@@ -281,9 +277,17 @@ async def update_alert_rule(
         raise NotFoundError("AlertRule", rule_id)
 
     RULE_UPDATABLE_FIELDS = {
-        "name", "description", "alert_type", "severity", "metric",
-        "operator", "threshold_value", "is_scope_all", "scope_unit_id",
-        "cooldown_minutes", "is_active",
+        "name",
+        "description",
+        "alert_type",
+        "severity",
+        "metric",
+        "operator",
+        "threshold_value",
+        "is_scope_all",
+        "scope_unit_id",
+        "cooldown_minutes",
+        "is_active",
     }
     update_data = body.model_dump(exclude_unset=True)
     for field, value in update_data.items():

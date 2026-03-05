@@ -97,9 +97,7 @@ async def list_requisitions(
     if date_to:
         query = query.where(Requisition.created_at <= date_to)
 
-    query = (
-        query.order_by(Requisition.created_at.desc()).offset(offset).limit(limit)
-    )
+    query = query.order_by(Requisition.created_at.desc()).offset(offset).limit(limit)
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -156,7 +154,10 @@ async def submit_requisition(
     """Submit a DRAFT requisition for approval."""
     req = await _verify_req_access(db, current_user, requisition_id)
     # H-3: only creator or S4/ADMIN can submit
-    if current_user.id != req.requested_by_id and current_user.role not in [Role.ADMIN, Role.S4]:
+    if current_user.id != req.requested_by_id and current_user.role not in [
+        Role.ADMIN,
+        Role.S4,
+    ]:
         raise NotFoundError("Requisition", requisition_id)
     return await svc_submit(db, current_user, requisition_id, data)
 
@@ -257,7 +258,10 @@ async def cancel_requisition(
     """Cancel a requisition (from DRAFT, SUBMITTED, or APPROVED)."""
     req = await _verify_req_access(db, current_user, requisition_id)
     # H-3: only creator or S4/ADMIN can cancel
-    if current_user.id != req.requested_by_id and current_user.role not in [Role.ADMIN, Role.S4]:
+    if current_user.id != req.requested_by_id and current_user.role not in [
+        Role.ADMIN,
+        Role.S4,
+    ]:
         raise NotFoundError("Requisition", requisition_id)
     return await svc_cancel(db, current_user, requisition_id, data.reason)
 

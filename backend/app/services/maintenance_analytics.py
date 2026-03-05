@@ -33,9 +33,7 @@ class MaintenanceAnalytics:
         Uses the Equipment model's status field (EquipmentAssetStatus.DEADLINED).
         """
         total_result = await self.db.execute(
-            select(func.count(Equipment.id)).where(
-                Equipment.unit_id == self.unit_id
-            )
+            select(func.count(Equipment.id)).where(Equipment.unit_id == self.unit_id)
         )
         total_count = total_result.scalar() or 0
 
@@ -133,14 +131,14 @@ class MaintenanceAnalytics:
         filled_result = await self.db.execute(
             select(func.count(MaintenancePart.id)).where(
                 MaintenancePart.work_order_id.in_(wo_ids),
-                MaintenancePart.status.in_(
-                    [PartStatus.RECEIVED, PartStatus.INSTALLED]
-                ),
+                MaintenancePart.status.in_([PartStatus.RECEIVED, PartStatus.INSTALLED]),
             )
         )
         filled_parts = filled_result.scalar() or 0
 
-        fill_rate = round(filled_parts / total_parts * 100, 1) if total_parts > 0 else 0.0
+        fill_rate = (
+            round(filled_parts / total_parts * 100, 1) if total_parts > 0 else 0.0
+        )
 
         return {
             "total_parts_requested": total_parts,

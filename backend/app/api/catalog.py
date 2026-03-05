@@ -39,7 +39,9 @@ def _escape_like(value: str) -> str:
 
 @router.get("/equipment", response_model=list[EquipmentCatalogResponse])
 async def search_equipment_catalog(
-    q: Optional[str] = Query(None, description="Search TAMCN, nomenclature, or common name"),
+    q: Optional[str] = Query(
+        None, description="Search TAMCN, nomenclature, or common name"
+    ),
     category: Optional[str] = Query(None, description="Filter by category"),
     subcategory: Optional[str] = Query(None, description="Filter by subcategory"),
     limit: int = Query(50, le=500),
@@ -48,9 +50,7 @@ async def search_equipment_catalog(
     current_user: User = Depends(get_current_user),
 ):
     """Search the equipment catalog by TAMCN, nomenclature, or common name."""
-    query = select(EquipmentCatalogItem).where(
-        EquipmentCatalogItem.is_active.is_(True)
-    )
+    query = select(EquipmentCatalogItem).where(EquipmentCatalogItem.is_active.is_(True))
 
     filters = []
     if q:
@@ -62,14 +62,20 @@ async def search_equipment_catalog(
             | EquipmentCatalogItem.nsn.ilike(like_q)
         )
     if category:
-        filters.append(EquipmentCatalogItem.category.ilike(f"%{_escape_like(category)}%"))
+        filters.append(
+            EquipmentCatalogItem.category.ilike(f"%{_escape_like(category)}%")
+        )
     if subcategory:
-        filters.append(EquipmentCatalogItem.subcategory.ilike(f"%{_escape_like(subcategory)}%"))
+        filters.append(
+            EquipmentCatalogItem.subcategory.ilike(f"%{_escape_like(subcategory)}%")
+        )
 
     if filters:
         query = query.where(and_(*filters))
 
-    query = query.order_by(EquipmentCatalogItem.category, EquipmentCatalogItem.nomenclature)
+    query = query.order_by(
+        EquipmentCatalogItem.category, EquipmentCatalogItem.nomenclature
+    )
     query = query.offset(offset).limit(limit)
 
     result = await db.execute(query)
@@ -110,7 +116,9 @@ async def equipment_categories(
 
 @router.get("/supply", response_model=list[SupplyCatalogResponse])
 async def search_supply_catalog(
-    q: Optional[str] = Query(None, description="Search NSN, DODIC, LIN, or nomenclature"),
+    q: Optional[str] = Query(
+        None, description="Search NSN, DODIC, LIN, or nomenclature"
+    ),
     supply_class: Optional[str] = Query(None, description="Filter by supply class"),
     category: Optional[str] = Query(None, description="Filter by category"),
     limit: int = Query(50, le=500),
@@ -139,7 +147,9 @@ async def search_supply_catalog(
     if filters:
         query = query.where(and_(*filters))
 
-    query = query.order_by(SupplyCatalogItem.supply_class, SupplyCatalogItem.nomenclature)
+    query = query.order_by(
+        SupplyCatalogItem.supply_class, SupplyCatalogItem.nomenclature
+    )
     query = query.offset(offset).limit(limit)
 
     result = await db.execute(query)
@@ -162,9 +172,7 @@ async def supply_classes(
         .order_by(SupplyCatalogItem.supply_class)
     )
     rows = result.all()
-    return [
-        SupplyClassInfo(supply_class=row[0], item_count=row[1]) for row in rows
-    ]
+    return [SupplyClassInfo(supply_class=row[0], item_count=row[1]) for row in rows]
 
 
 # ---------------------------------------------------------------------------
@@ -174,7 +182,9 @@ async def supply_classes(
 
 @router.get("/ammunition", response_model=list[AmmunitionCatalogResponse])
 async def search_ammunition_catalog(
-    q: Optional[str] = Query(None, description="Search DODIC, caliber, or nomenclature"),
+    q: Optional[str] = Query(
+        None, description="Search DODIC, caliber, or nomenclature"
+    ),
     caliber: Optional[str] = Query(None, description="Filter by caliber"),
     weapon_system: Optional[str] = Query(None, description="Filter by weapon system"),
     limit: int = Query(50, le=500),
@@ -200,9 +210,15 @@ async def search_ammunition_catalog(
             | AmmunitionCatalogItem.common_name.ilike(like_q)
         )
     if caliber:
-        filters.append(AmmunitionCatalogItem.caliber.ilike(f"%{_escape_like(caliber)}%"))
+        filters.append(
+            AmmunitionCatalogItem.caliber.ilike(f"%{_escape_like(caliber)}%")
+        )
     if weapon_system:
-        filters.append(AmmunitionCatalogItem.weapon_system.ilike(f"%{_escape_like(weapon_system)}%"))
+        filters.append(
+            AmmunitionCatalogItem.weapon_system.ilike(
+                f"%{_escape_like(weapon_system)}%"
+            )
+        )
 
     if filters:
         query = query.where(and_(*filters))

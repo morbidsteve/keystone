@@ -91,13 +91,12 @@ async def create_billet(
         )
     )
     if existing.scalar_one_or_none():
-        raise ConflictError(
-            f"Billet with code '{data.billet_id_code}' already exists"
-        )
+        raise ConflictError(f"Billet with code '{data.billet_id_code}' already exists")
 
     # M-4 fix: validate filled_by_id belongs to an accessible unit
     if data.filled_by_id is not None:
         from app.models.personnel import Personnel
+
         person_result = await db.execute(
             select(Personnel.unit_id).where(Personnel.id == data.filled_by_id)
         )
@@ -225,7 +224,10 @@ async def create_manning_snapshot(
     snapshot_data = data.model_dump()
 
     # Auto-calculate fill rate if not provided
-    if snapshot_data.get("fill_rate_pct") is None and snapshot_data["authorized_total"] > 0:
+    if (
+        snapshot_data.get("fill_rate_pct") is None
+        and snapshot_data["authorized_total"] > 0
+    ):
         snapshot_data["fill_rate_pct"] = round(
             snapshot_data["assigned_total"] / snapshot_data["authorized_total"] * 100, 1
         )

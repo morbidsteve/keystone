@@ -175,9 +175,7 @@ async def seed_billets(db: AsyncSession) -> int:
     Idempotent — checks billet_id_code before inserting each record.
     """
     # Find the first BN-echelon unit
-    result = await db.execute(
-        select(Unit).where(Unit.echelon == "BN").limit(1)
-    )
+    result = await db.execute(select(Unit).where(Unit.echelon == "BN").limit(1))
     unit = result.scalar_one_or_none()
     if not unit:
         logger.warning("No battalion-echelon unit found for billet seeding.")
