@@ -2,9 +2,13 @@
 // ConvoyPlanDetail — Full detail view for a selected convoy plan
 // =============================================================================
 
+import { useState } from 'react';
 import { ArrowLeft, Clock, MapPin, Radio, ShieldAlert, Cross } from 'lucide-react';
-import type { ConvoyPlan, ConvoyPlanStatus, RiskAssessmentLevel } from '@/lib/types';
+import type { ConvoyPlan, ConvoyPlanStatus, RiskAssessmentLevel, ManifestEntry, LocationInventoryItem } from '@/lib/types';
 import Card from '@/components/ui/Card';
+import OriginInventoryTable from '@/components/transportation/OriginInventoryTable';
+import ManifestSummary from '@/components/transportation/ManifestSummary';
+import AddToManifestModal from '@/components/transportation/AddToManifestModal';
 
 // ---------------------------------------------------------------------------
 // Badge helpers (duplicated for isolation; could be shared in a util)
@@ -71,6 +75,32 @@ export default function ConvoyPlanDetail({
   onExecutePlan,
   onCancelPlan,
 }: ConvoyPlanDetailProps) {
+  const [manifest, setManifest] = useState<ManifestEntry[]>([]);
+  const [selectedItem, setSelectedItem] = useState<LocationInventoryItem | null>(null);
+  const [editingEntry, setEditingEntry] = useState<ManifestEntry | null>(null);
+
+  const handleAddToManifest = (entry: ManifestEntry) => {
+    setManifest(prev => {
+      const existing = prev.findIndex(e => e.item_id === entry.item_id);
+      if (existing >= 0) {
+        const updated = [...prev];
+        updated[existing] = entry;
+        return updated;
+      }
+      return [...prev, entry];
+    });
+    setSelectedItem(null);
+    setEditingEntry(null);
+  };
+
+  const handleRemoveFromManifest = (itemId: string) => {
+    setManifest(prev => prev.filter(e => e.item_id !== itemId));
+  };
+
+  const handleEditManifestEntry = (entry: ManifestEntry) => {
+    setEditingEntry(entry);
+  };
+
   const formatDate = (iso: string | null) => {
     if (!iso) return '--';
     const d = new Date(iso);
@@ -376,6 +406,40 @@ export default function ConvoyPlanDetail({
           <div style={fieldValueStyle}>{plan.medevac_plan ?? 'No MEDEVAC plan specified'}</div>
         </Card>
       </div>
+
+      {/* Origin Inventory */}
+      <Card title="ORIGIN INVENTORY">
+        <OriginInventoryTable
+          location={plan.route_primary ?? 'default'}
+          onItemClick={(item) => setSelectedItem(item)}
+        />
+      </Card>
+
+      {/* Cargo Manifest */}
+      <Card title="CARGO MANIFEST">
+        <ManifestSummary
+          entries={manifest}
+          onEdit={handleEditManifestEntry}
+          onRemove={handleRemoveFromManifest}
+        />
+      </Card>
+
+      {/* Add to Manifest Modal */}
+      <AddToManifestModal
+        isOpen={selectedItem != null || editingEntry != null}
+        item={selectedItem ? selectedItem : editingEntry ? {
+          item_id: editingEntry.item_id,
+          item_type: 'equipment',
+          nomenclature: editingEntry.nomenclature,
+          category: editingEntry.category,
+          available_qty: 999,
+          weight_lbs: editingEntry.weight_lbs ? editingEntry.weight_lbs / editingEntry.quantity : undefined,
+          status: 'SERVICEABLE',
+        } : null}
+        existingEntry={editingEntry}
+        onClose={() => { setSelectedItem(null); setEditingEntry(null); }}
+        onAdd={handleAddToManifest}
+      />
     </div>
   );
 }
