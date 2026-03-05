@@ -83,7 +83,7 @@ class PersonnelAnalyticsService:
         mos_required: Dict[str, int] = {}
         mos_filled: Dict[str, int] = {}
         for b in billets:
-            mos = b.mos_required or "UNSPECIFIED"
+            mos = str(b.mos_required or "UNSPECIFIED")
             mos_required[mos] = mos_required.get(mos, 0) + 1
             if b.is_filled:
                 mos_filled[mos] = mos_filled.get(mos, 0) + 1

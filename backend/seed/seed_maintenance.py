@@ -28,7 +28,7 @@ async def seed_maintenance(db: AsyncSession) -> int:
     Idempotent — skips if any work orders already exist.
     """
     existing = await db.execute(select(func.count(MaintenanceWorkOrder.id)))
-    if existing.scalar() > 0:
+    if (existing.scalar() or 0) > 0:
         return 0
 
     now = datetime.now(timezone.utc)
@@ -192,7 +192,9 @@ async def seed_maintenance(db: AsyncSession) -> int:
     await db.flush()
 
     # Build a lookup by work order number for parts and labor references
-    wo_map = {wo.work_order_number: wo for wo in work_orders}
+    wo_map: dict[str, MaintenanceWorkOrder] = {
+        str(wo.work_order_number): wo for wo in work_orders
+    }
 
     # --- Parts -----------------------------------------------------------
     parts = [

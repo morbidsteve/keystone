@@ -181,12 +181,14 @@ def _nlp_extract(text: str) -> Optional[Dict]:
         nlp = spacy.load("en_core_web_sm")
         doc = nlp(text)
 
-        entities = {}
+        entities: dict[str, str | list[str]] = {}
         for ent in doc.ents:
             if ent.label_ in ("QUANTITY", "CARDINAL"):
                 entities["quantity"] = ent.text
             elif ent.label_ in ("ORG", "GPE"):
-                entities.setdefault("locations", []).append(ent.text)
+                locs = entities.setdefault("locations", [])
+                assert isinstance(locs, list)
+                locs.append(ent.text)
             elif ent.label_ == "DATE":
                 entities["date"] = ent.text
 

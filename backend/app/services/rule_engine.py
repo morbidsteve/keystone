@@ -161,7 +161,7 @@ class RuleEngine:
             records = result.scalars().all()
             if not records:
                 return None
-            return sum(r.dos for r in records) / len(records)
+            return float(sum(r.dos for r in records) / len(records))
 
         elif metric in ("READINESS_PCT", "equipment_readiness_pct"):
             from app.models.equipment import EquipmentStatus
@@ -200,10 +200,12 @@ class RuleEngine:
 
         elif metric in ("FUEL_LEVEL", "fuel_level_pct"):
             try:
-                from app.models.fuel import FuelStorage
+                from app.models.fuel import FuelStoragePoint
 
                 result = await self.db.execute(
-                    select(FuelStorage).where(FuelStorage.unit_id == unit.id)
+                    select(FuelStoragePoint).where(
+                        FuelStoragePoint.unit_id == unit.id
+                    )
                 )
                 storage = result.scalar_one_or_none()
                 if not storage or not storage.capacity_gallons:
