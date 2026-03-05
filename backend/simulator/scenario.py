@@ -11,6 +11,7 @@ import logging
 import random
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+import typing
 from typing import TYPE_CHECKING
 
 from simulator.events.event_types import EventType
@@ -1335,7 +1336,7 @@ def _build_trident_spear() -> Scenario:
 # Scenario catalog
 # ---------------------------------------------------------------------------
 
-_SCENARIO_CATALOG: dict[str, callable] = {
+_SCENARIO_CATALOG: dict[str, typing.Callable[[], Scenario]] = {
     "steel_guardian": _build_steel_guardian,
     "pacific_fury": _build_pacific_fury,
     "iron_forge": _build_iron_forge,
