@@ -4,6 +4,7 @@
 
 import apiClient from './client';
 import { isDemoMode } from './mockClient';
+import { DEMO_UNITS } from './mockData';
 import type {
   ReadinessSnapshot,
   UnitStrengthReport,
@@ -46,41 +47,113 @@ interface UnitReadinessConfig {
   limitingFactor: string | null;
 }
 
-const UNIT_CONFIGS: UnitReadinessConfig[] = [
-  {
-    unitId: 1, unitName: 'I MEF',
-    cRating: 'C-2', sRating: 'S-2', rRating: 'R-2', pRating: 'P-2', tRating: 'T-2',
-    overallPct: 82, equipmentPct: 84, supplyPct: 78, personnelPct: 85, trainingPct: 80,
-    limitingFactor: 'Supply Class IX shortfalls across subordinate units',
-  },
-  {
-    unitId: 2, unitName: '1st MarDiv',
-    cRating: 'C-2', sRating: 'S-2', rRating: 'R-2', pRating: 'P-2', tRating: 'T-2',
-    overallPct: 79, equipmentPct: 81, supplyPct: 74, personnelPct: 82, trainingPct: 78,
-    limitingFactor: 'Equipment readiness below threshold for 2/1',
-  },
-  {
-    unitId: 3, unitName: '1st Marines',
-    cRating: 'C-2', sRating: 'S-2', rRating: 'R-2', pRating: 'P-2', tRating: 'T-2',
-    overallPct: 81, equipmentPct: 83, supplyPct: 76, personnelPct: 84, trainingPct: 79,
-    limitingFactor: 'CL IX repair parts awaiting FEDLOG',
-  },
-  {
-    unitId: 4, unitName: '1/1',
-    cRating: 'C-1', sRating: 'S-1', rRating: 'R-1', pRating: 'P-1', tRating: 'T-1',
-    overallPct: 91, equipmentPct: 93, supplyPct: 89, personnelPct: 94, trainingPct: 90,
-    limitingFactor: null,
-  },
-  {
-    unitId: 5, unitName: '2/1',
-    cRating: 'C-3', sRating: 'S-3', rRating: 'R-2', pRating: 'P-2', tRating: 'T-3',
-    overallPct: 68, equipmentPct: 72, supplyPct: 60, personnelPct: 75, trainingPct: 64,
-    limitingFactor: 'CL III bulk fuel and CL IX parts critically low; 4x HMMWV deadlined',
-  },
+// ---------------------------------------------------------------------------
+// Build parent→children map and unit lookup from DEMO_UNITS (module-level)
+// ---------------------------------------------------------------------------
+
+const childMap = new Map<string, typeof DEMO_UNITS>();
+const unitById = new Map<string, (typeof DEMO_UNITS)[0]>();
+for (const u of DEMO_UNITS) {
+  unitById.set(u.id, u);
+  if (u.parentId) {
+    const siblings = childMap.get(u.parentId) ?? [];
+    siblings.push(u);
+    childMap.set(u.parentId, siblings);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Dynamic config generation (seeded random, deterministic per unitId)
+// ---------------------------------------------------------------------------
+
+function ratingFromPct(pct: number, prefix: string): string {
+  if (pct >= 90) return `${prefix}-1`;
+  if (pct >= 75) return `${prefix}-2`;
+  if (pct >= 60) return `${prefix}-3`;
+  return `${prefix}-4`;
+}
+
+const limitingFactors = [
+  'CL IX repair parts awaiting FEDLOG',
+  'Supply Class III bulk fuel below threshold',
+  'Equipment readiness below DRRS standard',
+  'Personnel fill rate below 80%',
+  'CL V ammunition stocks critically low',
+  'Multiple vehicles deadlined awaiting parts',
+  'Training qualification currency expired for key billets',
 ];
 
+function generateGenericConfig(unitId: number, unitName: string, echelon: string): UnitReadinessConfig {
+  // Echelon-based readiness ranges (higher echelons trend toward average, lower can vary more)
+  const ranges: Record<string, [number, number]> = {
+    'MEF':       [75, 88],
+    'DIVISION':  [72, 86],
+    'REGIMENT':  [70, 88],
+    'BATTALION': [60, 95],
+    'COMPANY':   [55, 98],
+    'PLATOON':   [50, 100],
+  };
+  const [lo, hi] = ranges[echelon] ?? [60, 95];
+
+  const pct = (fieldOffset: number) => {
+    // Deterministic pseudo-random per unitId + field
+    let s = unitId * 1337 + fieldOffset * 7919;
+    s = (s * 16807 + 12345) % 2147483647;
+    const r = (s % 1000) / 1000;
+    return Math.round((lo + r * (hi - lo)) * 10) / 10;
+  };
+
+  const overallPct = pct(0);
+  const equipmentPct = pct(1);
+  const supplyPct = pct(2);
+  const personnelPct = pct(3);
+  const trainingPct = pct(4);
+
+  let limitingFactor: string | null = null;
+  if (overallPct < 80) {
+    const idx = unitId % limitingFactors.length;
+    limitingFactor = limitingFactors[idx];
+  }
+
+  return {
+    unitId,
+    unitName,
+    cRating: ratingFromPct(overallPct, 'C'),
+    sRating: ratingFromPct(supplyPct, 'S'),
+    rRating: ratingFromPct(equipmentPct, 'R'),
+    pRating: ratingFromPct(personnelPct, 'P'),
+    tRating: ratingFromPct(trainingPct, 'T'),
+    overallPct,
+    equipmentPct,
+    supplyPct,
+    personnelPct,
+    trainingPct,
+    limitingFactor,
+  };
+}
+
+function generateConfigForUnit(unitId: number): UnitReadinessConfig {
+  const unit = unitById.get(String(unitId));
+  if (!unit) {
+    // Unknown unit — return a generic config
+    return generateGenericConfig(unitId, `Unit ${unitId}`, 'BATTALION');
+  }
+  return generateGenericConfig(unitId, unit.abbreviation || unit.name, unit.echelon);
+}
+
+// ---------------------------------------------------------------------------
+// Config cache — ensures consistent data across calls
+// ---------------------------------------------------------------------------
+
+const configCache = new Map<number, UnitReadinessConfig>();
+
 function getConfig(unitId: number): UnitReadinessConfig {
-  return UNIT_CONFIGS.find((c) => c.unitId === unitId) ?? UNIT_CONFIGS[0];
+  let cfg = configCache.get(unitId);
+  if (!cfg) {
+    cfg = generateConfigForUnit(unitId);
+    configCache.set(unitId, cfg);
+  }
+  return cfg;
 }
 
 // ---------------------------------------------------------------------------
@@ -104,13 +177,6 @@ function generateTrend(cfg: UnitReadinessConfig, days: number): ReadinessSnapsho
     const supply = clamp(cfg.supplyPct + jitter());
     const personnel = clamp(cfg.personnelPct + jitter());
     const training = clamp(cfg.trainingPct + jitter());
-
-    function ratingFromPct(pct: number, prefix: string): string {
-      if (pct >= 90) return `${prefix}-1`;
-      if (pct >= 75) return `${prefix}-2`;
-      if (pct >= 60) return `${prefix}-3`;
-      return `${prefix}-4`;
-    }
 
     snapshots.push({
       id: cfg.unitId * 10000 + i,
@@ -142,10 +208,20 @@ function generateTrend(cfg: UnitReadinessConfig, days: number): ReadinessSnapsho
 
 function generateStrength(unitId: number): UnitStrengthReport {
   const cfg = getConfig(unitId);
-  // Realistic USMC battalion-level numbers
-  const isLargeUnit = unitId <= 2;
-  const authOfficers = isLargeUnit ? 180 : 42;
-  const authEnlisted = isLargeUnit ? 3200 : 820;
+  const unit = unitById.get(String(unitId));
+  const echelon = unit?.echelon ?? 'BATTALION';
+
+  // Scale authorized strength by echelon
+  const strengthByEchelon: Record<string, { officers: number; enlisted: number }> = {
+    'MEF':       { officers: 450, enlisted: 8500 },
+    'DIVISION':  { officers: 180, enlisted: 3200 },
+    'REGIMENT':  { officers: 85, enlisted: 1800 },
+    'BATTALION': { officers: 42, enlisted: 820 },
+    'COMPANY':   { officers: 6, enlisted: 180 },
+    'PLATOON':   { officers: 2, enlisted: 43 },
+  };
+
+  const { officers: authOfficers, enlisted: authEnlisted } = strengthByEchelon[echelon] ?? strengthByEchelon['BATTALION'];
   const fillRatio = cfg.personnelPct / 100;
 
   const assignedOfficers = Math.round(authOfficers * (fillRatio + 0.02));
@@ -180,7 +256,7 @@ function generateStrength(unitId: number): UnitStrengthReport {
     tad: Math.round(totalAssigned * 0.03),
     leave: Math.round(totalAssigned * 0.05),
     medical: Math.round(totalAssigned * 0.02),
-    ua: unitId === 5 ? 2 : 0,
+    ua: cfg.overallPct < 70 ? 2 : 0,
     totalAuthorized: totalAuth,
     totalAssigned,
     fillPct: Math.round((totalAssigned / totalAuth) * 1000) / 10,
@@ -234,38 +310,24 @@ export async function getReadinessRollup(
 ): Promise<ReadinessRollup> {
   if (isDemoMode) {
     await mockDelay();
-    // Unit 1 (I MEF) rolls up 2,3,4,5
-    // Unit 2 (1st MarDiv) rolls up 3,4,5
-    // Unit 3 (1st Marines) rolls up 4,5
-    // Otherwise just return self
-    // Direct children only (USMC hierarchy)
-    // Unit 1 (I MEF) -> Unit 2 (1st MarDiv), Unit 3 (1st Marines)
-    // Unit 2 (1st MarDiv) -> Unit 3 (1st Marines)
-    // Unit 3 (1st Marines) -> Unit 4 (1/1), Unit 5 (2/1)
-    const DIRECT_CHILDREN: Record<number, number[]> = {
-      1: [2, 3],
-      2: [3],
-      3: [4, 5],
-    };
 
-    const ECHELON_LABELS: Record<number, string> = {
-      1: 'MEF',
-      2: 'DIV',
-      3: 'REGT',
-      4: 'BN',
-      5: 'BN',
-    };
+    // Dynamic child lookup from DEMO_UNITS hierarchy
+    const children = childMap.get(String(unitId)) ?? [];
+    const childConfigs = children
+      .map((c) => {
+        const numId = parseInt(c.id, 10);
+        if (isNaN(numId)) return null;
+        return { config: getConfig(numId), echelon: c.echelon };
+      })
+      .filter(Boolean) as { config: UnitReadinessConfig; echelon: string }[];
 
-    const childIds = DIRECT_CHILDREN[unitId] ?? [];
-    const childConfigs = childIds.map((id) => getConfig(id));
-
-    const subs = childConfigs.map((c) => ({
+    const subs = childConfigs.map(({ config: c, echelon }) => ({
       unitId: c.unitId,
       unitName: c.unitName,
       cRating: c.cRating,
       overallReadinessPct: c.overallPct,
       limitingFactor: c.limitingFactor,
-      echelonLabel: ECHELON_LABELS[c.unitId] ?? undefined,
+      echelonLabel: echelon,
     }));
 
     const avg = (arr: number[]) =>
@@ -274,10 +336,10 @@ export async function getReadinessRollup(
     return {
       unitId,
       numSubordinates: subs.length,
-      avgOverallReadinessPct: avg(childConfigs.map((c) => c.overallPct)),
-      avgEquipmentReadinessPct: avg(childConfigs.map((c) => c.equipmentPct)),
-      avgSupplyReadinessPct: avg(childConfigs.map((c) => c.supplyPct)),
-      avgPersonnelFillPct: avg(childConfigs.map((c) => c.personnelPct)),
+      avgOverallReadinessPct: avg(childConfigs.map(({ config: c }) => c.overallPct)),
+      avgEquipmentReadinessPct: avg(childConfigs.map(({ config: c }) => c.equipmentPct)),
+      avgSupplyReadinessPct: avg(childConfigs.map(({ config: c }) => c.supplyPct)),
+      avgPersonnelFillPct: avg(childConfigs.map(({ config: c }) => c.personnelPct)),
       subordinates: subs,
     };
   }
@@ -298,15 +360,23 @@ export async function getReadinessDashboard(): Promise<{
 }> {
   if (isDemoMode) {
     await mockDelay();
-    return {
-      units: UNIT_CONFIGS.map((c) => ({
-        unitId: c.unitId,
-        unitName: c.unitName,
-        cRating: c.cRating,
-        overallReadinessPct: c.overallPct,
-        limitingFactor: c.limitingFactor,
-      })),
-    };
+    const topUnits = DEMO_UNITS
+      .filter((u) => {
+        const numId = parseInt(u.id, 10);
+        return !isNaN(numId);
+      })
+      .map((u) => {
+        const numId = parseInt(u.id, 10);
+        const cfg = getConfig(numId);
+        return {
+          unitId: cfg.unitId,
+          unitName: cfg.unitName,
+          cRating: cfg.cRating,
+          overallReadinessPct: cfg.overallPct,
+          limitingFactor: cfg.limitingFactor,
+        };
+      });
+    return { units: topUnits };
   }
   const response = await apiClient.get<{
     data: {
@@ -436,8 +506,19 @@ export async function getPersonnelDetail(unitId: number): Promise<PersonnelDetai
   if (isDemoMode) {
     await mockDelay();
     const cfg = getConfig(unitId);
-    const isLargeUnit = unitId <= 2;
-    const authTotal = isLargeUnit ? 3380 : 862;
+    const unit = unitById.get(String(unitId));
+    const echelon = unit?.echelon ?? 'BATTALION';
+
+    const strengthByEchelon: Record<string, number> = {
+      'MEF':       8950,
+      'DIVISION':  3380,
+      'REGIMENT':  1885,
+      'BATTALION': 862,
+      'COMPANY':   186,
+      'PLATOON':   45,
+    };
+
+    const authTotal = strengthByEchelon[echelon] ?? 862;
     const fillRatio = cfg.personnelPct / 100;
     const assignedTotal = Math.round(authTotal * fillRatio);
     return {
