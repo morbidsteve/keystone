@@ -3,8 +3,9 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Users } from 'lucide-react';
 import type { PersonnelRecord, RifleQual, DutyStatusType } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface AlphaRosterTableProps {
   personnel: PersonnelRecord[];
@@ -198,6 +199,13 @@ export default function AlphaRosterTable({ personnel }: AlphaRosterTableProps) {
       </div>
 
       {/* Table */}
+      {filtered.length === 0 ? (
+        <EmptyState
+          icon={<Users size={32} />}
+          title="NO PERSONNEL"
+          message="Personnel assigned to this unit will appear here"
+        />
+      ) : (
       <div style={{ overflowX: 'auto' }}>
         <table
           style={{
@@ -294,6 +302,7 @@ export default function AlphaRosterTable({ personnel }: AlphaRosterTableProps) {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }

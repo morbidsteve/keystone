@@ -2,8 +2,9 @@
 // CustodyChainTimeline — Vertical timeline of custody transfers
 // =============================================================================
 
-import { ArrowRight, User } from 'lucide-react';
+import { ArrowRight, GitBranch, User } from 'lucide-react';
 import type { CustodyTransfer } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 
 interface CustodyChainTimelineProps {
   transfers: CustodyTransfer[];
@@ -71,17 +72,11 @@ export default function CustodyChainTimeline({
 
       {/* Timeline entries */}
       {transfers.length === 0 ? (
-        <div
-          style={{
-            padding: 24,
-            textAlign: 'center',
-            color: 'var(--color-text-muted)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
-        >
-          No transfer history
-        </div>
+        <EmptyState
+          icon={<GitBranch size={32} />}
+          title="NO TRANSFER HISTORY"
+          message="Custody transfer records will appear here"
+        />
       ) : (
         transfers.map((transfer, idx) => {
           const color = TRANSFER_TYPE_COLORS[transfer.transfer_type] ?? '#6b7280';

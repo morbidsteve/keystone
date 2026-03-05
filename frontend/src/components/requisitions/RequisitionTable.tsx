@@ -3,8 +3,9 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronRight, ClipboardList } from 'lucide-react';
 import type { Requisition, RequisitionStatus, RequisitionPriority } from '@/lib/types';
+import EmptyState from '@/components/ui/EmptyState';
 import RequisitionDetail from './RequisitionDetail';
 
 // ---------------------------------------------------------------------------
@@ -119,17 +120,11 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
 
   if (requisitions.length === 0) {
     return (
-      <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
-      >
-        No requisitions found
-      </div>
+      <EmptyState
+        icon={<ClipboardList size={32} />}
+        title="NO REQUISITIONS"
+        message="Requisitions will appear here"
+      />
     );
   }
 

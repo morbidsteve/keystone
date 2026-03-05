@@ -3,8 +3,9 @@
 // =============================================================================
 
 import { useQuery } from '@tanstack/react-query';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Package } from 'lucide-react';
 import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
 import { getInventory, getLowStockAlerts } from '@/api/requisitions';
 
 // ---------------------------------------------------------------------------
@@ -228,17 +229,11 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
             </table>
           </div>
         ) : (
-          <div
-            style={{
-              padding: 40,
-              textAlign: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            No inventory records found
-          </div>
+          <EmptyState
+            icon={<Package size={32} />}
+            title="NO INVENTORY RECORDS"
+            message="Inventory records will appear here"
+          />
         )}
       </Card>
     </div>

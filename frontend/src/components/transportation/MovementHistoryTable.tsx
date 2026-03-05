@@ -3,9 +3,10 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { Check, X } from 'lucide-react';
+import { Check, Truck, X } from 'lucide-react';
 import type { MovementHistoryRecord } from '@/lib/types';
 import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -177,17 +178,11 @@ export default function MovementHistoryTable({
         }
       >
         {filteredRecords.length === 0 ? (
-          <div
-            style={{
-              padding: 40,
-              textAlign: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            No movement records found
-          </div>
+          <EmptyState
+            icon={<Truck size={32} />}
+            title="NO MOVEMENT RECORDS"
+            message="Completed movement records will appear here"
+          />
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
