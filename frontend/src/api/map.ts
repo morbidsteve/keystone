@@ -70,6 +70,40 @@ export interface MapConvoy {
   heading: number;
 }
 
+export interface ConvoyVehicleDetail {
+  vehicle_id: string;
+  vehicle_type: 'HMMWV' | 'MTVR' | 'JLTV' | 'LVSR' | 'LAV' | 'ACV' | 'AAV' | string;
+  tamcn: string;
+  bumper_number: string;
+  call_sign: string;
+  status: 'FMC' | 'NMC' | 'BROKEN_DOWN' | 'MOVING' | 'STOPPED';
+  position: { lat: number; lon: number };
+  heading: number;
+  speed_kph: number;
+  last_updated: string;
+  crew: {
+    personnel_id: string;
+    rank: string;
+    name: string;
+    role: 'DRIVER' | 'TC' | 'GUNNER' | 'PAX';
+  }[];
+  cargo: {
+    item_id: string;
+    item_name: string;
+    supply_class: string;
+    quantity: number;
+    uom: string;
+    total_weight_kg: number;
+  }[];
+}
+
+export interface ConvoyMovementDetail extends MapConvoy {
+  vehicles: ConvoyVehicleDetail[];
+  total_personnel: number;
+  total_cargo_weight_kg: number;
+  progress_percent: number;
+}
+
 export interface MapSupplyPoint {
   id: string;
   name: string;
@@ -485,6 +519,133 @@ function persistMapData(): void {
 
 loadPersistedMapData();
 
+// ── Convoy Vehicle Mock Data ─────────────────────────────────────────
+
+function generateMockConvoyMovements(): ConvoyMovementDetail[] {
+  const baseConvoys = mockMapData.convoys;
+  return baseConvoys
+    .filter((c) => c.status === 'EN_ROUTE' || c.status === 'DELAYED')
+    .map((convoy) => {
+      if (convoy.convoy_id === 'cv1') {
+        return {
+          ...convoy,
+          progress_percent: 50,
+          total_personnel: 7,
+          total_cargo_weight_kg: 11900,
+          vehicles: [
+            {
+              vehicle_id: 'veh-cv1-001',
+              vehicle_type: 'HMMWV' as const,
+              tamcn: 'D1100',
+              bumper_number: 'A1-01',
+              call_sign: 'ALPHA-1',
+              status: 'MOVING' as const,
+              position: { lat: convoy.current_position!.lat, lon: convoy.current_position!.lon },
+              heading: convoy.heading,
+              speed_kph: convoy.speed_kph,
+              last_updated: new Date().toISOString(),
+              crew: [
+                { personnel_id: 'p1', rank: 'Cpl', name: 'Garcia, L.', role: 'DRIVER' as const },
+                { personnel_id: 'p2', rank: 'Sgt', name: 'Martinez, R.', role: 'TC' as const },
+              ],
+              cargo: [
+                { item_id: 'i1', item_name: 'MRE Case', supply_class: 'I', quantity: 50, uom: 'CASE', total_weight_kg: 1100 },
+              ],
+            },
+            {
+              vehicle_id: 'veh-cv1-002',
+              vehicle_type: 'MTVR' as const,
+              tamcn: 'D0054',
+              bumper_number: 'A1-02',
+              call_sign: 'ALPHA-2',
+              status: 'MOVING' as const,
+              position: { lat: convoy.current_position!.lat - 0.002, lon: convoy.current_position!.lon + 0.001 },
+              heading: convoy.heading - 1,
+              speed_kph: convoy.speed_kph - 1,
+              last_updated: new Date().toISOString(),
+              crew: [
+                { personnel_id: 'p3', rank: 'LCpl', name: 'Smith, J.', role: 'DRIVER' as const },
+                { personnel_id: 'p4', rank: 'PFC', name: 'Johnson, M.', role: 'TC' as const },
+              ],
+              cargo: [
+                { item_id: 'i2', item_name: 'Diesel Fuel', supply_class: 'III', quantity: 5000, uom: 'GAL', total_weight_kg: 4200 },
+                { item_id: 'i3', item_name: 'MRE Case', supply_class: 'I', quantity: 200, uom: 'CASE', total_weight_kg: 4400 },
+              ],
+            },
+            {
+              vehicle_id: 'veh-cv1-003',
+              vehicle_type: 'JLTV' as const,
+              tamcn: 'D1195',
+              bumper_number: 'A1-03',
+              call_sign: 'ALPHA-3',
+              status: 'MOVING' as const,
+              position: { lat: convoy.current_position!.lat - 0.004, lon: convoy.current_position!.lon + 0.002 },
+              heading: convoy.heading + 1,
+              speed_kph: convoy.speed_kph + 1,
+              last_updated: new Date().toISOString(),
+              crew: [
+                { personnel_id: 'p5', rank: 'LCpl', name: 'Brown, K.', role: 'DRIVER' as const },
+                { personnel_id: 'p6', rank: 'PFC', name: 'Davis, R.', role: 'GUNNER' as const },
+                { personnel_id: 'p7', rank: 'PFC', name: 'Miller, A.', role: 'PAX' as const },
+              ],
+              cargo: [
+                { item_id: 'i4', item_name: 'Medical Supplies', supply_class: 'VIII', quantity: 10, uom: 'KIT', total_weight_kg: 2200 },
+              ],
+            },
+          ],
+        };
+      }
+      // cv2 - EMERGENCY RESUPPLY
+      return {
+        ...convoy,
+        progress_percent: 33,
+        total_personnel: 4,
+        total_cargo_weight_kg: 15000,
+        vehicles: [
+          {
+            vehicle_id: 'veh-cv2-001',
+            vehicle_type: 'MTVR' as const,
+            tamcn: 'D0054',
+            bumper_number: 'B2-01',
+            call_sign: 'BRAVO-1',
+            status: 'MOVING' as const,
+            position: { lat: convoy.current_position!.lat, lon: convoy.current_position!.lon },
+            heading: convoy.heading,
+            speed_kph: convoy.speed_kph,
+            last_updated: new Date().toISOString(),
+            crew: [
+              { personnel_id: 'p8', rank: 'Cpl', name: 'Wilson, T.', role: 'DRIVER' as const },
+              { personnel_id: 'p9', rank: 'Sgt', name: 'Taylor, D.', role: 'TC' as const },
+            ],
+            cargo: [
+              { item_id: 'i5', item_name: '5.56mm Ball', supply_class: 'V', quantity: 100, uom: 'CASE', total_weight_kg: 7500 },
+            ],
+          },
+          {
+            vehicle_id: 'veh-cv2-002',
+            vehicle_type: 'MTVR' as const,
+            tamcn: 'D0054',
+            bumper_number: 'B2-02',
+            call_sign: 'BRAVO-2',
+            status: 'MOVING' as const,
+            position: { lat: convoy.current_position!.lat - 0.002, lon: convoy.current_position!.lon + 0.001 },
+            heading: convoy.heading + 2,
+            speed_kph: convoy.speed_kph - 2,
+            last_updated: new Date().toISOString(),
+            crew: [
+              { personnel_id: 'p10', rank: 'LCpl', name: 'Anderson, P.', role: 'DRIVER' as const },
+              { personnel_id: 'p11', rank: 'PFC', name: 'Thomas, S.', role: 'TC' as const },
+            ],
+            cargo: [
+              { item_id: 'i6', item_name: '7.62mm Linked', supply_class: 'V', quantity: 50, uom: 'CASE', total_weight_kg: 5000 },
+              { item_id: 'i7', item_name: 'Grenades, Frag', supply_class: 'V', quantity: 20, uom: 'CASE', total_weight_kg: 2500 },
+            ],
+          },
+        ],
+      };
+    });
+}
+
 // ── API Functions ──────────────────────────────────────────────────────
 
 export async function getMapData(): Promise<MapData> {
@@ -520,6 +681,16 @@ export async function getMapRoutes(): Promise<MapRoute[]> {
 export async function getMapAlerts(): Promise<MapAlert[]> {
   if (isDemoMode) return mockMapData.alerts;
   const response = await apiClient.get<ApiResponse<MapAlert[]>>('/map/alerts');
+  return response.data.data;
+}
+
+// ── Active Convoy Movements (with vehicle detail) ────────────────────
+
+export async function getActiveConvoyMovements(): Promise<ConvoyMovementDetail[]> {
+  if (isDemoMode) return generateMockConvoyMovements();
+  const response = await apiClient.get<ApiResponse<ConvoyMovementDetail[]>>(
+    '/transportation/active-convoys/map',
+  );
   return response.data.data;
 }
 

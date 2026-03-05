@@ -12,6 +12,11 @@ import PMScheduleTable from '@/components/maintenance/PMScheduleTable';
 import MaintenanceTrendChart from '@/components/maintenance/MaintenanceTrendChart';
 import TopFaultsChart from '@/components/maintenance/TopFaultsChart';
 import MaintenanceQueue from '@/components/equipment/MaintenanceQueue';
+import PersonnelWorkloadChart from '@/components/maintenance/PersonnelWorkloadChart';
+import EquipmentReliabilityChart from '@/components/maintenance/EquipmentReliabilityChart';
+import EquipmentHealthTable from '@/components/maintenance/EquipmentHealthTable';
+import PredictiveAlertsPanel from '@/components/maintenance/PredictiveAlertsPanel';
+import PartsForecastTable from '@/components/maintenance/PartsForecastTable';
 import {
   getMaintenanceDeadlines,
   liftDeadline,
@@ -28,6 +33,7 @@ const TABS = [
   { key: 'pm-schedule' as const, label: 'PM SCHEDULE' },
   { key: 'deadlines' as const, label: 'DEADLINES' },
   { key: 'analytics' as const, label: 'ANALYTICS' },
+  { key: 'predictive' as const, label: 'PREDICTIVE' },
 ];
 
 type TabKey = (typeof TABS)[number]['key'];
@@ -249,26 +255,51 @@ export default function MaintenanceDashboardPage() {
       )}
 
       {activeTab === 'analytics' && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-            gap: 16,
-          }}
-        >
-          <Card title="WEEKLY MAINTENANCE TREND">
-            {analytics ? (
-              <MaintenanceTrendChart data={analytics.weeklyTrend} height={300} />
-            ) : (
-              renderLoadingSkeleton()
-            )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+              gap: 16,
+            }}
+          >
+            <Card title="WEEKLY MAINTENANCE TREND">
+              {analytics ? (
+                <MaintenanceTrendChart data={analytics.weeklyTrend} height={300} />
+              ) : (
+                renderLoadingSkeleton()
+              )}
+            </Card>
+            <Card title="TOP EQUIPMENT FAULTS">
+              {analytics ? (
+                <TopFaultsChart faults={analytics.topFaults} height={300} />
+              ) : (
+                renderLoadingSkeleton()
+              )}
+            </Card>
+          </div>
+          <Card title="PERSONNEL WORKLOAD (30D)">
+            <PersonnelWorkloadChart unitId={numericUnitId} days={30} />
           </Card>
-          <Card title="TOP EQUIPMENT FAULTS">
-            {analytics ? (
-              <TopFaultsChart faults={analytics.topFaults} height={300} />
-            ) : (
-              renderLoadingSkeleton()
-            )}
+          <Card title="EQUIPMENT RELIABILITY (90D)">
+            <EquipmentReliabilityChart unitId={numericUnitId} days={90} />
+          </Card>
+          <Card title="EQUIPMENT HEALTH &amp; MTBF">
+            <EquipmentHealthTable unitId={numericUnitId} />
+          </Card>
+        </div>
+      )}
+
+      {activeTab === 'predictive' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Card title="PREDICTIVE MAINTENANCE ALERTS">
+            <PredictiveAlertsPanel unitId={numericUnitId} />
+          </Card>
+          <Card title="EQUIPMENT HEALTH SCORES">
+            <EquipmentHealthTable unitId={numericUnitId} />
+          </Card>
+          <Card title="PARTS DEMAND FORECAST (90D)">
+            <PartsForecastTable unitId={numericUnitId} days={90} />
           </Card>
         </div>
       )}

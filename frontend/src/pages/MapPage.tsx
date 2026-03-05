@@ -2,7 +2,7 @@ import { useMapData } from '@/hooks/useMapData';
 import LogisticsMap from '@/components/map/LogisticsMap';
 
 export default function MapPage() {
-  const { units, convoys, supplyPoints, routes, alerts, isLoading, isError, refetch } =
+  const { units, convoys, convoyMovements, supplyPoints, routes, alerts, isLoading, isError, refetch } =
     useMapData();
 
   if (isLoading) {
@@ -116,6 +116,7 @@ export default function MapPage() {
     <div className="map-full-viewport">
       <LogisticsMap
         data={{ units, convoys, supplyPoints, routes, alerts }}
+        convoyMovements={convoyMovements}
         height="100%"
       />
     </div>

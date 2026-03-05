@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { NearbyResult } from '@/api/map';
 
-export type EntityType = 'unit' | 'convoy' | 'supplyPoint' | 'route' | 'alert';
+export type EntityType = 'unit' | 'convoy' | 'convoy_vehicle' | 'supplyPoint' | 'route' | 'alert';
 
 export type PlacementType = 'unit' | 'supply_point' | 'maintenance_site' | 'lz_farp';
 

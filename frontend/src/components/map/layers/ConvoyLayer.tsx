@@ -1,12 +1,15 @@
 import { Marker, Polyline, Tooltip, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 import { useMemo } from 'react';
-import type { MapConvoy } from '@/api/map';
+import type { MapConvoy, ConvoyMovementDetail } from '@/api/map';
 import { useMapStore } from '@/stores/mapStore';
+import ConvoyVehicleMarker from '../markers/ConvoyVehicleMarker';
 
 interface ConvoyLayerProps {
   convoys: MapConvoy[];
+  convoyMovements: ConvoyMovementDetail[];
   showRoutes: boolean;
+  showVehicles: boolean;
 }
 
 function getConvoyRouteStyle(status: string): {
@@ -93,7 +96,7 @@ function ConvoyMarker({ convoy }: { convoy: MapConvoy }) {
   );
 }
 
-function ConvoyRoute({ convoy }: { convoy: MapConvoy }) {
+function ConvoyRoute({ convoy, progressPercent }: { convoy: MapConvoy; progressPercent?: number }) {
   const routeStyle = getConvoyRouteStyle(convoy.status);
   const positions = convoy.route_geometry.map(
     (point) => [point[0], point[1]] as [number, number],
@@ -104,15 +107,35 @@ function ConvoyRoute({ convoy }: { convoy: MapConvoy }) {
   const origin = positions[0];
   const destination = positions[positions.length - 1];
 
+  // Split route into completed and remaining based on progress
+  const progress = progressPercent ?? (convoy.status === 'EN_ROUTE' ? 50 : 0);
+  const splitIdx = Math.max(1, Math.floor((progress / 100) * (positions.length - 1)));
+  const completedPositions = positions.slice(0, splitIdx + 1);
+  const remainingPositions = positions.slice(splitIdx);
+
   return (
     <>
+      {/* Completed portion (solid) */}
+      {completedPositions.length >= 2 && (convoy.status === 'EN_ROUTE' || convoy.status === 'DELAYED') && (
+        <Polyline
+          positions={completedPositions}
+          pathOptions={{
+            color: routeStyle.color,
+            weight: routeStyle.weight,
+            opacity: routeStyle.opacity,
+          }}
+          interactive={false}
+        />
+      )}
+
+      {/* Remaining or full route */}
       <Polyline
-        positions={positions}
+        positions={convoy.status === 'EN_ROUTE' || convoy.status === 'DELAYED' ? remainingPositions : positions}
         pathOptions={{
           color: routeStyle.color,
           weight: routeStyle.weight,
-          dashArray: routeStyle.dashArray,
-          opacity: routeStyle.opacity,
+          dashArray: (convoy.status === 'EN_ROUTE' || convoy.status === 'DELAYED') ? '8 6' : routeStyle.dashArray,
+          opacity: (convoy.status === 'EN_ROUTE' || convoy.status === 'DELAYED') ? 0.5 : routeStyle.opacity,
         }}
       >
         <Tooltip sticky opacity={0.9}>
@@ -128,6 +151,7 @@ function ConvoyRoute({ convoy }: { convoy: MapConvoy }) {
           </div>
         </Tooltip>
       </Polyline>
+
       {/* Origin marker */}
       <CircleMarker
         center={origin}
@@ -140,17 +164,12 @@ function ConvoyRoute({ convoy }: { convoy: MapConvoy }) {
         }}
       >
         <Tooltip direction="bottom" offset={[0, 6]} opacity={0.9}>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: '#111',
-            }}
-          >
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#111' }}>
             ORIGIN: {convoy.origin.name}
           </div>
         </Tooltip>
       </CircleMarker>
+
       {/* Destination marker */}
       <CircleMarker
         center={destination}
@@ -163,13 +182,7 @@ function ConvoyRoute({ convoy }: { convoy: MapConvoy }) {
         }}
       >
         <Tooltip direction="bottom" offset={[0, 6]} opacity={0.9}>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: '#111',
-            }}
-          >
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#111' }}>
             DEST: {convoy.destination.name}
           </div>
         </Tooltip>
@@ -178,16 +191,52 @@ function ConvoyRoute({ convoy }: { convoy: MapConvoy }) {
   );
 }
 
-export default function ConvoyLayer({ convoys, showRoutes }: ConvoyLayerProps) {
+export default function ConvoyLayer({ convoys, convoyMovements, showRoutes, showVehicles }: ConvoyLayerProps) {
+  // Build a set of convoy IDs that have vehicle detail data
+  const movementMap = useMemo(() => {
+    const map = new Map<string, ConvoyMovementDetail>();
+    for (const m of convoyMovements) {
+      map.set(m.convoy_id, m);
+    }
+    return map;
+  }, [convoyMovements]);
+
   return (
     <>
-      {convoys.map((convoy) => (
-        <ConvoyMarker key={convoy.convoy_id} convoy={convoy} />
-      ))}
+      {convoys.map((convoy) => {
+        const movement = movementMap.get(convoy.convoy_id);
+        const hasVehicles = showVehicles && movement && movement.vehicles.length > 0;
+
+        return (
+          <span key={convoy.convoy_id}>
+            {/* Show individual vehicle markers if we have detail data */}
+            {hasVehicles
+              ? movement.vehicles.map((vehicle, idx) => (
+                  <ConvoyVehicleMarker
+                    key={vehicle.vehicle_id}
+                    vehicle={vehicle}
+                    convoyId={convoy.convoy_id}
+                    convoyName={convoy.name}
+                    isLeadVehicle={idx === 0}
+                  />
+                ))
+              : <ConvoyMarker convoy={convoy} />
+            }
+          </span>
+        );
+      })}
+
       {showRoutes &&
-        convoys.map((convoy) => (
-          <ConvoyRoute key={`route-${convoy.convoy_id}`} convoy={convoy} />
-        ))}
+        convoys.map((convoy) => {
+          const movement = movementMap.get(convoy.convoy_id);
+          return (
+            <ConvoyRoute
+              key={`route-${convoy.convoy_id}`}
+              convoy={convoy}
+              progressPercent={movement?.progress_percent}
+            />
+          );
+        })}
     </>
   );
 }
