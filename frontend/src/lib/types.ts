@@ -1854,3 +1854,27 @@ export interface HandReceipt {
   items: SensitiveItem[];
   generated_at: string;
 }
+
+// Transportation manifest types
+export interface LocationInventoryItem {
+  item_id: string;
+  item_type: 'equipment' | 'supply' | 'personnel';
+  nomenclature: string;
+  tamcn?: string;
+  nsn?: string;
+  category: string;
+  available_qty: number;
+  weight_lbs?: number;
+  status: string;
+}
+
+export interface ManifestEntry {
+  item_id: string;
+  nomenclature: string;
+  category: string;
+  quantity: number;
+  priority: 'ROUTINE' | 'PRIORITY' | 'URGENT' | 'FLASH';
+  special_handling?: string;
+  weight_lbs?: number;
+  added_at: string;
+}

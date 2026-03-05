@@ -11,6 +11,7 @@ import type {
   LiftRequest,
   Movement,
   MovementHistoryRecord,
+  LocationInventoryItem,
 } from '@/lib/types';
 import { MovementStatus } from '@/lib/types';
 
@@ -1080,4 +1081,61 @@ export async function getMovementHistory(
     { params: { unit_id: unitId, days } },
   );
   return response.data.data;
+}
+
+// ---------------------------------------------------------------------------
+// Location Inventory (for manifest building)
+// ---------------------------------------------------------------------------
+
+const MOCK_INVENTORY: LocationInventoryItem[] = [
+  { item_id: 'eq-001', item_type: 'equipment', nomenclature: 'HMMWV M1151 Up-Armored', tamcn: 'D1076', category: 'VEHICLES', available_qty: 8, weight_lbs: 12100, status: 'SERVICEABLE' },
+  { item_id: 'eq-002', item_type: 'equipment', nomenclature: 'MTVR MK23 7-Ton Cargo', tamcn: 'D0090', category: 'VEHICLES', available_qty: 4, weight_lbs: 30000, status: 'SERVICEABLE' },
+  { item_id: 'eq-003', item_type: 'equipment', nomenclature: 'JLTV M1280 General Purpose', tamcn: 'D1180', category: 'VEHICLES', available_qty: 6, weight_lbs: 14000, status: 'SERVICEABLE' },
+  { item_id: 'eq-004', item_type: 'equipment', nomenclature: 'M240B Machine Gun 7.62mm', nsn: '1005-01-412-9963', category: 'WEAPONS', available_qty: 24, weight_lbs: 27.6, status: 'SERVICEABLE' },
+  { item_id: 'eq-005', item_type: 'equipment', nomenclature: 'M2A1 .50 Cal Machine Gun', nsn: '1005-01-364-0443', category: 'WEAPONS', available_qty: 12, weight_lbs: 84, status: 'SERVICEABLE' },
+  { item_id: 'eq-006', item_type: 'equipment', nomenclature: 'AN/PRC-117G Multiband Radio', nsn: '5820-01-557-5829', category: 'COMMS', available_qty: 16, weight_lbs: 12.5, status: 'SERVICEABLE' },
+  { item_id: 'eq-007', item_type: 'equipment', nomenclature: 'AN/PRC-152A Handheld Radio', nsn: '5820-01-451-8250', category: 'COMMS', available_qty: 48, weight_lbs: 2.6, status: 'SERVICEABLE' },
+  { item_id: 'eq-008', item_type: 'equipment', nomenclature: 'MEP-803A Generator 10kW', nsn: '6115-01-274-7392', category: 'EQUIPMENT', available_qty: 3, weight_lbs: 880, status: 'SERVICEABLE' },
+  { item_id: 'eq-009', item_type: 'equipment', nomenclature: 'MK19 MOD 3 Grenade Launcher', nsn: '1010-01-126-9063', category: 'WEAPONS', available_qty: 8, weight_lbs: 77.6, status: 'SERVICEABLE' },
+  { item_id: 'eq-010', item_type: 'equipment', nomenclature: 'HMMWV M1165 Expanded Capacity', tamcn: 'D1077', category: 'VEHICLES', available_qty: 4, weight_lbs: 13000, status: 'SERVICEABLE' },
+  { item_id: 'sup-001', item_type: 'supply', nomenclature: 'MRE, Menu Variety Pack (Case)', nsn: '8970-01-321-9160', category: 'SUPPLY', available_qty: 200, weight_lbs: 22.5, status: 'SERVICEABLE' },
+  { item_id: 'sup-002', item_type: 'supply', nomenclature: 'Potable Water, 1L Bottles (Case/12)', nsn: '8960-00-926-1730', category: 'SUPPLY', available_qty: 150, weight_lbs: 28, status: 'SERVICEABLE' },
+  { item_id: 'sup-003', item_type: 'supply', nomenclature: '5.56mm Ball M855A1 (840rd Can)', nsn: '1305-01-617-8520', category: 'AMMO', available_qty: 60, weight_lbs: 27, status: 'SERVICEABLE' },
+  { item_id: 'sup-004', item_type: 'supply', nomenclature: '7.62mm Ball M80A1 (200rd Belt)', nsn: '1305-01-600-8703', category: 'AMMO', available_qty: 40, weight_lbs: 13.5, status: 'SERVICEABLE' },
+  { item_id: 'sup-005', item_type: 'supply', nomenclature: 'JP-8 Aviation Fuel (55gal Drum)', nsn: '9130-00-256-8366', category: 'SUPPLY', available_qty: 20, weight_lbs: 410, status: 'SERVICEABLE' },
+  { item_id: 'sup-006', item_type: 'supply', nomenclature: 'MOGAS Unleaded (55gal Drum)', nsn: '9130-00-160-1818', category: 'SUPPLY', available_qty: 15, weight_lbs: 370, status: 'SERVICEABLE' },
+  { item_id: 'sup-007', item_type: 'supply', nomenclature: 'Camouflage Net System, Woodland', nsn: '1080-01-455-0590', category: 'EQUIPMENT', available_qty: 10, weight_lbs: 45, status: 'SERVICEABLE' },
+  { item_id: 'sup-008', item_type: 'supply', nomenclature: 'Concertina Wire, Triple Standard', nsn: '5660-00-262-4855', category: 'EQUIPMENT', available_qty: 30, weight_lbs: 52, status: 'SERVICEABLE' },
+  { item_id: 'eq-011', item_type: 'equipment', nomenclature: 'ACOG TA31RCO Rifle Scope', nsn: '1240-01-412-6608', category: 'EQUIPMENT', available_qty: 100, weight_lbs: 0.97, status: 'SERVICEABLE' },
+  { item_id: 'eq-012', item_type: 'equipment', nomenclature: 'PVS-14 Night Vision Monocular', nsn: '5855-01-432-0524', category: 'EQUIPMENT', available_qty: 40, weight_lbs: 0.77, status: 'SERVICEABLE' },
+];
+
+export async function getLocationInventory(
+  _location: string,
+  query?: { q?: string; category?: string; limit?: number; offset?: number },
+): Promise<{ data: LocationInventoryItem[]; total_count: number }> {
+  if (isDemoMode) {
+    await mockDelay();
+    let items = [...MOCK_INVENTORY];
+    if (query?.q) {
+      const q = query.q.toLowerCase();
+      items = items.filter(
+        (i) =>
+          i.nomenclature.toLowerCase().includes(q) ||
+          (i.tamcn && i.tamcn.toLowerCase().includes(q)) ||
+          (i.nsn && i.nsn.toLowerCase().includes(q)),
+      );
+    }
+    if (query?.category && query.category !== 'ALL') {
+      items = items.filter((i) => i.category === query.category);
+    }
+    const total = items.length;
+    const offset = query?.offset ?? 0;
+    const limit = query?.limit ?? 25;
+    return { data: items.slice(offset, offset + limit), total_count: total };
+  }
+  const response = await apiClient.get('/transportation/location-inventory', {
+    params: { location: _location, ...query },
+  });
+  return response.data;
 }
