@@ -14,6 +14,7 @@ import AlertsPage from '@/pages/AlertsPage';
 import MapPage from '@/pages/MapPage';
 import AdminPage from '@/pages/AdminPage';
 import DocsPage from '@/pages/DocsPage';
+import ReadinessPage from '@/pages/ReadinessPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
@@ -49,6 +50,7 @@ export default function App() {
         <Route path="data-sources" element={<DataSourcesPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="alerts" element={<AlertsPage />} />
+        <Route path="readiness" element={<ReadinessPage />} />
         <Route path="admin" element={<AdminPage />} />
         <Route path="docs" element={<DocsPage />} />
       </Route>

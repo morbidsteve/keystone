@@ -839,3 +839,68 @@ export interface AmmunitionCatalogItem {
   hazardClass: string | null;
   notes: string | null;
 }
+
+// Readiness types
+
+export interface ReadinessSnapshot {
+  id: number;
+  unitId: number;
+  snapshotDate: string;
+  overallReadinessPct: number;
+  equipmentReadinessPct: number | null;
+  supplyReadinessPct: number | null;
+  personnelFillPct: number | null;
+  trainingReadinessPct: number | null;
+  cRating: string;
+  sRating: string;
+  rRating: string;
+  pRating: string;
+  tRating: string;
+  limitingFactor: string | null;
+  notes: string | null;
+  isOfficial: boolean;
+  createdAt: string;
+}
+
+export interface UnitStrengthReport {
+  id: number;
+  unitId: number;
+  reportedAt: string;
+  authorizedOfficers: number;
+  assignedOfficers: number;
+  authorizedEnlisted: number;
+  assignedEnlisted: number;
+  attached: number;
+  detached: number;
+  tad: number;
+  leave: number;
+  medical: number;
+  ua: number;
+  totalAuthorized: number;
+  totalAssigned: number;
+  fillPct: number;
+  mosShortfalls: Array<{
+    mos: string;
+    mosTitle: string;
+    authorized: number;
+    assigned: number;
+    shortfall: number;
+  }> | null;
+  notes: string | null;
+}
+
+export interface ReadinessRollup {
+  unitId: number;
+  numSubordinates: number;
+  avgOverallReadinessPct: number;
+  avgEquipmentReadinessPct: number;
+  avgSupplyReadinessPct: number;
+  avgPersonnelFillPct: number;
+  subordinates: Array<{
+    unitId: number;
+    unitName: string;
+    cRating: string;
+    overallReadinessPct: number;
+    limitingFactor: string | null;
+  }>;
+}
