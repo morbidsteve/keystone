@@ -1654,3 +1654,113 @@ export interface FuelDashboard {
     resupply_required_by: string;
   };
 }
+
+// ---------------------------------------------------------------------------
+// Custody & Chain of Custody
+// ---------------------------------------------------------------------------
+
+export type SensitiveItemType = 'WEAPON' | 'OPTIC' | 'NVG' | 'CRYPTO' | 'RADIO' | 'COMSEC' | 'CLASSIFIED_DOCUMENT' | 'EXPLOSIVE' | 'MISSILE' | 'OTHER';
+export type SecurityClassification = 'UNCLASSIFIED' | 'CUI' | 'CONFIDENTIAL' | 'SECRET' | 'TOP_SECRET' | 'TS_SCI';
+export type ItemConditionCode = 'A' | 'B' | 'C' | 'D' | 'F' | 'H';
+export type SensitiveItemStatus = 'ON_HAND' | 'ISSUED' | 'IN_TRANSIT' | 'IN_MAINTENANCE' | 'MISSING' | 'LOST' | 'DESTROYED' | 'TRANSFERRED';
+export type TransferType = 'ISSUE' | 'TURN_IN' | 'LATERAL_TRANSFER' | 'TEMPORARY_LOAN' | 'MAINTENANCE_TURN_IN' | 'MAINTENANCE_RETURN' | 'INVENTORY_ADJUSTMENT';
+export type InventoryEventType = 'CYCLIC' | 'SENSITIVE_ITEM' | 'CHANGE_OF_COMMAND' | 'MONTHLY' | 'QUARTERLY' | 'ANNUAL' | 'DIRECTED' | 'LOSS_INVESTIGATION';
+export type InventoryEventStatus = 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type DiscrepancyType = 'NONE' | 'NOT_FOUND' | 'WRONG_LOCATION' | 'WRONG_HOLDER' | 'CONDITION_CHANGED' | 'SERIAL_MISMATCH';
+export type AuditAction = 'CREATE' | 'UPDATE' | 'DELETE' | 'VIEW' | 'TRANSFER' | 'STATUS_CHANGE' | 'INVENTORY_START' | 'INVENTORY_COMPLETE' | 'ITEM_VERIFIED' | 'LOGIN' | 'LOGOUT' | 'PERMISSION_CHANGE' | 'EXPORT';
+export type AuditEntityType = 'SENSITIVE_ITEM' | 'CUSTODY_TRANSFER' | 'INVENTORY_EVENT' | 'USER' | 'UNIT' | 'PERSONNEL' | 'REPORT' | 'SYSTEM';
+
+export interface SensitiveItem {
+  id: number;
+  serial_number: string;
+  item_type: SensitiveItemType;
+  nomenclature: string;
+  nsn: string | null;
+  tamcn: string | null;
+  security_classification: SecurityClassification;
+  owning_unit_id: number;
+  current_holder_id: number | null;
+  current_holder_name: string | null;
+  hand_receipt_number: string | null;
+  sub_hand_receipt_number: string | null;
+  condition_code: ItemConditionCode;
+  status: SensitiveItemStatus;
+  last_inventory_date: string | null;
+  last_transfer_date: string | null;
+  created_at: string;
+  updated_at: string;
+  notes: string | null;
+}
+
+export interface CustodyTransfer {
+  id: number;
+  sensitive_item_id: number;
+  from_personnel_id: number | null;
+  from_personnel_name: string | null;
+  to_personnel_id: number | null;
+  to_personnel_name: string | null;
+  from_unit_id: number | null;
+  to_unit_id: number | null;
+  transfer_type: TransferType;
+  transfer_date: string;
+  document_number: string | null;
+  authorized_by: number | null;
+  witnessed_by: number | null;
+  reason: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface InventoryEvent {
+  id: number;
+  unit_id: number;
+  inventory_type: InventoryEventType;
+  conducted_by: number;
+  conducted_by_name: string | null;
+  witnessed_by: number | null;
+  started_at: string;
+  completed_at: string | null;
+  total_items_expected: number;
+  total_items_verified: number;
+  discrepancies: number;
+  status: InventoryEventStatus;
+  approved_by: number | null;
+  approved_at: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface InventoryLineItem {
+  id: number;
+  inventory_event_id: number;
+  sensitive_item_id: number;
+  verified: boolean;
+  serial_number_verified: boolean;
+  condition_code: ItemConditionCode | null;
+  discrepancy_type: DiscrepancyType | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  user_id: number;
+  action: AuditAction;
+  entity_type: AuditEntityType;
+  entity_id: number | null;
+  description: string;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+}
+
+export interface HandReceipt {
+  personnel_id: number;
+  personnel_name: string;
+  rank: string;
+  edipi: string;
+  unit_name: string;
+  total_items: number;
+  items: SensitiveItem[];
+  generated_at: string;
+}
