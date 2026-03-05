@@ -1,12 +1,20 @@
 """Personnel, weapon, ammo, convoy vehicle/assignment schemas."""
 
 import json
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from app.models.personnel import ConvoyRole, PersonnelStatus
+from app.models.personnel import (
+    ConvoyRole,
+    DutyStatus,
+    PayGrade,
+    PersonnelStatus,
+    RifleQualification,
+    SecurityClearance,
+    SwimQualification,
+)
 
 
 # --- Weapon schemas ---
@@ -108,6 +116,28 @@ class PersonnelCreate(BaseModel):
     weapons: Optional[List[WeaponCreate]] = None
     ammo_loads: Optional[List[AmmoLoadCreate]] = None
 
+    # Manning & billet fields
+    pay_grade: Optional[PayGrade] = None
+    billet: Optional[str] = Field(None, max_length=100)
+    date_of_rank: Optional[date] = None
+    eaos: Optional[date] = None
+    pme_complete: bool = False
+
+    # Qualifications & fitness
+    rifle_qual: Optional[RifleQualification] = None
+    rifle_qual_date: Optional[date] = None
+    pft_score: Optional[int] = Field(None, ge=0, le=300)
+    pft_date: Optional[date] = None
+    cft_score: Optional[int] = Field(None, ge=0, le=300)
+    cft_date: Optional[date] = None
+    swim_qual: Optional[SwimQualification] = None
+
+    # Security & admin
+    security_clearance: Optional[SecurityClearance] = None
+    clearance_expiry: Optional[date] = None
+    drivers_license_military: bool = False
+    duty_status: Optional[DutyStatus] = DutyStatus.PRESENT
+
 
 class PersonnelUpdate(BaseModel):
     first_name: Optional[str] = Field(None, max_length=50)
@@ -118,6 +148,28 @@ class PersonnelUpdate(BaseModel):
     blood_type: Optional[str] = Field(None, max_length=5)
     status: Optional[PersonnelStatus] = None
 
+    # Manning & billet fields
+    pay_grade: Optional[PayGrade] = None
+    billet: Optional[str] = Field(None, max_length=100)
+    date_of_rank: Optional[date] = None
+    eaos: Optional[date] = None
+    pme_complete: Optional[bool] = None
+
+    # Qualifications & fitness
+    rifle_qual: Optional[RifleQualification] = None
+    rifle_qual_date: Optional[date] = None
+    pft_score: Optional[int] = Field(None, ge=0, le=300)
+    pft_date: Optional[date] = None
+    cft_score: Optional[int] = Field(None, ge=0, le=300)
+    cft_date: Optional[date] = None
+    swim_qual: Optional[SwimQualification] = None
+
+    # Security & admin
+    security_clearance: Optional[SecurityClearance] = None
+    clearance_expiry: Optional[date] = None
+    drivers_license_military: Optional[bool] = None
+    duty_status: Optional[DutyStatus] = None
+
 
 class PersonnelSummaryResponse(BaseModel):
     id: int
@@ -127,6 +179,8 @@ class PersonnelSummaryResponse(BaseModel):
     rank: Optional[str] = None
     mos: Optional[str] = None
     status: PersonnelStatus
+    pay_grade: Optional[PayGrade] = None
+    duty_status: Optional[DutyStatus] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -145,6 +199,28 @@ class PersonnelResponse(BaseModel):
     updated_at: Optional[datetime] = None
     weapons: List[WeaponResponse] = []
     ammo_loads: List[AmmoLoadResponse] = []
+
+    # Manning & billet fields
+    pay_grade: Optional[PayGrade] = None
+    billet: Optional[str] = None
+    date_of_rank: Optional[date] = None
+    eaos: Optional[date] = None
+    pme_complete: bool = False
+
+    # Qualifications & fitness
+    rifle_qual: Optional[RifleQualification] = None
+    rifle_qual_date: Optional[date] = None
+    pft_score: Optional[int] = None
+    pft_date: Optional[date] = None
+    cft_score: Optional[int] = None
+    cft_date: Optional[date] = None
+    swim_qual: Optional[SwimQualification] = None
+
+    # Security & admin
+    security_clearance: Optional[SecurityClearance] = None
+    clearance_expiry: Optional[date] = None
+    drivers_license_military: bool = False
+    duty_status: Optional[DutyStatus] = None
 
     model_config = ConfigDict(from_attributes=True)
 

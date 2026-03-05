@@ -59,11 +59,21 @@ from app.models.location import (
 from app.models.personnel import (
     Personnel,
     PersonnelStatus,
+    PayGrade,
+    RifleQualification,
+    SwimQualification,
+    SecurityClearance,
+    DutyStatus,
     Weapon,
     AmmoLoad,
     ConvoyVehicle,
     ConvoyPersonnel,
     ConvoyRole,
+)
+from app.models.manning import (
+    BilletStructure,
+    ManningSnapshot,
+    Qualification,
 )
 from app.models.catalog_equipment import EquipmentCatalogItem
 from app.models.catalog_supply import SupplyCatalogItem
@@ -172,4 +182,12 @@ __all__ = [
     "PMType",
     "DeadlineReason",
     "EROStatus",
+    "PayGrade",
+    "RifleQualification",
+    "SwimQualification",
+    "SecurityClearance",
+    "DutyStatus",
+    "BilletStructure",
+    "ManningSnapshot",
+    "Qualification",
 ]

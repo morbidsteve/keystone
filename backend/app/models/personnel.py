@@ -3,7 +3,9 @@
 import enum
 
 from sqlalchemy import (
+    Boolean,
     Column,
+    Date,
     DateTime,
     Enum as SQLEnum,
     ForeignKey,
@@ -24,6 +26,66 @@ class PersonnelStatus(str, enum.Enum):
     LEAVE = "LEAVE"
     MEDICAL = "MEDICAL"
     INACTIVE = "INACTIVE"
+
+
+class PayGrade(str, enum.Enum):
+    E1 = "E1"
+    E2 = "E2"
+    E3 = "E3"
+    E4 = "E4"
+    E5 = "E5"
+    E6 = "E6"
+    E7 = "E7"
+    E8 = "E8"
+    E9 = "E9"
+    W1 = "W1"
+    W2 = "W2"
+    W3 = "W3"
+    W4 = "W4"
+    W5 = "W5"
+    O1 = "O1"
+    O2 = "O2"
+    O3 = "O3"
+    O4 = "O4"
+    O5 = "O5"
+    O6 = "O6"
+    O7 = "O7"
+    O8 = "O8"
+    O9 = "O9"
+    O10 = "O10"
+
+
+class RifleQualification(str, enum.Enum):
+    EXPERT = "EXPERT"
+    SHARPSHOOTER = "SHARPSHOOTER"
+    MARKSMAN = "MARKSMAN"
+    UNQUAL = "UNQUAL"
+
+
+class SwimQualification(str, enum.Enum):
+    CWS1 = "CWS1"
+    CWS2 = "CWS2"
+    CWS3 = "CWS3"
+    CWS4 = "CWS4"
+    UNQUAL = "UNQUAL"
+
+
+class SecurityClearance(str, enum.Enum):
+    NONE = "NONE"
+    CONFIDENTIAL = "CONFIDENTIAL"
+    SECRET = "SECRET"
+    TOP_SECRET = "TOP_SECRET"
+    TS_SCI = "TS_SCI"
+
+
+class DutyStatus(str, enum.Enum):
+    PRESENT = "PRESENT"
+    UA = "UA"
+    DESERTER = "DESERTER"
+    AWOL = "AWOL"
+    CONFINEMENT = "CONFINEMENT"
+    LIMDU = "LIMDU"
+    PTAD = "PTAD"
 
 
 class ConvoyRole(str, enum.Enum):
@@ -50,6 +112,31 @@ class Personnel(Base):
     status = Column(
         SQLEnum(PersonnelStatus), nullable=False, default=PersonnelStatus.ACTIVE
     )
+
+    # Manning & billet fields
+    pay_grade = Column(SQLEnum(PayGrade), nullable=True)
+    billet = Column(String(100), nullable=True)
+    date_of_rank = Column(Date, nullable=True)
+    eaos = Column(Date, nullable=True)
+    pme_complete = Column(Boolean, default=False)
+
+    # Qualifications & fitness
+    rifle_qual = Column(SQLEnum(RifleQualification), nullable=True)
+    rifle_qual_date = Column(Date, nullable=True)
+    pft_score = Column(Integer, nullable=True)
+    pft_date = Column(Date, nullable=True)
+    cft_score = Column(Integer, nullable=True)
+    cft_date = Column(Date, nullable=True)
+    swim_qual = Column(SQLEnum(SwimQualification), nullable=True)
+
+    # Security & admin
+    security_clearance = Column(SQLEnum(SecurityClearance), nullable=True)
+    clearance_expiry = Column(Date, nullable=True)
+    drivers_license_military = Column(Boolean, default=False)
+    duty_status = Column(
+        SQLEnum(DutyStatus), nullable=True, default=DutyStatus.PRESENT
+    )
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -63,6 +150,14 @@ class Personnel(Base):
         "AmmoLoad", back_populates="personnel", cascade="all, delete-orphan"
     )
     convoy_assignments = relationship("ConvoyPersonnel", back_populates="personnel")
+    qualifications = relationship(
+        "Qualification", back_populates="personnel", cascade="all, delete-orphan"
+    )
+    billet_assignments = relationship(
+        "BilletStructure",
+        foreign_keys="BilletStructure.filled_by_id",
+        back_populates="assigned_personnel",
+    )
 
 
 class Weapon(Base):

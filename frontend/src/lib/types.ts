@@ -1077,3 +1077,64 @@ export interface LowStockAlert {
   quantity_below: number;
   last_inventory_date: string;
 }
+
+// --- Personnel & Manning ---
+export type PayGrade = 'E1'|'E2'|'E3'|'E4'|'E5'|'E6'|'E7'|'E8'|'E9'|'W1'|'W2'|'W3'|'W4'|'W5'|'O1'|'O2'|'O3'|'O4'|'O5'|'O6'|'O7'|'O8'|'O9'|'O10';
+export type RifleQual = 'EXPERT'|'SHARPSHOOTER'|'MARKSMAN'|'UNQUAL';
+export type SwimQual = 'CWS1'|'CWS2'|'CWS3'|'CWS4'|'UNQUAL';
+export type SecurityClearanceLevel = 'NONE'|'CONFIDENTIAL'|'SECRET'|'TOP_SECRET'|'TS_SCI';
+export type DutyStatusType = 'PRESENT'|'UA'|'DESERTER'|'AWOL'|'CONFINEMENT'|'LIMDU'|'PTAD';
+
+export interface PersonnelRecord {
+  id: number; edipi: string; first_name: string; last_name: string;
+  rank: string | null; unit_id: number | null; mos: string | null;
+  pay_grade: PayGrade | null; billet: string | null;
+  date_of_rank: string | null; eaos: string | null; pme_complete: boolean;
+  rifle_qual: RifleQual | null; rifle_qual_date: string | null;
+  pft_score: number | null; pft_date: string | null;
+  cft_score: number | null; cft_date: string | null;
+  swim_qual: SwimQual | null; security_clearance: SecurityClearanceLevel | null;
+  clearance_expiry: string | null; drivers_license_military: boolean;
+  duty_status: DutyStatusType; status: string;
+}
+
+export interface BilletRecord {
+  id: number; unit_id: number; billet_id_code: string; billet_title: string;
+  mos_required: string | null; rank_required: string | null;
+  is_key_billet: boolean; is_filled: boolean;
+  filled_by_id: number | null; filled_by_name?: string; filled_date: string | null;
+}
+
+export interface ManningSnapshotRecord {
+  id: number; unit_id: number; snapshot_date: string;
+  authorized_total: number; assigned_total: number; present_for_duty: number;
+  fill_rate_pct: number; mos_shortfalls: Record<string, number> | null;
+  rank_distribution: Record<string, number> | null;
+}
+
+export interface QualificationRecord {
+  id: number; personnel_id: number; qualification_type: string;
+  qualification_name: string; date_achieved: string;
+  expiration_date: string | null; is_current: boolean;
+}
+
+export interface UnitStrengthData {
+  total_authorized: number; total_assigned: number; present_for_duty: number;
+  deployed: number; tdy: number; leave: number; medical: number;
+  inactive: number; fill_rate_pct: number;
+}
+
+export interface MOSFillData { required: number; assigned: number; shortfall: number; }
+
+export interface QualStatusData { total: number; current: number; percent: number; }
+
+export interface PersonnelReadinessData {
+  p_rating: string; percent_ready: number;
+  fill_rate_pct: number; qualification_pct: number; fitness_pct: number;
+}
+
+export interface EASRecord {
+  id: number; edipi: string; first_name: string; last_name: string;
+  rank: string; mos: string; pay_grade: string | null; billet: string | null;
+  eaos: string; days_until_eas: number;
+}

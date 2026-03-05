@@ -62,3 +62,9 @@ class Unit(Base):
         "UnitReadinessSnapshot", back_populates="unit"
     )
     strength_reports = relationship("UnitStrength", back_populates="unit")
+    billets = relationship(
+        "BilletStructure", back_populates="unit", cascade="all, delete-orphan"
+    )
+    manning_snapshots = relationship(
+        "ManningSnapshot", back_populates="unit", cascade="all, delete-orphan"
+    )

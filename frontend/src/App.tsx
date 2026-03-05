@@ -17,6 +17,7 @@ import DocsPage from '@/pages/DocsPage';
 import ReadinessPage from '@/pages/ReadinessPage';
 import MaintenanceDashboardPage from '@/pages/MaintenanceDashboardPage';
 import RequisitionsPage from '@/pages/RequisitionsPage';
+import PersonnelPage from '@/pages/PersonnelPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="equipment" element={<EquipmentPage />} />
         <Route path="maintenance" element={<MaintenanceDashboardPage />} />
         <Route path="requisitions" element={<RequisitionsPage />} />
+        <Route path="personnel" element={<PersonnelPage />} />
         <Route path="equipment/:id" element={<EquipmentDetailPage />} />
         <Route path="transportation" element={<TransportationPage />} />
         <Route path="ingestion" element={<IngestionPage />} />
