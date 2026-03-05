@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
-import type { MaintenanceWorkOrder, WorkOrderCategory } from '@/lib/types';
+import type { MaintenanceWorkOrder, WorkOrderCategory, EquipmentCatalogItem } from '@/lib/types';
 import { WorkOrderPriority, WorkOrderCategory as WOCat } from '@/lib/types';
 import { createWorkOrder } from '@/api/maintenance';
+import EquipmentSelector from '@/components/catalog/EquipmentSelector';
 
 interface CreateWorkOrderModalProps {
   isOpen: boolean;
@@ -59,6 +60,7 @@ export default function CreateWorkOrderModal({
   const [priority, setPriority] = useState<number>(WorkOrderPriority.ROUTINE);
   const [category, setCategory] = useState<WorkOrderCategory>(WOCat.CORRECTIVE);
   const [equipmentId, setEquipmentId] = useState(defaultEquipmentId || '');
+  const [selectedEquipment, setSelectedEquipment] = useState<EquipmentCatalogItem | null>(null);
   const [unitId, setUnitId] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [location, setLocation] = useState('');
@@ -102,6 +104,7 @@ export default function CreateWorkOrderModal({
       setPriority(WorkOrderPriority.ROUTINE);
       setCategory(WOCat.CORRECTIVE);
       setEquipmentId(defaultEquipmentId || '');
+      setSelectedEquipment(null);
       setUnitId('');
       setAssignedTo('');
       setLocation('');
@@ -271,7 +274,23 @@ export default function CreateWorkOrderModal({
               </select>
             </div>
 
-            {/* Equipment ID */}
+            {/* Equipment Catalog Selector */}
+            <div style={{ gridColumn: '1 / -1' }}>
+              <EquipmentSelector
+                value={selectedEquipment}
+                onChange={(item) => {
+                  setSelectedEquipment(item);
+                  if (item) {
+                    setEquipmentId(item.tamcn || `CAT-${item.id}`);
+                  } else {
+                    setEquipmentId(defaultEquipmentId || '');
+                  }
+                }}
+                placeholder="Search by TAMCN, nomenclature, name..."
+              />
+            </div>
+
+            {/* Equipment ID (auto-filled or manual) */}
             <div>
               <label style={labelStyle}>EQUIPMENT ID</label>
               <input

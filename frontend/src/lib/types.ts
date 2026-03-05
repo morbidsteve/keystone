@@ -782,3 +782,60 @@ export interface WorkOrderFilters {
   page?: number;
   pageSize?: number;
 }
+
+// Catalog types — equipment, supply, and ammunition master data
+
+export interface EquipmentCatalogItem {
+  id: number;
+  tamcn: string | null;
+  niin: string | null;
+  nsn: string | null;
+  nomenclature: string;
+  commonName: string | null;
+  category: string;
+  subcategory: string | null;
+  supplyClass: string;
+  manufacturer: string | null;
+  weightLbs: number | null;
+  crewSize: number | null;
+  paxCapacity: number | null;
+  isSerialized: boolean;
+  echelonTypical: string | null;
+  notes: string | null;
+}
+
+export interface SupplyCatalogItem {
+  id: number;
+  nsn: string | null;
+  niin: string | null;
+  lin: string | null;
+  dodic: string | null;
+  nomenclature: string;
+  commonName: string | null;
+  supplyClass: string;
+  supplySubclass: string | null;
+  unitOfIssue: string;
+  unitOfIssueDesc: string | null;
+  category: string | null;
+  subcategory: string | null;
+  isControlled: boolean;
+  isHazmat: boolean;
+  shelfLifeDays: number | null;
+  notes: string | null;
+}
+
+export interface AmmunitionCatalogItem {
+  id: number;
+  dodic: string;
+  nsn: string | null;
+  nomenclature: string;
+  commonName: string | null;
+  caliber: string | null;
+  weaponSystem: string | null;
+  unitOfIssue: string;
+  roundsPerUnit: number | null;
+  weightPerRoundLbs: number | null;
+  isControlled: boolean;
+  hazardClass: string | null;
+  notes: string | null;
+}

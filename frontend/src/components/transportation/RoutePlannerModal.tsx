@@ -22,6 +22,8 @@ import { getMapData, type MapData, type MapRoute } from '@/api/map';
 import { mockApi } from '@/api/mockClient';
 import { createMilSymbolIcon } from '@/components/map/symbols/MilSymbol';
 import { getStatusColor } from '@/components/map/symbols/symbolConfig';
+import type { SupplyCatalogItem } from '@/lib/types';
+import SupplySelector from '@/components/catalog/SupplySelector';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -1496,6 +1498,45 @@ export default function RoutePlannerModal({
                 >
                   <Plus size={11} /> ADD CARGO
                 </button>
+
+                {/* ── Catalog Lookup ───────────────────────────────── */}
+                <div
+                  style={{
+                    marginBottom: 8,
+                    padding: 8,
+                    backgroundColor: 'rgba(77,171,247,0.03)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius)',
+                  }}
+                >
+                  <div style={{ ...labelStyle, fontSize: 8, marginBottom: 4 }}>
+                    <Search size={10} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                    CATALOG LOOKUP
+                  </div>
+                  <SupplySelector
+                    value={null}
+                    onChange={(item: SupplyCatalogItem | null) => {
+                      if (item) {
+                        const scMap: Record<string, SupplyClass> = {
+                          I: SupplyClass.I, II: SupplyClass.II, III: SupplyClass.III,
+                          IIIA: SupplyClass.IIIA, IV: SupplyClass.IV, V: SupplyClass.V,
+                          VI: SupplyClass.VI, VII: SupplyClass.VII, VIII: SupplyClass.VIII,
+                          IX: SupplyClass.IX, X: SupplyClass.X,
+                        };
+                        setCargoItems(prev => [
+                          ...prev,
+                          {
+                            supplyClass: scMap[item.supplyClass] || SupplyClass.I,
+                            description: item.commonName || item.nomenclature,
+                            quantity: 0,
+                            unit: item.unitOfIssue === 'GL' ? 'GAL' : item.unitOfIssue === 'CS' || item.unitOfIssue === 'BX' || item.unitOfIssue === 'BD' || item.unitOfIssue === 'CO' || item.unitOfIssue === 'KT' ? 'CASES' : 'EA',
+                          },
+                        ]);
+                      }
+                    }}
+                    placeholder="Search supply catalog by NSN, name..."
+                  />
+                </div>
 
                 {/* ── Available at Origin ─────────────────────────────── */}
                 {originSupply.length > 0 && (

@@ -123,6 +123,48 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Sample data seeding failed: {e}")
 
+    # 4. Seed equipment catalog
+    try:
+        from seed.seed_equipment_catalog import seed_equipment_catalog
+
+        async with async_session() as db:
+            count = await seed_equipment_catalog(db)
+            await db.commit()
+            if count:
+                logger.info(f"Equipment catalog: {count} items seeded.")
+            else:
+                logger.info("Equipment catalog already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Equipment catalog seeding failed: {e}")
+
+    # 5. Seed supply catalog
+    try:
+        from seed.seed_supply_catalog import seed_supply_catalog
+
+        async with async_session() as db:
+            count = await seed_supply_catalog(db)
+            await db.commit()
+            if count:
+                logger.info(f"Supply catalog: {count} items seeded.")
+            else:
+                logger.info("Supply catalog already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Supply catalog seeding failed: {e}")
+
+    # 6. Seed ammunition catalog
+    try:
+        from seed.seed_ammunition_catalog import seed_ammunition_catalog
+
+        async with async_session() as db:
+            count = await seed_ammunition_catalog(db)
+            await db.commit()
+            if count:
+                logger.info(f"Ammunition catalog: {count} items seeded.")
+            else:
+                logger.info("Ammunition catalog already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Ammunition catalog seeding failed: {e}")
+
 
 app = FastAPI(
     title="KEYSTONE",
