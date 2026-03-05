@@ -20,6 +20,43 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 
 ---
 
+## Screenshots
+
+### Login
+![Login page with classification banner and demo mode indicator](docs/images/login-page.png)
+
+### Commander Dashboard
+![Dashboard showing readiness KPIs, supply class status, equipment readiness, sustainability projections, consumption charts, and active alerts](docs/images/dashboard.png)
+
+### Interactive Map
+![Leaflet map with military symbology, unit positions, supply points, convoy routes, MSR/ASR overlays, and layer controls](docs/images/map-view.png)
+
+### Supply Status
+![Supply tracking table with NATO supply classes, on-hand vs required quantities, days-of-supply, consumption rates, and traffic-light status](docs/images/supply-status.png)
+
+### Equipment Readiness
+![Equipment readiness table showing fleet types, TAMCNs, authorized vs on-hand, MC/NMC counts, and readiness percentages](docs/images/equipment-readiness.png)
+
+### Maintenance Management
+![Maintenance dashboard with deadline rate, MTTR, parts fill rate, cannibalization rate, and work order queue](docs/images/maintenance.png)
+
+### Transportation & Convoy Tracking
+![Transportation view with active convoy map, convoy cards with origin/destination/ETA, and movement list](docs/images/transportation.png)
+
+### Personnel & Manning
+![Personnel page with strength summary, fill rate, P-rating, and alpha roster with EDIPI, MOS, billet, duty status, and qualifications](docs/images/personnel.png)
+
+### SITREP Reports
+![Reports page showing generated LOGSTATs, equipment readiness reports, and supply status reports with draft/finalized workflow](docs/images/reports.png)
+
+### Alerts
+![Alerts dashboard with severity breakdown (critical/warning/info), filterable alert list with acknowledge and resolve actions](docs/images/alerts.png)
+
+### Administration
+![Admin panel with user management table, role assignment, unit configuration, classification settings, and map tile configuration](docs/images/admin-panel.png)
+
+---
+
 ## Architecture
 
 ```
