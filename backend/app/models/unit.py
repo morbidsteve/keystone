@@ -58,3 +58,7 @@ class Unit(Base):
     alerts = relationship("Alert", back_populates="unit")
     personnel = relationship("Personnel", back_populates="unit")
     equipment_assets = relationship("Equipment", back_populates="unit")
+    readiness_snapshots = relationship(
+        "UnitReadinessSnapshot", back_populates="unit"
+    )
+    strength_reports = relationship("UnitStrength", back_populates="unit")

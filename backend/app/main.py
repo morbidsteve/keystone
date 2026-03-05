@@ -165,6 +165,20 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Ammunition catalog seeding failed: {e}")
 
+    # 7. Seed readiness thresholds
+    try:
+        from seed.seed_readiness_thresholds import seed_readiness_thresholds
+
+        async with async_session() as db:
+            count = await seed_readiness_thresholds(db)
+            await db.commit()
+            if count:
+                logger.info(f"Readiness thresholds: {count} items seeded.")
+            else:
+                logger.info("Readiness thresholds already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Readiness threshold seeding failed: {e}")
+
 
 app = FastAPI(
     title="KEYSTONE",
@@ -300,6 +314,13 @@ app = FastAPI(
             "name": "Maintenance",
             "description": (
                 "Equipment maintenance requests, scheduling, and work-order tracking."
+            ),
+        },
+        {
+            "name": "Readiness",
+            "description": (
+                "Unit readiness snapshots, DRRS ratings, strength tracking, "
+                "and rollup analytics."
             ),
         },
     ],
