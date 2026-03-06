@@ -2,6 +2,7 @@ import { useDashboardStore } from '@/stores/dashboardStore';
 import CommanderView from '@/components/dashboard/CommanderView';
 import S4View from '@/components/dashboard/S4View';
 import S3View from '@/components/dashboard/S3View';
+import ActivityFeed from '@/components/dashboard/ActivityFeed';
 
 const views = [
   { key: 'commander' as const, label: 'COMMANDER' },
@@ -60,6 +61,11 @@ export default function DashboardPage() {
       {activeView === 'commander' && <CommanderView />}
       {activeView === 's4' && <S4View />}
       {activeView === 's3' && <S3View />}
+
+      {/* Activity Feed */}
+      <div style={{ marginTop: 20 }}>
+        <ActivityFeed />
+      </div>
     </div>
   );
 }

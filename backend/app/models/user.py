@@ -11,6 +11,7 @@ from sqlalchemy import (
     Integer,
     String,
 )
+from sqlalchemy.types import JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -43,6 +44,7 @@ class User(Base):
     )
 
     custom_role_id = Column(Integer, ForeignKey("custom_roles.id"), nullable=True)
+    demo_profile = Column(JSON, nullable=True)
 
     unit = relationship("Unit", back_populates="users")
     custom_role = relationship(

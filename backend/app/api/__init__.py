@@ -34,6 +34,8 @@ from app.api.fuel import router as fuel_router
 from app.api.custody import router as custody_router
 from app.api.rbac import router as rbac_router
 from app.api.predictions import router as predictions_router
+from app.api.activities import router as activities_router
+from app.api.simulation import router as simulation_router_living
 
 api_router = APIRouter()
 
@@ -96,4 +98,8 @@ api_router.include_router(
 api_router.include_router(rbac_router, prefix="/rbac", tags=["RBAC"])
 api_router.include_router(
     predictions_router, prefix="/predictions", tags=["Predictions"]
+)
+api_router.include_router(activities_router, prefix="/activities", tags=["Activities"])
+api_router.include_router(
+    simulation_router_living, prefix="/simulation", tags=["Living Simulation"]
 )

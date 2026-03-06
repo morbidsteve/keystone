@@ -1,6 +1,7 @@
 """KEYSTONE FastAPI application entry point."""
 
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -66,7 +67,54 @@ async def lifespan(app: FastAPI):
     if settings.ENV_MODE == "development":
         await _run_dev_seeds()
 
+    # Start Living Simulation Engine if enabled
+    sim_engine = None
+    if os.getenv("SIM_ENABLED", "").lower() in ("1", "true", "yes"):
+        try:
+            from app.database import async_session
+            from app.services.living_sim import (
+                LivingSimulationEngine,
+                SimulationConfig,
+                set_living_sim_engine,
+            )
+
+            config = SimulationConfig(
+                speed=int(os.getenv("SIM_SPEED", "60")),
+                scenario=os.getenv("SIM_SCENARIO", "Garrison"),
+            )
+            sim_engine = LivingSimulationEngine(async_session, config)
+            set_living_sim_engine(sim_engine)
+            await sim_engine.start()
+            logger.info(
+                "Living Simulation Engine started (speed=%dx, scenario=%s)",
+                config.speed,
+                config.scenario,
+            )
+        except Exception as e:
+            logger.warning("Failed to start Living Simulation Engine: %s", e)
+    else:
+        # Still initialize the engine instance so API endpoints work
+        try:
+            from app.database import async_session
+            from app.services.living_sim import (
+                LivingSimulationEngine,
+                SimulationConfig,
+                set_living_sim_engine,
+            )
+
+            sim_engine = LivingSimulationEngine(async_session, SimulationConfig())
+            set_living_sim_engine(sim_engine)
+            logger.info("Living Simulation Engine initialized (not auto-started)")
+        except Exception as e:
+            logger.warning("Failed to initialize Living Simulation Engine: %s", e)
+
     yield
+
+    # Shutdown: stop sim engine
+    if sim_engine and sim_engine.running:
+        await sim_engine.stop()
+        logger.info("Living Simulation Engine stopped on shutdown.")
+
     logger.info("KEYSTONE shutting down.")
 
 
@@ -192,6 +240,20 @@ async def _run_dev_seeds():
                 logger.info("Billet structure already populated, skipping.")
     except Exception as e:
         logger.warning(f"Billet seeding failed: {e}")
+
+    # 8a. Seed demo users (Living Sim)
+    try:
+        from seed.seed_demo_users import seed_demo_data
+
+        async with async_session() as db:
+            count = await seed_demo_data(db)
+            await db.commit()
+            if count:
+                logger.info(f"Demo users: {count} users seeded.")
+            else:
+                logger.info("Demo users already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Demo user seeding failed: {e}")
 
     # 8b. Seed personnel roster
     try:
