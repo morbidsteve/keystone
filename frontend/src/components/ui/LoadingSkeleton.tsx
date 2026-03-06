@@ -88,3 +88,82 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
     </div>
   );
 }
+
+// --- Variant-based skeleton component ---
+
+interface SkeletonProps {
+  variant?: 'card' | 'table' | 'text' | 'chart' | 'kpi-row';
+  count?: number;
+}
+
+function TextSkeleton() {
+  return (
+    <div>
+      <div className="skeleton" style={{ width: '100%', height: 14, marginBottom: 8 }} />
+      <div className="skeleton" style={{ width: '80%', height: 14, marginBottom: 8 }} />
+      <div className="skeleton" style={{ width: '60%', height: 14 }} />
+    </div>
+  );
+}
+
+function ChartSkeleton() {
+  return (
+    <div
+      className="skeleton"
+      style={{
+        width: '100%',
+        height: 200,
+        borderRadius: 'var(--radius)',
+      }}
+    />
+  );
+}
+
+function KpiRowSkeleton() {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <CardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
+function CardVariantSkeleton() {
+  return (
+    <div
+      className="skeleton"
+      style={{
+        width: '100%',
+        height: 120,
+        borderRadius: 'var(--radius)',
+      }}
+    />
+  );
+}
+
+export function Skeleton({ variant = 'text', count = 1 }: SkeletonProps) {
+  const items = Array.from({ length: count });
+
+  return (
+    <>
+      {items.map((_, i) => {
+        const key = i;
+        switch (variant) {
+          case 'card':
+            return <CardVariantSkeleton key={key} />;
+          case 'table':
+            return <TableSkeleton key={key} />;
+          case 'text':
+            return <TextSkeleton key={key} />;
+          case 'chart':
+            return <ChartSkeleton key={key} />;
+          case 'kpi-row':
+            return <KpiRowSkeleton key={key} />;
+          default:
+            return <TextSkeleton key={key} />;
+        }
+      })}
+    </>
+  );
+}

@@ -4,11 +4,11 @@ interface DashboardState {
   selectedUnitId: string | null;
   selectedEchelon: string | null;
   timeRange: string;
-  activeView: 'commander' | 's4' | 's3';
+  activeView: 'commander' | 's4' | 's3' | 'operator' | 'viewer';
   setSelectedUnitId: (unitId: string | null) => void;
   setSelectedEchelon: (echelon: string | null) => void;
   setTimeRange: (range: string) => void;
-  setActiveView: (view: 'commander' | 's4' | 's3') => void;
+  setActiveView: (view: 'commander' | 's4' | 's3' | 'operator' | 'viewer') => void;
 }
 
 export const useDashboardStore = create<DashboardState>((set) => ({

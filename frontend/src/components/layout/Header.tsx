@@ -6,6 +6,7 @@ import { useDashboardStore } from '@/stores/dashboardStore';
 import { useAlertStore } from '@/stores/alertStore';
 import { isDemoMode } from '@/api/mockClient';
 import { TIME_RANGES } from '@/lib/constants';
+import QuickActionsButton from '@/components/common/QuickActionsButton';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'DASHBOARD',
@@ -102,6 +103,9 @@ export default function Header({ onMenuToggle }: HeaderProps) {
 
       {/* Right Controls */}
       <div className="header-right-controls" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* Quick Actions */}
+        <QuickActionsButton />
+
         {/* Time Range Selector (hidden on mobile) */}
         <div className="header-time-range" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Clock size={12} style={{ color: 'var(--color-text-muted)', marginRight: 6 }} />

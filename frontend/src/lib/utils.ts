@@ -42,21 +42,34 @@ export function formatPercent(value: number): string {
 }
 
 export function getStatusColor(status: SupplyStatus | string): string {
-  switch (status) {
-    case SupplyStatus.GREEN:
-    case 'GREEN':
-      return 'var(--color-success)';
-    case SupplyStatus.AMBER:
-    case 'AMBER':
-      return 'var(--color-warning)';
-    case SupplyStatus.RED:
-    case 'RED':
-      return 'var(--color-danger)';
-    case 'BLACK':
-      return '#1a1a1a';
-    default:
-      return 'var(--color-text-muted)';
+  const s = (typeof status === 'string' ? status : '').toUpperCase();
+
+  // Good status - green
+  if (['GREEN', 'FMC', 'ACTIVE', 'APPROVED', 'RECEIVED', 'COMPLETED', 'COMPLETE', 'HEALTHY', 'GOOD', 'FULL', 'MC'].includes(s)) {
+    return 'var(--color-success)';
   }
+
+  // Warning status - yellow/amber
+  if (['AMBER', 'DEGRADED', 'PENDING', 'PENDING_APPROVAL', 'IN_PROGRESS', 'IN-PROGRESS', 'PARTIAL', 'PMC', 'STOPPED', 'DELAYED', 'LOW', 'SUBMITTED', 'DRAFT'].includes(s)) {
+    return 'var(--color-warning)';
+  }
+
+  // Critical/bad status - red
+  if (['RED', 'BLACK', 'NMC', 'DENIED', 'FAILED', 'CRITICAL', 'OVERDUE', 'DEADLINED', 'CANCELLED', 'BROKEN_DOWN', 'EMERGENCY'].includes(s)) {
+    return 'var(--color-danger)';
+  }
+
+  // Info status - blue
+  if (['EN_ROUTE', 'EN-ROUTE', 'DISPATCHED', 'PROCESSING', 'PLANNED', 'MOVING', 'INFO', 'OPEN'].includes(s)) {
+    return 'var(--color-info)';
+  }
+
+  // Inactive - gray
+  if (['INACTIVE', 'ARCHIVED', 'RETIRED', 'STORED', 'N/A'].includes(s)) {
+    return 'var(--color-text-muted)';
+  }
+
+  return 'var(--color-text-muted)';
 }
 
 export function getStatusBadgeClass(status: SupplyStatus | string): string {
