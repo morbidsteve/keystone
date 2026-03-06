@@ -6,6 +6,7 @@ import { isDemoMode } from '@/api/mockClient';
 import { DEMO_USERS_LIST, SECTION_TITLES, type DemoUser } from '@/api/demoUsers';
 import ClassificationBanner from '@/components/ui/ClassificationBanner';
 import { useClassificationStore } from '@/stores/classificationStore';
+import DemoWalkthrough from '@/components/onboarding/DemoWalkthrough';
 
 // ---------------------------------------------------------------------------
 // Rank accent colors
@@ -821,6 +822,13 @@ export default function LoginPage() {
             Use custom login
           </button>
         </div>
+
+        {/* Demo Walkthrough (demo mode only) */}
+        {isDemoMode && (
+          <div style={{ marginTop: 24, textAlign: 'center' }}>
+            <DemoWalkthrough />
+          </div>
+        )}
 
         {/* Footer */}
         <div

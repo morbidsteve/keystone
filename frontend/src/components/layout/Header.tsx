@@ -1,9 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, Clock, LogOut, Menu, User } from 'lucide-react';
+import { Bell, ChevronDown, Clock, HelpCircle, LogOut, Menu, RotateCcw, User } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { useAlertStore } from '@/stores/alertStore';
+import { useHelpMode } from '@/hooks/useHelpMode';
+import { resetGuidedTour } from '@/components/onboarding/GuidedTour';
 import { isDemoMode } from '@/api/mockClient';
 import { TIME_RANGES } from '@/lib/constants';
 import QuickActionsButton from '@/components/common/QuickActionsButton';
@@ -32,6 +34,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   const logout = useAuthStore((s) => s.logout);
   const { timeRange, setTimeRange } = useDashboardStore();
   const unreadCount = useAlertStore((s) => s.unreadCount);
+  const { isHelpMode, toggleHelpMode } = useHelpMode();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const pageTitle = pageTitles[location.pathname] || 'KEYSTONE';
@@ -140,6 +143,39 @@ export default function Header({ onMenuToggle }: HeaderProps) {
             </button>
           ))}
         </div>
+
+        {/* Help Mode Toggle */}
+        <button
+          id="header-help-button"
+          onClick={toggleHelpMode}
+          title="Toggle Help Mode"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            background: isHelpMode ? 'rgba(77, 171, 247, 0.15)' : 'none',
+            border: isHelpMode ? '1px solid var(--color-accent)' : '1px solid transparent',
+            borderRadius: 'var(--radius)',
+            cursor: 'pointer',
+            padding: '4px 8px',
+            color: isHelpMode ? 'var(--color-accent)' : 'var(--color-text-muted)',
+            transition: 'all var(--transition)',
+          }}
+        >
+          <HelpCircle size={16} />
+          {isHelpMode && (
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 9,
+                fontWeight: 700,
+                letterSpacing: '1px',
+              }}
+            >
+              HELP ON
+            </span>
+          )}
+        </button>
 
         {/* Alert Bell */}
         <button
@@ -252,6 +288,38 @@ export default function Header({ onMenuToggle }: HeaderProps) {
                     {user?.role}
                   </div>
                 </div>
+                <button
+                  onClick={() => {
+                    resetGuidedTour();
+                    setUserMenuOpen(false);
+                    window.location.reload();
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: '1px solid var(--color-border)',
+                    cursor: 'pointer',
+                    color: 'var(--color-text)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 11,
+                    letterSpacing: '1px',
+                    transition: 'background-color var(--transition)',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
+                >
+                  <RotateCcw size={14} />
+                  RESTART TOUR
+                </button>
                 <button
                   onClick={handleLogout}
                   style={{

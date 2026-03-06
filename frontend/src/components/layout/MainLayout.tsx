@@ -12,6 +12,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import CommandPalette from '@/components/common/CommandPalette';
 import ToastContainer from '@/components/ui/ToastContainer';
 import GlobalModals from '@/components/common/GlobalModals';
+import GuidedTour from '@/components/onboarding/GuidedTour';
 
 export default function MainLayout() {
   const fetchClassification = useClassificationStore((s) => s.fetchClassification);
@@ -76,6 +77,7 @@ export default function MainLayout() {
       <KeyboardShortcuts isOpen={showHelp} onClose={() => setShowHelp(false)} />
       <ToastContainer />
       <GlobalModals />
+      <GuidedTour />
     </div>
   );
 }
