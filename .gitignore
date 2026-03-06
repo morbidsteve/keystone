@@ -40,6 +40,8 @@ pgdata/
 htmlcov/
 .pytest_cache/
 coverage/
+frontend/test-results/
+frontend/playwright-report/
 
 # Misc
 *.log
