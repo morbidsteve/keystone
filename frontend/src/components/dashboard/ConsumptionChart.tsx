@@ -32,16 +32,9 @@ export default function ConsumptionChart({ data, title = 'CONSUMPTION RATE' }: C
     if (active && payload && payload.length) {
       return (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            padding: '8px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
         >
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>{label}</div>
+          <div className="text-[var(--color-text-muted)] mb-1">{label}</div>
           {payload.map((p, i) => (
             <div key={i} style={{ color: p.dataKey === 'rate' ? 'var(--color-accent)' : 'var(--color-warning)' }}>
               {p.dataKey === 'rate' ? 'Actual' : 'Projected'}: {p.value}

@@ -49,7 +49,7 @@ export default function MovementTracker({
 
   return (
     <Card title="ACTIVE MOVEMENTS">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {displayMovements.map((mov) => {
           const statusColor = getMovementStatusColor(mov.status);
           const isSelected = mov.id === selectedConvoyId;
@@ -60,19 +60,11 @@ export default function MovementTracker({
                 onSelectConvoy?.(mov.id);
                 onViewDetail?.(mov);
               }}
-              style={{
-                padding: '12px 14px',
-                backgroundColor: isSelected
+              className="py-3 px-3.5 rounded-[var(--radius)] cursor-pointer" style={{ backgroundColor: isSelected
                   ? 'rgba(77, 171, 247, 0.05)'
-                  : 'var(--color-bg-surface)',
-                border: isSelected
+                  : 'var(--color-bg-surface)', border: isSelected
                   ? '1px solid var(--color-accent)'
-                  : '1px solid var(--color-border)',
-                borderLeft: `3px solid ${statusColor}`,
-                borderRadius: 'var(--radius)',
-                transition: 'background-color var(--transition)',
-                cursor: 'pointer',
-              }}
+                  : '1px solid var(--color-border)', borderLeft: `3px solid ${statusColor}`, transition: 'background-color var(--transition)' }}
               onMouseEnter={(e) => {
                 if (!isSelected) {
                   e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
@@ -86,50 +78,28 @@ export default function MovementTracker({
             >
               {/* Header */}
               <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: 8,
-                }}
+                className="flex justify-between items-center mb-2"
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="flex items-center gap-2">
                   <Truck size={14} style={{ color: statusColor }} />
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      color: 'var(--color-text-bright)',
-                    }}
+                    className="font-[var(--font-mono)] text-[13px] font-bold text-[var(--color-text-bright)]"
                   >
                     {mov.name}
                   </span>
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: mov.priority === 'URGENT' ? 'var(--color-danger)' : 'var(--color-text-muted)',
-                      fontWeight: 600,
-                      letterSpacing: '1px',
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px]" style={{ color: mov.priority === 'URGENT' ? 'var(--color-danger)' : 'var(--color-text-muted)' }}
                   >
                     {mov.priority}
                   </span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div className="flex items-center gap-1.5">
                   <StatusDot
                     status={getMovementDotStatus(mov.status)}
                     pulse={mov.status === MovementStatus.EN_ROUTE}
                   />
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: statusColor,
-                      fontWeight: 600,
-                      letterSpacing: '1px',
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px]" style={{ color: statusColor }}
                   >
                     {mov.status.replace('_', ' ')}
                   </span>
@@ -138,41 +108,27 @@ export default function MovementTracker({
 
               {/* Route */}
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  marginBottom: 6,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                }}
+                className="flex items-center gap-2 mb-1.5 font-[var(--font-mono)] text-[11px]"
               >
-                <MapPin size={12} style={{ color: 'var(--color-text-muted)' }} />
-                <span style={{ color: 'var(--color-text)' }}>{mov.originUnit}</span>
-                <ArrowRight size={12} style={{ color: 'var(--color-text-muted)' }} />
-                <span style={{ color: 'var(--color-text-bright)' }}>{mov.destinationUnit}</span>
+                <MapPin size={12} className="text-[var(--color-text-muted)]" />
+                <span className="text-[var(--color-text)]">{mov.originUnit}</span>
+                <ArrowRight size={12} className="text-[var(--color-text-muted)]" />
+                <span className="text-[var(--color-text-bright)]">{mov.destinationUnit}</span>
               </div>
 
               {/* Cargo */}
-              <div style={{ fontSize: 11, color: 'var(--color-text-muted)', marginBottom: 6 }}>
+              <div className="text-[11px] text-[var(--color-text-muted)] mb-1.5">
                 {mov.manifest ? (
                   <div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    <div className="flex flex-wrap gap-1.5">
                       {mov.manifest.cargo.map((c, i) => (
-                        <span key={i} style={{
-                          padding: '1px 6px',
-                          backgroundColor: 'rgba(77, 171, 247, 0.08)',
-                          border: '1px solid var(--color-border)',
-                          borderRadius: 'var(--radius)',
-                          fontSize: 10,
-                          fontFamily: 'var(--font-mono)',
-                        }}>
+                        <span key={i} className="py-px px-1.5 bg-[rgba(77,171,247,0.08)] border border-[var(--color-border)] rounded-[var(--radius)] text-[10px] font-[var(--font-mono)]">
                           CL {c.supplyClass}: {c.quantity} {c.unit}
                         </span>
                       ))}
                     </div>
                     {mov.manifest.vehicles.length > 0 && (
-                      <div style={{ marginTop: 4, fontSize: 10, fontFamily: 'var(--font-mono)' }}>
+                      <div className="mt-1 text-[10px] font-[var(--font-mono)]">
                         {mov.manifest.vehicles.map(v => `${v.quantity}x ${v.type}`).join(', ')}
                       </div>
                     )}
@@ -189,14 +145,7 @@ export default function MovementTracker({
                     e.stopPropagation();
                     setExpandedManifest(prev => prev === mov.id ? null : mov.id);
                   }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4,
-                    padding: '2px 0', marginBottom: 4,
-                    fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600,
-                    letterSpacing: '0.5px',
-                    color: 'var(--color-accent)',
-                    background: 'none', border: 'none', cursor: 'pointer',
-                  }}
+                  className="flex items-center gap-1 py-0.5 px-0 mb-1 font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[var(--color-accent)] bg-transparent border-0 cursor-pointer"
                 >
                   <Package size={10} />
                   {expandedManifest === mov.id ? 'HIDE MANIFEST' : 'VIEW MANIFEST'}
@@ -209,25 +158,17 @@ export default function MovementTracker({
 
               {/* Expanded manifest detail */}
               {mov.manifest && expandedManifest === mov.id && (
-                <div style={{
-                  padding: 8,
-                  marginBottom: 6,
-                  backgroundColor: 'rgba(77, 171, 247, 0.03)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  fontSize: 10,
-                  fontFamily: 'var(--font-mono)',
-                }}>
+                <div className="p-2 mb-1.5 bg-[rgba(77,171,247,0.03)] border border-[var(--color-border)] rounded-[var(--radius)] text-[10px] font-[var(--font-mono)]">
                   {/* Cargo table */}
-                  <div style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'var(--color-text-muted)', marginBottom: 4 }}>CARGO</div>
+                  <div className="mb-2">
+                    <div className="text-[9px] font-bold tracking-[1px] text-[var(--color-text-muted)] mb-1">CARGO</div>
                     {mov.manifest.cargo.map((c, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid var(--color-border)' }}>
-                        <span style={{ color: 'var(--color-text)' }}>CL {c.supplyClass} — {c.description}</span>
-                        <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{c.quantity} {c.unit}</span>
+                      <div key={i} className="flex justify-between py-0.5 px-0 border-b border-b-[var(--color-border)]">
+                        <span className="text-[var(--color-text)]">CL {c.supplyClass} — {c.description}</span>
+                        <span className="text-[var(--color-text-bright)] font-semibold">{c.quantity} {c.unit}</span>
                       </div>
                     ))}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', fontWeight: 700, color: 'var(--color-text-bright)' }}>
+                    <div className="flex justify-between py-0.5 px-0 font-bold text-[var(--color-text-bright)]">
                       <span>TOTAL WEIGHT</span>
                       <span>{mov.manifest.totalWeightTons} T</span>
                     </div>
@@ -235,15 +176,15 @@ export default function MovementTracker({
 
                   {/* Vehicle table */}
                   {mov.manifest.vehicles.length > 0 && (
-                    <div style={{ marginBottom: 8 }}>
-                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'var(--color-text-muted)', marginBottom: 4 }}>VEHICLES</div>
+                    <div className="mb-2">
+                      <div className="text-[9px] font-bold tracking-[1px] text-[var(--color-text-muted)] mb-1">VEHICLES</div>
                       {mov.manifest.vehicles.map((v, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid var(--color-border)' }}>
-                          <span style={{ color: 'var(--color-text)' }}>{v.type} ({v.tamcn})</span>
-                          <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{v.quantity}x</span>
+                        <div key={i} className="flex justify-between py-0.5 px-0 border-b border-b-[var(--color-border)]">
+                          <span className="text-[var(--color-text)]">{v.type} ({v.tamcn})</span>
+                          <span className="text-[var(--color-text-bright)] font-semibold">{v.quantity}x</span>
                         </div>
                       ))}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', fontWeight: 700, color: 'var(--color-text-bright)' }}>
+                      <div className="flex justify-between py-0.5 px-0 font-bold text-[var(--color-text-bright)]">
                         <span>TOTAL</span>
                         <span>{mov.manifest.totalVehicles} VEH</span>
                       </div>
@@ -253,14 +194,14 @@ export default function MovementTracker({
                   {/* Personnel table */}
                   {mov.manifest.personnelByRole.length > 0 && (
                     <div>
-                      <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '1px', color: 'var(--color-text-muted)', marginBottom: 4 }}>PERSONNEL</div>
+                      <div className="text-[9px] font-bold tracking-[1px] text-[var(--color-text-muted)] mb-1">PERSONNEL</div>
                       {mov.manifest.personnelByRole.map((p, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid var(--color-border)' }}>
-                          <span style={{ color: 'var(--color-text)' }}>{p.role}</span>
-                          <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{p.count}</span>
+                        <div key={i} className="flex justify-between py-0.5 px-0 border-b border-b-[var(--color-border)]">
+                          <span className="text-[var(--color-text)]">{p.role}</span>
+                          <span className="text-[var(--color-text-bright)] font-semibold">{p.count}</span>
                         </div>
                       ))}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', fontWeight: 700, color: 'var(--color-text-bright)' }}>
+                      <div className="flex justify-between py-0.5 px-0 font-bold text-[var(--color-text-bright)]">
                         <span>TOTAL</span>
                         <span>{mov.manifest.totalPersonnel} PAX</span>
                       </div>
@@ -271,19 +212,11 @@ export default function MovementTracker({
 
               {/* Details Footer */}
               <div
-                style={{
-                  display: 'flex',
-                  gap: 16,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  paddingTop: 6,
-                  borderTop: '1px solid var(--color-border)',
-                }}
+                className="flex gap-4 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] pt-1.5 border-t border-t-[var(--color-border)]"
               >
                 <span>{mov.vehicles} VEH / {mov.personnel} PAX</span>
                 {mov.departureTime && (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <span className="flex items-center gap-[3px]">
                     <Clock size={9} />
                     DEP: {formatDateShort(mov.departureTime)}
                   </span>
@@ -292,7 +225,7 @@ export default function MovementTracker({
                   <span>ETA: {formatDateShort(mov.eta)}</span>
                 )}
                 {mov.arrivalTime && (
-                  <span style={{ color: 'var(--color-success)' }}>
+                  <span className="text-[var(--color-success)]">
                     ARR: {formatDateShort(mov.arrivalTime)}
                   </span>
                 )}
@@ -301,14 +234,7 @@ export default function MovementTracker({
               {/* Notes */}
               {mov.notes && (
                 <div
-                  style={{
-                    fontSize: 10,
-                    color: 'var(--color-warning)',
-                    marginTop: 6,
-                    padding: '4px 8px',
-                    backgroundColor: 'rgba(250, 176, 5, 0.08)',
-                    borderRadius: 'var(--radius)',
-                  }}
+                  className="text-[10px] text-[var(--color-warning)] mt-1.5 py-1 px-2 bg-[rgba(250,176,5,0.08)] rounded-[var(--radius)]"
                 >
                   {mov.notes}
                 </div>

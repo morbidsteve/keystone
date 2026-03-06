@@ -91,71 +91,27 @@ export default function RouteImportModal() {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 3000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(2px)',
-      }}
+      className="fixed z-[3000] flex items-center justify-center bg-[rgba(0,0,0,0.5)] inset-0 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
     >
       <div
-        style={{
-          width: 440,
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          backgroundColor: '#1a1f2e',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 8,
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)',
-          fontFamily: "'JetBrains Mono', monospace",
-        }}
+        className="w-[440px] max-h-[80vh] overflow-y-auto bg-[#1a1f2e] rounded-[8px]" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)', fontFamily: "'JetBrains Mono', monospace" }}
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
+          className="flex items-center justify-between py-3 px-4 border-b border-b-[rgba(255,255,255,0.1)]"
         >
           <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              color: '#e2e8f0',
-              textTransform: 'uppercase',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
+            className="text-[11px] font-bold tracking-[2px] text-[#e2e8f0] uppercase flex items-center gap-2"
           >
             <Upload size={14} />
             IMPORT ROUTES
           </span>
           <button
             onClick={handleClose}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              border: 'none',
-              borderRadius: 4,
-              backgroundColor: 'transparent',
-              color: '#94a3b8',
-              cursor: 'pointer',
-            }}
+            className="flex items-center justify-center w-[28px] h-[28px] border-0 rounded-[4px] bg-transparent text-[#94a3b8] cursor-pointer"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             }}
@@ -168,53 +124,29 @@ export default function RouteImportModal() {
         </div>
 
         {/* Body */}
-        <div style={{ padding: 16 }}>
+        <div className="p-4">
           {/* Success state */}
           {result && (
             <div
-              style={{
-                padding: '20px',
-                textAlign: 'center',
-                marginBottom: 12,
-              }}
+              className="text-center mb-3" style={{ padding: '20px' }}
             >
               <CheckCircle2
                 size={36}
-                style={{ color: '#4ade80', marginBottom: 12 }}
+                className="text-[#4ade80] mb-3"
               />
               <div
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: '#e2e8f0',
-                  marginBottom: 4,
-                }}
+                className="text-[13px] font-bold text-[#e2e8f0] mb-1"
               >
                 Import Successful
               </div>
               <div
-                style={{
-                  fontSize: 11,
-                  color: '#94a3b8',
-                }}
+                className="text-[11px] text-[#94a3b8]"
               >
                 {result.count} route{result.count !== 1 ? 's' : ''} created
               </div>
               <button
                 onClick={handleClose}
-                style={{
-                  marginTop: 16,
-                  padding: '7px 20px',
-                  border: '1px solid #60a5fa',
-                  borderRadius: 4,
-                  backgroundColor: 'rgba(96, 165, 250, 0.15)',
-                  color: '#60a5fa',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: '1px',
-                  cursor: 'pointer',
-                }}
+                className="mt-4 py-[7px] px-5 rounded-[4px] bg-[rgba(96,165,250,0.15)] text-[#60a5fa] text-[10px] font-bold tracking-[1px] cursor-pointer" style={{ border: '1px solid #60a5fa', fontFamily: "'JetBrains Mono', monospace" }}
               >
                 CLOSE
               </button>
@@ -230,43 +162,23 @@ export default function RouteImportModal() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onClick={() => fileInputRef.current?.click()}
-                style={{
-                  padding: '28px 16px',
-                  border: `2px dashed ${isDragging ? '#60a5fa' : 'rgba(255, 255, 255, 0.12)'}`,
-                  borderRadius: 6,
-                  backgroundColor: isDragging
+                className="py-7 px-4 rounded-[6px] text-center cursor-pointer mb-3" style={{ border: `2px dashed ${isDragging ? '#60a5fa' : 'rgba(255, 255, 255, 0.12)'}`, backgroundColor: isDragging
                     ? 'rgba(96, 165, 250, 0.08)'
-                    : 'rgba(255, 255, 255, 0.02)',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  marginBottom: 12,
-                }}
+                    : 'rgba(255, 255, 255, 0.02)', transition: 'all 0.15s ease' }}
               >
                 {isUploading ? (
                   <Loader2
                     size={28}
-                    style={{
-                      color: '#60a5fa',
-                      marginBottom: 8,
-                      animation: 'spin 1s linear infinite',
-                    }}
+                    className="text-[#60a5fa] mb-2 animate-spin"
                   />
                 ) : (
                   <FileUp
                     size={28}
-                    style={{
-                      color: isDragging ? '#60a5fa' : '#64748b',
-                      marginBottom: 8,
-                    }}
+                    className="mb-2" style={{ color: isDragging ? '#60a5fa' : '#64748b' }}
                   />
                 )}
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: '#e2e8f0',
-                    marginBottom: 4,
-                  }}
+                  className="text-[11px] text-[#e2e8f0] mb-1"
                 >
                   {file
                     ? file.name
@@ -275,10 +187,7 @@ export default function RouteImportModal() {
                       : 'Click or drag to upload'}
                 </div>
                 <div
-                  style={{
-                    fontSize: 9,
-                    color: '#64748b',
-                  }}
+                  className="text-[9px] text-[#64748b]"
                 >
                   Supported: GeoJSON, JSON, KML, KMZ, GPX, CSV
                 </div>
@@ -287,75 +196,35 @@ export default function RouteImportModal() {
                   type="file"
                   accept={ACCEPTED_EXTENSIONS}
                   onChange={handleFileInput}
-                  style={{ display: 'none' }}
+                  className="hidden"
                 />
               </div>
 
               {/* Error */}
               {error && (
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '8px 10px',
-                    backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                    border: '1px solid rgba(248, 113, 113, 0.3)',
-                    borderRadius: 4,
-                    color: '#f87171',
-                    fontSize: 10,
-                    marginBottom: 12,
-                  }}
+                  className="flex items-center gap-2 py-2 px-2.5 bg-[rgba(248,113,113,0.1)] rounded-[4px] text-[#f87171] text-[10px] mb-3 border border-[rgba(248,113,113,0.3)]"
                 >
-                  <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                  <AlertCircle size={14} className="shrink-0" />
                   <span>{error}</span>
                 </div>
               )}
 
               {/* Actions */}
               <div
-                style={{
-                  display: 'flex',
-                  gap: 8,
-                  justifyContent: 'flex-end',
-                  paddingTop: 8,
-                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                }}
+                className="flex gap-2 justify-end pt-2 border-t border-t-[rgba(255,255,255,0.08)]"
               >
                 <button
                   onClick={handleClose}
                   disabled={isUploading}
-                  style={{
-                    padding: '7px 16px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: 4,
-                    backgroundColor: 'transparent',
-                    color: '#94a3b8',
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="py-[7px] px-4 rounded-[4px] bg-transparent text-[#94a3b8] text-[10px] font-semibold tracking-[1px] cursor-pointer" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', fontFamily: "'JetBrains Mono', monospace" }}
                 >
                   CANCEL
                 </button>
                 <button
                   onClick={handleUpload}
                   disabled={!file || isUploading}
-                  style={{
-                    padding: '7px 16px',
-                    border: '1px solid #60a5fa',
-                    borderRadius: 4,
-                    backgroundColor: 'rgba(96, 165, 250, 0.15)',
-                    color: '#60a5fa',
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: '1px',
-                    cursor: !file || isUploading ? 'not-allowed' : 'pointer',
-                    opacity: !file || isUploading ? 0.5 : 1,
-                  }}
+                  className="py-[7px] px-4 rounded-[4px] bg-[rgba(96,165,250,0.15)] text-[#60a5fa] text-[10px] font-bold tracking-[1px]" style={{ border: '1px solid #60a5fa', fontFamily: "'JetBrains Mono', monospace", cursor: !file || isUploading ? 'not-allowed' : 'pointer', opacity: !file || isUploading ? 0.5 : 1 }}
                 >
                   {isUploading ? 'UPLOADING...' : 'IMPORT'}
                 </button>

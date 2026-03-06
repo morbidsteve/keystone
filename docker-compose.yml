@@ -33,6 +33,14 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     read_only: true
     tmpfs:
       - /tmp
@@ -47,12 +55,22 @@ services:
     ports: ["6379:6379"]
     volumes:
       - redisdata:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "keystone_redis_dev", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -80,7 +98,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone
       DATABASE_URL_SYNC: postgresql://keystone:keystone_dev@db:5432/keystone
-      REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://:keystone_redis_dev@redis:6379/0
       SECRET_KEY: dev-secret-key-change-in-production
       CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://localhost:8080","http://localhost","https://localhost","https://localhost:443"]'
       SIM_ENABLED: "true"
@@ -93,6 +111,14 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -113,7 +139,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone
       DATABASE_URL_SYNC: postgresql://keystone:keystone_dev@db:5432/keystone
-      REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://:keystone_redis_dev@redis:6379/0
       SECRET_KEY: dev-secret-key-change-in-production
     depends_on:
       db: { condition: service_healthy }
@@ -125,6 +151,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -152,6 +186,14 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
     security_opt:
       - no-new-privileges:true
     cap_drop:

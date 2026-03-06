@@ -47,112 +47,55 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
 
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border)',
-        borderLeft: `3px solid ${getPriorityColor(wo.priority)}`,
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-        transition: 'background-color var(--transition)',
-      }}
+      className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden" style={{ borderLeft: `3px solid ${getPriorityColor(wo.priority)}`, transition: 'background-color var(--transition)' }}
     >
       {/* Header Row */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          padding: '10px 12px',
-          cursor: 'pointer',
-        }}
+        className="flex items-center gap-2.5 py-2.5 px-3 cursor-pointer"
         onClick={() => setExpanded(!expanded)}
         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')}
         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
       >
         {expanded ? (
-          <ChevronDown size={14} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+          <ChevronDown size={14} className="text-[var(--color-text-muted)] shrink-0" />
         ) : (
-          <ChevronRight size={14} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+          <ChevronRight size={14} className="text-[var(--color-text-muted)] shrink-0" />
         )}
 
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text-bright)',
-            fontWeight: 600,
-            minWidth: 100,
-          }}
+          className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold min-w-[100px]"
         >
           {wo.workOrderNumber}
         </span>
 
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: getPriorityColor(wo.priority),
-            fontWeight: 600,
-            letterSpacing: '1px',
-            minWidth: 60,
-          }}
+          className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] min-w-[60px]" style={{ color: getPriorityColor(wo.priority) }}
         >
           {getPriorityLabel(wo.priority)}
         </span>
 
         <span
-          style={{
-            fontSize: 11,
-            color: 'var(--color-text)',
-            flex: 1,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
+          className="text-[11px] text-[var(--color-text)] flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
         >
           {wo.description}
         </span>
 
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: 'var(--color-text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-          }}
+          className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] flex items-center gap-1"
         >
           <Package size={9} />
           {totalParts}
         </span>
 
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: 'var(--color-text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-          }}
+          className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] flex items-center gap-1"
         >
           <Clock size={9} />
           {totalLabor}h
         </span>
 
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            padding: '2px 8px',
-            borderRadius: 2,
-            border: `1px solid ${getWOStatusColor(wo.status)}`,
-            color: getWOStatusColor(wo.status),
-            backgroundColor: `${getWOStatusColor(wo.status)}15`,
-            letterSpacing: '0.5px',
-            whiteSpace: 'nowrap',
-          }}
+          className="font-[var(--font-mono)] text-[9px] py-0.5 px-2 rounded-[2px] tracking-[0.5px] whitespace-nowrap" style={{ border: `1px solid ${getWOStatusColor(wo.status)}`, color: getWOStatusColor(wo.status), backgroundColor: `${getWOStatusColor(wo.status)}15` }}
         >
           {wo.status.replace(/_/g, ' ')}
         </span>
@@ -161,24 +104,11 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
       {/* Expanded Detail */}
       {expanded && (
         <div
-          style={{
-            borderTop: '1px solid var(--color-border)',
-            padding: '12px 16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 16,
-          }}
+          className="border-t border-t-[var(--color-border)] py-3 px-4 flex flex-col gap-4"
         >
           {/* Meta Info */}
           <div
-            style={{
-              display: 'flex',
-              gap: 24,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              flexWrap: 'wrap',
-            }}
+            className="flex gap-6 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex-wrap"
           >
             <span>Created: {formatDate(wo.createdAt)}</span>
             {wo.completedAt && <span>Completed: {formatDate(wo.completedAt)}</span>}
@@ -186,7 +116,7 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
               <span>ETA: {formatRelativeTime(wo.estimatedCompletion)}</span>
             )}
             {wo.assignedTo && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <span className="flex items-center gap-[3px]">
                 <User size={9} />
                 {wo.assignedTo}
               </span>
@@ -199,46 +129,21 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
           {wo.parts.length > 0 && (
             <div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  marginBottom: 8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2 flex items-center gap-1.5"
               >
                 <Package size={10} />
                 PARTS ({wo.parts.length})
               </div>
               <div
-                style={{
-                  backgroundColor: 'var(--color-bg-elevated)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  overflow: 'hidden',
-                }}
+                className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
               >
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className="w-full border-collapse">
                   <thead>
                     <tr>
                       {['PART #', 'NOMENCLATURE', 'QTY', 'SOURCE', 'STATUS', 'COST'].map((h) => (
                         <th
                           key={h}
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            fontWeight: 600,
-                            color: 'var(--color-text-muted)',
-                            padding: '6px 10px',
-                            textAlign: h === 'QTY' || h === 'COST' ? 'right' : 'left',
-                            borderBottom: '1px solid var(--color-border)',
-                            letterSpacing: '1px',
-                          }}
+                          className="font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-text-muted)] py-1.5 px-2.5 border-b border-b-[var(--color-border)] tracking-[1px]" style={{ textAlign: h === 'QTY' || h === 'COST' ? 'right' : 'left' }}
                         >
                           {h}
                         </th>
@@ -249,74 +154,36 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
                     {wo.parts.map((part) => (
                       <tr key={part.id}>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 10,
-                            padding: '6px 10px',
-                            color: 'var(--color-text-bright)',
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                          className="font-[var(--font-mono)] text-[10px] py-1.5 px-2.5 text-[var(--color-text-bright)] border-b border-b-[var(--color-border)]"
                         >
                           {part.partNumber}
                         </td>
                         <td
-                          style={{
-                            fontSize: 10,
-                            padding: '6px 10px',
-                            color: 'var(--color-text)',
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                          className="text-[10px] py-1.5 px-2.5 text-[var(--color-text)] border-b border-b-[var(--color-border)]"
                         >
                           {part.nomenclature}
                         </td>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 10,
-                            padding: '6px 10px',
-                            textAlign: 'right',
-                            color: 'var(--color-text)',
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                          className="font-[var(--font-mono)] text-[10px] py-1.5 px-2.5 text-right text-[var(--color-text)] border-b border-b-[var(--color-border)]"
                         >
                           {part.quantity}
                         </td>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            padding: '6px 10px',
-                            color: 'var(--color-text-muted)',
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                          className="font-[var(--font-mono)] text-[9px] py-1.5 px-2.5 text-[var(--color-text-muted)] border-b border-b-[var(--color-border)]"
                         >
                           {part.source.replace(/_/g, ' ')}
                         </td>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            padding: '6px 10px',
-                            color:
-                              part.status === 'INSTALLED'
+                          className="font-[var(--font-mono)] text-[9px] py-1.5 px-2.5 border-b border-b-[var(--color-border)]" style={{ color: part.status === 'INSTALLED'
                                 ? 'var(--color-success)'
                                 : part.status === 'ON_ORDER'
                                   ? 'var(--color-warning)'
-                                  : 'var(--color-text-muted)',
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                                  : 'var(--color-text-muted)' }}
                         >
                           {part.status.replace(/_/g, ' ')}
                         </td>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 10,
-                            padding: '6px 10px',
-                            textAlign: 'right',
-                            color: 'var(--color-text)',
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                          className="font-[var(--font-mono)] text-[10px] py-1.5 px-2.5 text-right text-[var(--color-text)] border-b border-b-[var(--color-border)]"
                         >
                           {part.unitCost ? `$${(part.unitCost * part.quantity).toLocaleString()}` : '\u2014'}
                         </td>
@@ -332,46 +199,21 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
           {wo.laborEntries.length > 0 && (
             <div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  marginBottom: 8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2 flex items-center gap-1.5"
               >
                 <Wrench size={10} />
                 LABOR ({wo.laborEntries.length} entries, {totalLabor}h total)
               </div>
               <div
-                style={{
-                  backgroundColor: 'var(--color-bg-elevated)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  overflow: 'hidden',
-                }}
+                className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
               >
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className="w-full border-collapse">
                   <thead>
                     <tr>
                       {['DATE', 'TYPE', 'HOURS', 'NOTES'].map((h) => (
                         <th
                           key={h}
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            fontWeight: 600,
-                            color: 'var(--color-text-muted)',
-                            padding: '6px 10px',
-                            textAlign: h === 'HOURS' ? 'right' : 'left',
-                            borderBottom: '1px solid var(--color-border)',
-                            letterSpacing: '1px',
-                          }}
+                          className="font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-text-muted)] py-1.5 px-2.5 border-b border-b-[var(--color-border)] tracking-[1px]" style={{ textAlign: h === 'HOURS' ? 'right' : 'left' }}
                         >
                           {h}
                         </th>
@@ -382,49 +224,22 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
                     {wo.laborEntries.map((labor) => (
                       <tr key={labor.id}>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 10,
-                            padding: '6px 10px',
-                            color: 'var(--color-text)',
-                            borderBottom: '1px solid var(--color-border)',
-                            whiteSpace: 'nowrap',
-                          }}
+                          className="font-[var(--font-mono)] text-[10px] py-1.5 px-2.5 text-[var(--color-text)] border-b border-b-[var(--color-border)] whitespace-nowrap"
                         >
                           {labor.date}
                         </td>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            padding: '6px 10px',
-                            color: 'var(--color-text-muted)',
-                            borderBottom: '1px solid var(--color-border)',
-                            textTransform: 'uppercase',
-                          }}
+                          className="font-[var(--font-mono)] text-[9px] py-1.5 px-2.5 text-[var(--color-text-muted)] border-b border-b-[var(--color-border)] uppercase"
                         >
                           {labor.laborType}
                         </td>
                         <td
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 10,
-                            padding: '6px 10px',
-                            textAlign: 'right',
-                            color: 'var(--color-text-bright)',
-                            fontWeight: 600,
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                          className="font-[var(--font-mono)] text-[10px] py-1.5 px-2.5 text-right text-[var(--color-text-bright)] font-semibold border-b border-b-[var(--color-border)]"
                         >
                           {labor.hours}h
                         </td>
                         <td
-                          style={{
-                            fontSize: 10,
-                            padding: '6px 10px',
-                            color: 'var(--color-text)',
-                            borderBottom: '1px solid var(--color-border)',
-                          }}
+                          className="text-[10px] py-1.5 px-2.5 text-[var(--color-text)] border-b border-b-[var(--color-border)]"
                         >
                           {labor.notes || '\u2014'}
                         </td>
@@ -437,28 +252,13 @@ function WorkOrderRow({ wo, onViewDetails }: { wo: MaintenanceWorkOrder; onViewD
           )}
 
           {/* View Full Details Button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="flex justify-end">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onViewDetails(wo);
               }}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1px',
-                padding: '6px 16px',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                backgroundColor: 'var(--color-bg-hover)',
-                color: 'var(--color-text-bright)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                transition: 'background-color var(--transition)',
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-1.5 px-4 border border-[var(--color-border)] rounded-[var(--radius)] bg-[var(--color-bg-hover)] text-[var(--color-text-bright)] cursor-pointer flex items-center gap-1.5 transition-colors duration-[var(--transition)]"
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-surface)')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')}
             >
@@ -509,131 +309,63 @@ export default function MaintenanceHistoryTab({ workOrders, equipmentId, onRefre
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="flex flex-col gap-3">
       {/* Summary Bar */}
       <div
-        style={{
-          display: 'flex',
-          gap: 24,
-          padding: '12px 16px',
-          backgroundColor: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius)',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-        }}
+        className="flex gap-6 py-3 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] items-center flex-wrap"
       >
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]"
           >
             Total WOs
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 18,
-              fontWeight: 600,
-              color: 'var(--color-text-bright)',
-            }}
+            className="font-[var(--font-mono)] text-lg font-semibold text-[var(--color-text-bright)]"
           >
             {workOrders.length}
           </div>
         </div>
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]"
           >
             Open
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 18,
-              fontWeight: 600,
-              color: openCount > 0 ? 'var(--color-warning)' : 'var(--color-success)',
-            }}
+            className="font-[var(--font-mono)] text-lg font-semibold" style={{ color: openCount > 0 ? 'var(--color-warning)' : 'var(--color-success)' }}
           >
             {openCount}
           </div>
         </div>
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]"
           >
             Total Hours
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 18,
-              fontWeight: 600,
-              color: 'var(--color-text-bright)',
-            }}
+            className="font-[var(--font-mono)] text-lg font-semibold text-[var(--color-text-bright)]"
           >
             {totalHours.toFixed(1)}
           </div>
         </div>
 
         {/* NEW WO Button + Sort Controls */}
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
+        <div className="flex gap-1.5 items-center ml-auto">
           <button
             onClick={() => setShowCreate(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '4px 10px',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'transparent',
-              color: 'var(--color-accent)',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-            }}
+            className="inline-flex items-center gap-1 font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-1 px-2.5 border border-[var(--color-accent)] rounded-[var(--radius)] bg-transparent text-[var(--color-accent)] cursor-pointer uppercase"
           >
             <Plus size={10} />
             NEW WO
           </button>
-          <div style={{ width: 1, height: 20, backgroundColor: 'var(--color-border)', margin: '0 4px' }} />
+          <div className="w-[1px] h-[20px] bg-[var(--color-border)] mx-1" />
           {(['date', 'priority', 'status'] as const).map((s) => (
             <button
               key={s}
               onClick={() => setSortBy(s)}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                padding: '4px 10px',
-                border: `1px solid ${sortBy === s ? 'var(--color-text-bright)' : 'var(--color-border)'}`,
-                borderRadius: 'var(--radius)',
-                backgroundColor: sortBy === s ? 'var(--color-bg-hover)' : 'transparent',
-                color: sortBy === s ? 'var(--color-text-bright)' : 'var(--color-text-muted)',
-                cursor: 'pointer',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-              }}
+              className="font-[var(--font-mono)] text-[9px] py-1 px-2.5 rounded-[var(--radius)] cursor-pointer uppercase tracking-[1px]" style={{ border: `1px solid ${sortBy === s ? 'var(--color-text-bright)' : 'var(--color-border)'}`, backgroundColor: sortBy === s ? 'var(--color-bg-hover)' : 'transparent', color: sortBy === s ? 'var(--color-text-bright)' : 'var(--color-text-muted)' }}
             >
               {s}
             </button>

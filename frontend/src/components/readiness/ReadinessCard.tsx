@@ -32,14 +32,7 @@ export default function ReadinessCard({
   return (
     <div
       onClick={onClick}
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        padding: 16,
-        cursor: onClick ? 'pointer' : 'default',
-        transition: 'all var(--transition)',
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4" style={{ cursor: onClick ? 'pointer' : 'default', transition: 'all var(--transition)' }}
       onMouseEnter={(e) => {
         if (onClick) {
           e.currentTarget.style.borderColor = 'var(--color-border-strong)';
@@ -55,21 +48,10 @@ export default function ReadinessCard({
     >
       {/* Top: unit name + rating badge */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 10,
-        }}
+        className="flex items-center justify-between mb-2.5"
       >
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            fontWeight: 600,
-            color: 'var(--color-text-bright)',
-            letterSpacing: '0.5px',
-          }}
+          className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)] tracking-[0.5px]"
         >
           {unitName}
         </span>
@@ -77,55 +59,27 @@ export default function ReadinessCard({
       </div>
 
       {/* Percentage + progress bar */}
-      <div style={{ marginBottom: 8 }}>
+      <div className="mb-2">
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            justifyContent: 'space-between',
-            marginBottom: 4,
-          }}
+          className="flex items-baseline justify-between mb-1"
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 22,
-              fontWeight: 700,
-              color: barColor,
-            }}
+            className="font-[var(--font-mono)] text-[22px] font-bold" style={{ color: barColor }}
           >
             {Math.round(overallReadinessPct)}%
           </span>
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]"
           >
             OVERALL
           </span>
         </div>
         {/* Progress bar */}
         <div
-          style={{
-            width: '100%',
-            height: 4,
-            backgroundColor: 'rgba(255,255,255,0.06)',
-            borderRadius: 2,
-            overflow: 'hidden',
-          }}
+          className="w-full h-[4px] bg-[rgba(255,255,255,0.06)] rounded-[2px] overflow-hidden"
         >
           <div
-            style={{
-              width: `${overallReadinessPct}%`,
-              height: '100%',
-              backgroundColor: barColor,
-              borderRadius: 2,
-              transition: 'width 0.4s ease',
-            }}
+            className="h-full rounded-[2px]" style={{ width: `${overallReadinessPct}%`, backgroundColor: barColor, transition: 'width 0.4s ease' }}
           />
         </div>
       </div>
@@ -133,17 +87,7 @@ export default function ReadinessCard({
       {/* Limiting factor */}
       {limitingFactor && (
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: 'var(--color-warning)',
-            lineHeight: 1.4,
-            marginTop: 8,
-            padding: '6px 8px',
-            backgroundColor: 'rgba(251, 191, 36, 0.06)',
-            border: '1px solid rgba(251, 191, 36, 0.15)',
-            borderRadius: 'var(--radius)',
-          }}
+          className="font-[var(--font-mono)] text-[9px] text-[var(--color-warning)] leading-[1.4] mt-2 py-1.5 px-2 bg-[rgba(251,191,36,0.06)] rounded-[var(--radius)]" style={{ border: '1px solid rgba(251, 191, 36, 0.15)' }}
         >
           LIMFAC: {limitingFactor}
         </div>

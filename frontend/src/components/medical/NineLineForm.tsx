@@ -191,24 +191,14 @@ export default function NineLineForm() {
   if (submitted) {
     return (
       <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-        }}
+        className="p-10 text-center font-[var(--font-mono)]"
       >
         <div
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: 'var(--color-danger)',
-            marginBottom: 8,
-            letterSpacing: '2px',
-          }}
+          className="text-sm font-bold text-[var(--color-danger)] mb-2 tracking-[2px]"
         >
           9-LINE SUBMITTED
         </div>
-        <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
+        <div className="text-[11px] text-[var(--color-text-muted)]">
           Casualty report has been transmitted. Awaiting acknowledgement...
         </div>
       </div>
@@ -216,14 +206,14 @@ export default function NineLineForm() {
   }
 
   return (
-    <div style={{ maxWidth: 720 }}>
+    <div className="max-w-[720px]">
       {/* Line 1 — Precedence */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>
           <AlertTriangle size={12} />
           LINE 1 — PRECEDENCE
         </div>
-        <div style={{ marginBottom: 0 }}>
+        <div className="mb-0">
           <label style={labelStyle}>CASEVAC PRECEDENCE</label>
           <select
             style={selectStyle}
@@ -352,12 +342,7 @@ export default function NineLineForm() {
           <div>
             <label style={labelStyle}>NBC CONTAMINATION</label>
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '8px 0',
-              }}
+              className="flex items-center gap-2 py-2 px-0"
             >
               <input
                 type="checkbox"
@@ -366,12 +351,7 @@ export default function NineLineForm() {
                 style={{ accentColor: 'var(--color-danger)' }}
               />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: form.nbcContamination ? 'var(--color-danger)' : 'var(--color-text-muted)',
-                  fontWeight: form.nbcContamination ? 700 : 400,
-                }}
+                className="font-[var(--font-mono)] text-[11px]" style={{ color: form.nbcContamination ? 'var(--color-danger)' : 'var(--color-text-muted)', fontWeight: form.nbcContamination ? 700 : 400 }}
               >
                 {form.nbcContamination ? 'CONTAMINATED' : 'NO CONTAMINATION'}
               </span>
@@ -386,7 +366,7 @@ export default function NineLineForm() {
           <AlertTriangle size={12} />
           LINE 7 — MECHANISM OF INJURY
         </div>
-        <div style={{ marginBottom: 12 }}>
+        <div className="mb-3">
           <label style={labelStyle}>MECHANISM</label>
           <input
             type="text"
@@ -399,7 +379,7 @@ export default function NineLineForm() {
         <div>
           <label style={labelStyle}>INJURIES DESCRIPTION</label>
           <textarea
-            style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }}
+            className="resize-y"
             placeholder="Describe injuries, interventions performed, vital signs..."
             value={form.injuriesDescription}
             onChange={(e) => update('injuriesDescription', e.target.value)}
@@ -413,7 +393,7 @@ export default function NineLineForm() {
           <AlertTriangle size={12} />
           LINE 8 — TRIAGE &amp; TCCC
         </div>
-        <div style={{ marginBottom: 12 }}>
+        <div className="mb-3">
           <label style={labelStyle}>TRIAGE CATEGORY</label>
           <select
             style={selectStyle}
@@ -429,12 +409,7 @@ export default function NineLineForm() {
         <div>
           <label style={labelStyle}>TCCC INTERVENTIONS APPLIED</label>
           <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 8,
-              marginTop: 4,
-            }}
+            className="flex flex-wrap gap-2 mt-1"
           >
             {TCCC_INTERVENTIONS.map((intervention) => {
               const active = form.tcccInterventions.includes(intervention);
@@ -443,20 +418,7 @@ export default function NineLineForm() {
                   key={intervention}
                   type="button"
                   onClick={() => toggleIntervention(intervention)}
-                  style={{
-                    padding: '4px 10px',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: active ? 700 : 400,
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase',
-                    border: `1px solid ${active ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: active ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
-                    color: active ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                    cursor: 'pointer',
-                    transition: 'all var(--transition)',
-                  }}
+                  className="py-1 px-2.5 font-[var(--font-mono)] text-[9px] tracking-[0.5px] uppercase rounded-[var(--radius)] cursor-pointer" style={{ fontWeight: active ? 700 : 400, border: `1px solid ${active ? 'var(--color-accent)' : 'var(--color-border)'}`, backgroundColor: active ? 'rgba(59, 130, 246, 0.15)' : 'transparent', color: active ? 'var(--color-accent)' : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
                 >
                   {intervention.replace(/_/g, ' ')}
                 </button>
@@ -475,7 +437,7 @@ export default function NineLineForm() {
         <div>
           <label style={labelStyle}>ADDITIONAL REMARKS</label>
           <textarea
-            style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }}
+            className="resize-y"
             placeholder="Terrain info, weather, LZ conditions, additional context..."
             value={form.remarks}
             onChange={(e) => update('remarks', e.target.value)}
@@ -536,25 +498,7 @@ export default function NineLineForm() {
       <button
         type="button"
         onClick={handleSubmit}
-        style={{
-          width: '100%',
-          padding: '12px 0',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          fontWeight: 700,
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          color: '#fff',
-          backgroundColor: 'var(--color-danger)',
-          border: 'none',
-          borderRadius: 'var(--radius)',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-          transition: 'opacity var(--transition)',
-        }}
+        className="w-full py-3 px-0 font-[var(--font-mono)] text-xs font-bold tracking-[2px] uppercase text-[#fff] bg-[var(--color-danger)] border-0 rounded-[var(--radius)] cursor-pointer flex items-center justify-center gap-2 transition-opacity duration-[var(--transition)]"
         onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.85'; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
       >

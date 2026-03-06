@@ -24,69 +24,31 @@ function KPICard({ label, value, unit, barValue, barMax, threshold, invertThresh
 
   return (
     <div
-      style={{
-        flex: '1 1 0',
-        minWidth: 160,
-        padding: 16,
-        backgroundColor: 'var(--color-bg-surface)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-      }}
+      className="min-w-[160px] p-4 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)] flex flex-col gap-2 flex-1"
     >
       <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '1.5px',
-          color: 'var(--color-text-muted)',
-        }}
+        className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)]"
       >
         {label}
       </span>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+      <div className="flex items-baseline gap-1">
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 24,
-            fontWeight: 700,
-            color: valueColor,
-          }}
+          className="font-[var(--font-mono)] text-2xl font-bold" style={{ color: valueColor }}
         >
           {value}
         </span>
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-text-muted)',
-          }}
+          className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
         >
           {unit}
         </span>
       </div>
       {barValue != null && barMax != null && (
         <div
-          style={{
-            width: '100%',
-            height: 4,
-            backgroundColor: 'rgba(255,255,255,0.06)',
-            borderRadius: 2,
-            overflow: 'hidden',
-          }}
+          className="w-full h-[4px] bg-[rgba(255,255,255,0.06)] rounded-[2px] overflow-hidden"
         >
           <div
-            style={{
-              width: `${Math.min((barValue / barMax) * 100, 100)}%`,
-              height: '100%',
-              backgroundColor: barColor,
-              borderRadius: 2,
-              transition: 'width 0.3s ease',
-            }}
+            className="h-full rounded-[2px]" style={{ width: `${Math.min((barValue / barMax) * 100, 100)}%`, backgroundColor: barColor, transition: 'width 0.3s ease' }}
           />
         </div>
       )}
@@ -98,22 +60,12 @@ export default function MaintenanceAnalyticsPanel({ analytics }: MaintenanceAnal
   if (!analytics) {
     return (
       <div
-        style={{
-          display: 'flex',
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
+        className="flex gap-3 flex-wrap"
       >
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="skeleton"
-            style={{
-              flex: '1 1 0',
-              minWidth: 160,
-              height: 100,
-              borderRadius: 'var(--radius)',
-            }}
+            className="skeleton min-w-[160px] h-[100px] rounded-[var(--radius)] flex-1"
           />
         ))}
       </div>
@@ -161,11 +113,7 @@ export default function MaintenanceAnalyticsPanel({ analytics }: MaintenanceAnal
 
   return (
     <div
-      style={{
-        display: 'flex',
-        gap: 12,
-        flexWrap: 'wrap',
-      }}
+      className="flex gap-3 flex-wrap"
     >
       {cards.map((card) => (
         <KPICard key={card.label} {...card} />

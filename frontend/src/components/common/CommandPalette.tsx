@@ -94,6 +94,42 @@ interface FuzzyResult {
   indices: number[];
 }
 
+/** Shape of a personnel record returned from the /personnel API. */
+interface ApiPersonnelItem {
+  id?: number | string;
+  full_name?: string;
+  name?: string;
+  rank?: string;
+  mos?: string;
+  unit_name?: string;
+}
+
+/** Shape of an individual equipment record from /equipment/individual. */
+interface ApiEquipmentItem {
+  id?: number | string;
+  bumper_number?: string;
+  equipment_type?: string;
+  status?: string;
+  unit_name?: string;
+  serial_number?: string;
+}
+
+/** Shape of a requisition record from /requisitions. */
+interface ApiRequisitionItem {
+  id: number | string;
+  requisition_number?: string;
+  name?: string;
+  status?: string;
+}
+
+/** Shape of a maintenance work-order record from /maintenance. */
+interface ApiWorkOrderItem {
+  id: number | string;
+  work_order_number?: string;
+  status?: string;
+  description?: string;
+}
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -239,7 +275,7 @@ function HighlightLabel({ text, query }: { text: string; query: string }) {
       let end = i;
       while (end < text.length && indexSet.has(end)) end++;
       parts.push(
-        <span key={i} style={{ color: 'var(--color-accent)', fontWeight: 700 }}>
+        <span key={i} className="text-[var(--color-accent)] font-bold">
           {text.slice(i, end)}
         </span>,
       );
@@ -380,41 +416,17 @@ function getModeColor(prefix: ModePrefix): string {
 function SkeletonRow() {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        padding: '8px 16px',
-      }}
+      className="flex items-center gap-2.5 py-2 px-4"
     >
       <div
-        style={{
-          width: 16,
-          height: 16,
-          borderRadius: 'var(--radius)',
-          background: 'var(--color-bg-hover)',
-          animation: 'shimmer 1.5s ease-in-out infinite',
-        }}
+        className="w-[16px] h-[16px] rounded-[var(--radius)]" style={{ background: 'var(--color-bg-hover)', animation: 'shimmer 1.5s ease-in-out infinite' }}
       />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div className="flex-1 flex flex-col gap-1">
         <div
-          style={{
-            width: '60%',
-            height: 12,
-            borderRadius: 'var(--radius)',
-            background: 'var(--color-bg-hover)',
-            animation: 'shimmer 1.5s ease-in-out infinite',
-          }}
+          className="w-[60%] h-[12px] rounded-[var(--radius)]" style={{ background: 'var(--color-bg-hover)', animation: 'shimmer 1.5s ease-in-out infinite' }}
         />
         <div
-          style={{
-            width: '40%',
-            height: 10,
-            borderRadius: 'var(--radius)',
-            background: 'var(--color-bg-hover)',
-            animation: 'shimmer 1.5s ease-in-out infinite',
-            animationDelay: '0.2s',
-          }}
+          className="w-[40%] h-[10px] rounded-[var(--radius)]" style={{ background: 'var(--color-bg-hover)', animation: 'shimmer 1.5s ease-in-out infinite', animationDelay: '0.2s' }}
         />
       </div>
     </div>
@@ -725,7 +737,7 @@ export default function CommandPalette() {
       const fetchWithFallback = async (
         url: string,
         params: Record<string, string | number>,
-        mapper: (items: any[]) => CommandItem[],
+        mapper: (items: Record<string, unknown>[]) => CommandItem[],
         fallback: () => CommandItem[],
       ) => {
         try {
@@ -745,7 +757,7 @@ export default function CommandPalette() {
           '/personnel',
           { search: q, limit: MAX_PER_CATEGORY },
           (items) =>
-            items.map((p: any) => ({
+            (items as unknown as ApiPersonnelItem[]).map((p) => ({
               id: `api-per-${p.id || p.full_name}`,
               label: p.rank ? `${p.rank} ${p.full_name || p.name}` : (p.full_name || p.name || 'Unknown'),
               category: 'Personnel' as CategoryKey,
@@ -763,7 +775,7 @@ export default function CommandPalette() {
           '/equipment/individual',
           { search: q, limit: MAX_PER_CATEGORY },
           (items) =>
-            items.map((e: any) => ({
+            (items as unknown as ApiEquipmentItem[]).map((e) => ({
               id: `api-eq-${e.id || e.bumper_number}`,
               label: `${e.equipment_type || 'Equipment'} ${e.bumper_number || ''}`.trim(),
               category: 'Equipment' as CategoryKey,
@@ -807,7 +819,7 @@ export default function CommandPalette() {
           '/requisitions',
           { search: q, limit: MAX_PER_CATEGORY },
           (items) =>
-            items.map((r: any) => ({
+            (items as unknown as ApiRequisitionItem[]).map((r) => ({
               id: `api-req-${r.id}`,
               label: r.requisition_number || r.name || `REQ-${r.id}`,
               category: 'Requisitions' as CategoryKey,
@@ -823,7 +835,7 @@ export default function CommandPalette() {
           '/maintenance',
           { search: q, limit: MAX_PER_CATEGORY },
           (items) =>
-            items.map((w: any) => ({
+            (items as unknown as ApiWorkOrderItem[]).map((w) => ({
               id: `api-wo-${w.id}`,
               label: w.work_order_number || `WO-${w.id}`,
               category: 'Work Orders' as CategoryKey,
@@ -1183,79 +1195,33 @@ export default function CommandPalette() {
         role="dialog"
         aria-label="Command palette"
         aria-modal="true"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 10000,
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          paddingTop: 100,
-          backgroundColor: 'rgba(0, 0, 0, 0.65)',
-          animation: 'cmdFadeIn 0.15s ease',
-        }}
+        className="fixed z-[10000] flex items-start justify-center pt-[100px] bg-[rgba(0,0,0,0.65)]" style={{ inset: 0, animation: 'cmdFadeIn 0.15s ease' }}
         onClick={(e) => {
           if (e.target === e.currentTarget) close();
         }}
       >
         {/* Palette container */}
         <div
-          style={{
-            width: '92%',
-            maxWidth: 640,
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'calc(var(--radius) * 1.5)',
-            overflow: 'hidden',
-            animation: 'cmdSlideUp 0.2s ease forwards',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: 520,
-            boxShadow: '0 24px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.05)',
-          }}
+          className="w-[92%] max-w-[640px] bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[calc(var(--radius) * 1.5)] overflow-hidden flex flex-col max-h-[520px]" style={{ animation: 'cmdSlideUp 0.2s ease forwards', boxShadow: '0 24px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.05)' }}
           onKeyDown={handleKeyDown}
         >
           {/* Search Input */}
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '14px 16px',
-              borderBottom: '1px solid var(--color-border)',
-            }}
+            className="flex items-center gap-2.5 py-3.5 px-4 border-b border-b-[var(--color-border)]"
           >
             {isSearching ? (
               <Loader2
                 size={18}
-                style={{
-                  color: 'var(--color-accent)',
-                  flexShrink: 0,
-                  animation: 'spin 1s linear infinite',
-                }}
+                className="text-[var(--color-accent)] shrink-0 animate-spin"
               />
             ) : (
-              <Search size={18} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+              <Search size={18} className="text-[var(--color-text-muted)] shrink-0" />
             )}
 
             {/* Mode indicator pill */}
             {prefix && (
               <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '2px 8px',
-                  borderRadius: 'var(--radius)',
-                  backgroundColor: getModeColor(prefix),
-                  color: 'var(--color-bg)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: '0.5px',
-                  flexShrink: 0,
-                  textTransform: 'uppercase',
-                }}
+                className="inline-flex items-center gap-1 py-0.5 px-2 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[10px] font-bold tracking-[0.5px] shrink-0 uppercase" style={{ backgroundColor: getModeColor(prefix) }}
               >
                 {prefix === '>' && <Terminal size={10} />}
                 {prefix === '#' && <Hash size={10} />}
@@ -1290,34 +1256,14 @@ export default function CommandPalette() {
               }
               value={rawQuery}
               onChange={(e) => setRawQuery(e.target.value)}
-              style={{
-                flex: 1,
-                background: 'none',
-                border: 'none',
-                outline: 'none',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 14,
-                color: 'var(--color-text-bright)',
-                caretColor: 'var(--color-accent)',
-              }}
+              className="flex-1 bg-transparent border-0 outline-none font-[var(--font-mono)] text-sm text-[var(--color-text-bright)]" style={{ caretColor: 'var(--color-accent)' }}
             />
 
             {rawQuery && (
               <button
                 onClick={() => setRawQuery('')}
                 aria-label="Clear search"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--color-text-muted)',
-                  cursor: 'pointer',
-                  padding: 2,
-                  borderRadius: 'var(--radius)',
-                  flexShrink: 0,
-                }}
+                className="flex items-center justify-center bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-0.5 rounded-[var(--radius)] shrink-0"
               >
                 <X size={14} />
               </button>
@@ -1325,20 +1271,7 @@ export default function CommandPalette() {
 
             <button
               onClick={close}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'none',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text-muted)',
-                cursor: 'pointer',
-                padding: '2px 6px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                flexShrink: 0,
-              }}
+              className="flex items-center justify-center bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] cursor-pointer py-0.5 px-1.5 font-[var(--font-mono)] text-[10px] shrink-0"
             >
               ESC
             </button>
@@ -1347,19 +1280,9 @@ export default function CommandPalette() {
           {/* Prefix hints (when empty, no prefix) */}
           {!rawQuery && !prefix && (
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 16px',
-                borderBottom: '1px solid var(--color-border)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-                flexWrap: 'wrap',
-              }}
+              className="flex items-center gap-1.5 py-1.5 px-4 border-b border-b-[var(--color-border)] font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex-wrap"
             >
-              <span style={{ opacity: 0.7 }}>Tip:</span>
+              <span className="opacity-70">Tip:</span>
               {[
                 { key: '>', label: 'Commands' },
                 { key: '#', label: 'NSN/TAMCN' },
@@ -1369,22 +1292,13 @@ export default function CommandPalette() {
               ].map(({ key, label }) => (
                 <span
                   key={key}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 3,
-                    cursor: 'pointer',
-                    padding: '1px 5px',
-                    borderRadius: 'var(--radius)',
-                    border: '1px solid var(--color-border)',
-                    backgroundColor: 'var(--color-bg-surface)',
-                  }}
+                  className="inline-flex items-center gap-[3px] cursor-pointer py-px px-1.5 rounded-[var(--radius)] border border-[var(--color-border)] bg-[var(--color-bg-surface)]"
                   onClick={() => {
                     setRawQuery(key);
                     inputRef.current?.focus();
                   }}
                 >
-                  <kbd style={{ fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{key}</kbd>
+                  <kbd className="font-[var(--font-mono)] font-bold">{key}</kbd>
                   {label}
                 </span>
               ))}
@@ -1397,11 +1311,7 @@ export default function CommandPalette() {
             ref={listRef}
             role="listbox"
             aria-label="Search results"
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '4px 0',
-            }}
+            className="flex-1 overflow-y-auto py-1 px-0"
           >
             {/* Skeleton loader */}
             {showSkeleton && (
@@ -1415,14 +1325,7 @@ export default function CommandPalette() {
             {/* Empty state */}
             {showEmpty && emptyMessage && (
               <div
-                style={{
-                  padding: '32px 16px',
-                  textAlign: 'center',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  color: 'var(--color-text-muted)',
-                  lineHeight: 1.6,
-                }}
+                className="py-8 px-4 text-center font-[var(--font-mono)] text-xs text-[var(--color-text-muted)] leading-relaxed"
               >
                 {emptyMessage}
               </div>
@@ -1441,34 +1344,12 @@ export default function CommandPalette() {
                 <div key={category}>
                   {/* Category header */}
                   <div
-                    style={{
-                      position: 'sticky',
-                      top: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '8px 16px 4px',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '1.5px',
-                      color: CATEGORY_COLORS[category] || 'var(--color-text-muted)',
-                      backgroundColor: 'var(--color-bg-elevated)',
-                      zIndex: 1,
-                    }}
+                    className="sticky top-0 flex items-center justify-between font-[var(--font-mono)] text-[10px] font-bold uppercase tracking-[1.5px] bg-[var(--color-bg-elevated)] z-[1]" style={{ padding: '8px 16px 4px', color: CATEGORY_COLORS[category] || 'var(--color-text-muted)' }}
                   >
                     <span>
                       {category}
                       <span
-                        style={{
-                          marginLeft: 6,
-                          fontSize: 9,
-                          fontWeight: 500,
-                          color: 'var(--color-text-muted)',
-                          textTransform: 'none',
-                          letterSpacing: '0px',
-                        }}
+                        className="ml-1.5 text-[9px] font-medium text-[var(--color-text-muted)] normal-case tracking-[0px]"
                       >
                         {items.length}
                       </span>
@@ -1477,20 +1358,7 @@ export default function CommandPalette() {
                       <button
                         onClick={handleClearRecent}
                         aria-label="Clear recent items"
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 3,
-                          background: 'none',
-                          border: 'none',
-                          color: 'var(--color-text-muted)',
-                          cursor: 'pointer',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          padding: '1px 4px',
-                          borderRadius: 'var(--radius)',
-                          opacity: 0.7,
-                        }}
+                        className="flex items-center gap-[3px] bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer font-[var(--font-mono)] text-[9px] py-px px-1 rounded-[var(--radius)] opacity-70"
                       >
                         <X size={10} />
                         Clear
@@ -1513,56 +1381,27 @@ export default function CommandPalette() {
                         data-selected={isSelected}
                         onClick={() => selectItem(item)}
                         onMouseEnter={() => setSelectedIndex(globalIdx)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 10,
-                          padding: '7px 16px',
-                          paddingLeft: isSelected ? 13 : 16,
-                          cursor: 'pointer',
-                          backgroundColor: isSelected ? 'var(--color-bg-hover)' : 'transparent',
-                          borderLeft: isSelected ? '3px solid var(--color-accent)' : '3px solid transparent',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 12,
-                          color: isSelected ? 'var(--color-text-bright)' : 'var(--color-text)',
-                          transition: 'all 0.1s ease',
-                        }}
+                        className="flex items-center gap-2.5 py-[7px] px-4 cursor-pointer font-[var(--font-mono)] text-xs" style={{ paddingLeft: isSelected ? 13 : 16, backgroundColor: isSelected ? 'var(--color-bg-hover)' : 'transparent', borderLeft: isSelected ? '3px solid var(--color-accent)' : '3px solid transparent', color: isSelected ? 'var(--color-text-bright)' : 'var(--color-text)', transition: 'all 0.1s ease' }}
                       >
                         {/* Icon */}
                         <span
-                          style={{
-                            color: isSelected
+                          className="flex shrink-0" style={{ color: isSelected
                               ? CATEGORY_COLORS[item.category] || 'var(--color-accent)'
-                              : 'var(--color-text-muted)',
-                            display: 'flex',
-                            flexShrink: 0,
-                            transition: 'color 0.1s ease',
-                          }}
+                              : 'var(--color-text-muted)', transition: 'color 0.1s ease' }}
                         >
                           {item.icon}
                         </span>
 
                         {/* Label + Subtitle */}
-                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <div className="flex-1 min-w-[0px] flex flex-col gap-px">
                           <span
-                            style={{
-                              fontWeight: isSelected ? 600 : 500,
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
+                            className="whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontWeight: isSelected ? 600 : 500 }}
                           >
                             <HighlightLabel text={item.label} query={queryLower} />
                           </span>
                           {item.subtitle && (
                             <span
-                              style={{
-                                fontSize: 10,
-                                color: 'var(--color-text-muted)',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}
+                              className="text-[10px] text-[var(--color-text-muted)] whitespace-nowrap overflow-hidden text-ellipsis"
                             >
                               {item.subtitle}
                             </span>
@@ -1572,26 +1411,12 @@ export default function CommandPalette() {
                         {/* Shortcut hint */}
                         {item.shortcut && (
                           <span
-                            style={{
-                              display: 'flex',
-                              gap: 3,
-                              flexShrink: 0,
-                            }}
+                            className="flex gap-[3px] shrink-0"
                           >
                             {item.shortcut.split(' ').map((k, ki) => (
                               <kbd
                                 key={ki}
-                                style={{
-                                  display: 'inline-block',
-                                  padding: '1px 5px',
-                                  border: '1px solid var(--color-border)',
-                                  borderRadius: 'var(--radius)',
-                                  backgroundColor: 'var(--color-bg-surface)',
-                                  fontFamily: 'var(--font-mono)',
-                                  fontSize: 9,
-                                  lineHeight: '14px',
-                                  color: 'var(--color-text-muted)',
-                                }}
+                                className="inline-block py-px px-1.5 border border-[var(--color-border)] rounded-[var(--radius)] bg-[var(--color-bg-surface)] font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]" style={{ lineHeight: '14px' }}
                               >
                                 {k}
                               </kbd>
@@ -1602,17 +1427,7 @@ export default function CommandPalette() {
                         {/* Category badge */}
                         {item.category !== 'Recent' && (
                           <span
-                            style={{
-                              flexShrink: 0,
-                              padding: '1px 6px',
-                              borderRadius: 'calc(var(--radius) * 0.75)',
-                              backgroundColor: 'var(--color-bg-surface)',
-                              border: '1px solid var(--color-border)',
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 9,
-                              color: 'var(--color-text-muted)',
-                              whiteSpace: 'nowrap',
-                            }}
+                            className="shrink-0 py-px px-1.5 rounded-[calc(var(--radius) * 0.75)] bg-[var(--color-bg-surface)] border border-[var(--color-border)] font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
                           >
                             {item.category}
                           </span>
@@ -1627,18 +1442,9 @@ export default function CommandPalette() {
             {/* Loading indicator inline when we have some results but still searching */}
             {isSearching && flatItems.length > 0 && (
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 6,
-                  padding: '8px 16px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="flex items-center justify-center gap-1.5 py-2 px-4 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
               >
-                <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} />
+                <Loader2 size={12} className="animate-spin" />
                 Loading more results...
               </div>
             )}
@@ -1646,21 +1452,10 @@ export default function CommandPalette() {
 
           {/* Footer */}
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '7px 16px',
-              borderTop: '1px solid var(--color-border)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              gap: 8,
-              flexWrap: 'wrap',
-            }}
+            className="flex items-center justify-between py-[7px] px-4 border-t border-t-[var(--color-border)] font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] gap-2 flex-wrap"
           >
             {/* Left: prefix hints */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <div className="flex items-center gap-2 flex-wrap">
               {[
                 { key: '>', label: 'Commands' },
                 { key: '#', label: 'NSN/TAMCN' },
@@ -1668,16 +1463,16 @@ export default function CommandPalette() {
                 { key: '!', label: 'Equipment' },
                 { key: '/', label: 'Pages' },
               ].map(({ key, label }, i, arr) => (
-                <span key={key} style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                <span key={key} className="inline-flex items-center gap-0.5">
                   <kbd style={kbdStyle}>{key}</kbd>
                   <span>{label}</span>
-                  {i < arr.length - 1 && <span style={{ margin: '0 2px', opacity: 0.4 }}>&middot;</span>}
+                  {i < arr.length - 1 && <span className="opacity-40" style={{ margin: '0 2px' }}>&middot;</span>}
                 </span>
               ))}
             </div>
 
             {/* Right: keyboard hints */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+            <div className="flex items-center gap-2 shrink-0">
               <span>
                 <kbd style={kbdStyle}>&uarr;</kbd>
                 <kbd style={kbdStyle}>&darr;</kbd>

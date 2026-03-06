@@ -11,23 +11,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.config import settings
 from app.database import Base
 
-# Import all models so they register with Base.metadata
-from app.models import (  # noqa: F401
-    Alert,
-    EquipmentStatus,
-    MaintenanceWorkOrder,
-    Movement,
-    RawData,
-    Report,
-    SupplyStatusRecord,
-    Unit,
-    User,
-    Personnel,
-    Weapon,
-    AmmoLoad,
-    ConvoyVehicle,
-    ConvoyPersonnel,
-)
+# Import all models so they register with Base.metadata.
+# The app.models package __init__.py imports every model class, ensuring
+# Base.metadata is fully populated for autogenerate.
+import app.models  # noqa: F401
 
 config = context.config
 
@@ -38,6 +25,22 @@ target_metadata = Base.metadata
 
 # Override sqlalchemy.url with the app's database URL
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+
+# Tables managed by the application (registered via Base.metadata)
+_APP_TABLES = set(target_metadata.tables.keys())
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    """Filter autogenerate to only include application-managed tables.
+
+    Excludes PostGIS/Tiger geocoder tables, spatial_ref_sys, topology, and
+    any other tables not defined in our SQLAlchemy models.
+    """
+    if type_ == "table":
+        # Only include tables that exist in our metadata
+        return name in _APP_TABLES
+    # Include all columns, indexes, etc. for included tables
+    return True
 
 
 def run_migrations_offline() -> None:
@@ -51,6 +54,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_object=include_object,
     )
 
     with context.begin_transaction():
@@ -58,7 +62,11 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        include_object=include_object,
+    )
     with context.begin_transaction():
         context.run_migrations()
 

@@ -40,7 +40,7 @@ export default function ReadinessTable() {
       columnHelper.accessor('missionCapable', {
         header: 'MC',
         cell: (info) => (
-          <span style={{ color: 'var(--color-success)' }}>{info.getValue()}</span>
+          <span className="text-[var(--color-success)]">{info.getValue()}</span>
         ),
       }),
       columnHelper.accessor('notMissionCapable', {
@@ -54,7 +54,7 @@ export default function ReadinessTable() {
       columnHelper.accessor('readinessPercent', {
         header: '%',
         cell: (info) => (
-          <span style={{ color: getStatusColor(info.row.original.status), fontWeight: 600 }}>
+          <span className="font-semibold" style={{ color: getStatusColor(info.row.original.status) }}>
             {info.getValue()}%
           </span>
         ),
@@ -67,7 +67,7 @@ export default function ReadinessTable() {
         id: 'actions',
         header: '',
         cell: () => (
-          <ChevronRight size={14} style={{ color: 'var(--color-text-muted)' }} />
+          <ChevronRight size={14} className="text-[var(--color-text-muted)]" />
         ),
       }),
     ],
@@ -85,15 +85,10 @@ export default function ReadinessTable() {
 
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
     >
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -101,32 +96,18 @@ export default function ReadinessTable() {
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '1.5px',
-                      color: 'var(--color-text-muted)',
-                      padding: '10px 12px',
-                      textAlign:
-                        ['authorized', 'onHand', 'missionCapable', 'notMissionCapable', 'readinessPercent'].includes(header.column.id)
+                    className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] py-2.5 px-3 border-b border-b-[var(--color-border)] cursor-pointer whitespace-nowrap" style={{ textAlign: ['authorized', 'onHand', 'missionCapable', 'notMissionCapable', 'readinessPercent'].includes(header.column.id)
                           ? 'right'
-                          : 'left',
-                      borderBottom: '1px solid var(--color-border)',
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      whiteSpace: 'nowrap',
-                    }}
+                          : 'left', userSelect: 'none' }}
                   >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <span className="inline-flex items-center gap-1">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getIsSorted() === 'asc' ? (
                         <ArrowUp size={10} />
                       ) : header.column.getIsSorted() === 'desc' ? (
                         <ArrowDown size={10} />
                       ) : (
-                        <ArrowUpDown size={10} style={{ opacity: 0.3 }} />
+                        <ArrowUpDown size={10} className="opacity-30" />
                       )}
                     </span>
                   </th>
@@ -138,7 +119,7 @@ export default function ReadinessTable() {
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
-                style={{ transition: 'background-color var(--transition)', cursor: 'pointer' }}
+                className="cursor-pointer transition-colors duration-[var(--transition)]"
                 onClick={() => navigate(`/equipment/${row.original.id}`)}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
@@ -150,17 +131,9 @@ export default function ReadinessTable() {
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 12,
-                      padding: '8px 12px',
-                      borderBottom: '1px solid var(--color-border)',
-                      color: cell.column.id === 'type' ? 'var(--color-text-bright)' : 'var(--color-text)',
-                      textAlign:
-                        ['authorized', 'onHand', 'missionCapable', 'notMissionCapable', 'readinessPercent'].includes(cell.column.id)
+                    className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)]" style={{ color: cell.column.id === 'type' ? 'var(--color-text-bright)' : 'var(--color-text)', textAlign: ['authorized', 'onHand', 'missionCapable', 'notMissionCapable', 'readinessPercent'].includes(cell.column.id)
                           ? 'right'
-                          : 'left',
-                    }}
+                          : 'left' }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

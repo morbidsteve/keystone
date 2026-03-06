@@ -59,31 +59,16 @@ export default function PMScheduleTable({ schedule }: PMScheduleTableProps) {
   const columns = ['EQUIPMENT', 'TYPE', 'INTERVAL', 'LAST PERFORMED', 'NEXT DUE', 'STATUS'];
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div className="overflow-x-auto">
       <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-        }}
+        className="w-full border-collapse font-[var(--font-mono)] text-[11px]"
       >
         <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
-                style={{
-                  padding: '10px 12px',
-                  textAlign: 'left',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-text-muted)',
-                  borderBottom: '1px solid var(--color-border)',
-                  whiteSpace: 'nowrap',
-                }}
+                className="py-2.5 px-3 text-left text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] border-b border-b-[var(--color-border)] whitespace-nowrap"
               >
                 {col}
               </th>
@@ -110,30 +95,21 @@ export default function PMScheduleTable({ schedule }: PMScheduleTableProps) {
                 }}
               >
                 {/* Equipment */}
-                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--color-border)' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <span style={{ fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                <td className="py-2.5 px-3 border-b border-b-[var(--color-border)]">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-semibold text-[var(--color-text-bright)]">
                       {item.bumperNumber || '---'}
                     </span>
-                    <span style={{ fontSize: 9, color: 'var(--color-text-muted)' }}>
+                    <span className="text-[9px] text-[var(--color-text-muted)]">
                       {item.nomenclature || '---'}
                     </span>
                   </div>
                 </td>
 
                 {/* Type badge */}
-                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--color-border)' }}>
+                <td className="py-2.5 px-3 border-b border-b-[var(--color-border)]">
                   <span
-                    style={{
-                      fontSize: 8,
-                      fontWeight: 600,
-                      letterSpacing: '1px',
-                      padding: '2px 8px',
-                      borderRadius: 'var(--radius)',
-                      backgroundColor: `${PM_TYPE_COLORS[item.pmType]}18`,
-                      color: PM_TYPE_COLORS[item.pmType],
-                      border: `1px solid ${PM_TYPE_COLORS[item.pmType]}40`,
-                    }}
+                    className="text-[8px] font-semibold tracking-[1px] py-0.5 px-2 rounded-[var(--radius)]" style={{ backgroundColor: `${PM_TYPE_COLORS[item.pmType]}18`, color: PM_TYPE_COLORS[item.pmType], border: `1px solid ${PM_TYPE_COLORS[item.pmType]}40` }}
                   >
                     {item.pmType}
                   </span>
@@ -141,11 +117,7 @@ export default function PMScheduleTable({ schedule }: PMScheduleTableProps) {
 
                 {/* Interval */}
                 <td
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text)',
-                  }}
+                  className="py-2.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text)]"
                 >
                   {item.pmType === 'MILEAGE'
                     ? `${item.intervalValue.toLocaleString()} mi`
@@ -154,47 +126,31 @@ export default function PMScheduleTable({ schedule }: PMScheduleTableProps) {
 
                 {/* Last Performed */}
                 <td
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-muted)',
-                    whiteSpace: 'nowrap',
-                  }}
+                  className="py-2.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] whitespace-nowrap"
                 >
                   {item.lastPerformed ? formatDate(item.lastPerformed, 'dd MMM yyyy') : '---'}
                 </td>
 
                 {/* Next Due */}
                 <td
-                  style={{
-                    padding: '10px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: item.isOverdue ? 'var(--color-danger)' : 'var(--color-text)',
-                    fontWeight: item.isOverdue ? 600 : 400,
-                    whiteSpace: 'nowrap',
-                  }}
+                  className="py-2.5 px-3 border-b border-b-[var(--color-border)] whitespace-nowrap" style={{ color: item.isOverdue ? 'var(--color-danger)' : 'var(--color-text)', fontWeight: item.isOverdue ? 600 : 400 }}
                 >
                   {item.nextDue ? formatDate(item.nextDue, 'dd MMM yyyy') : '---'}
                   {item.isOverdue && item.daysOverdue != null && item.daysOverdue > 0 && (
-                    <span style={{ fontSize: 9, marginLeft: 6, color: 'var(--color-danger)' }}>
+                    <span className="text-[9px] ml-1.5 text-[var(--color-danger)]">
                       ({item.daysOverdue}d overdue)
                     </span>
                   )}
                 </td>
 
                 {/* Status */}
-                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--color-border)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <td className="py-2.5 px-3 border-b border-b-[var(--color-border)]">
+                  <div className="flex items-center gap-1.5">
                     {status.icon === 'overdue' && <AlertTriangle size={12} style={{ color: status.color }} />}
                     {status.icon === 'upcoming' && <Clock size={12} style={{ color: status.color }} />}
                     {status.icon === 'ok' && <CheckCircle size={12} style={{ color: status.color }} />}
                     <span
-                      style={{
-                        fontSize: 9,
-                        fontWeight: 600,
-                        letterSpacing: '1px',
-                        color: status.color,
-                      }}
+                      className="text-[9px] font-semibold tracking-[1px]" style={{ color: status.color }}
                     >
                       {status.label}
                     </span>

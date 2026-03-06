@@ -153,18 +153,9 @@ export default function TileLayerSettings() {
     return (
       <Card title="MAP TILE LAYERS">
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            padding: 40,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text-muted)',
-          }}
+          className="flex items-center justify-center gap-2 p-10 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
         >
-          <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} />
+          <RefreshCw size={14} className="animate-spin" />
           LOADING TILE LAYERS...
         </div>
       </Card>
@@ -175,44 +166,25 @@ export default function TileLayerSettings() {
     <Card
       title="MAP TILE LAYERS"
       headerRight={
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="flex gap-2">
           <button onClick={addLayer} style={addButtonStyle}>
             <Plus size={10} /> ADD LAYER
           </button>
         </div>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="flex flex-col gap-4">
         {/* Info banner */}
         <div
-          style={{
-            padding: '10px 12px',
-            backgroundColor: 'rgba(77, 171, 247, 0.08)',
-            border: '1px solid rgba(77, 171, 247, 0.2)',
-            borderRadius: 'var(--radius)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-text-muted)',
-            lineHeight: 1.6,
-          }}
+          className="py-2.5 px-3 bg-[rgba(77,171,247,0.08)] rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] leading-relaxed" style={{ border: '1px solid rgba(77, 171, 247, 0.2)' }}
         >
           <Layers
             size={12}
-            style={{
-              display: 'inline',
-              verticalAlign: 'middle',
-              marginRight: 6,
-              color: 'var(--color-accent)',
-            }}
+            className="inline align-middle mr-1.5 text-[var(--color-accent)]"
           />
           Configure map tile layers served through the nginx proxy. URL templates use{' '}
           <code
-            style={{
-              backgroundColor: 'var(--color-bg)',
-              padding: '1px 4px',
-              borderRadius: 2,
-              fontSize: 10,
-            }}
+            className="bg-[var(--color-bg)] py-px px-1 rounded-[2px] text-[10px]"
           >
             {'{z}/{x}/{y}'}
           </code>{' '}
@@ -222,15 +194,7 @@ export default function TileLayerSettings() {
         {/* Error message */}
         {error && (
           <div
-            style={{
-              padding: '8px 12px',
-              backgroundColor: 'rgba(255, 107, 107, 0.08)',
-              border: '1px solid rgba(255, 107, 107, 0.3)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: '#ff6b6b',
-            }}
+            className="py-2 px-3 bg-[rgba(255,107,107,0.08)] rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] text-[#ff6b6b]" style={{ border: '1px solid rgba(255, 107, 107, 0.3)' }}
           >
             {error}
           </div>
@@ -239,13 +203,7 @@ export default function TileLayerSettings() {
         {/* Layer list */}
         {layers.length === 0 ? (
           <div
-            style={{
-              padding: 40,
-              textAlign: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-muted)',
-            }}
+            className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
           >
             No tile layers configured. Click ADD LAYER to create one.
           </div>
@@ -253,80 +211,37 @@ export default function TileLayerSettings() {
           layers.map((layer, index) => (
             <div
               key={`${layer.name}-${index}`}
-              style={{
-                padding: 14,
-                backgroundColor: layer.enabled
+              className="p-3.5 border border-[var(--color-border)] rounded-[var(--radius)]" style={{ backgroundColor: layer.enabled
                   ? 'var(--color-bg)'
-                  : 'rgba(134, 142, 150, 0.05)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                opacity: layer.enabled ? 1 : 0.6,
-                transition: 'opacity 0.2s ease',
-              }}
+                  : 'rgba(134, 142, 150, 0.05)', opacity: layer.enabled ? 1 : 0.6, transition: 'opacity 0.2s ease' }}
             >
               {/* Layer header row */}
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  marginBottom: 12,
-                }}
+                className="flex items-center gap-2 mb-3"
               >
                 {/* Order badge */}
                 <div
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--color-accent)',
-                    color: 'var(--color-bg)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    flexShrink: 0,
-                  }}
+                  className="w-[24px] h-[24px] bg-[var(--color-accent)] text-[var(--color-bg)] flex items-center justify-center font-[var(--font-mono)] text-[10px] font-bold shrink-0 rounded-full"
                 >
                   {index + 1}
                 </div>
 
                 {/* Layer label display */}
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: 'var(--color-text-bright)',
-                    letterSpacing: '0.5px',
-                    flex: 1,
-                  }}
+                  className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)] tracking-[0.5px] flex-1"
                 >
                   {layer.label || layer.name}
                 </span>
 
                 {/* Enabled toggle */}
                 <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: '1px',
-                    color: layer.enabled ? '#40c057' : 'var(--color-text-muted)',
-                    textTransform: 'uppercase',
-                  }}
+                  className="flex items-center gap-1.5 cursor-pointer font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] uppercase" style={{ color: layer.enabled ? '#40c057' : 'var(--color-text-muted)' }}
                 >
                   <input
                     type="checkbox"
                     checked={layer.enabled}
                     onChange={(e) => updateLayer(index, 'enabled', e.target.checked)}
-                    style={{ cursor: 'pointer' }}
+                    className="cursor-pointer"
                   />
                   {layer.enabled ? 'ENABLED' : 'DISABLED'}
                 </label>
@@ -381,12 +296,7 @@ export default function TileLayerSettings() {
 
               {/* Inline fields */}
               <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '140px 140px 1fr',
-                  gap: 10,
-                  marginBottom: 10,
-                }}
+                className="grid gap-2.5 mb-2.5" style={{ gridTemplateColumns: '140px 140px 1fr' }}
               >
                 {/* Name */}
                 <div>
@@ -426,11 +336,7 @@ export default function TileLayerSettings() {
               </div>
 
               <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 100px',
-                  gap: 10,
-                }}
+                className="grid gap-2.5" style={{ gridTemplateColumns: '1fr 100px' }}
               >
                 {/* Attribution */}
                 <div>
@@ -465,34 +371,12 @@ export default function TileLayerSettings() {
 
         {/* Save button row */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            paddingTop: 8,
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="flex items-center gap-3 pt-2 border-t border-t-[var(--color-border)]"
         >
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 20px',
-              backgroundColor: saving ? 'var(--color-muted)' : 'var(--color-accent)',
-              border: 'none',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-bg)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              transition: 'background-color var(--transition)',
-            }}
+            className="flex items-center gap-1.5 py-2 px-5 border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[11px] font-semibold tracking-[1.5px] uppercase" style={{ backgroundColor: saving ? 'var(--color-muted)' : 'var(--color-accent)', cursor: saving ? 'not-allowed' : 'pointer', transition: 'background-color var(--transition)' }}
           >
             <Save size={12} />
             {saving ? 'SAVING...' : 'SAVE TILE LAYERS'}
@@ -501,21 +385,7 @@ export default function TileLayerSettings() {
           <button
             onClick={loadLayers}
             disabled={loading}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              backgroundColor: 'transparent',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text-muted)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              cursor: 'pointer',
-            }}
+            className="flex items-center gap-1.5 py-2 px-4 bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] cursor-pointer"
           >
             <RefreshCw size={12} />
             RELOAD
@@ -523,15 +393,7 @@ export default function TileLayerSettings() {
 
           {success && (
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: '#40c057',
-                letterSpacing: '1px',
-              }}
+              className="flex items-center gap-1 font-[var(--font-mono)] text-[10px] text-[#40c057] tracking-[1px]"
             >
               TILE LAYERS SAVED SUCCESSFULLY
             </div>

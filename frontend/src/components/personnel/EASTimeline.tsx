@@ -41,13 +41,7 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
   if (losses.length === 0) {
     return (
       <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No personnel EASing within 90 days
       </div>
@@ -55,14 +49,10 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Summary */}
       <div
-        style={{
-          display: 'flex',
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
+        className="flex gap-3 flex-wrap"
       >
         {[
           { label: 'TOTAL EASing', value: buckets.total, color: 'var(--color-text-bright)' },
@@ -72,35 +62,15 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
         ].map((item) => (
           <div
             key={item.label}
-            style={{
-              padding: '10px 14px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              minWidth: 110,
-              textAlign: 'center',
-            }}
+            className="py-2.5 px-3.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] min-w-[110px] text-center"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 4,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1"
             >
               {item.label}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 20,
-                fontWeight: 700,
-                color: item.color,
-              }}
+              className="font-[var(--font-mono)] text-xl font-bold" style={{ color: item.color }}
             >
               {item.value}
             </div>
@@ -110,11 +80,7 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
 
       {/* Cards */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-          gap: 10,
-        }}
+        className="grid gap-2.5 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
       >
         {losses.map((person) => {
           const color = urgencyColor(person.days_until_eas);
@@ -122,38 +88,16 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
           return (
             <div
               key={person.id}
-              style={{
-                padding: '12px 14px',
-                backgroundColor: bg,
-                border: `1px solid ${color}40`,
-                borderLeft: `3px solid ${color}`,
-                borderRadius: 'var(--radius)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-              }}
+              className="py-3 px-3.5 rounded-[var(--radius)] flex flex-col gap-1.5" style={{ backgroundColor: bg, border: `1px solid ${color}40`, borderLeft: `3px solid ${color}` }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="flex justify-between items-center">
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)]"
                 >
                   {person.rank} {person.last_name}
                 </span>
                 <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color,
-                  }}
+                  className="inline-flex items-center gap-1 font-[var(--font-mono)] text-[10px] font-bold"
                 >
                   <Clock size={11} />
                   {person.days_until_eas}D
@@ -161,25 +105,14 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
               </div>
 
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-muted)',
-                  display: 'flex',
-                  gap: 12,
-                  flexWrap: 'wrap',
-                }}
+                className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex gap-3 flex-wrap"
               >
                 <span>MOS: {person.mos}</span>
                 {person.billet && <span>BILLET: {person.billet}</span>}
               </div>
 
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
               >
                 EAOS: {person.eaos}
               </div>

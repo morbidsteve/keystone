@@ -119,45 +119,35 @@ export default function ReportViewer() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="flex flex-col gap-3">
       {/* Report List */}
       <Card title="GENERATED REPORTS">
         {loading ? (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', padding: 16, textAlign: 'center' }}>
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center">
             Loading reports...
           </div>
         ) : reports.length === 0 ? (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', padding: 16, textAlign: 'center' }}>
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center">
             No reports generated yet. Use the panel on the left to generate one.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 300, overflow: 'auto' }}>
+          <div className="flex flex-col gap-1 max-h-[300px] overflow-auto">
             {reports.map((r) => (
               <div
                 key={r.id}
                 onClick={() => setSelectedReport(r)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '8px 10px',
-                  backgroundColor: r.id === selectedReport?.id ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)',
-                  border: r.id === selectedReport?.id ? '1px solid var(--color-accent)' : '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  cursor: 'pointer',
-                  transition: 'all var(--transition)',
-                }}
+                className="flex items-center gap-2.5 py-2 px-2.5 rounded-[var(--radius)] cursor-pointer" style={{ backgroundColor: r.id === selectedReport?.id ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)', border: r.id === selectedReport?.id ? '1px solid var(--color-accent)' : '1px solid var(--color-border)', transition: 'all var(--transition)' }}
               >
-                <FileText size={14} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                <FileText size={14} className="text-[var(--color-text-muted)] shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold">
                     {r.title}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', display: 'flex', gap: 8, marginTop: 2 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] flex gap-2 mt-0.5">
+                    <span className="flex items-center gap-[3px]">
                       <User size={9} /> {r.generatedBy}
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <span className="flex items-center gap-[3px]">
                       <Clock size={9} /> {formatDate(r.generatedAt)}
                     </span>
                   </div>
@@ -174,21 +164,12 @@ export default function ReportViewer() {
         <Card
           title={selectedReport.title}
           headerRight={
-            <div style={{ display: 'flex', gap: 6 }}>
+            <div className="flex gap-1.5">
               {(selectedReport.status === ReportStatus.READY || selectedReport.status === ReportStatus.FINALIZED) && (
                 <button
                   disabled={selectedReport.status === ReportStatus.FINALIZED}
                   onClick={handleFinalize}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-                    backgroundColor: selectedReport.status === ReportStatus.FINALIZED ? 'var(--color-bg-surface)' : 'var(--color-accent)',
-                    border: selectedReport.status === ReportStatus.FINALIZED ? '1px solid var(--color-border)' : 'none',
-                    borderRadius: 'var(--radius)',
-                    color: selectedReport.status === ReportStatus.FINALIZED ? 'var(--color-text-muted)' : 'var(--color-bg)',
-                    fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '1px',
-                    cursor: selectedReport.status === ReportStatus.FINALIZED ? 'not-allowed' : 'pointer',
-                    opacity: selectedReport.status === ReportStatus.FINALIZED ? 0.5 : 1,
-                  }}
+                  className="flex items-center gap-1 py-1 px-2.5 rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px]" style={{ backgroundColor: selectedReport.status === ReportStatus.FINALIZED ? 'var(--color-bg-surface)' : 'var(--color-accent)', border: selectedReport.status === ReportStatus.FINALIZED ? '1px solid var(--color-border)' : 'none', color: selectedReport.status === ReportStatus.FINALIZED ? 'var(--color-text-muted)' : 'var(--color-bg)', cursor: selectedReport.status === ReportStatus.FINALIZED ? 'not-allowed' : 'pointer', opacity: selectedReport.status === ReportStatus.FINALIZED ? 0.5 : 1 }}
                 >
                   <Check size={10} /> FINALIZE
                 </button>
@@ -210,17 +191,12 @@ export default function ReportViewer() {
             ? <StructuredReportView content={selectedReport.parsedContent} reportType={selectedReport.type} />
             : selectedReport.content
               ? (
-                <pre style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 11, lineHeight: 1.6,
-                  color: 'var(--color-text)', whiteSpace: 'pre-wrap', padding: 12,
-                  backgroundColor: 'var(--color-bg)', borderRadius: 'var(--radius)',
-                  border: '1px solid var(--color-border)', maxHeight: 500, overflow: 'auto',
-                }}>
+                <pre className="font-[var(--font-mono)] text-[11px] leading-relaxed text-[var(--color-text)] whitespace-pre-wrap p-3 bg-[var(--color-bg)] rounded-[var(--radius)] border border-[var(--color-border)] max-h-[500px] overflow-auto">
                   {selectedReport.content}
                 </pre>
               )
               : (
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', padding: 16, textAlign: 'center' }}>
+                <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center">
                   Report content is still generating...
                 </div>
               )
@@ -306,43 +282,36 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
   return (
     <div style={overlayStyle} onClick={onClose}>
       <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, letterSpacing: '1.5px', color: 'var(--color-text-bright)' }}>
+        <div className="flex justify-between items-center mb-4">
+          <div className="font-[var(--font-mono)] text-xs font-bold tracking-[1.5px] text-[var(--color-text-bright)]">
             EXPORT TO API
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
+          <button onClick={onClose} className="bg-transparent border-0 cursor-pointer text-[var(--color-text-muted)]">
             <X size={16} />
           </button>
         </div>
 
         {loading ? (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', textAlign: 'center', padding: 20 }}>
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center p-5">
             Loading destinations...
           </div>
         ) : destinations.length === 0 ? (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', textAlign: 'center', padding: 20 }}>
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center p-5">
             No active export destinations configured.
           </div>
         ) : results ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>
+          <div className="flex flex-col gap-2">
+            <div className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-[1px] mb-1">
               EXPORT RESULTS
             </div>
             {results.map((r) => (
-              <div key={r.destination_id} style={{
-                ...checkboxRowStyle,
-                borderColor: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)',
-                cursor: 'default',
-              }}>
-                <div style={{
-                  width: 8, height: 8, borderRadius: '50%',
-                  backgroundColor: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)',
-                }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+              <div key={r.destination_id} className="cursor-default" style={{ color: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)' }}>
+                <div className="w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)' }} />
+                <div className="flex-1">
+                  <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold">
                     {r.destination_name}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+                  <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
                     {r.success ? `Success (${r.status_code})` : `Failed: ${r.error || 'Unknown error'}`}
                   </div>
                 </div>
@@ -350,18 +319,14 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
             ))}
             <button
               onClick={onClose}
-              style={{
-                marginTop: 8, padding: '8px 16px', backgroundColor: 'var(--color-accent)',
-                border: 'none', borderRadius: 'var(--radius)', color: 'var(--color-bg)',
-                fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '1px', cursor: 'pointer',
-              }}
+              className="mt-2 py-2 px-4 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] cursor-pointer"
             >
               CLOSE
             </button>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>
+          <div className="flex flex-col gap-2">
+            <div className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] uppercase tracking-[1px] mb-1">
               SELECT DESTINATIONS
             </div>
             {destinations.map((d) => (
@@ -370,22 +335,17 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
                   type="checkbox"
                   checked={selected.has(d.id)}
                   onChange={() => toggleDest(d.id)}
-                  style={{ accentColor: 'var(--color-accent)' }}
+                  className="accent-[var(--color-accent)]"
                 />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                <div className="flex-1">
+                  <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold">
                     {d.name}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+                  <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
                     {d.url}
                   </div>
                 </div>
-                <div style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 8, padding: '2px 6px',
-                  borderRadius: 'var(--radius)', backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border)', color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase', letterSpacing: '0.5px',
-                }}>
+                <div className="font-[var(--font-mono)] text-[8px] py-0.5 px-1.5 rounded-[var(--radius)] bg-[var(--color-bg-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)] uppercase tracking-[0.5px]">
                   {d.auth_type}
                 </div>
               </div>
@@ -393,16 +353,7 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
             <button
               onClick={handleSend}
               disabled={selected.size === 0 || sending}
-              style={{
-                marginTop: 8, padding: '8px 16px',
-                backgroundColor: selected.size === 0 || sending ? 'var(--color-bg-surface)' : 'var(--color-accent)',
-                border: selected.size === 0 || sending ? '1px solid var(--color-border)' : 'none',
-                borderRadius: 'var(--radius)',
-                color: selected.size === 0 || sending ? 'var(--color-text-muted)' : 'var(--color-bg)',
-                fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, letterSpacing: '1px',
-                cursor: selected.size === 0 || sending ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              }}
+              className="mt-2 py-2 px-4 rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] flex items-center justify-center gap-1.5" style={{ backgroundColor: selected.size === 0 || sending ? 'var(--color-bg-surface)' : 'var(--color-accent)', border: selected.size === 0 || sending ? '1px solid var(--color-border)' : 'none', color: selected.size === 0 || sending ? 'var(--color-text-muted)' : 'var(--color-bg)', cursor: selected.size === 0 || sending ? 'not-allowed' : 'pointer' }}
             >
               {sending ? <><Loader size={12} className="animate-spin" /> SENDING...</> : <><Send size={12} /> SEND TO {selected.size} DESTINATION{selected.size !== 1 ? 'S' : ''}</>}
             </button>
@@ -484,11 +435,11 @@ const tdStyle: React.CSSProperties = {
 
 function ReportHeader({ content }: { content: ReportContent }) {
   return (
-    <div style={{ borderBottom: '1px solid var(--color-border)', paddingBottom: 8 }}>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: 'var(--color-text-bright)' }}>
+    <div className="border-b border-b-[var(--color-border)] pb-2">
+      <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)]">
         {content.report_type} REPORT
       </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)', display: 'flex', gap: 16, marginTop: 4 }}>
+      <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex gap-4 mt-1">
         {content.unit && <span>Unit: {content.unit.name} ({content.unit.abbreviation})</span>}
         {content.generated_at && <span>Generated: {formatDate(content.generated_at)}</span>}
       </div>
@@ -501,7 +452,7 @@ function LogstatSection({ content }: { content: ReportContent }) {
   return (
     <>
       {/* Summary stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+      <div className="grid gap-2 grid-cols-5">
         <StatBox value={`${content.equipment_readiness?.readiness_pct ?? 0}%`} label="EQUIP READINESS" color={statusColor(content.equipment_readiness?.status || '')} />
         <StatBox value={String(content.open_work_orders ?? 0)} label="OPEN WORK ORDERS" />
         <StatBox value={String(content.active_movements ?? 0)} label="ACTIVE MOVEMENTS" />
@@ -529,7 +480,7 @@ function LogstatSection({ content }: { content: ReportContent }) {
                   <td style={tdStyle}>{s.class_name}</td>
                   <td style={tdStyle}>{s.items.length}</td>
                   <td style={tdStyle}>
-                    <span style={{ color: statusColor(s.overall_status || ''), fontWeight: 600 }}>
+                    <span className="font-semibold" style={{ color: statusColor(s.overall_status || '') }}>
                       {s.overall_status || 'N/A'}
                     </span>
                   </td>
@@ -547,7 +498,7 @@ function LogstatSection({ content }: { content: ReportContent }) {
 function ReadinessSection({ content }: { content: ReportContent }) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+      <div className="grid gap-2 grid-cols-4">
         <StatBox value={`${content.overall_readiness_pct ?? 0}%`} label="OVERALL READINESS" color={statusColor(content.overall_status || '')} />
         <StatBox value={String(content.total_possessed ?? 0)} label="TOTAL POSSESSED" />
         <StatBox value={String(content.total_mission_capable ?? 0)} label="MISSION CAPABLE" />
@@ -580,7 +531,7 @@ function ReadinessSection({ content }: { content: ReportContent }) {
                   <td style={tdStyle}>{e.nmc_maintenance ?? '-'}</td>
                   <td style={tdStyle}>{e.nmc_supply ?? '-'}</td>
                   <td style={tdStyle}>{e.readiness_pct}%</td>
-                  <td style={tdStyle}><span style={{ color: statusColor(e.status), fontWeight: 600 }}>{e.status}</span></td>
+                  <td style={tdStyle}><span className="font-semibold" style={{ color: statusColor(e.status) }}>{e.status}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -591,7 +542,7 @@ function ReadinessSection({ content }: { content: ReportContent }) {
       {content.individual_status_breakdown && (
         <div>
           <div style={sectionTitleStyle}>INDIVIDUAL EQUIPMENT STATUS</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+          <div className="grid gap-2 grid-cols-5">
             {Object.entries(content.individual_status_breakdown).map(([s, count]) => (
               <StatBox key={s} value={String(count)} label={s} />
             ))}
@@ -630,7 +581,7 @@ function ReadinessSection({ content }: { content: ReportContent }) {
 function SupplyStatusSection({ content }: { content: ReportContent }) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+      <div className="grid gap-2 grid-cols-4">
         <StatBox
           value={content.overall_health || 'N/A'}
           label="OVERALL HEALTH"
@@ -667,7 +618,7 @@ function SupplyStatusSection({ content }: { content: ReportContent }) {
                   <td style={tdStyle}>{c.fill_rate_pct}%</td>
                   <td style={tdStyle}>{c.avg_dos}</td>
                   <td style={tdStyle}>{c.red_items}</td>
-                  <td style={tdStyle}><span style={{ color: statusColor(c.status), fontWeight: 600 }}>{c.status}</span></td>
+                  <td style={tdStyle}><span className="font-semibold" style={{ color: statusColor(c.status) }}>{c.status}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -697,7 +648,7 @@ function SupplyStatusSection({ content }: { content: ReportContent }) {
                     <td style={tdStyle}>{ci.item}</td>
                     <td style={tdStyle}>{ci.on_hand}</td>
                     <td style={tdStyle}>{ci.required}</td>
-                    <td style={{ ...tdStyle, color: statusColor('RED'), fontWeight: 600 }}>{ci.dos}</td>
+                    <td className="font-semibold" style={{ color: statusColor('RED') }}>{ci.dos}</td>
                   </tr>
                 )),
               )}
@@ -714,7 +665,7 @@ function EquipmentStatusSection({ content }: { content: ReportContent }) {
   return (
     <>
       {content.fleet_readiness && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+        <div className="grid gap-2 grid-cols-5">
           <StatBox value={`${content.fleet_readiness.readiness_pct}%`} label="FLEET READINESS" color={statusColor(content.fleet_readiness.status)} />
           <StatBox value={String(content.fleet_readiness.total_possessed)} label="TOTAL POSSESSED" />
           <StatBox value={String(content.fleet_readiness.total_mission_capable)} label="MISSION CAPABLE" />
@@ -749,7 +700,7 @@ function EquipmentStatusSection({ content }: { content: ReportContent }) {
                   <td style={tdStyle}>{e.nmc_maintenance ?? '-'}</td>
                   <td style={tdStyle}>{e.nmc_supply ?? '-'}</td>
                   <td style={tdStyle}>{e.readiness_pct}%</td>
-                  <td style={tdStyle}><span style={{ color: statusColor(e.status), fontWeight: 600 }}>{e.status}</span></td>
+                  <td style={tdStyle}><span className="font-semibold" style={{ color: statusColor(e.status) }}>{e.status}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -760,7 +711,7 @@ function EquipmentStatusSection({ content }: { content: ReportContent }) {
       {content.individual_status_breakdown && (
         <div>
           <div style={sectionTitleStyle}>INDIVIDUAL EQUIPMENT STATUS ({content.individual_total ?? 0} total)</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+          <div className="grid gap-2 grid-cols-5">
             {Object.entries(content.individual_status_breakdown).map(([s, count]) => (
               <StatBox key={s} value={String(count)} label={s} />
             ))}
@@ -803,7 +754,7 @@ function EquipmentStatusSection({ content }: { content: ReportContent }) {
 function MaintenanceSection({ content }: { content: ReportContent }) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+      <div className="grid gap-2 grid-cols-4">
         <StatBox value={String(content.total_work_orders ?? 0)} label="TOTAL WORK ORDERS" />
         <StatBox value={`${content.avg_completion_time_hours ?? 0}h`} label="AVG COMPLETION" />
         <StatBox value={String(content.total_labor_hours ?? 0)} label="LABOR HOURS" />
@@ -813,7 +764,7 @@ function MaintenanceSection({ content }: { content: ReportContent }) {
       {content.work_order_counts && (
         <div>
           <div style={sectionTitleStyle}>WORK ORDER STATUS</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+          <div className="grid gap-2 grid-cols-4">
             {Object.entries(content.work_order_counts).map(([status, count]) => (
               <StatBox key={status} value={String(count)} label={status.replace(/_/g, ' ')} />
             ))}
@@ -850,7 +801,7 @@ function MaintenanceSection({ content }: { content: ReportContent }) {
 function MovementSection({ content }: { content: ReportContent }) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+      <div className="grid gap-2 grid-cols-4">
         <StatBox value={String(content.total_movements ?? 0)} label="TOTAL MOVEMENTS" />
         <StatBox value={String(content.total_vehicles_in_transit ?? 0)} label="VEHICLES IN TRANSIT" />
         <StatBox value={String(content.total_personnel_in_transit ?? 0)} label="PERSONNEL IN TRANSIT" />
@@ -863,7 +814,7 @@ function MovementSection({ content }: { content: ReportContent }) {
       {content.status_counts && (
         <div>
           <div style={sectionTitleStyle}>MOVEMENT STATUS</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+          <div className="grid gap-2 grid-cols-5">
             {Object.entries(content.status_counts).map(([status, count]) => (
               <StatBox key={status} value={String(count)} label={status.replace(/_/g, ' ')} />
             ))}
@@ -906,7 +857,7 @@ function MovementSection({ content }: { content: ReportContent }) {
 function PersonnelSection({ content }: { content: ReportContent }) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+      <div className="grid gap-2 grid-cols-3">
         <StatBox value={String(content.total_assigned ?? 0)} label="TOTAL ASSIGNED" />
         <StatBox value={String(content.total_active ?? 0)} label="ACTIVE" color={statusColor('GREEN')} />
         <StatBox
@@ -918,7 +869,7 @@ function PersonnelSection({ content }: { content: ReportContent }) {
       {content.status_breakdown && (
         <div>
           <div style={sectionTitleStyle}>STATUS BREAKDOWN</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          <div className="grid gap-2 grid-cols-3">
             {Object.entries(content.status_breakdown).map(([status, count]) => (
               <StatBox key={status} value={String(count)} label={status} />
             ))}

@@ -28,41 +28,17 @@ export default function PageHelpPanel({
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        bottom: 40,
-        right: 20,
-        zIndex: 1040,
-        width: expanded ? 320 : 140,
-        transition: 'width 0.2s ease',
-      }}
+      className="fixed bottom-10 right-5 z-[1040]" style={{ width: expanded ? 320 : 140, transition: 'width 0.2s ease' }}
     >
       {/* Collapsed bar / header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 8,
-          padding: '8px 12px',
-          backgroundColor: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-border)',
-          borderRadius: expanded
+        className="w-full flex items-center justify-between gap-2 py-2 px-3 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] cursor-pointer font-[var(--font-mono)] text-[10px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)]" style={{ borderRadius: expanded
             ? 'var(--radius) var(--radius) 0 0'
-            : 'var(--radius)',
-          cursor: 'pointer',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: '1.5px',
-          textTransform: 'uppercase',
-          color: 'var(--color-text-muted)',
-        }}
+            : 'var(--radius)' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <HelpCircle size={14} style={{ color: 'var(--color-accent)' }} />
+        <div className="flex items-center gap-1.5">
+          <HelpCircle size={14} className="text-[var(--color-accent)]" />
           <span>Page Help</span>
         </div>
         {expanded ? <ChevronDown size={12} /> : <ChevronUp size={12} />}
@@ -71,39 +47,19 @@ export default function PageHelpPanel({
       {/* Expanded content */}
       {expanded && (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderTop: 'none',
-            borderRadius: '0 0 var(--radius) var(--radius)',
-            overflow: 'hidden',
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[0 0 var(--radius) var(--radius)] overflow-hidden border-t-0"
         >
           {/* Title */}
           <div
-            style={{
-              padding: '12px 14px',
-              borderBottom: '1px solid var(--color-border)',
-            }}
+            className="py-3 px-3.5 border-b border-b-[var(--color-border)]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 600,
-                color: 'var(--color-text-bright)',
-                marginBottom: 6,
-              }}
+              className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)] mb-1.5"
             >
               {title}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                lineHeight: 1.5,
-                color: 'var(--color-text)',
-              }}
+              className="font-[var(--font-mono)] text-[11px] leading-normal text-[var(--color-text)]"
             >
               {description}
             </div>
@@ -112,26 +68,12 @@ export default function PageHelpPanel({
           {/* Actions */}
           {actions.length > 0 && (
             <div
-              style={{
-                padding: '10px 14px',
-                borderBottom:
-                  relatedPages.length > 0
+              className="py-2.5 px-3.5 flex flex-col gap-1.5" style={{ borderBottom: relatedPages.length > 0
                     ? '1px solid var(--color-border)'
-                    : undefined,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-              }}
+                    : undefined }}
             >
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)]"
               >
                 Actions
               </span>
@@ -139,19 +81,7 @@ export default function PageHelpPanel({
                 <button
                   key={i}
                   onClick={action.onClick}
-                  style={{
-                    padding: '6px 10px',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    letterSpacing: '0.5px',
-                    border: '1px solid var(--color-accent)',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: 'transparent',
-                    color: 'var(--color-accent)',
-                    cursor: 'pointer',
-                    transition: 'background-color var(--transition)',
-                    textAlign: 'left',
-                  }}
+                  className="py-1.5 px-2.5 font-[var(--font-mono)] text-[10px] tracking-[0.5px] border border-[var(--color-accent)] rounded-[var(--radius)] bg-transparent text-[var(--color-accent)] cursor-pointer text-left transition-colors duration-[var(--transition)]"
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor =
                       'rgba(77, 171, 247, 0.1)')
@@ -169,22 +99,10 @@ export default function PageHelpPanel({
           {/* Related Pages */}
           {relatedPages.length > 0 && (
             <div
-              style={{
-                padding: '10px 14px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-              }}
+              className="py-2.5 px-3.5 flex flex-col gap-1.5"
             >
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)]"
               >
                 Related Pages
               </span>
@@ -192,15 +110,7 @@ export default function PageHelpPanel({
                 <a
                   key={i}
                   href={page.link}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-accent)',
-                    textDecoration: 'none',
-                  }}
+                  className="flex items-center gap-1.5 font-[var(--font-mono)] text-[11px] text-[var(--color-accent)] no-underline"
                 >
                   <ExternalLink size={10} />
                   {page.label}

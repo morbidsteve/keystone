@@ -112,27 +112,11 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
     <div>
       {/* Facility Selector + WBB Summary */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 16,
-          flexWrap: 'wrap',
-          gap: 12,
-        }}
+        className="flex items-center justify-between mb-4 flex-wrap gap-3"
       >
         <div>
           <label
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              color: 'var(--color-text-muted)',
-              marginBottom: 4,
-              display: 'block',
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] mb-1 block"
           >
             FACILITY
           </label>
@@ -154,38 +138,19 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
         </div>
 
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 14px',
-            backgroundColor: 'var(--color-bg)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-          }}
+          className="flex items-center gap-2 py-2 px-3.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]"
         >
-          <Users size={14} style={{ color: 'var(--color-accent)' }} />
+          <Users size={14} className="text-[var(--color-accent)]" />
           <div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-              }}
+              className="font-[var(--font-mono)] text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] uppercase"
             >
               WALKING BLOOD BANK
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 18,
-                fontWeight: 700,
-                color: 'var(--color-text-bright)',
-              }}
+              className="font-[var(--font-mono)] text-lg font-bold text-[var(--color-text-bright)]"
             >
-              {totalWBBDonors} <span style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>DONORS</span>
+              {totalWBBDonors} <span className="text-[10px] text-[var(--color-text-muted)]">DONORS</span>
             </div>
           </div>
         </div>
@@ -193,11 +158,7 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
 
       {/* Blood Type Grid */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]"
       >
         {bloodTypeCards.map((card) => {
           const isCritical = card.totalUnits <= 2 && card.products.length > 0;
@@ -208,79 +169,40 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
           return (
             <div
               key={card.bloodType}
-              style={{
-                backgroundColor: 'var(--color-bg)',
-                border: `1px solid ${borderColor}`,
-                borderRadius: 'var(--radius)',
-                padding: 14,
-                position: 'relative',
-              }}
+              className="bg-[var(--color-bg)] rounded-[var(--radius)] p-3.5 relative" style={{ border: `1px solid ${borderColor}` }}
             >
               {isCritical && (
                 <AlertTriangle
                   size={12}
-                  style={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    color: '#ef4444',
-                  }}
+                  className="absolute top-2 right-2 text-[#ef4444]"
                 />
               )}
 
               {/* Blood Type Label */}
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: card.products.length > 0
+                className="font-[var(--font-mono)] text-[22px] font-bold mb-2" style={{ color: card.products.length > 0
                     ? (isCritical ? '#ef4444' : 'var(--color-text-bright)')
-                    : 'var(--color-text-muted)',
-                  marginBottom: 8,
-                }}
+                    : 'var(--color-text-muted)' }}
               >
                 <Droplets
                   size={14}
-                  style={{
-                    verticalAlign: 'middle',
-                    marginRight: 4,
-                    color: card.products.length > 0 ? '#ef4444' : 'var(--color-text-muted)',
-                  }}
+                  className="align-middle mr-1" style={{ color: card.products.length > 0 ? '#ef4444' : 'var(--color-text-muted)' }}
                 />
                 {card.label}
               </div>
 
               {/* Units On Hand */}
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                  marginBottom: 2,
-                }}
+                className="font-[var(--font-mono)] text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-0.5"
               >
                 ON HAND
               </div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 20,
-                  fontWeight: 700,
-                  color: isCritical ? '#ef4444' : 'var(--color-text-bright)',
-                  marginBottom: 8,
-                }}
+                className="font-[var(--font-mono)] text-xl font-bold mb-2" style={{ color: isCritical ? '#ef4444' : 'var(--color-text-bright)' }}
               >
                 {card.totalUnits}
                 <span
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 400,
-                    color: 'var(--color-text-muted)',
-                    marginLeft: 4,
-                  }}
+                  className="text-[10px] font-normal text-[var(--color-text-muted)] ml-1"
                 >
                   units
                 </span>
@@ -288,30 +210,15 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
 
               {/* Used in 24h */}
               <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginBottom: 4,
-                }}
+                className="flex justify-between mb-1"
               >
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] uppercase"
                 >
                   USED 24H
                 </span>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: card.totalUsed24h > 0 ? '#f59e0b' : 'var(--color-text-muted)',
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] font-semibold" style={{ color: card.totalUsed24h > 0 ? '#f59e0b' : 'var(--color-text-muted)' }}
                 >
                   {card.totalUsed24h}
                 </span>
@@ -319,30 +226,15 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
 
               {/* WBB Donors */}
               <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginBottom: 4,
-                }}
+                className="flex justify-between mb-1"
               >
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] uppercase"
                 >
                   WBB
                 </span>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: 'var(--color-accent)',
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-accent)]"
                 >
                   {card.totalDonors}
                 </span>
@@ -351,17 +243,7 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
               {/* Expiration Warning */}
               {card.earliestExpiry && (
                 <div
-                  style={{
-                    marginTop: 6,
-                    padding: '3px 6px',
-                    borderRadius: 2,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 8,
-                    letterSpacing: '0.5px',
-                    backgroundColor: expiryWarning ? 'rgba(239, 68, 68, 0.12)' : 'rgba(107, 114, 128, 0.12)',
-                    color: expiryWarning ? '#ef4444' : 'var(--color-text-muted)',
-                    textAlign: 'center',
-                  }}
+                  className="mt-1.5 py-[3px] px-1.5 rounded-[2px] font-[var(--font-mono)] text-[8px] tracking-[0.5px] text-center" style={{ backgroundColor: expiryWarning ? 'rgba(239, 68, 68, 0.12)' : 'rgba(107, 114, 128, 0.12)', color: expiryWarning ? '#ef4444' : 'var(--color-text-muted)' }}
                 >
                   EXP: {expiryDays !== null ? `${expiryDays}d` : '--'}
                 </div>

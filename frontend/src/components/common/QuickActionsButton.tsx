@@ -98,7 +98,7 @@ export default function QuickActionsButton() {
 
   // Multiple actions: render dropdown
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="relative">
       <button style={buttonStyle} onClick={() => setOpen((v) => !v)}>
         <Plus size={14} />
         NEW
@@ -109,44 +109,17 @@ export default function QuickActionsButton() {
         <>
           {/* Click-outside overlay */}
           <div
-            style={{ position: 'fixed', inset: 0, zIndex: 1100 }}
+            className="fixed z-[1100] inset-0"
             onClick={() => setOpen(false)}
           />
           <div
-            style={{
-              position: 'absolute',
-              top: '100%',
-              right: 0,
-              marginTop: 6,
-              minWidth: 200,
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-              zIndex: 1101,
-              overflow: 'hidden',
-            }}
+            className="absolute right-0 mt-1.5 min-w-[200px] bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] z-[1101] overflow-hidden" style={{ top: '100%', boxShadow: '0 8px 24px rgba(0,0,0,0.3)' }}
           >
             {actions.map((action) => (
               <button
                 key={action.label}
                 onClick={action.onClick}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  width: '100%',
-                  padding: '10px 14px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-text)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  letterSpacing: '1px',
-                  textAlign: 'left',
-                  transition: 'background-color var(--transition)',
-                }}
+                className="flex items-center gap-2 w-full py-2.5 px-3.5 bg-transparent border-0 cursor-pointer text-[var(--color-text)] font-[var(--font-mono)] text-[11px] tracking-[1px] text-left transition-colors duration-[var(--transition)]"
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
                 }
@@ -154,7 +127,7 @@ export default function QuickActionsButton() {
                   (e.currentTarget.style.backgroundColor = 'transparent')
                 }
               >
-                <Plus size={12} style={{ color: 'var(--color-accent)' }} />
+                <Plus size={12} className="text-[var(--color-accent)]" />
                 {action.label.toUpperCase()}
               </button>
             ))}

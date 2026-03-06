@@ -9,18 +9,7 @@ interface UnitPopupProps {
 function StatusPill({ status }: { status: string }) {
   return (
     <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 10,
-        fontSize: 9,
-        fontWeight: 700,
-        letterSpacing: '1px',
-        fontFamily: 'var(--font-mono)',
-        color: '#fff',
-        backgroundColor: getStatusColor(status),
-        textTransform: 'uppercase',
-      }}
+      className="inline-block py-0.5 px-2 rounded-[10px] text-[9px] font-bold tracking-[1px] font-[var(--font-mono)] text-[#fff] uppercase" style={{ backgroundColor: getStatusColor(status) }}
     >
       {status}
     </span>
@@ -39,16 +28,9 @@ function SupplyBar({
   status: string;
 }) {
   return (
-    <div style={{ marginBottom: 4 }}>
+    <div className="mb-1">
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: 9,
-          color: 'var(--color-text-muted)',
-          marginBottom: 2,
-          fontFamily: 'var(--font-mono)',
-        }}
+        className="flex justify-between text-[9px] text-[var(--color-text-muted)] mb-0.5 font-[var(--font-mono)]"
       >
         <span>{label}</span>
         <span>
@@ -56,22 +38,10 @@ function SupplyBar({
         </span>
       </div>
       <div
-        style={{
-          width: '100%',
-          height: 6,
-          backgroundColor: 'rgba(255,255,255,0.1)',
-          borderRadius: 3,
-          overflow: 'hidden',
-        }}
+        className="w-full h-[6px] bg-[rgba(255,255,255,0.1)] rounded-[3px] overflow-hidden"
       >
         <div
-          style={{
-            width: `${Math.min(100, percentage)}%`,
-            height: '100%',
-            backgroundColor: getStatusColor(status),
-            borderRadius: 3,
-            transition: 'width 0.3s ease',
-          }}
+          className="h-full rounded-[3px]" style={{ width: `${Math.min(100, percentage)}%`, backgroundColor: getStatusColor(status), transition: 'width 0.3s ease' }}
         />
       </div>
     </div>
@@ -81,42 +51,20 @@ function SupplyBar({
 export default function UnitPopup({ unit }: UnitPopupProps) {
   return (
     <div
-      style={{
-        minWidth: 260,
-        maxWidth: 300,
-        fontFamily: 'var(--font-mono)',
-        backgroundColor: 'var(--color-bg-elevated)',
-        color: 'var(--color-text)',
-        padding: 12,
-        borderRadius: 'var(--radius)',
-      }}
+      className="min-w-[260px] max-w-[300px] font-[var(--font-mono)] bg-[var(--color-bg-elevated)] text-[var(--color-text)] p-3 rounded-[var(--radius)]"
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: 8,
-        }}
+        className="flex justify-between items-start mb-2"
       >
         <div>
           <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '0.5px',
-            }}
+            className="text-xs font-bold text-[var(--color-text-bright)] tracking-[0.5px]"
           >
             {unit.name}
           </div>
           <div
-            style={{
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              marginTop: 2,
-            }}
+            className="text-[10px] text-[var(--color-text-muted)] mt-0.5"
           >
             {unit.abbreviation} | {unit.echelon}
           </div>
@@ -126,25 +74,18 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
 
       {/* Position info */}
       <div
-        style={{
-          fontSize: 9,
-          color: 'var(--color-text-muted)',
-          marginBottom: 8,
-          padding: '4px 0',
-          borderTop: '1px solid var(--color-border)',
-          borderBottom: '1px solid var(--color-border)',
-        }}
+        className="text-[9px] text-[var(--color-text-muted)] mb-2 py-1 px-0 border-t border-t-[var(--color-border)] border-b border-b-[var(--color-border)]"
       >
         <div>
           POS: {Math.abs(unit.latitude).toFixed(2)}{unit.latitude >= 0 ? 'N' : 'S'}, {Math.abs(unit.longitude).toFixed(2)}{unit.longitude >= 0 ? 'E' : 'W'}
           {unit.position_source && (
-            <span style={{ marginLeft: 8, color: 'var(--color-accent)' }}>
+            <span className="ml-2 text-[var(--color-accent)]">
               [{unit.position_source}]
             </span>
           )}
         </div>
         {unit.last_updated && (
-          <div style={{ marginTop: 2 }}>
+          <div className="mt-0.5">
             UPDATED: {formatRelativeTime(unit.last_updated)}
           </div>
         )}
@@ -152,28 +93,19 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
 
       {/* Readiness */}
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 8,
-        }}
+        className="flex justify-between items-center mb-2"
       >
-        <span style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>
+        <span className="text-[10px] text-[var(--color-text-muted)]">
           OVERALL READINESS
         </span>
         <span
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: getStatusColor(
+          className="text-sm font-bold" style={{ color: getStatusColor(
               unit.readiness_pct >= 90
                 ? 'GREEN'
                 : unit.readiness_pct >= 75
                   ? 'AMBER'
                   : 'RED',
-            ),
-          }}
+            ) }}
         >
           {Math.round(unit.readiness_pct)}%
         </span>
@@ -181,16 +113,9 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
 
       {/* Supply breakdown */}
       {unit.supply_breakdown && unit.supply_breakdown.length > 0 && (
-        <div style={{ marginBottom: 8 }}>
+        <div className="mb-2">
           <div
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-bright)',
-              marginBottom: 6,
-              textTransform: 'uppercase',
-            }}
+            className="text-[9px] font-bold tracking-[1.5px] text-[var(--color-text-bright)] mb-1.5 uppercase"
           >
             SUPPLY STATUS
           </div>
@@ -208,50 +133,34 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
 
       {/* Equipment summary */}
       {unit.equipment_summary && unit.equipment_summary.length > 0 && (
-        <div style={{ marginBottom: 8 }}>
+        <div className="mb-2">
           <div
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-bright)',
-              marginBottom: 4,
-              textTransform: 'uppercase',
-            }}
+            className="text-[9px] font-bold tracking-[1.5px] text-[var(--color-text-bright)] mb-1 uppercase"
           >
             EQUIPMENT READINESS
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="flex flex-col gap-0.5">
             {unit.equipment_summary.map((eq) => (
               <div
                 key={eq.type}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: 9,
-                  padding: '2px 0',
-                }}
+                className="flex justify-between items-center text-[9px] py-0.5 px-0"
               >
-                <span style={{ color: 'var(--color-text-muted)' }}>
+                <span className="text-[var(--color-text-muted)]">
                   {eq.type}
                 </span>
                 <span>
                   <span
-                    style={{
-                      color: getStatusColor(
+                    className="font-semibold" style={{ color: getStatusColor(
                         eq.readiness_pct >= 90
                           ? 'GREEN'
                           : eq.readiness_pct >= 75
                             ? 'AMBER'
                             : 'RED',
-                      ),
-                      fontWeight: 600,
-                    }}
+                      ) }}
                   >
                     {eq.mission_capable}/{eq.total}
                   </span>
-                  <span style={{ color: 'var(--color-text-muted)', marginLeft: 4 }}>
+                  <span className="text-[var(--color-text-muted)] ml-1">
                     ({Math.round(eq.readiness_pct)}%)
                   </span>
                 </span>
@@ -263,43 +172,26 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
 
       {/* Inbound convoys */}
       {unit.inbound_convoys && unit.inbound_convoys.length > 0 && (
-        <div style={{ marginBottom: 4 }}>
+        <div className="mb-1">
           <div
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-bright)',
-              marginBottom: 4,
-              textTransform: 'uppercase',
-            }}
+            className="text-[9px] font-bold tracking-[1.5px] text-[var(--color-text-bright)] mb-1 uppercase"
           >
             INBOUND CONVOYS
           </div>
           {unit.inbound_convoys.map((cv) => (
             <div
               key={cv.convoy_id}
-              style={{
-                fontSize: 9,
-                padding: '4px 6px',
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                borderRadius: 'var(--radius)',
-                marginBottom: 2,
-              }}
+              className="text-[9px] py-1 px-1.5 bg-[rgba(255,255,255,0.03)] rounded-[var(--radius)] mb-0.5"
             >
               <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginBottom: 2,
-                }}
+                className="flex justify-between mb-0.5"
               >
-                <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                <span className="text-[var(--color-text-bright)] font-semibold">
                   {cv.name}
                 </span>
                 <StatusPill status={cv.status} />
               </div>
-              <div style={{ color: 'var(--color-text-muted)' }}>
+              <div className="text-[var(--color-text-muted)]">
                 ETA: {formatRelativeTime(cv.eta)} | {cv.cargo_summary}
               </div>
             </div>
@@ -309,23 +201,11 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
 
       {/* View Dashboard link */}
       <div
-        style={{
-          textAlign: 'center',
-          paddingTop: 6,
-          borderTop: '1px solid var(--color-border)',
-          marginTop: 4,
-        }}
+        className="text-center pt-1.5 border-t border-t-[var(--color-border)] mt-1"
       >
         <a
           href={`/dashboard?unit=${unit.unit_id}`}
-          style={{
-            fontSize: 9,
-            color: 'var(--color-accent)',
-            textDecoration: 'none',
-            letterSpacing: '1px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-          }}
+          className="text-[9px] text-[var(--color-accent)] no-underline tracking-[1px] font-semibold uppercase"
         >
           VIEW DASHBOARD
         </a>

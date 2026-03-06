@@ -32,20 +32,13 @@ const CustomTooltip = ({
   if (!active || !payload?.length) return null;
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border-strong)',
-        borderRadius: 'var(--radius)',
-        padding: '8px 12px',
-        fontFamily: 'var(--font-mono)',
-        fontSize: 11,
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
     >
-      <div style={{ color: 'var(--color-text-bright)', marginBottom: 4, fontWeight: 600 }}>
+      <div className="text-[var(--color-text-bright)] mb-1 font-semibold">
         {label}
       </div>
       {payload.map((p, i) => (
-        <div key={i} style={{ color: p.color, display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+        <div key={i} className="flex justify-between gap-4" style={{ color: p.color }}>
           <span>{p.dataKey === 'corrective_count' ? 'CORRECTIVE' : 'PREVENTIVE'}</span>
           <span>{p.value}</span>
         </div>
@@ -61,21 +54,13 @@ export default function EquipmentReliabilityChart({ unitId, days = 90 }: Equipme
   });
 
   if (isLoading) {
-    return <div className="skeleton" style={{ width: '100%', height: 300 }} />;
+    return <div className="skeleton w-full h-[300px]"  />;
   }
 
   if (!data || data.length === 0) {
     return (
       <div
-        style={{
-          height: 300,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="h-[300px] flex items-center justify-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No equipment reliability data available
       </div>

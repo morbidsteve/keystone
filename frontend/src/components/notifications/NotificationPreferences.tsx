@@ -84,29 +84,16 @@ export default function NotificationPreferences() {
 
   return (
     <Card title="NOTIFICATION PREFERENCES">
-      <div style={{ overflowX: 'auto' }}>
+      <div className="overflow-x-auto">
         <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="w-full border-collapse font-[var(--font-mono)] text-[11px]"
         >
           <thead>
             <tr>
               {['ALERT TYPE', 'CHANNEL', 'MIN SEVERITY'].map((header) => (
                 <th
                   key={header}
-                  style={{
-                    padding: '8px 12px',
-                    textAlign: 'left',
-                    fontWeight: 600,
-                    fontSize: 9,
-                    letterSpacing: '1.5px',
-                    color: 'var(--color-text-muted)',
-                    borderBottom: '1px solid var(--color-border)',
-                  }}
+                  className="py-2 px-3 text-left font-semibold text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] border-b border-b-[var(--color-border)]"
                 >
                   {header}
                 </th>
@@ -119,20 +106,14 @@ export default function NotificationPreferences() {
               return (
                 <tr
                   key={alertType}
-                  style={{
-                    borderBottom: '1px solid var(--color-border)',
-                  }}
+                  className="border-b border-b-[var(--color-border)]"
                 >
                   <td
-                    style={{
-                      padding: '8px 12px',
-                      color: 'var(--color-text-bright)',
-                      fontWeight: 500,
-                    }}
+                    className="py-2 px-3 text-[var(--color-text-bright)] font-medium"
                   >
                     {ALERT_TYPE_LABELS[alertType] || alertType}
                   </td>
-                  <td style={{ padding: '8px 12px' }}>
+                  <td className="py-2 px-3">
                     <select
                       value={pref?.channel ?? 'IN_APP'}
                       onChange={(e) => handleChannelChange(alertType, e.target.value)}
@@ -143,7 +124,7 @@ export default function NotificationPreferences() {
                       ))}
                     </select>
                   </td>
-                  <td style={{ padding: '8px 12px' }}>
+                  <td className="py-2 px-3">
                     <select
                       value={pref?.min_severity ?? 'WARNING'}
                       onChange={(e) => handleSeverityChange(alertType, e.target.value)}

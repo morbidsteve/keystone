@@ -89,14 +89,7 @@ function SupplyPointMarker({ sp }: { sp: MapSupplyPoint }) {
     >
       <Tooltip direction="top" offset={[0, -12]} opacity={0.95}>
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#111',
-            padding: '2px 4px',
-          }}
+          className="font-[var(--font-mono)] text-[9px] font-bold tracking-[1px] text-[#111] py-0.5 px-1"
         >
           {sp.name}
         </div>

@@ -23,16 +23,9 @@ function LegendSection({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ marginBottom: 6 }}>
+    <div className="mb-1.5">
       <div
-        style={{
-          fontSize: 8,
-          fontWeight: 700,
-          letterSpacing: '1.5px',
-          color: 'var(--color-text-bright)',
-          marginBottom: 3,
-          textTransform: 'uppercase',
-        }}
+        className="text-[8px] font-bold tracking-[1.5px] text-[var(--color-text-bright)] mb-[3px] uppercase"
       >
         {title}
       </div>
@@ -52,36 +45,15 @@ function LegendDot({
 }) {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '2px 0',
-      }}
+      className="flex items-center gap-2 py-0.5 px-0"
     >
       <div
-        style={{
-          width: 16,
-          height: 16,
-          backgroundColor: color,
-          borderRadius: letter ? 3 : '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 9,
-          fontWeight: 700,
-          color: '#fff',
-          fontFamily: 'var(--font-mono)',
-        }}
+        className="w-[16px] h-[16px] flex items-center justify-center text-[9px] font-bold text-[#fff] font-[var(--font-mono)]" style={{ backgroundColor: color, borderRadius: letter ? 3 : '50%' }}
       >
         {letter}
       </div>
       <span
-        style={{
-          fontSize: 9,
-          color: 'var(--color-text-muted)',
-          letterSpacing: '0.5px',
-        }}
+        className="text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
       >
         {label}
       </span>
@@ -102,30 +74,13 @@ function LegendLine({
 }) {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '2px 0',
-      }}
+      className="flex items-center gap-2 py-0.5 px-0"
     >
       <div
-        style={{
-          width: 20,
-          height: weight || 3,
-          borderRadius: 1,
-          borderStyle: dashed ? 'dashed' : 'solid',
-          borderWidth: dashed ? 1 : 0,
-          borderColor: color,
-          backgroundColor: dashed ? 'transparent' : color,
-        }}
+        className="w-[20px] rounded-[1px]" style={{ height: weight || 3, borderStyle: dashed ? 'dashed' : 'solid', borderWidth: dashed ? 1 : 0, borderColor: color, backgroundColor: dashed ? 'transparent' : color }}
       />
       <span
-        style={{
-          fontSize: 9,
-          color: 'var(--color-text-muted)',
-          letterSpacing: '0.5px',
-        }}
+        className="text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
       >
         {label}
       </span>
@@ -149,56 +104,22 @@ export default function MapLegend({ layers }: MapLegendProps) {
 
   return (
     <div
-      style={{
-        position: 'absolute',
-        bottom: 20,
-        right: 10,
-        zIndex: 1000,
-        backgroundColor: 'rgba(17, 17, 17, 0.92)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        fontFamily: 'var(--font-mono)',
-        backdropFilter: 'blur(8px)',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-        minWidth: collapsed ? 40 : 160,
-        transition: 'min-width 0.2s ease',
-      }}
+      className="absolute bottom-5 right-2.5 z-[1000] bg-[rgba(17,17,17,0.92)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)]" style={{ backdropFilter: 'blur(8px)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)', minWidth: collapsed ? 40 : 160, transition: 'min-width 0.2s ease' }}
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: collapsed ? '6px 8px' : '6px 10px',
-          borderBottom: collapsed ? 'none' : '1px solid var(--color-border)',
-          cursor: 'pointer',
-        }}
+        className="flex items-center justify-between cursor-pointer" style={{ padding: collapsed ? '6px 8px' : '6px 10px', borderBottom: collapsed ? 'none' : '1px solid var(--color-border)' }}
         onClick={() => setCollapsed(!collapsed)}
       >
         {!collapsed && (
           <span
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="text-[9px] font-bold tracking-[2px] text-[var(--color-text-bright)] uppercase"
           >
             LEGEND
           </span>
         )}
         <span
-          style={{
-            fontSize: 12,
-            color: 'var(--color-text-muted)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 16,
-            height: 16,
-          }}
+          className="text-xs text-[var(--color-text-muted)] flex items-center justify-center w-[16px] h-[16px]"
         >
           {collapsed ? '\u25B2' : '\u25BC'}
         </span>

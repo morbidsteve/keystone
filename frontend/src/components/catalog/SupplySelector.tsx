@@ -259,10 +259,10 @@ export default function SupplySelector({
   const classNameMap = Object.fromEntries(supplyClasses.map((c) => [c.code, c.name]));
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', ...style }}>
+    <div ref={containerRef} className="relative">
       {/* Supply class filter (only show if no external filter) */}
       {externalClassFilter === undefined && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+        <div className="flex items-center gap-2 mb-1">
           <label style={{ ...labelStyle, marginBottom: 0 }}>SUPPLY ITEM</label>
           <select
             value={classFilter}
@@ -281,17 +281,10 @@ export default function SupplySelector({
 
       {/* Search input */}
       {!value ? (
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <Search
             size={13}
-            style={{
-              position: 'absolute',
-              left: 10,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'var(--color-text-muted)',
-              pointerEvents: 'none',
-            }}
+            className="absolute left-2.5 text-[var(--color-text-muted)] top-1/2 -translate-y-1/2 pointer-events-none"
           />
           <input
             ref={inputRef}
@@ -305,14 +298,7 @@ export default function SupplySelector({
           {isLoading && (
             <Loader2
               size={13}
-              style={{
-                position: 'absolute',
-                right: 10,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-accent)',
-                animation: 'spin 1s linear infinite',
-              }}
+              className="absolute right-2.5 text-[var(--color-accent)]" style={{ top: '50%', transform: 'translateY(-50%)', animation: 'spin 1s linear infinite' }}
             />
           )}
         </div>
@@ -320,34 +306,18 @@ export default function SupplySelector({
         /* Selected item display */
         <div>
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 10px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-bright)',
-            }}
+            className="flex items-center gap-2 py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-accent)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)]"
           >
-            <span style={{ flex: 1 }}>
+            <span className="flex-1">
               {(value.nsn || value.dodic) && (
-                <span style={{ fontWeight: 700, marginRight: 8 }}>
+                <span className="font-bold mr-2">
                   {value.nsn || value.dodic}
                 </span>
               )}
               {value.commonName || value.nomenclature}
               <span style={badgeStyle}>CL {value.supplyClass}</span>
               <span
-                style={{
-                  ...badgeStyle,
-                  backgroundColor: 'transparent',
-                  border: '1px solid var(--color-border)',
-                  color: 'var(--color-text-muted)',
-                }}
+                className="border border-[var(--color-border)] text-[var(--color-text-muted)]"
               >
                 {value.unitOfIssue}
               </span>
@@ -355,16 +325,7 @@ export default function SupplySelector({
             <button
               onClick={handleClear}
               type="button"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'none',
-                border: 'none',
-                color: 'var(--color-text-muted)',
-                cursor: 'pointer',
-                padding: 2,
-              }}
+              className="flex items-center justify-center bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-0.5"
             >
               <X size={13} />
             </button>
@@ -383,34 +344,18 @@ export default function SupplySelector({
         <div style={dropdownStyle}>
           {flatResults.length === 0 && !isLoading && (
             <div
-              style={{
-                padding: '16px 10px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-                textAlign: 'center',
-              }}
+              className="py-4 px-2.5 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center"
             >
               {query ? 'No results found' : 'Type to search supply catalog'}
             </div>
           )}
           {isLoading && flatResults.length === 0 && (
             <div
-              style={{
-                padding: '16px 10px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-                textAlign: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-              }}
+              className="py-4 px-2.5 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center flex items-center justify-center gap-2"
             >
               <Loader2
                 size={13}
-                style={{ animation: 'spin 1s linear infinite' }}
+                className="animate-spin"
               />
               Searching...
             </div>
@@ -422,7 +367,7 @@ export default function SupplySelector({
                 <div style={classHeaderStyle}>
                   {classKey}
                   {classNameMap[classKey.replace('CL ', '')] && (
-                    <span style={{ fontWeight: 400, marginLeft: 6 }}>
+                    <span className="font-normal ml-1.5">
                       {classNameMap[classKey.replace('CL ', '')]}
                     </span>
                   )}
@@ -442,42 +387,26 @@ export default function SupplySelector({
                           : 'transparent',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                        <span style={{ fontWeight: 700, color: 'var(--color-text-bright)', minWidth: 120 }}>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="font-bold text-[var(--color-text-bright)] min-w-[120px]">
                           {item.nsn || item.dodic || '--'}
                         </span>
-                        <span style={{ flex: 1 }}>{item.nomenclature}</span>
+                        <span className="flex-1">{item.nomenclature}</span>
                         <span style={badgeStyle}>{item.unitOfIssue}</span>
                       </div>
                       {item.commonName && (
-                        <div style={{ fontSize: 9, color: 'var(--color-text-muted)', marginTop: 1 }}>
+                        <div className="text-[9px] text-[var(--color-text-muted)] mt-px">
                           {item.commonName}
                           {item.isHazmat && (
                             <span
-                              style={{
-                                marginLeft: 6,
-                                padding: '0 4px',
-                                borderRadius: 2,
-                                fontSize: 8,
-                                fontWeight: 700,
-                                backgroundColor: 'var(--color-danger, #ef4444)',
-                                color: '#fff',
-                              }}
+                              className="ml-1.5 py-0 px-1 rounded-[2px] text-[8px] font-bold bg-[var(--color-danger, #ef4444)] text-[#fff]"
                             >
                               HAZMAT
                             </span>
                           )}
                           {item.isControlled && (
                             <span
-                              style={{
-                                marginLeft: 4,
-                                padding: '0 4px',
-                                borderRadius: 2,
-                                fontSize: 8,
-                                fontWeight: 700,
-                                backgroundColor: 'var(--color-warning, #f59e0b)',
-                                color: '#000',
-                              }}
+                              className="ml-1 py-0 px-1 rounded-[2px] text-[8px] font-bold bg-[var(--color-warning, #f59e0b)] text-[#000]"
                             >
                               CTRL
                             </span>

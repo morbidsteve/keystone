@@ -81,46 +81,32 @@ const tdRight: React.CSSProperties = { ...tdStyle, textAlign: 'right' };
 
 function EquipmentDrillDown({ data }: { data: EquipmentDetailResponse }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Summary header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="flex items-center gap-3">
         <RatingBadge rating={data.rRating} />
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            color: getPctColor(data.overallReadinessPct),
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold" style={{ color: getPctColor(data.overallReadinessPct) }}
         >
           {Math.round(data.overallReadinessPct)}%
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+        <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
           as of {data.snapshotDate}
         </span>
       </div>
 
       {/* Category summary bar */}
       {data.summaryByCategory && (
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div className="flex gap-3 flex-wrap">
           {Object.entries(data.summaryByCategory).map(([cat, pct]) => (
             <div
               key={cat}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-              }}
+              className="py-1.5 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] flex flex-col items-center gap-0.5"
             >
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]">
                 {cat}
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: getPctColor(pct) }}>
+              <span className="font-[var(--font-mono)] text-sm font-bold" style={{ color: getPctColor(pct) }}>
                 {pct}%
               </span>
             </div>
@@ -129,8 +115,8 @@ function EquipmentDrillDown({ data }: { data: EquipmentDetailResponse }) {
       )}
 
       {/* Equipment table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
           <thead>
             <tr>
               <th style={thStyle}>TAMCN</th>
@@ -145,7 +131,7 @@ function EquipmentDrillDown({ data }: { data: EquipmentDetailResponse }) {
           <tbody>
             {data.equipmentItems.map((item) => (
               <tr key={item.tamcn}>
-                <td style={{ ...tdStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>{item.tamcn}</td>
+                <td className="text-[var(--color-text-bright)]">{item.tamcn}</td>
                 <td style={tdStyle}>{item.nomenclature}</td>
                 <td style={tdRight}>{item.totalPossessed}</td>
                 <td style={tdRight}>{item.missionCapable}</td>
@@ -165,46 +151,32 @@ function EquipmentDrillDown({ data }: { data: EquipmentDetailResponse }) {
 
 function SupplyDrillDown({ data }: { data: SupplyDetailResponse }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Summary header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="flex items-center gap-3">
         <RatingBadge rating={data.sRating} />
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            color: getPctColor(data.overallReadinessPct),
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold" style={{ color: getPctColor(data.overallReadinessPct) }}
         >
           {Math.round(data.overallReadinessPct)}%
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+        <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
           as of {data.snapshotDate}
         </span>
       </div>
 
       {/* DOS by class summary */}
       {data.dosByClass && (
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div className="flex gap-3 flex-wrap">
           {Object.entries(data.dosByClass).map(([cls, dos]) => (
             <div
               key={cls}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-              }}
+              className="py-1.5 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] flex flex-col items-center gap-0.5"
             >
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]">
                 {cls}
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: dos < 5 ? '#f87171' : dos < 15 ? '#fbbf24' : '#4ade80' }}>
+              <span className="font-[var(--font-mono)] text-sm font-bold" style={{ color: dos < 5 ? '#f87171' : dos < 15 ? '#fbbf24' : '#4ade80' }}>
                 {dos < 100 ? dos.toFixed(1) : Math.round(dos)} DOS
               </span>
             </div>
@@ -213,8 +185,8 @@ function SupplyDrillDown({ data }: { data: SupplyDetailResponse }) {
       )}
 
       {/* Supply table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
           <thead>
             <tr>
               <th style={thStyle}>Class</th>
@@ -228,7 +200,7 @@ function SupplyDrillDown({ data }: { data: SupplyDetailResponse }) {
           <tbody>
             {data.supplyItems.map((item, idx) => (
               <tr key={`${item.supplyClass}-${idx}`}>
-                <td style={{ ...tdStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>{item.supplyClass}</td>
+                <td className="text-[var(--color-text-bright)]">{item.supplyClass}</td>
                 <td style={tdStyle}>{item.description}</td>
                 <td style={tdRight}>{item.onHand.toLocaleString()}</td>
                 <td style={tdRight}>{item.required.toLocaleString()}</td>
@@ -237,18 +209,7 @@ function SupplyDrillDown({ data }: { data: SupplyDetailResponse }) {
                 </td>
                 <td style={tdStyle}>
                   <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '2px 8px',
-                      borderRadius: 'var(--radius)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      fontWeight: 700,
-                      letterSpacing: '1px',
-                      color: getStatusColor(item.status),
-                      backgroundColor: `${getStatusColor(item.status)}15`,
-                      border: `1px solid ${getStatusColor(item.status)}30`,
-                    }}
+                    className="inline-block py-0.5 px-2 rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] font-bold tracking-[1px]" style={{ color: getStatusColor(item.status), backgroundColor: `${getStatusColor(item.status)}15`, border: `1px solid ${getStatusColor(item.status)}30` }}
                   >
                     {item.status}
                   </span>
@@ -264,27 +225,22 @@ function SupplyDrillDown({ data }: { data: SupplyDetailResponse }) {
 
 function PersonnelDrillDown({ data }: { data: PersonnelDetailResponse }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Summary header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="flex items-center gap-3">
         <RatingBadge rating={data.pRating} />
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            color: getPctColor(data.overallReadinessPct),
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold" style={{ color: getPctColor(data.overallReadinessPct) }}
         >
           {Math.round(data.overallReadinessPct)}%
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+        <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
           as of {data.snapshotDate}
         </span>
       </div>
 
       {/* Summary cards */}
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+      <div className="flex gap-3 flex-wrap">
         {[
           { label: 'Authorized', value: data.authorizedTotal.toLocaleString() },
           { label: 'Assigned', value: data.assignedTotal.toLocaleString() },
@@ -292,21 +248,12 @@ function PersonnelDrillDown({ data }: { data: PersonnelDetailResponse }) {
         ].map((card) => (
           <div
             key={card.label}
-            style={{
-              flex: '1 1 120px',
-              padding: '12px 16px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-            }}
+            className="py-3 px-4 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] flex flex-col gap-1 flex-[1_1_120px]"
           >
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]">
               {card.label}
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: card.color ?? 'var(--color-text-bright)' }}>
+            <span className="font-[var(--font-mono)] text-xl font-bold" style={{ color: card.color ?? 'var(--color-text-bright)' }}>
               {card.value}
             </span>
           </div>
@@ -316,11 +263,11 @@ function PersonnelDrillDown({ data }: { data: PersonnelDetailResponse }) {
       {/* MOS Shortfalls table */}
       {data.mosShortfalls.length > 0 && (
         <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--color-text-muted)', marginBottom: 8 }}>
+          <div className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2">
             MOS SHORTFALLS
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   <th style={thStyle}>MOS</th>
@@ -333,11 +280,11 @@ function PersonnelDrillDown({ data }: { data: PersonnelDetailResponse }) {
               <tbody>
                 {data.mosShortfalls.map((s) => (
                   <tr key={s.mos}>
-                    <td style={{ ...tdStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>{s.mos}</td>
+                    <td className="text-[var(--color-text-bright)]">{s.mos}</td>
                     <td style={tdStyle}>{s.mosTitle}</td>
                     <td style={tdRight}>{s.authorized}</td>
                     <td style={tdRight}>{s.assigned}</td>
-                    <td style={{ ...tdRight, fontWeight: 700, color: '#f87171' }}>-{s.shortfall}</td>
+                    <td className="text-[#f87171]">-{s.shortfall}</td>
                   </tr>
                 ))}
               </tbody>
@@ -351,21 +298,16 @@ function PersonnelDrillDown({ data }: { data: PersonnelDetailResponse }) {
 
 function TrainingDrillDown({ data }: { data: TrainingDetailResponse }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Summary header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="flex items-center gap-3">
         <RatingBadge rating={data.tRating} />
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            color: getPctColor(data.overallReadinessPct),
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold" style={{ color: getPctColor(data.overallReadinessPct) }}
         >
           {Math.round(data.overallReadinessPct)}%
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+        <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
           as of {data.snapshotDate}
         </span>
       </div>
@@ -373,11 +315,11 @@ function TrainingDrillDown({ data }: { data: TrainingDetailResponse }) {
       {/* Qualification currency rates */}
       {data.qualificationCurrencyRates && (
         <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--color-text-muted)', marginBottom: 8 }}>
+          <div className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2">
             QUALIFICATION CURRENCY RATES
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   <th style={thStyle}>Qualification</th>
@@ -400,31 +342,23 @@ function TrainingDrillDown({ data }: { data: TrainingDetailResponse }) {
       {/* Upcoming expirations */}
       {data.upcomingExpirations && data.upcomingExpirations.length > 0 && (
         <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--color-text-muted)', marginBottom: 8 }}>
+          <div className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2">
             UPCOMING EXPIRATIONS
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div className="flex flex-col gap-1">
             {data.upcomingExpirations.map((exp, idx) => (
               <div
                 key={idx}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '8px 12px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                }}
+                className="flex items-center justify-between py-2 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]"
               >
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text)' }}>
+                <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]">
                   {exp.qualification}
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: '#fb923c' }}>
+                <div className="flex items-center gap-2.5">
+                  <span className="font-[var(--font-mono)] text-[11px] font-bold text-[#fb923c]">
                     {exp.count} Marines
                   </span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+                  <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
                     within {exp.dueWithin}
                   </span>
                 </div>
@@ -437,28 +371,19 @@ function TrainingDrillDown({ data }: { data: TrainingDetailResponse }) {
       {/* Combat readiness stats */}
       {data.combatReadinessStats && (
         <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--color-text-muted)', marginBottom: 8 }}>
+          <div className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2">
             COMBAT READINESS STATS
           </div>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <div className="flex gap-3 flex-wrap">
             {Object.entries(data.combatReadinessStats).map(([stat, pct]) => (
               <div
                 key={stat}
-                style={{
-                  flex: '1 1 140px',
-                  padding: '8px 12px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2,
-                }}
+                className="py-2 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] flex flex-col gap-0.5 flex-[1_1_140px]"
               >
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]">
                   {stat}
                 </span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: getPctColor(pct) }}>
+                <span className="font-[var(--font-mono)] text-lg font-bold" style={{ color: getPctColor(pct) }}>
                   {pct}%
                 </span>
               </div>
@@ -499,50 +424,20 @@ export default function DrillDownPanel({ unitId, domain, onClose }: DrillDownPan
 
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '12px 16px',
-          borderBottom: '1px solid var(--color-border)',
-          backgroundColor: 'var(--color-bg)',
-        }}
+        className="flex items-center justify-between py-3 px-4 border-b border-b-[var(--color-border)] bg-[var(--color-bg)]"
       >
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: '1.5px',
-            textTransform: 'uppercase',
-            color: 'var(--color-text-bright)',
-          }}
+          className="font-[var(--font-mono)] text-[10px] font-bold tracking-[1.5px] uppercase text-[var(--color-text-bright)]"
         >
           {DOMAIN_LABELS[domain]}
         </span>
         <button
           onClick={onClose}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--color-text-muted)',
-            padding: 4,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 'var(--radius)',
-            transition: 'color var(--transition)',
-          }}
+          className="bg-transparent border-0 cursor-pointer text-[var(--color-text-muted)] p-1 flex items-center justify-center rounded-[var(--radius)] transition-colors duration-[var(--transition)]"
           onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-bright)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-muted)'; }}
         >
@@ -551,21 +446,15 @@ export default function DrillDownPanel({ unitId, domain, onClose }: DrillDownPan
       </div>
 
       {/* Content */}
-      <div style={{ padding: 16 }}>
+      <div className="p-4">
         {isLoading ? (
-          <div style={{ padding: 40, textAlign: 'center' }}>
-            <div className="skeleton" style={{ width: 200, height: 16, margin: '0 auto 12px' }} />
-            <div className="skeleton" style={{ width: 300, height: 12, margin: '0 auto' }} />
+          <div className="p-10 text-center">
+            <div className="skeleton w-[200px] h-[16px] mx-auto mb-3" />
+            <div className="skeleton w-[300px] h-[12px] mx-auto"  />
           </div>
         ) : error ? (
           <div
-            style={{
-              padding: 40,
-              textAlign: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              color: 'var(--color-danger)',
-            }}
+            className="p-10 text-center font-[var(--font-mono)] text-xs text-[var(--color-danger)]"
           >
             Failed to load {domain} detail data.
           </div>

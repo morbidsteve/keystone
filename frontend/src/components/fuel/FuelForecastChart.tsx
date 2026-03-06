@@ -65,12 +65,7 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
     <div>
       {/* Summary cards */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: 10,
-          marginBottom: 16,
-        }}
+        className="grid gap-2.5 mb-4 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
       >
         {[
           {
@@ -96,32 +91,15 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
         ].map((item) => (
           <div
             key={item.label}
-            style={{
-              padding: '10px 12px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-2.5 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                marginBottom: 4,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] mb-1"
             >
               {item.label}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 16,
-                fontWeight: 700,
-                color: item.color,
-              }}
+              className="font-[var(--font-mono)] text-base font-bold" style={{ color: item.color }}
             >
               {item.value}
             </div>
@@ -132,25 +110,11 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
       {/* Alert banner */}
       {forecast.alert && (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 12px',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: 'var(--radius)',
-            marginBottom: 12,
-          }}
+          className="flex items-center gap-2 py-2 px-3 bg-[rgba(239,68,68,0.1)] rounded-[var(--radius)] mb-3 border border-[rgba(239,68,68,0.3)]"
         >
-          <AlertTriangle size={14} style={{ color: '#ef4444' }} />
+          <AlertTriangle size={14} className="text-[#ef4444]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: '#ef4444',
-              fontWeight: 600,
-            }}
+            className="font-[var(--font-mono)] text-[10px] text-[#ef4444] font-semibold"
           >
             CRITICAL: {forecast.days_of_supply.toFixed(1)} DOS remaining. Resupply required NLT{' '}
             {forecast.resupply_required_by_date}.
@@ -160,29 +124,18 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
 
       {/* Chart header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          marginBottom: 12,
-        }}
+        className="flex items-center gap-1.5 mb-3"
       >
-        <TrendingDown size={12} style={{ color: 'var(--color-text-muted)' }} />
+        <TrendingDown size={12} className="text-[var(--color-text-muted)]" />
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1.5px',
-            color: 'var(--color-text-muted)',
-          }}
+          className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)]"
         >
           14-DAY FUEL PROJECTION
         </span>
       </div>
 
       {/* Chart */}
-      <div style={{ width: '100%', height: 300 }}>
+      <div className="w-full h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={projectionData}

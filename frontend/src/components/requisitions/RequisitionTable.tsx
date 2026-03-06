@@ -90,8 +90,8 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
     return sortDir === 'asc'
-      ? <ChevronUp size={10} style={{ marginLeft: 2 }} />
-      : <ChevronDown size={10} style={{ marginLeft: 2 }} />;
+      ? <ChevronUp size={10} className="ml-0.5" />
+      : <ChevronDown size={10} className="ml-0.5" />;
   };
 
   const headerStyle: React.CSSProperties = {
@@ -129,31 +129,31 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
         <thead>
           <tr>
             <th style={{ ...headerStyle, width: 24 }} />
             <th style={headerStyle} onClick={() => handleSort('requisition_number')}>
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>REQ # <SortIcon field="requisition_number" /></span>
+              <span className="inline-flex items-center">REQ # <SortIcon field="requisition_number" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('nomenclature')}>
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>NOMENCLATURE <SortIcon field="nomenclature" /></span>
+              <span className="inline-flex items-center">NOMENCLATURE <SortIcon field="nomenclature" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('quantity_requested')}>
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>QTY REQ <SortIcon field="quantity_requested" /></span>
+              <span className="inline-flex items-center">QTY REQ <SortIcon field="quantity_requested" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('quantity_approved')}>
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>QTY APPR <SortIcon field="quantity_approved" /></span>
+              <span className="inline-flex items-center">QTY APPR <SortIcon field="quantity_approved" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('priority')}>
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>PRIORITY <SortIcon field="priority" /></span>
+              <span className="inline-flex items-center">PRIORITY <SortIcon field="priority" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('status')}>
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>STATUS <SortIcon field="status" /></span>
+              <span className="inline-flex items-center">STATUS <SortIcon field="status" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('created_at')}>
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>CREATED <SortIcon field="created_at" /></span>
+              <span className="inline-flex items-center">CREATED <SortIcon field="created_at" /></span>
             </th>
           </tr>
         </thead>
@@ -161,32 +161,22 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
           {sorted.map((req) => {
             const isExpanded = expandedId === req.id;
             return (
-              <tr key={req.id} style={{ cursor: 'pointer' }}>
-                <td colSpan={8} style={{ padding: 0, border: 'none' }}>
+              <tr key={req.id} className="cursor-pointer">
+                <td colSpan={8} className="p-0 border-0">
                   <div
                     onClick={() => setExpandedId(isExpanded ? null : req.id)}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '24px 130px 1fr 80px 80px 100px 110px 90px',
-                      alignItems: 'center',
-                      backgroundColor: isExpanded ? 'var(--color-bg-hover)' : 'transparent',
-                      transition: 'background-color var(--transition)',
-                    }}
+                    className="grid items-center" style={{ gridTemplateColumns: '24px 130px 1fr 80px 80px 100px 110px 90px', backgroundColor: isExpanded ? 'var(--color-bg-hover)' : 'transparent', transition: 'background-color var(--transition)' }}
                   >
-                    <div style={{ ...cellStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="items-center justify-center">
                       <ChevronRight
                         size={12}
-                        style={{
-                          color: 'var(--color-text-muted)',
-                          transform: isExpanded ? 'rotate(90deg)' : 'none',
-                          transition: 'transform var(--transition)',
-                        }}
+                        className="text-[var(--color-text-muted)]" style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform var(--transition)' }}
                       />
                     </div>
-                    <div style={{ ...cellStyle, color: 'var(--color-accent)', fontWeight: 600 }}>
+                    <div className="font-semibold">
                       {req.requisition_number}
                     </div>
-                    <div style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div className="text-ellipsis">
                       {req.nomenclature}
                     </div>
                     <div style={{ ...cellStyle, textAlign: 'right' }}>
@@ -197,49 +187,25 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
                     </div>
                     <div style={cellStyle}>
                       <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '2px 6px',
-                          borderRadius: 2,
-                          fontSize: 9,
-                          fontWeight: 700,
-                          letterSpacing: '0.5px',
-                          color: priorityColor(req.priority),
-                          border: `1px solid ${priorityColor(req.priority)}`,
-                          backgroundColor: `color-mix(in srgb, ${priorityColor(req.priority)} 10%, transparent)`,
-                        }}
+                        className="inline-block py-0.5 px-1.5 rounded-[2px] text-[9px] font-bold tracking-[0.5px]" style={{ color: priorityColor(req.priority), border: `1px solid ${priorityColor(req.priority)}`, backgroundColor: `color-mix(in srgb, ${priorityColor(req.priority)} 10%, transparent)` }}
                       >
                         {priorityLabel(req.priority)}
                       </span>
                     </div>
                     <div style={cellStyle}>
                       <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '2px 6px',
-                          borderRadius: 2,
-                          fontSize: 9,
-                          fontWeight: 700,
-                          letterSpacing: '0.5px',
-                          color: statusColor(req.status),
-                          border: `1px solid ${statusColor(req.status)}`,
-                          backgroundColor: `color-mix(in srgb, ${statusColor(req.status)} 10%, transparent)`,
-                        }}
+                        className="inline-block py-0.5 px-1.5 rounded-[2px] text-[9px] font-bold tracking-[0.5px]" style={{ color: statusColor(req.status), border: `1px solid ${statusColor(req.status)}`, backgroundColor: `color-mix(in srgb, ${statusColor(req.status)} 10%, transparent)` }}
                       >
                         {req.status}
                       </span>
                     </div>
-                    <div style={{ ...cellStyle, fontSize: 10, color: 'var(--color-text-muted)' }}>
+                    <div className="text-[var(--color-text-muted)]">
                       {new Date(req.created_at).toLocaleDateString()}
                     </div>
                   </div>
                   {isExpanded && (
                     <div
-                      style={{
-                        borderTop: '1px solid var(--color-border)',
-                        borderBottom: '1px solid var(--color-border)',
-                        backgroundColor: 'var(--color-bg)',
-                      }}
+                      className="border-t border-t-[var(--color-border)] border-b border-b-[var(--color-border)] bg-[var(--color-bg)]"
                     >
                       <RequisitionDetail requisition={req} onRefresh={onRefresh} />
                     </div>

@@ -64,35 +64,19 @@ const CustomTooltip = ({
   const total = payload.reduce((s, p) => s + p.value, 0);
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border-strong)',
-        borderRadius: 'var(--radius)',
-        padding: '8px 12px',
-        fontFamily: 'var(--font-mono)',
-        fontSize: 11,
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
     >
-      <div style={{ color: 'var(--color-text-bright)', marginBottom: 4, fontWeight: 600 }}>
+      <div className="text-[var(--color-text-bright)] mb-1 font-semibold">
         {label}
       </div>
       {payload.map((p, i) => (
-        <div key={i} style={{ color: p.color, display: 'flex', justifyContent: 'space-between', gap: 16 }}>
+        <div key={i} className="flex justify-between gap-4" style={{ color: p.color }}>
           <span>{p.dataKey}</span>
           <span>{p.value.toFixed(1)}h</span>
         </div>
       ))}
       <div
-        style={{
-          borderTop: '1px solid var(--color-border)',
-          marginTop: 4,
-          paddingTop: 4,
-          color: 'var(--color-text-bright)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: 16,
-          fontWeight: 600,
-        }}
+        className="border-t border-t-[var(--color-border)] mt-1 pt-1 text-[var(--color-text-bright)] flex justify-between gap-4 font-semibold"
       >
         <span>TOTAL</span>
         <span>{total.toFixed(1)}h</span>
@@ -108,21 +92,13 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
   });
 
   if (isLoading) {
-    return <div className="skeleton" style={{ width: '100%', height: 300 }} />;
+    return <div className="skeleton w-full h-[300px]"  />;
   }
 
   if (!data || data.length === 0) {
     return (
       <div
-        style={{
-          height: 300,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="h-[300px] flex items-center justify-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No personnel workload data available
       </div>
@@ -195,30 +171,16 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
       </ResponsiveContainer>
 
       {/* Summary table */}
-      <div style={{ overflowX: 'auto', marginTop: 16 }}>
+      <div className="overflow-x-auto mt-4">
         <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="w-full border-collapse font-[var(--font-mono)] text-[11px]"
         >
           <thead>
             <tr>
               {['RANK', 'NAME', 'MOS', 'TOTAL HRS', 'WO COUNT', 'AVG/WO'].map((h) => (
                 <th
                   key={h}
-                  style={{
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-muted)',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}
+                  className="text-left py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] text-[9px] font-semibold tracking-[1px] uppercase"
                 >
                   {h}
                 </th>
@@ -229,58 +191,32 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
             {data.map((p) => (
               <tr key={p.personnel_id}>
                 <td
-                  style={{
-                    padding: '6px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                    fontWeight: 600,
-                  }}
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
                 >
                   {p.rank}
                 </td>
                 <td
-                  style={{
-                    padding: '6px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
                   {p.last_name}, {p.first_name}
                 </td>
                 <td
-                  style={{
-                    padding: '6px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
                 >
                   {p.mos}
                 </td>
                 <td
-                  style={{
-                    padding: '6px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-accent)',
-                    fontWeight: 600,
-                  }}
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-accent)] font-semibold"
                 >
                   {p.total_hours.toFixed(1)}
                 </td>
                 <td
-                  style={{
-                    padding: '6px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
                   {p.work_order_count}
                 </td>
                 <td
-                  style={{
-                    padding: '6px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
                 >
                   {p.avg_hours_per_wo.toFixed(1)}
                 </td>

@@ -20,39 +20,17 @@ export default function DataSourcesPage() {
     <div>
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          marginBottom: 20,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 mb-5 border-b border-b-[var(--color-border)] pb-0"
       >
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
           </button>

@@ -116,27 +116,12 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="flex flex-col gap-5">
       {/* Add Button */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div className="flex justify-end">
         <button
           onClick={handleAdd}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '6px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            color: 'var(--color-accent)',
-            backgroundColor: 'transparent',
-            border: '1px solid var(--color-accent)',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-          }}
+          className="flex items-center gap-1 py-1.5 px-3 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] text-[var(--color-accent)] bg-transparent border border-[var(--color-accent)] rounded-[var(--radius)] cursor-pointer whitespace-nowrap"
         >
           <Plus size={12} />
           ADD BILLET
@@ -145,11 +130,7 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
 
       {/* Summary KPIs */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
       >
         {[
           { label: 'TOTAL BILLETS', value: stats.total, color: 'var(--color-text-bright)' },
@@ -159,33 +140,15 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
         ].map((kpi) => (
           <div
             key={kpi.label}
-            style={{
-              padding: '12px 14px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-3 px-3.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 4,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1"
             >
               {kpi.label}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 20,
-                fontWeight: 700,
-                color: kpi.color,
-              }}
+              className="font-[var(--font-mono)] text-xl font-bold" style={{ color: kpi.color }}
             >
               {kpi.value}
             </div>
@@ -194,8 +157,8 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
       </div>
 
       {/* Billet Table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse min-w-[700px]">
           <thead>
             <tr>
               <th style={headerStyle}>BILLET CODE</th>
@@ -223,82 +186,56 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
                   (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                 }}
               >
-                <td style={{ ...cellStyle, color: 'var(--color-accent)', fontWeight: 600 }}>
+                <td className="font-semibold">
                   {b.billet_id_code}
                 </td>
-                <td style={{ ...cellStyle, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                <td className="font-semibold">
                   {b.billet_title}
                 </td>
                 <td style={cellStyle}>{b.mos_required ?? '—'}</td>
                 <td style={cellStyle}>{b.rank_required ?? '—'}</td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
                   {b.is_key_billet && (
-                    <Star size={13} style={{ color: '#fbbf24' }} />
+                    <Star size={13} className="text-[#fbbf24]" />
                   )}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
                   <span
-                    style={{
-                      display: 'inline-block',
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      backgroundColor: b.is_filled ? '#4ade80' : '#f87171',
-                    }}
+                    className="inline-block w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: b.is_filled ? '#4ade80' : '#f87171' }}
                   />
                 </td>
                 <td style={cellStyle}>
                   {b.filled_by_name ?? (
-                    <span style={{ color: '#f87171', fontStyle: 'italic', fontSize: 10 }}>
+                    <span className="text-[#f87171] text-[10px] italic">
                       VACANT
                     </span>
                   )}
                 </td>
-                <td style={{ ...cellStyle, textAlign: 'center', position: 'relative' }}>
-                  <div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <td className="relative">
+                  <div className="flex gap-1 justify-center flex-wrap">
                     <button
                       onClick={() => handleEdit(b)}
-                      style={{
-                        fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600,
-                        color: 'var(--color-accent)', background: 'none',
-                        border: '1px solid var(--color-border)', borderRadius: 2,
-                        padding: '2px 5px', cursor: 'pointer', letterSpacing: '0.5px',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-accent)] bg-transparent border border-[var(--color-border)] rounded-[2px] py-0.5 px-1.5 cursor-pointer tracking-[0.5px]"
                     >
                       EDIT
                     </button>
                     <button
                       onClick={() => handleDelete(b)}
-                      style={{
-                        fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600,
-                        color: '#f87171', background: 'none',
-                        border: '1px solid rgba(248,113,113,0.3)', borderRadius: 2,
-                        padding: '2px 5px', cursor: 'pointer', letterSpacing: '0.5px',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] font-semibold text-[#f87171] bg-transparent rounded-[2px] py-0.5 px-1.5 cursor-pointer tracking-[0.5px] border border-[rgba(248,113,113,0.3)]"
                     >
                       DEL
                     </button>
                     {b.is_filled ? (
                       <button
                         onClick={() => handleUnassign(b)}
-                        style={{
-                          fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600,
-                          color: '#fbbf24', background: 'none',
-                          border: '1px solid rgba(251,191,36,0.3)', borderRadius: 2,
-                          padding: '2px 5px', cursor: 'pointer', letterSpacing: '0.5px',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] font-semibold text-[#fbbf24] bg-transparent rounded-[2px] py-0.5 px-1.5 cursor-pointer tracking-[0.5px]" style={{ border: '1px solid rgba(251,191,36,0.3)' }}
                       >
                         UNASSIGN
                       </button>
                     ) : (
                       <button
                         onClick={() => { setAssigningBilletId(assigningBilletId === b.id ? null : b.id); setAssignSearch(''); }}
-                        style={{
-                          fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600,
-                          color: '#4ade80', background: 'none',
-                          border: '1px solid rgba(74,222,128,0.3)', borderRadius: 2,
-                          padding: '2px 5px', cursor: 'pointer', letterSpacing: '0.5px',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] font-semibold text-[#4ade80] bg-transparent rounded-[2px] py-0.5 px-1.5 cursor-pointer tracking-[0.5px]" style={{ border: '1px solid rgba(74,222,128,0.3)' }}
                       >
                         ASSIGN
                       </button>
@@ -306,59 +243,33 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
                   </div>
                   {assigningBilletId === b.id && !b.is_filled && (
                     <div
-                      style={{
-                        position: 'absolute',
-                        top: '100%',
-                        right: 0,
-                        zIndex: 40,
-                        width: 260,
-                        backgroundColor: 'var(--color-bg-elevated)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: 'var(--radius)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-                      }}
+                      className="absolute right-0 z-[40] w-[260px] bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]" style={{ top: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }}
                     >
                       <input
                         autoFocus
                         value={assignSearch}
                         onChange={(e) => setAssignSearch(e.target.value)}
                         placeholder="Search Marine..."
-                        style={{
-                          width: '100%',
-                          padding: '6px 8px',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          color: 'var(--color-text)',
-                          backgroundColor: 'var(--color-bg)',
-                          border: 'none',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="w-full py-1.5 px-2 font-[var(--font-mono)] text-[10px] text-[var(--color-text)] bg-[var(--color-bg)] border-0 border-b border-b-[var(--color-border)]"
                       />
-                      <div style={{ maxHeight: 160, overflowY: 'auto' }}>
+                      <div className="max-h-[160px] overflow-y-auto">
                         {filteredPersonnel.slice(0, 15).map((m) => (
                           <div
                             key={m.id}
                             onClick={() => handleAssign(b.id, m)}
-                            style={{
-                              padding: '5px 8px',
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 10,
-                              color: 'var(--color-text)',
-                              cursor: 'pointer',
-                              borderBottom: '1px solid rgba(255,255,255,0.03)',
-                            }}
+                            className="py-1.5 px-2 font-[var(--font-mono)] text-[10px] text-[var(--color-text)] cursor-pointer" style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}
                             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-hover)'; }}
                             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
                           >
-                            <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                            <span className="text-[var(--color-text-bright)] font-semibold">
                               {m.rank ?? ''} {m.last_name}
                             </span>
-                            <span style={{ color: 'var(--color-text-muted)' }}>, {m.first_name}</span>
-                            <span style={{ color: 'var(--color-accent)', marginLeft: 6 }}>{m.mos ?? ''}</span>
+                            <span className="text-[var(--color-text-muted)]">, {m.first_name}</span>
+                            <span className="text-[var(--color-accent)] ml-1.5">{m.mos ?? ''}</span>
                           </div>
                         ))}
                         {filteredPersonnel.length === 0 && (
-                          <div style={{ padding: '8px', fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)', textAlign: 'center' }}>
+                          <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] text-center p-2">
                             NO MATCHES
                           </div>
                         )}
@@ -376,60 +287,28 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
       {stats.keyVacancies.length > 0 && (
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              color: '#f87171',
-              textTransform: 'uppercase',
-              marginBottom: 12,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[#f87171] uppercase mb-3"
           >
             KEY BILLET VACANCIES
           </div>
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-              gap: 10,
-            }}
+            className="grid gap-2.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]"
           >
             {stats.keyVacancies.map((b) => (
               <div
                 key={b.id}
-                style={{
-                  padding: '12px 14px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid rgba(248, 113, 113, 0.3)',
-                  borderLeft: '3px solid #f87171',
-                  borderRadius: 'var(--radius)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 6,
-                }}
+                className="py-3 px-3.5 bg-[var(--color-bg)] rounded-[var(--radius)] flex flex-col gap-1.5" style={{ border: '1px solid rgba(248, 113, 113, 0.3)', borderLeft: '3px solid #f87171' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Star size={12} style={{ color: '#fbbf24' }} />
+                <div className="flex items-center gap-1.5">
+                  <Star size={12} className="text-[#fbbf24]" />
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: 'var(--color-text-bright)',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
                   >
                     {b.billet_title}
                   </span>
                 </div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text-muted)',
-                    display: 'flex',
-                    gap: 12,
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex gap-3"
                 >
                   <span>{b.billet_id_code}</span>
                   <span>MOS: {b.mos_required ?? 'ANY'}</span>

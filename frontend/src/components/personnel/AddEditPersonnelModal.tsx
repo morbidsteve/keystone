@@ -221,7 +221,7 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
   };
 
   const renderField = (label: string, key: string, type: 'text' | 'number' | 'date' | 'select' | 'checkbox' = 'text', options?: string[]) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <div className="flex flex-col gap-0.5">
       <label style={labelStyle}>{label}</label>
       {type === 'select' ? (
         <select
@@ -235,14 +235,14 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
           ))}
         </select>
       ) : type === 'checkbox' ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0' }}>
+        <div className="flex items-center gap-1.5 py-1 px-0">
           <input
             type="checkbox"
             checked={!!form[key]}
             onChange={(e) => set(key, e.target.checked)}
-            style={{ accentColor: 'var(--color-accent)' }}
+            className="accent-[var(--color-accent)]"
           />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text)' }}>
+          <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
             {form[key] ? 'YES' : 'NO'}
           </span>
         </div>
@@ -258,13 +258,13 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
   );
 
   const renderSection = (key: string, label: string, content: React.ReactNode) => (
-    <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: 4 }}>
+    <div className="mb-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
       <div style={sectionHeaderStyle} onClick={() => toggleSection(key)}>
         {openSections[key] ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         {label}
       </div>
       {openSections[key] && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 14px', paddingBottom: 12 }}>
+        <div className="grid pb-3" style={{ gridTemplateColumns: '1fr 1fr', gap: '10px 14px' }}>
           {content}
         </div>
       )}
@@ -276,22 +276,12 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
       <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div style={headerStyle}>
-          <span style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            fontWeight: 700,
-            letterSpacing: '2px',
-            color: 'var(--color-text-bright)',
-            textTransform: 'uppercase',
-          }}>
+          <span className="font-[var(--font-mono)] text-xs font-bold tracking-[2px] text-[var(--color-text-bright)] uppercase">
             {isEdit ? 'EDIT MARINE' : 'ADD MARINE'}
           </span>
           <button
             onClick={onClose}
-            style={{
-              background: 'none', border: 'none', color: 'var(--color-text-muted)',
-              cursor: 'pointer', padding: 4,
-            }}
+            className="bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-1"
           >
             <X size={16} />
           </button>
@@ -339,24 +329,14 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
         <div style={footerStyle}>
           <button
             onClick={onClose}
-            style={{
-              ...btnBase,
-              backgroundColor: 'transparent',
-              color: 'var(--color-text-muted)',
-            }}
+            className="text-[var(--color-text-muted)]"
           >
             CANCEL
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{
-              ...btnBase,
-              backgroundColor: 'var(--color-accent)',
-              color: '#000',
-              border: '1px solid var(--color-accent)',
-              opacity: saving ? 0.6 : 1,
-            }}
+            className="text-[#000] border border-[var(--color-accent)]" style={{ opacity: saving ? 0.6 : 1 }}
           >
             {saving ? 'SAVING...' : 'SAVE'}
           </button>

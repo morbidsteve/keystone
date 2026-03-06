@@ -65,7 +65,7 @@ export function SupplyPointDetailPanel({ data }: SupplyPointDetailPanelProps) {
       {/* Details */}
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <Building2 size={11} style={{ marginRight: 4 }} />
+          <Building2 size={11} className="mr-1" />
           DETAILS
         </div>
         <div style={styles.detailRow}>
@@ -92,7 +92,7 @@ export function SupplyPointDetailPanel({ data }: SupplyPointDetailPanelProps) {
       {/* Coordinates */}
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <MapPin size={11} style={{ marginRight: 4 }} />
+          <MapPin size={11} className="mr-1" />
           POSITION
         </div>
         <div style={styles.coordBlock}>

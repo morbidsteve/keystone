@@ -88,23 +88,19 @@ export default function MovementHistoryTable({
   if (isLoading) {
     return (
       <Card title="MOVEMENT HISTORY">
-        <div style={{ padding: 40, textAlign: 'center' }}>
-          <div className="skeleton" style={{ width: 200, height: 16, margin: '0 auto 12px' }} />
-          <div className="skeleton" style={{ width: 300, height: 12, margin: '0 auto' }} />
+        <div className="p-10 text-center">
+          <div className="skeleton w-[200px] h-[16px] mx-auto mb-3" />
+          <div className="skeleton w-[300px] h-[12px] mx-auto"  />
         </div>
       </Card>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Summary cards */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-4"
       >
         {[
           { label: 'TOTAL MOVEMENTS', value: stats.total, color: 'var(--color-text-bright)' },
@@ -118,33 +114,15 @@ export default function MovementHistoryTable({
         ].map((kpi) => (
           <div
             key={kpi.label}
-            style={{
-              padding: '14px 16px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-3.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 6,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1.5"
             >
               {kpi.label}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 22,
-                fontWeight: 700,
-                color: kpi.color,
-              }}
+              className="font-[var(--font-mono)] text-[22px] font-bold" style={{ color: kpi.color }}
             >
               {kpi.value}
             </div>
@@ -157,21 +135,13 @@ export default function MovementHistoryTable({
         title="COMPLETED MOVEMENTS"
         headerRight={
           <label
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-            }}
+            className="flex items-center gap-1.5 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] cursor-pointer"
           >
             <input
               type="checkbox"
               checked={onTimeOnly}
               onChange={(e) => setOnTimeOnly(e.target.checked)}
-              style={{ accentColor: 'var(--color-accent)' }}
+              className="accent-[var(--color-accent)]"
             />
             ON-TIME ONLY
           </label>
@@ -184,8 +154,8 @@ export default function MovementHistoryTable({
             message="Completed movement records will appear here"
           />
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   <th style={headerCellStyle}>Date</th>
@@ -203,22 +173,22 @@ export default function MovementHistoryTable({
                 {filteredRecords.map((rec) => (
                   <tr key={rec.id}>
                     <td style={cellStyle}>{formatDate(rec.departure_time)}</td>
-                    <td style={{ ...cellStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                    <td className="text-[var(--color-text-bright)]">
                       {rec.convoy_id ?? '--'}
                     </td>
                     <td style={cellStyle}>
-                      <span style={{ color: 'var(--color-text)' }}>{rec.origin}</span>
-                      <span style={{ color: 'var(--color-text-muted)', margin: '0 4px' }}>&#8594;</span>
-                      <span style={{ color: 'var(--color-text)' }}>{rec.destination}</span>
+                      <span className="text-[var(--color-text)]">{rec.origin}</span>
+                      <span className="text-[var(--color-text-muted)] mx-1">&#8594;</span>
+                      <span className="text-[var(--color-text)]">{rec.destination}</span>
                     </td>
                     <td style={cellStyle}>{rec.vehicle_count}</td>
                     <td style={cellStyle}>{formatDate(rec.eta)}</td>
                     <td style={cellStyle}>{formatDate(rec.actual_arrival)}</td>
                     <td style={{ ...cellStyle, textAlign: 'center' }}>
                       {rec.on_time ? (
-                        <Check size={14} style={{ color: '#4ade80' }} />
+                        <Check size={14} className="text-[#4ade80]" />
                       ) : (
-                        <X size={14} style={{ color: '#f87171' }} />
+                        <X size={14} className="text-[#f87171]" />
                       )}
                     </td>
                     <td style={cellStyle}>

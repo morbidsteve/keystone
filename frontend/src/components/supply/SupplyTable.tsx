@@ -79,7 +79,7 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
       columnHelper.accessor('item', {
         header: 'ITEM',
         cell: (info) => (
-          <span style={{ color: 'var(--color-text-bright)' }}>{info.getValue()}</span>
+          <span className="text-[var(--color-text-bright)]">{info.getValue()}</span>
         ),
       }),
       columnHelper.accessor('onHand', {
@@ -89,7 +89,7 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
       columnHelper.accessor('authorized', {
         header: 'REQUIRED',
         cell: (info) => (
-          <span style={{ color: 'var(--color-text-muted)' }}>
+          <span className="text-[var(--color-text-muted)]">
             {info.getValue().toLocaleString()}
           </span>
         ),
@@ -104,10 +104,7 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
             const row = info.row.original;
             return (
               <span
-                style={{
-                  color: getStatusColor(row.status),
-                  fontWeight: 600,
-                }}
+                className="font-semibold" style={{ color: getStatusColor(row.status) }}
               >
                 {val}%
               </span>
@@ -122,7 +119,7 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
       columnHelper.accessor('consumptionRate', {
         header: 'RATE',
         cell: (info) => (
-          <span style={{ color: 'var(--color-text-muted)' }}>
+          <span className="text-[var(--color-text-muted)]">
             {info.getValue()}/day
           </span>
         ),
@@ -151,36 +148,22 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
   return (
     <div>
       {/* Search */}
-      <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <Filter size={14} style={{ color: 'var(--color-text-muted)' }} />
+      <div className="mb-3 flex items-center gap-2">
+        <Filter size={14} className="text-[var(--color-text-muted)]" />
         <input
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder="Search supply records..."
-          style={{
-            backgroundColor: 'var(--color-bg)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            padding: '6px 10px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            color: 'var(--color-text)',
-            width: 260,
-          }}
+          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] py-1.5 px-2.5 font-[var(--font-mono)] text-xs text-[var(--color-text)] w-[260px]"
         />
       </div>
 
       {/* Table */}
       <div
-        style={{
-          backgroundColor: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius)',
-          overflow: 'hidden',
-        }}
+        className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
       >
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
@@ -188,34 +171,20 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
                     <th
                       key={header.id}
                       onClick={header.column.getToggleSortingHandler()}
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        letterSpacing: '1.5px',
-                        color: 'var(--color-text-muted)',
-                        padding: '10px 12px',
-                        textAlign:
-                          ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
+                      className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] py-2.5 px-3 border-b border-b-[var(--color-border)] cursor-pointer whitespace-nowrap" style={{ textAlign: ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
                             header.column.id,
                           )
                             ? 'right'
-                            : 'left',
-                        borderBottom: '1px solid var(--color-border)',
-                        cursor: 'pointer',
-                        userSelect: 'none',
-                        whiteSpace: 'nowrap',
-                      }}
+                            : 'left', userSelect: 'none' }}
                     >
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span className="inline-flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getIsSorted() === 'asc' ? (
                           <ArrowUp size={10} />
                         ) : header.column.getIsSorted() === 'desc' ? (
                           <ArrowDown size={10} />
                         ) : (
-                          <ArrowUpDown size={10} style={{ opacity: 0.3 }} />
+                          <ArrowUpDown size={10} className="opacity-30" />
                         )}
                       </span>
                     </th>
@@ -227,7 +196,7 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
               {table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  style={{ transition: 'background-color var(--transition)' }}
+                  className="transition-colors duration-[var(--transition)]"
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
                   }
@@ -238,19 +207,11 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 12,
-                        padding: '8px 12px',
-                        borderBottom: '1px solid var(--color-border)',
-                        color: 'var(--color-text)',
-                        textAlign:
-                          ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
+                      className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text)]" style={{ textAlign: ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
                             cell.column.id,
                           )
                             ? 'right'
-                            : 'left',
-                      }}
+                            : 'left' }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>

@@ -145,27 +145,20 @@ export default function ReadinessPage() {
   // ---------------------------------------------------------------------------
 
   const renderLoadingSkeleton = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
 
   const renderError = () => (
     <div
-      style={{
-        padding: 40,
-        textAlign: 'center',
-        fontFamily: 'var(--font-mono)',
-        fontSize: 12,
-        color: 'var(--color-danger)',
-      }}
+      className="p-10 text-center font-[var(--font-mono)] text-xs text-[var(--color-danger)]"
     >
       Failed to load readiness data. {String(snapshotError)}
     </div>
@@ -176,7 +169,7 @@ export default function ReadinessPage() {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Gauges overview row */}
       {snapshotLoading ? (
         renderLoadingSkeleton()
@@ -187,13 +180,7 @@ export default function ReadinessPage() {
           {/* 5 Gauges */}
           <Card title={`READINESS \u2014 ${getUnitName(numericUnitId, dashboard?.units)}`}>
             <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-around',
-                alignItems: 'flex-start',
-                flexWrap: 'wrap',
-                gap: 16,
-              }}
+              className="flex justify-around items-start flex-wrap gap-4"
             >
               <ReadinessGauge
                 percentage={snapshot.overallReadinessPct}
@@ -250,24 +237,11 @@ export default function ReadinessPage() {
           {/* Limiting factor alert banner */}
           {snapshot.limitingFactor && (
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '10px 16px',
-                backgroundColor: 'rgba(251, 191, 36, 0.08)',
-                border: '1px solid rgba(251, 191, 36, 0.2)',
-                borderRadius: 'var(--radius)',
-              }}
+              className="flex items-center gap-2.5 py-2.5 px-4 bg-[rgba(251,191,36,0.08)] rounded-[var(--radius)]" style={{ border: '1px solid rgba(251, 191, 36, 0.2)' }}
             >
-              <AlertTriangle size={16} style={{ color: '#fbbf24', flexShrink: 0 }} />
+              <AlertTriangle size={16} className="text-[#fbbf24] shrink-0" />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: '#fbbf24',
-                  lineHeight: 1.4,
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[#fbbf24] leading-[1.4]"
               >
                 <strong>LIMITING FACTOR:</strong> {snapshot.limitingFactor}
               </span>
@@ -278,38 +252,17 @@ export default function ReadinessPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
           </button>
@@ -318,16 +271,12 @@ export default function ReadinessPage() {
 
       {/* Tab content */}
       {activeTab === 'overview' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="flex flex-col gap-4">
           {/* Rating summary grid */}
           {snapshot && (
             <Card title="DRRS RATINGS">
               <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                  gap: 12,
-                }}
+                className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
               >
                 {[
                   { label: 'COMBINED', rating: snapshot.cRating, pct: snapshot.overallReadinessPct, domain: null as DrillDownDomain | null },
@@ -339,17 +288,7 @@ export default function ReadinessPage() {
                   <div
                     key={item.label}
                     onClick={() => item.domain && setActiveDrillDown(item.domain)}
-                    style={{
-                      padding: 12,
-                      backgroundColor: 'var(--color-bg)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 8,
-                      cursor: item.domain ? 'pointer' : 'default',
-                      transition: 'background-color var(--transition)',
-                    }}
+                    className="p-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] flex flex-col gap-2" style={{ cursor: item.domain ? 'pointer' : 'default', transition: 'background-color var(--transition)' }}
                     onMouseEnter={(e) => {
                       if (item.domain) e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
                     }}
@@ -358,26 +297,14 @@ export default function ReadinessPage() {
                     }}
                   >
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        letterSpacing: '1.5px',
-                        color: 'var(--color-text-muted)',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)]"
                     >
                       {item.label}
                     </span>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div className="flex items-center justify-between">
                       <RatingBadge rating={item.rating} />
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 14,
-                          fontWeight: 700,
-                          color: 'var(--color-text-bright)',
-                        }}
+                        className="font-[var(--font-mono)] text-sm font-bold text-[var(--color-text-bright)]"
                       >
                         {item.pct != null ? `${Math.round(item.pct)}%` : 'N/A'}
                       </span>
@@ -392,13 +319,7 @@ export default function ReadinessPage() {
           {snapshot?.notes && (
             <Card title="COMMANDER NOTES">
               <p
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text)',
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] leading-relaxed m-0"
               >
                 {snapshot.notes}
               </p>
@@ -409,24 +330,12 @@ export default function ReadinessPage() {
           {dashboard && (
             <div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  marginBottom: 10,
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2.5"
               >
                 ALL UNITS OVERVIEW
               </div>
               <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                  gap: 12,
-                }}
+                className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]"
               >
                 {dashboard.units.map((u) => (
                   <ReadinessCard
@@ -448,22 +357,11 @@ export default function ReadinessPage() {
         <Card
           title="READINESS TREND"
           headerRight={
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="flex items-center gap-2">
               {/* Show components toggle */}
               <button
                 onClick={() => setShowComponents(!showComponents)}
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  padding: '3px 8px',
-                  borderRadius: 'var(--radius)',
-                  border: `1px solid ${showComponents ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                  backgroundColor: showComponents ? 'rgba(77, 171, 247, 0.1)' : 'transparent',
-                  color: showComponents ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                  cursor: 'pointer',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                }}
+                className="font-[var(--font-mono)] text-[9px] py-[3px] px-2 rounded-[var(--radius)] cursor-pointer uppercase tracking-[1px]" style={{ border: `1px solid ${showComponents ? 'var(--color-accent)' : 'var(--color-border)'}`, backgroundColor: showComponents ? 'rgba(77, 171, 247, 0.1)' : 'transparent', color: showComponents ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
               >
                 COMPONENTS
               </button>
@@ -472,24 +370,11 @@ export default function ReadinessPage() {
                 <button
                   key={r.value}
                   onClick={() => setTrendDays(r.value)}
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    padding: '3px 8px',
-                    borderRadius: 'var(--radius)',
-                    border: `1px solid ${trendDays === r.value ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                    backgroundColor:
-                      trendDays === r.value
+                  className="font-[var(--font-mono)] text-[9px] py-[3px] px-2 rounded-[var(--radius)] cursor-pointer uppercase tracking-[1px]" style={{ border: `1px solid ${trendDays === r.value ? 'var(--color-accent)' : 'var(--color-border)'}`, backgroundColor: trendDays === r.value
                         ? 'rgba(77, 171, 247, 0.1)'
-                        : 'transparent',
-                    color:
-                      trendDays === r.value
+                        : 'transparent', color: trendDays === r.value
                         ? 'var(--color-accent)'
-                        : 'var(--color-text-muted)',
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                  }}
+                        : 'var(--color-text-muted)' }}
                 >
                   {r.label}
                 </button>
@@ -507,13 +392,7 @@ export default function ReadinessPage() {
             />
           ) : (
             <div
-              style={{
-                padding: 40,
-                textAlign: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-              }}
+              className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
             >
               No trend data available
             </div>
@@ -529,13 +408,7 @@ export default function ReadinessPage() {
             <StrengthTable strength={strength} />
           ) : (
             <div
-              style={{
-                padding: 40,
-                textAlign: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-              }}
+              className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
             >
               No strength data available
             </div>
@@ -556,13 +429,7 @@ export default function ReadinessPage() {
           ) : (
             <Card title="SUBORDINATE UNITS">
               <div
-                style={{
-                  padding: 40,
-                  textAlign: 'center',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
               >
                 No subordinate units available for this echelon
               </div>

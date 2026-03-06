@@ -32,15 +32,8 @@ export default function TopFaultsChart({ faults, height = 280 }: TopFaultsChartP
   if (faults.length === 0) {
     return (
       <div
-        style={{
-          height,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="items-center justify-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]" style={{ height,
+          display: 'flex' }}
       >
         No fault data available
       </div>
@@ -68,19 +61,12 @@ export default function TopFaultsChart({ faults, height = 280 }: TopFaultsChartP
       const data = payload[0].payload;
       return (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            padding: '8px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
         >
-          <div style={{ color: 'var(--color-text-bright)', marginBottom: 4 }}>
+          <div className="text-[var(--color-text-bright)] mb-1">
             {data.fullName}
           </div>
-          <div style={{ color: 'var(--color-text-muted)' }}>
+          <div className="text-[var(--color-text-muted)]">
             {data.equipmentType} — {data.count} occurrences
           </div>
         </div>

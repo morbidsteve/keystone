@@ -50,14 +50,13 @@ const tdStyle: React.CSSProperties = {
 export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
   if (loading) {
     return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
+      <div className="p-10 text-center">
         <div
-          className="skeleton"
-          style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+          className="skeleton w-[200px] h-[16px] mx-auto mb-3"
         />
         <div
-          className="skeleton"
-          style={{ width: 300, height: 12, margin: '0 auto' }}
+          className="skeleton w-[300px] h-[12px] mx-auto"
+          
         />
       </div>
     );
@@ -74,8 +73,8 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
         <thead>
           <tr>
             {['Date/Time', 'User', 'Action', 'Entity Type', 'Description'].map((h) => (
@@ -91,7 +90,7 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
 
             return (
               <tr key={log.id}>
-                <td style={{ ...tdStyle, color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
+                <td className="whitespace-nowrap">
                   {new Date(log.created_at).toLocaleString()}
                 </td>
                 <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
@@ -99,20 +98,12 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
                 </td>
                 <td style={tdStyle}>
                   <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: 3,
-                      backgroundColor: `${actionColor}20`,
-                      color: actionColor,
-                      fontWeight: 600,
-                      fontSize: 9,
-                      letterSpacing: '0.5px',
-                    }}
+                    className="py-0.5 px-2 rounded-[3px] font-semibold text-[9px] tracking-[0.5px]" style={{ backgroundColor: `${actionColor}20`, color: actionColor }}
                   >
                     {log.action}
                   </span>
                 </td>
-                <td style={{ ...tdStyle, color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
+                <td className="whitespace-nowrap">
                   {log.entity_type.replace(/_/g, ' ')}
                 </td>
                 <td style={{ ...tdStyle, maxWidth: 400 }}>{log.description}</td>

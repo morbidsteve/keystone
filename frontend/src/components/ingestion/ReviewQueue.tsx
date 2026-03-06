@@ -62,121 +62,52 @@ export default function ReviewQueue() {
       title="REVIEW QUEUE"
       headerRight={
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-warning)',
-          }}
+          className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)]"
         >
           {demoRecords.length} PENDING
         </span>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {demoRecords.map((record) => (
           <div
             key={record.id}
-            style={{
-              padding: '12px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)] p-3"
           >
             {/* Confidence + Actions */}
             <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 8,
-              }}
+              className="flex justify-between items-center mb-2"
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="flex items-center gap-2">
                 <span className="section-header">CONFIDENCE</span>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: getConfidenceColor(record.confidence),
-                  }}
+                  className="font-[var(--font-mono)] text-xs font-bold" style={{ color: getConfidenceColor(record.confidence) }}
                 >
                   {Math.round(record.confidence * 100)}%
                 </span>
                 {/* Confidence bar */}
                 <div
-                  style={{
-                    width: 60,
-                    height: 4,
-                    backgroundColor: 'var(--color-bg)',
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                  }}
+                  className="w-[60px] h-[4px] bg-[var(--color-bg)] rounded-[2px] overflow-hidden"
                 >
                   <div
-                    style={{
-                      width: `${record.confidence * 100}%`,
-                      height: '100%',
-                      backgroundColor: getConfidenceColor(record.confidence),
-                      borderRadius: 2,
-                    }}
+                    className="h-full rounded-[2px]" style={{ width: `${record.confidence * 100}%`, backgroundColor: getConfidenceColor(record.confidence) }}
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 6 }}>
+              <div className="flex gap-1.5">
                 <button
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '4px 10px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid var(--color-success)',
-                    borderRadius: 'var(--radius)',
-                    color: 'var(--color-success)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="flex items-center gap-1 py-1 px-2.5 bg-transparent border border-[var(--color-success)] rounded-[var(--radius)] text-[var(--color-success)] font-[var(--font-mono)] text-[9px] tracking-[1px] cursor-pointer"
                 >
                   <Check size={10} /> APPROVE
                 </button>
                 <button
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '4px 10px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid var(--color-accent)',
-                    borderRadius: 'var(--radius)',
-                    color: 'var(--color-accent)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="flex items-center gap-1 py-1 px-2.5 bg-transparent border border-[var(--color-accent)] rounded-[var(--radius)] text-[var(--color-accent)] font-[var(--font-mono)] text-[9px] tracking-[1px] cursor-pointer"
                 >
                   <Edit3 size={10} /> EDIT
                 </button>
                 <button
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '4px 10px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid var(--color-danger)',
-                    borderRadius: 'var(--radius)',
-                    color: 'var(--color-danger)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="flex items-center gap-1 py-1 px-2.5 bg-transparent border border-[var(--color-danger)] rounded-[var(--radius)] text-[var(--color-danger)] font-[var(--font-mono)] text-[9px] tracking-[1px] cursor-pointer"
                 >
                   <X size={10} /> REJECT
                 </button>
@@ -184,54 +115,33 @@ export default function ReviewQueue() {
             </div>
 
             {/* Two columns: Original and Parsed */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="section-header" style={{ marginBottom: 4 }}>
+                <div className="section-header mb-1">
                   ORIGINAL TEXT
                 </div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-text-muted)',
-                    padding: '8px',
-                    backgroundColor: 'var(--color-bg)',
-                    borderRadius: 'var(--radius)',
-                    border: '1px solid var(--color-border)',
-                    whiteSpace: 'pre-wrap',
-                    lineHeight: 1.4,
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] bg-[var(--color-bg)] rounded-[var(--radius)] border border-[var(--color-border)] whitespace-pre-wrap leading-[1.4] p-2"
                 >
                   {record.originalText}
                 </div>
               </div>
               <div>
-                <div className="section-header" style={{ marginBottom: 4 }}>
+                <div className="section-header mb-1">
                   PARSED FIELDS
                 </div>
                 <div
-                  style={{
-                    padding: '8px',
-                    backgroundColor: 'var(--color-bg)',
-                    borderRadius: 'var(--radius)',
-                    border: '1px solid var(--color-border)',
-                  }}
+                  className="bg-[var(--color-bg)] rounded-[var(--radius)] border border-[var(--color-border)] p-2"
                 >
                   {Object.entries(record.parsedFields).map(([key, value]) => (
                     <div
                       key={key}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        padding: '2px 0',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 11,
-                      }}
+                      className="flex justify-between py-0.5 px-0 font-[var(--font-mono)] text-[11px]"
                     >
-                      <span style={{ color: 'var(--color-text-muted)', textTransform: 'uppercase', fontSize: 9, letterSpacing: '0.5px' }}>
+                      <span className="text-[var(--color-text-muted)] uppercase text-[9px] tracking-[0.5px]">
                         {key}
                       </span>
-                      <span style={{ color: 'var(--color-text-bright)' }}>
+                      <span className="text-[var(--color-text-bright)]">
                         {String(value)}
                       </span>
                     </div>

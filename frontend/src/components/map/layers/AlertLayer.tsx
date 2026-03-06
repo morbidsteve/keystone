@@ -59,13 +59,7 @@ export default function AlertLayer({ alerts }: AlertLayerProps) {
           >
             <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 700,
-                  color: '#111',
-                  padding: '2px 4px',
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-bold text-[#111] py-0.5 px-1"
               >
                 {getAlertIcon(alert.severity)} {alert.severity} - {alert.alert_type.replace(/_/g, ' ')}
               </div>

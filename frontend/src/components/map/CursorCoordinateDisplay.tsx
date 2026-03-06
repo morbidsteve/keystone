@@ -35,27 +35,11 @@ export default function CursorCoordinateDisplay() {
     <>
       <CursorTracker />
       <div
-        style={{
-          position: 'absolute',
-          bottom: 8,
-          left: 8,
-          zIndex: 1000,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 4,
-          padding: '4px 8px',
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
-          color: '#e2e8f0',
-          pointerEvents: 'none',
-          userSelect: 'none',
-          lineHeight: 1.5,
-          backdropFilter: 'blur(4px)',
-        }}
+        className="absolute bottom-2 left-2 z-[1000] bg-[rgba(0,0,0,0.75)] rounded-[4px] py-1 px-2 text-[11px] text-[#e2e8f0] leading-normal" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', fontFamily: "'JetBrains Mono', monospace", pointerEvents: 'none', userSelect: 'none', backdropFilter: 'blur(4px)' }}
       >
         <div>{formatCoords(cursorPosition.lat, cursorPosition.lon)}</div>
         {mgrsStr && (
-          <div style={{ color: '#60a5fa', fontSize: 10 }}>{mgrsStr}</div>
+          <div className="text-[#60a5fa] text-[10px]">{mgrsStr}</div>
         )}
       </div>
     </>

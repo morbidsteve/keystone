@@ -62,40 +62,18 @@ export default function DashboardPage() {
       {/* View Tabs — only shown when the user has multiple view options */}
       {tabs.length > 0 && (
         <div
-          className="responsive-tabs"
-          style={{
-            display: 'flex',
-            gap: 2,
-            marginBottom: 20,
-            borderBottom: '1px solid var(--color-border)',
-            paddingBottom: 0,
-          }}
+          className="responsive-tabs flex gap-0.5 mb-5 border-b border-b-[var(--color-border)] pb-0"
+          
         >
           {tabs.map((view) => (
             <button
               key={view.key}
               onClick={() => setActiveView(view.key)}
-              style={{
-                padding: '8px 16px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: activeView === view.key ? 600 : 400,
-                letterSpacing: '1.5px',
-                textTransform: 'uppercase',
-                border: 'none',
-                borderBottom:
-                  activeView === view.key
+              className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeView === view.key ? 600 : 400, borderBottom: activeView === view.key
                     ? '2px solid var(--color-accent)'
-                    : '2px solid transparent',
-                backgroundColor: 'transparent',
-                color:
-                  activeView === view.key
+                    : '2px solid transparent', color: activeView === view.key
                     ? 'var(--color-accent)'
-                    : 'var(--color-text-muted)',
-                cursor: 'pointer',
-                transition: 'all var(--transition)',
-                marginBottom: -1,
-              }}
+                    : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
             >
               {view.label}
             </button>
@@ -111,7 +89,7 @@ export default function DashboardPage() {
       {activeView === 'viewer' && <ViewerDashboard />}
 
       {/* Activity Feed */}
-      <div style={{ marginTop: 20 }}>
+      <div className="mt-5">
         <ActivityFeed />
       </div>
     </div>

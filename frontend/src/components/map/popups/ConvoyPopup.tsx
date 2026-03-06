@@ -42,47 +42,19 @@ function getConvoyStatusLabel(status: string): string {
 export default function ConvoyPopup({ convoy }: ConvoyPopupProps) {
   return (
     <div
-      style={{
-        minWidth: 240,
-        maxWidth: 280,
-        fontFamily: 'var(--font-mono)',
-        backgroundColor: 'var(--color-bg-elevated)',
-        color: 'var(--color-text)',
-        padding: 12,
-        borderRadius: 'var(--radius)',
-      }}
+      className="min-w-[240px] max-w-[280px] font-[var(--font-mono)] bg-[var(--color-bg-elevated)] text-[var(--color-text)] p-3 rounded-[var(--radius)]"
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 8,
-        }}
+        className="flex justify-between items-center mb-2"
       >
         <div
-          style={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: 'var(--color-text-bright)',
-            letterSpacing: '0.5px',
-          }}
+          className="text-xs font-bold text-[var(--color-text-bright)] tracking-[0.5px]"
         >
           {convoy.name}
         </div>
         <span
-          style={{
-            display: 'inline-block',
-            padding: '2px 8px',
-            borderRadius: 10,
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#fff',
-            backgroundColor: getConvoyStatusColor(convoy.status),
-            textTransform: 'uppercase',
-          }}
+          className="inline-block py-0.5 px-2 rounded-[10px] text-[9px] font-bold tracking-[1px] text-[#fff] uppercase" style={{ backgroundColor: getConvoyStatusColor(convoy.status) }}
         >
           {getConvoyStatusLabel(convoy.status)}
         </span>
@@ -90,64 +62,48 @@ export default function ConvoyPopup({ convoy }: ConvoyPopupProps) {
 
       {/* Route */}
       <div
-        style={{
-          fontSize: 10,
-          padding: '6px 0',
-          borderTop: '1px solid var(--color-border)',
-          borderBottom: '1px solid var(--color-border)',
-          marginBottom: 8,
-        }}
+        className="text-[10px] py-1.5 px-0 border-t border-t-[var(--color-border)] border-b border-b-[var(--color-border)] mb-2"
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ color: 'var(--color-success)', fontSize: 10 }}>{'\u25CF'}</span>
-          <span style={{ color: 'var(--color-text-muted)' }}>FROM:</span>
-          <span style={{ color: 'var(--color-text-bright)' }}>{convoy.origin.name}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[var(--color-success)] text-[10px]">{'\u25CF'}</span>
+          <span className="text-[var(--color-text-muted)]">FROM:</span>
+          <span className="text-[var(--color-text-bright)]">{convoy.origin.name}</span>
         </div>
         <div
-          style={{
-            borderLeft: '1px dashed var(--color-border)',
-            marginLeft: 4,
-            height: 8,
-          }}
+          className="ml-1 h-[8px]" style={{ borderLeft: '1px dashed var(--color-border)' }}
         />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ color: 'var(--color-accent)', fontSize: 10 }}>{'\u25CF'}</span>
-          <span style={{ color: 'var(--color-text-muted)' }}>TO:</span>
-          <span style={{ color: 'var(--color-text-bright)' }}>{convoy.destination.name}</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[var(--color-accent)] text-[10px]">{'\u25CF'}</span>
+          <span className="text-[var(--color-text-muted)]">TO:</span>
+          <span className="text-[var(--color-text-bright)]">{convoy.destination.name}</span>
         </div>
       </div>
 
       {/* Details grid */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '6px 12px',
-          fontSize: 9,
-          marginBottom: 8,
-        }}
+        className="grid text-[9px] mb-2" style={{ gridTemplateColumns: '1fr 1fr', gap: '6px 12px' }}
       >
         <div>
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 1 }}>VEHICLES</div>
-          <div style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+          <div className="text-[var(--color-text-muted)] mb-px">VEHICLES</div>
+          <div className="text-[var(--color-text-bright)] font-semibold">
             {convoy.vehicle_count}
           </div>
         </div>
         <div>
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 1 }}>CARGO</div>
-          <div style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+          <div className="text-[var(--color-text-muted)] mb-px">CARGO</div>
+          <div className="text-[var(--color-text-bright)] font-semibold">
             {convoy.cargo_summary}
           </div>
         </div>
         <div>
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 1 }}>DEPARTED</div>
-          <div style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+          <div className="text-[var(--color-text-muted)] mb-px">DEPARTED</div>
+          <div className="text-[var(--color-text-bright)] font-semibold">
             {formatRelativeTime(convoy.departure_time)}
           </div>
         </div>
         <div>
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 1 }}>ETA</div>
-          <div style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+          <div className="text-[var(--color-text-muted)] mb-px">ETA</div>
+          <div className="text-[var(--color-text-bright)] font-semibold">
             {formatRelativeTime(convoy.eta)}
           </div>
         </div>
@@ -156,24 +112,17 @@ export default function ConvoyPopup({ convoy }: ConvoyPopupProps) {
       {/* Speed and heading */}
       {convoy.speed_kph > 0 && (
         <div
-          style={{
-            fontSize: 9,
-            padding: '4px 0',
-            borderTop: '1px solid var(--color-border)',
-            display: 'flex',
-            gap: 16,
-            color: 'var(--color-text-muted)',
-          }}
+          className="text-[9px] py-1 px-0 border-t border-t-[var(--color-border)] flex gap-4 text-[var(--color-text-muted)]"
         >
           <span>
             SPEED:{' '}
-            <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+            <span className="text-[var(--color-text-bright)] font-semibold">
               {convoy.speed_kph} KPH
             </span>
           </span>
           <span>
             HDG:{' '}
-            <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+            <span className="text-[var(--color-text-bright)] font-semibold">
               {convoy.heading}{'\u00B0'}
             </span>
           </span>

@@ -114,66 +114,26 @@ export default function AddToManifestModal({
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 3000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-      }}
+      className="fixed z-[3000] flex items-center justify-center bg-[rgba(0,0,0,0.85)] inset-0"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        style={{
-          width: '90%',
-          maxWidth: 500,
-          maxHeight: '80vh',
-          backgroundColor: 'var(--color-bg-card)',
-          border: '1px solid var(--color-border-strong)',
-          borderRadius: 'var(--radius)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
+        className="w-[90%] max-w-[500px] max-h-[80vh] bg-[var(--color-bg-card)] border border-[var(--color-border-strong)] rounded-[var(--radius)] flex flex-col overflow-hidden"
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '14px 16px',
-            borderBottom: '1px solid var(--color-border)',
-          }}
+          className="flex justify-between items-center py-3.5 px-4 border-b border-b-[var(--color-border)]"
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-xs font-bold tracking-[1.5px] text-[var(--color-text-bright)] uppercase"
           >
             {existingEntry ? 'EDIT MANIFEST ITEM' : 'ADD TO MANIFEST'}
           </span>
           <button
             onClick={onClose}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-              padding: 4,
-            }}
+            className="flex items-center justify-center bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-1"
           >
             <X size={16} />
           </button>
@@ -181,48 +141,24 @@ export default function AddToManifestModal({
 
         {/* Body */}
         <div
-          style={{
-            flex: 1,
-            minHeight: 0,
-            overflowY: 'auto',
-            padding: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 14,
-          }}
+          className="flex-1 min-h-[0px] overflow-y-auto p-4 flex flex-col gap-3.5"
         >
           {/* Item name (read-only) */}
           <div>
             <label style={labelStyle}>ITEM</label>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                color: 'var(--color-text-bright)',
-                fontWeight: 600,
-              }}
+              className="font-[var(--font-mono)] text-xs text-[var(--color-text-bright)] font-semibold"
             >
               {item.nomenclature}
             </div>
           </div>
 
           {/* Category badge + Available qty */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className="flex items-center gap-4">
             <div>
               <label style={labelStyle}>CATEGORY</label>
               <span
-                style={{
-                  display: 'inline-block',
-                  padding: '3px 10px',
-                  borderRadius: 2,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  fontWeight: 700,
-                  letterSpacing: '0.5px',
-                  color: catColor.text,
-                  backgroundColor: catColor.bg,
-                  border: `1px solid ${catColor.border}`,
-                }}
+                className="inline-block py-[3px] px-2.5 rounded-[2px] font-[var(--font-mono)] text-[10px] font-bold tracking-[0.5px]" style={{ color: catColor.text, backgroundColor: catColor.bg, border: `1px solid ${catColor.border}` }}
               >
                 {item.category}
               </span>
@@ -230,12 +166,7 @@ export default function AddToManifestModal({
             <div>
               <label style={labelStyle}>AVAILABLE</label>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  color: 'var(--color-text)',
-                  fontWeight: 600,
-                }}
+                className="font-[var(--font-mono)] text-xs text-[var(--color-text)] font-semibold"
               >
                 {item.available_qty}
               </div>
@@ -244,11 +175,7 @@ export default function AddToManifestModal({
               <div>
                 <label style={labelStyle}>WT/UNIT (LBS)</label>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    color: 'var(--color-text)',
-                  }}
+                  className="font-[var(--font-mono)] text-xs text-[var(--color-text)]"
                 >
                   {item.weight_lbs.toLocaleString()}
                 </div>
@@ -259,25 +186,11 @@ export default function AddToManifestModal({
           {/* Quantity selector */}
           <div>
             <label style={labelStyle}>QUANTITY</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+            <div className="flex items-center gap-0">
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                style={{
-                  width: 36,
-                  height: 36,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius) 0 0 var(--radius)',
-                  color: 'var(--color-text)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 16,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
+                className="w-[36px] h-[36px] flex items-center justify-center bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius) 0 0 var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-base font-bold cursor-pointer"
               >
                 -
               </button>
@@ -290,34 +203,12 @@ export default function AddToManifestModal({
                   const v = parseInt(e.target.value, 10);
                   if (!isNaN(v)) setQuantity(Math.min(maxQty, Math.max(1, v)));
                 }}
-                style={{
-                  ...inputStyle,
-                  width: 70,
-                  textAlign: 'center',
-                  borderRadius: 0,
-                  borderLeft: 'none',
-                  borderRight: 'none',
-                  MozAppearance: 'textfield',
-                }}
+                className="text-center rounded-none" style={{ borderLeft: 'none', borderRight: 'none', MozAppearance: 'textfield' }}
               />
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.min(maxQty, q + 1))}
-                style={{
-                  width: 36,
-                  height: 36,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '0 var(--radius) var(--radius) 0',
-                  color: 'var(--color-text)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 16,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
+                className="w-[36px] h-[36px] flex items-center justify-center bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[0 var(--radius) var(--radius) 0] text-[var(--color-text)] font-[var(--font-mono)] text-base font-bold cursor-pointer"
               >
                 +
               </button>
@@ -343,7 +234,7 @@ export default function AddToManifestModal({
           <div>
             <label style={labelStyle}>SPECIAL HANDLING (OPTIONAL)</label>
             <textarea
-              style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }}
+              className="resize-y"
               rows={3}
               maxLength={500}
               value={specialHandling}
@@ -355,49 +246,19 @@ export default function AddToManifestModal({
 
         {/* Footer */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-            padding: '12px 16px',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="flex justify-end gap-2 py-3 px-4 border-t border-t-[var(--color-border)]"
         >
           <button
             type="button"
             onClick={onClose}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '8px 20px',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'transparent',
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] py-2 px-5 border border-[var(--color-border)] rounded-[var(--radius)] bg-transparent text-[var(--color-text-muted)] cursor-pointer uppercase"
           >
             CANCEL
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '8px 20px',
-              border: 'none',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'var(--color-accent)',
-              color: 'var(--color-bg)',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] py-2 px-5 border-0 rounded-[var(--radius)] bg-[var(--color-accent)] text-[var(--color-bg)] cursor-pointer uppercase"
           >
             {existingEntry ? 'UPDATE MANIFEST' : 'ADD TO MANIFEST'}
           </button>

@@ -25,11 +25,11 @@ const demoEntries: IngestionEntry[] = [
 
 function getStatusIcon(status: string) {
   switch (status) {
-    case 'REVIEWED': return <Check size={12} style={{ color: 'var(--color-success)' }} />;
-    case 'PARSED': return <FileText size={12} style={{ color: 'var(--color-accent)' }} />;
-    case 'PARSING': return <Loader size={12} className="animate-spin" style={{ color: 'var(--color-accent)' }} />;
-    case 'ERROR': return <AlertTriangle size={12} style={{ color: 'var(--color-danger)' }} />;
-    default: return <Clock size={12} style={{ color: 'var(--color-text-muted)' }} />;
+    case 'REVIEWED': return <Check size={12} className="text-[var(--color-success)]" />;
+    case 'PARSED': return <FileText size={12} className="text-[var(--color-accent)]" />;
+    case 'PARSING': return <Loader size={12} className="animate-spin text-[var(--color-accent)]" />;
+    case 'ERROR': return <AlertTriangle size={12} className="text-[var(--color-danger)]" />;
+    default: return <Clock size={12} className="text-[var(--color-text-muted)]" />;
   }
 }
 
@@ -48,14 +48,7 @@ export default function IngestionStatus() {
     <Card title="PIPELINE STATUS">
       {/* Summary */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 12,
-          marginBottom: 16,
-          padding: '12px 0',
-          borderBottom: '1px solid var(--color-border)',
-        }}
+        className="grid gap-3 mb-4 py-3 px-0 border-b border-b-[var(--color-border)] grid-cols-4"
       >
         {[
           { label: 'TOTAL', value: demoEntries.length, color: 'var(--color-text-bright)' },
@@ -63,9 +56,9 @@ export default function IngestionStatus() {
           { label: 'REVIEWED', value: demoEntries.filter((e) => e.status === 'REVIEWED').length, color: 'var(--color-success)' },
           { label: 'ERRORS', value: demoEntries.filter((e) => e.status === 'ERROR').length, color: 'var(--color-danger)' },
         ].map((stat) => (
-          <div key={stat.label} style={{ textAlign: 'center' }}>
-            <div className="section-header" style={{ marginBottom: 4 }}>{stat.label}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: stat.color }}>
+          <div key={stat.label} className="text-center">
+            <div className="section-header mb-1">{stat.label}</div>
+            <div className="font-[var(--font-mono)] text-xl font-bold" style={{ color: stat.color }}>
               {stat.value}
             </div>
           </div>
@@ -73,19 +66,11 @@ export default function IngestionStatus() {
       </div>
 
       {/* Entries */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div className="flex flex-col gap-1">
         {demoEntries.map((entry) => (
           <div
             key={entry.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '8px 10px',
-              backgroundColor: 'var(--color-bg-surface)',
-              borderRadius: 'var(--radius)',
-              transition: 'background-color var(--transition)',
-            }}
+            className="flex items-center gap-2.5 py-2 px-2.5 bg-[var(--color-bg-surface)] rounded-[var(--radius)] transition-colors duration-[var(--transition)]"
             onMouseEnter={(e) =>
               (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
             }
@@ -94,43 +79,26 @@ export default function IngestionStatus() {
             }
           >
             {getStatusIcon(entry.status)}
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="flex-1 min-w-0">
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text)',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {entry.filename}
               </div>
               {entry.errors && entry.errors.length > 0 && (
-                <div style={{ fontSize: 9, color: 'var(--color-danger)', marginTop: 1 }}>
+                <div className="text-[9px] text-[var(--color-danger)] mt-px">
                   {entry.errors[0]}
                 </div>
               )}
             </div>
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-text-muted)',
-                whiteSpace: 'nowrap',
-              }}
+              className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
             >
               {entry.records > 0 ? `${entry.records} rec` : '-'}
             </span>
             <StatusDot status={getStatusDot(entry.status)} size={6} />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-text-muted)',
-                whiteSpace: 'nowrap',
-              }}
+              className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
             >
               {formatRelativeTime(entry.uploadedAt)}
             </span>

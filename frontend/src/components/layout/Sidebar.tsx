@@ -200,60 +200,28 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
   return (
     <aside
-      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''}`}
-      style={{
-        width: sidebarWidth,
-        minWidth: sidebarWidth,
-        height: '100vh',
-        backgroundColor: 'var(--color-bg-elevated)',
-        borderRight: '1px solid var(--color-border)',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        zIndex: 20,
-        transition: 'width 0.2s ease, min-width 0.2s ease',
-        overflow: 'hidden',
-      }}
+      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''} bg-bg-elevated border-r border-border flex flex-col relative z-20 overflow-hidden h-[100vh]`}
+      role="complementary"
+      aria-label="Sidebar"
+      style={{ width: sidebarWidth, minWidth: sidebarWidth, transition: 'width 0.2s ease, min-width 0.2s ease' }}
     >
       {/* Brand */}
       <div
+        className="border-b border-border flex items-center gap-2.5"
         style={{
           padding: effectiveCollapsed ? '16px 0' : '16px 16px',
-          borderBottom: '1px solid var(--color-border)',
-          display: 'flex',
-          alignItems: 'center',
           justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-          gap: 10,
         }}
       >
-        <Shield size={20} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+        <Shield size={20} className="text-accent shrink-0" aria-hidden="true" />
         {!effectiveCollapsed && (
           <>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 16,
-                fontWeight: 700,
-                letterSpacing: '3px',
-                color: 'var(--color-text-bright)',
-              }}
-            >
+            <span className="font-mono text-[16px] font-bold tracking-[3px] text-text-bright">
               KEYSTONE
             </span>
             {isDemoMode && (
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 8,
-                  fontWeight: 700,
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-accent)',
-                  backgroundColor: 'rgba(77, 171, 247, 0.12)',
-                  border: '1px solid rgba(77, 171, 247, 0.3)',
-                  borderRadius: 'var(--radius)',
-                  padding: '2px 6px',
-                  marginLeft: 'auto',
-                }}
+                className="font-mono text-[8px] font-bold tracking-[1.5px] text-accent rounded ml-auto bg-[rgba(77,171,247,0.12)] py-0.5 px-1.5 border border-[rgba(77,171,247,0.3)]"
               >
                 DEMO
               </span>
@@ -268,25 +236,14 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
           aria-label="Close sidebar"
           style={{ marginLeft: isDemoMode && !effectiveCollapsed ? 4 : 'auto' }}
         >
-          <X size={16} />
+          <X size={16} aria-hidden="true" />
         </button>
       </div>
 
-      {/* Unit Selector — hidden when collapsed */}
+      {/* Unit Selector -- hidden when collapsed */}
       {!effectiveCollapsed && (
-        <div style={{ padding: '12px 12px 8px' }}>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              marginBottom: 6,
-              paddingLeft: 4,
-            }}
-          >
+        <div className="px-3 pt-3 pb-2">
+          <div className="font-mono text-3xs font-semibold uppercase tracking-[1.5px] text-text-muted mb-1.5 pl-1">
             ECHELON / UNIT
           </div>
           <UnitSelector
@@ -297,7 +254,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
       )}
 
       {/* Navigation */}
-      <nav style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
+      <nav className="flex-1 py-2 overflow-y-auto" aria-label="Main navigation">
         {navGroups.map((group) => {
           const filteredItems = group.items.filter(
             (item) => !item.permission || hasPermission(item.permission),
@@ -307,30 +264,17 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
           const isGroupCollapsed = !!collapsed[group.key];
 
           return (
-            <div key={group.key} style={{ marginBottom: 4 }}>
-              {/* Group header — hidden when in icon-only mode */}
+            <div key={group.key} className="mb-1">
+              {/* Group header -- hidden when in icon-only mode */}
               {!effectiveCollapsed && (
                 <button
                   onClick={() => toggleGroup(group.key)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    width: '100%',
-                    padding: '6px 16px',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    fontSize: 9,
-                    fontFamily: 'var(--font-mono)',
-                    fontWeight: 600,
-                    letterSpacing: '1.5px',
-                    color: 'var(--color-text-muted)',
-                    textTransform: 'uppercase',
-                  }}
+                  aria-expanded={!isGroupCollapsed}
+                  className="flex items-center gap-1.5 w-full px-4 py-1.5 border-none bg-transparent cursor-pointer font-mono text-3xs font-semibold tracking-[1.5px] text-text-muted uppercase"
                 >
                   <ChevronDown
                     size={12}
+                    aria-hidden="true"
                     style={{
                       transition: 'transform 0.2s ease',
                       transform: isGroupCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
@@ -340,74 +284,68 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 </button>
               )}
 
-              {/* Group items — always visible in collapsed mode, respect group collapse in expanded */}
-              {(effectiveCollapsed || !isGroupCollapsed) &&
-                filteredItems.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    onClick={onClose}
-                    title={effectiveCollapsed ? item.label : undefined}
-                    style={({ isActive }) => ({
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-                      gap: effectiveCollapsed ? 0 : 10,
-                      padding: effectiveCollapsed ? '10px 0' : '10px 16px',
-                      margin: '1px 0',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: 500,
-                      letterSpacing: '1.5px',
-                      textTransform: 'uppercase',
-                      textDecoration: 'none',
-                      color: isActive ? 'var(--color-text-bright)' : 'var(--color-text-muted)',
-                      backgroundColor: isActive ? 'var(--color-bg-hover)' : 'transparent',
-                      borderLeft: isActive
-                        ? '3px solid var(--color-accent)'
-                        : '3px solid transparent',
-                      transition: 'all var(--transition)',
-                      position: 'relative',
-                    })}
-                  >
-                    <item.icon size={16} style={{ flexShrink: 0 }} />
-                    {!effectiveCollapsed && (
-                      <span style={{ flex: 1 }}>{item.label}</span>
-                    )}
-                    {(() => {
-                      const dynamicBadge = badgeMap[item.to];
-                      const badge = item.badge ?? dynamicBadge;
-                      if (!badge || badge.count <= 0) return null;
-                      return effectiveCollapsed ? (
-                        <span
-                          style={{
-                            position: 'absolute',
-                            top: 6,
-                            right: 12,
-                            width: 6,
-                            height: 6,
-                            borderRadius: '50%',
-                            backgroundColor: badge.color,
-                          }}
-                        />
-                      ) : (
-                        <span
-                          style={{
-                            fontSize: 9,
-                            fontWeight: 700,
-                            padding: '1px 5px',
-                            borderRadius: 10,
-                            backgroundColor: badge.color,
-                            color: badge.textColor,
-                            lineHeight: '14px',
-                          }}
-                        >
-                          {badge.count}
-                        </span>
-                      );
-                    })()}
-                  </NavLink>
-                ))}
+              {/* Group items -- always visible in collapsed mode, respect group collapse in expanded */}
+              {(effectiveCollapsed || !isGroupCollapsed) && (
+                <ul className="list-none p-0 m-0">
+                  {filteredItems.map((item) => (
+                    <li key={item.to}>
+                      <NavLink
+                        to={item.to}
+                        onClick={onClose}
+                        title={effectiveCollapsed ? item.label : undefined}
+                        aria-label={effectiveCollapsed ? item.label : undefined}
+                        className="no-underline"
+                        style={({ isActive }) => ({
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
+                          gap: effectiveCollapsed ? 0 : 10,
+                          padding: effectiveCollapsed ? '10px 0' : '10px 16px',
+                          margin: '1px 0',
+                          fontFamily: 'var(--font-mono)',
+                          fontSize: 11,
+                          fontWeight: 500,
+                          letterSpacing: '1.5px',
+                          textTransform: 'uppercase',
+                          textDecoration: 'none',
+                          color: isActive ? 'var(--color-text-bright)' : 'var(--color-text-muted)',
+                          backgroundColor: isActive ? 'var(--color-bg-hover)' : 'transparent',
+                          borderLeft: isActive
+                            ? '3px solid var(--color-accent)'
+                            : '3px solid transparent',
+                          transition: 'all var(--transition)',
+                          position: 'relative',
+                        })}
+                      >
+                        <item.icon size={16} className="shrink-0" aria-hidden="true" />
+                        {!effectiveCollapsed && (
+                          <span className="flex-1">{item.label}</span>
+                        )}
+                        {(() => {
+                          const dynamicBadge = badgeMap[item.to];
+                          const badge = item.badge ?? dynamicBadge;
+                          if (!badge || badge.count <= 0) return null;
+                          return effectiveCollapsed ? (
+                            <span
+                              className="absolute top-1.5 right-3 w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: badge.color }}
+                              aria-label={`${badge.count} notifications`}
+                            />
+                          ) : (
+                            <span
+                              className="text-3xs font-bold rounded-full leading-[14px] py-px px-1.5"
+                              style={{ backgroundColor: badge.color, color: badge.textColor }}
+                              aria-label={`${badge.count} notifications`}
+                            >
+                              {badge.count}
+                            </span>
+                          );
+                        })()}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           );
         })}
@@ -415,35 +353,16 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
       {/* Collapse toggle (desktop only) */}
       <div
-        className="sidebar-collapse-toggle"
-        style={{
-          padding: effectiveCollapsed ? '8px 8px' : '8px 12px',
-          display: 'flex',
-          justifyContent: 'center',
-        }}
+        className="sidebar-collapse-toggle flex justify-center"
+        style={{ padding: effectiveCollapsed ? '8px 8px' : '8px 12px' }}
       >
         <button
           onClick={toggleCollapsedMode}
           title={effectiveCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          style={{
-            background: 'none',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-text-muted)',
-            cursor: 'pointer',
-            padding: '4px 8px',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            letterSpacing: '1px',
-            transition: 'all var(--transition)',
-          }}
+          aria-label={effectiveCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="bg-transparent border border-border rounded text-text-muted cursor-pointer w-full flex items-center justify-center gap-1.5 font-mono text-3xs tracking-[1px] py-1 px-2 transition-all duration-[var(--transition)]"
         >
-          {effectiveCollapsed ? <ChevronsRight size={14} /> : <ChevronsLeft size={14} />}
+          {effectiveCollapsed ? <ChevronsRight size={14} aria-hidden="true" /> : <ChevronsLeft size={14} aria-hidden="true" />}
           {!effectiveCollapsed && <span>COLLAPSE</span>}
         </button>
       </div>
@@ -451,39 +370,21 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
       {/* User Info */}
       {user && (
         <div
+          className="border-t border-border flex flex-col"
           style={{
             padding: effectiveCollapsed ? '12px 0' : '12px 16px',
-            borderTop: '1px solid var(--color-border)',
-            display: 'flex',
-            flexDirection: 'column',
             alignItems: effectiveCollapsed ? 'center' : 'flex-start',
           }}
           title={effectiveCollapsed ? `${user.full_name} — ${user.role}` : undefined}
         >
           {effectiveCollapsed ? (
-            <Users size={16} style={{ color: 'var(--color-text-muted)' }} />
+            <Users size={16} className="text-text-muted" aria-label={`${user.full_name} - ${user.role}`} />
           ) : (
             <>
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text)',
-                  fontWeight: 600,
-                }}
-              >
+              <div className="font-mono text-[11px] text-text font-semibold">
                 {user.full_name}
               </div>
-              <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  marginTop: 2,
-                }}
-              >
+              <div className="font-mono text-3xs text-text-muted uppercase tracking-[1px] mt-0.5">
                 {user.role}
               </div>
             </>

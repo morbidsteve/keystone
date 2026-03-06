@@ -72,12 +72,12 @@ export function AlertDetailPanel({ data }: AlertDetailPanelProps) {
           borderColor: `${severityColor}40`,
         }}
       >
-        <AlertTriangle size={14} style={{ color: severityColor, flexShrink: 0 }} />
+        <AlertTriangle size={14} className="shrink-0" style={{ color: severityColor }} />
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: severityColor, letterSpacing: '1px' }}>
+          <div className="text-[10px] font-bold tracking-[1px]" style={{ color: severityColor }}>
             {data.severity}
           </div>
-          <div style={{ fontSize: 9, color: '#94a3b8', marginTop: 1 }}>
+          <div className="text-[9px] text-[#94a3b8] mt-px">
             {getAlertTypeLabel(data.alert_type)}
           </div>
         </div>
@@ -86,7 +86,7 @@ export function AlertDetailPanel({ data }: AlertDetailPanelProps) {
       {/* Details */}
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <Info size={11} style={{ marginRight: 4 }} />
+          <Info size={11} className="mr-1" />
           DETAILS
         </div>
         <div style={styles.detailRow}>
@@ -129,7 +129,7 @@ export function AlertDetailPanel({ data }: AlertDetailPanelProps) {
       {hasPosition && mgrs && gps && (
         <div style={styles.section}>
           <div style={styles.sectionHeader}>
-            <MapPin size={11} style={{ marginRight: 4 }} />
+            <MapPin size={11} className="mr-1" />
             POSITION
           </div>
           <div style={styles.coordBlock}>

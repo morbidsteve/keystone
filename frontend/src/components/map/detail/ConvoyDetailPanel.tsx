@@ -115,20 +115,20 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
             <div style={styles.sectionHeader}>ROUTE</div>
             <div style={styles.routeVisual}>
               <div style={styles.routePoint}>
-                <span style={{ color: '#4ade80', fontSize: 12 }}>{'\u25CF'}</span>
+                <span className="text-[#4ade80] text-xs">{'\u25CF'}</span>
                 <div>
-                  <div style={{ color: '#94a3b8', fontSize: 9 }}>ORIGIN</div>
-                  <div style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                  <div className="text-[#94a3b8] text-[9px]">ORIGIN</div>
+                  <div className="text-[#e2e8f0] text-[11px] font-semibold">
                     {data.origin.name}
                   </div>
                 </div>
               </div>
               <div style={styles.routeLine} />
               <div style={styles.routePoint}>
-                <span style={{ color: '#60a5fa', fontSize: 12 }}>{'\u25CF'}</span>
+                <span className="text-[#60a5fa] text-xs">{'\u25CF'}</span>
                 <div>
-                  <div style={{ color: '#94a3b8', fontSize: 9 }}>DESTINATION</div>
-                  <div style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                  <div className="text-[#94a3b8] text-[9px]">DESTINATION</div>
+                  <div className="text-[#e2e8f0] text-[11px] font-semibold">
                     {data.destination.name}
                   </div>
                 </div>
@@ -144,7 +144,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
           {/* Origin */}
           <div style={styles.section}>
             <div style={styles.sectionHeader}>
-              <MapPin size={11} style={{ marginRight: 4 }} />
+              <MapPin size={11} className="mr-1" />
               ORIGIN
             </div>
             <div style={styles.locationName}>{data.origin.name}</div>
@@ -172,7 +172,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
           {/* Destination */}
           <div style={styles.section}>
             <div style={styles.sectionHeader}>
-              <MapPin size={11} style={{ marginRight: 4 }} />
+              <MapPin size={11} className="mr-1" />
               DESTINATION
             </div>
             <div style={styles.locationName}>{data.destination.name}</div>
@@ -201,7 +201,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
           {data.current_position && currentMGRS && (
             <div style={styles.section}>
               <div style={styles.sectionHeader}>
-                <MapPin size={11} style={{ marginRight: 4 }} />
+                <MapPin size={11} className="mr-1" />
                 CURRENT POSITION
               </div>
               <div style={styles.coordBlock}>
@@ -267,19 +267,19 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
         <div style={styles.tabContent}>
           <div style={styles.section}>
             <div style={styles.sectionHeader}>
-              <Clock size={11} style={{ marginRight: 4 }} />
+              <Clock size={11} className="mr-1" />
               TIMELINE
             </div>
             <div style={styles.timelineItem}>
               <div style={timelineDot('#4ade80')} />
               <div style={styles.timelineContent}>
-                <div style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                <div className="text-[#e2e8f0] text-[11px] font-semibold">
                   Departure
                 </div>
                 <div style={styles.mutedText}>
                   {formatRelativeTime(data.departure_time)}
                 </div>
-                <div style={{ color: '#94a3b8', fontSize: 9, marginTop: 2 }}>
+                <div className="text-[#94a3b8] text-[9px] mt-0.5">
                   From {data.origin.name}
                 </div>
               </div>
@@ -290,7 +290,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
                 <div style={styles.timelineItem}>
                   <div style={timelineDot('#fbbf24')} />
                   <div style={styles.timelineContent}>
-                    <div style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                    <div className="text-[#e2e8f0] text-[11px] font-semibold">
                       In Transit
                     </div>
                     <div style={styles.mutedText}>
@@ -304,11 +304,11 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
             <div style={styles.timelineItem}>
               <div style={timelineDot('#60a5fa')} />
               <div style={styles.timelineContent}>
-                <div style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                <div className="text-[#e2e8f0] text-[11px] font-semibold">
                   Estimated Arrival
                 </div>
                 <div style={styles.mutedText}>{formatRelativeTime(data.eta)}</div>
-                <div style={{ color: '#94a3b8', fontSize: 9, marginTop: 2 }}>
+                <div className="text-[#94a3b8] text-[9px] mt-0.5">
                   At {data.destination.name}
                 </div>
               </div>

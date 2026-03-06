@@ -82,78 +82,33 @@ export default function ActivityFeed() {
 
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
     >
       {/* Header */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px 14px',
-          backgroundColor: 'transparent',
-          border: 'none',
-          borderBottom: collapsed ? 'none' : '1px solid var(--color-border)',
-          cursor: 'pointer',
-        }}
+        className="w-full flex items-center justify-between py-2.5 px-3.5 bg-transparent border-0 cursor-pointer" style={{ borderBottom: collapsed ? 'none' : '1px solid var(--color-border)' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Activity size={14} style={{ color: 'var(--color-accent)' }} />
+        <div className="flex items-center gap-2">
+          <Activity size={14} className="text-[var(--color-accent)]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-bold tracking-[2px] text-[var(--color-text-bright)] uppercase"
           >
             ACTIVITY FEED
           </span>
           {/* LIVE badge */}
           <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '2px 6px',
-              backgroundColor: 'rgba(64, 192, 87, 0.15)',
-              border: '1px solid rgba(64, 192, 87, 0.4)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 8,
-              fontWeight: 700,
-              letterSpacing: '1.5px',
-              color: 'var(--color-success)',
-            }}
+            className="inline-flex items-center gap-1 py-0.5 px-1.5 bg-[rgba(64,192,87,0.15)] rounded-[var(--radius)] font-[var(--font-mono)] text-[8px] font-bold tracking-[1.5px] text-[var(--color-success)]" style={{ border: '1px solid rgba(64, 192, 87, 0.4)' }}
           >
             <span
-              style={{
-                width: 5,
-                height: 5,
-                borderRadius: '50%',
-                backgroundColor: 'var(--color-success)',
-                animation: 'pulse 2s ease-in-out infinite',
-              }}
+              className="w-[5px] h-[5px] bg-[var(--color-success)]" style={{ borderRadius: '50%', animation: 'pulse 2s ease-in-out infinite' }}
             />
             LIVE
           </span>
         </div>
         <ChevronDown
           size={14}
-          style={{
-            color: 'var(--color-text-muted)',
-            transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-            transition: 'transform var(--transition)',
-          }}
+          className="text-[var(--color-text-muted)]" style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform var(--transition)' }}
         />
       </button>
 
@@ -162,28 +117,13 @@ export default function ActivityFeed() {
         <>
           {/* Filter bar */}
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 14px',
-              borderBottom: '1px solid var(--color-border)',
-            }}
+            className="flex items-center gap-1.5 py-2 px-3.5 border-b border-b-[var(--color-border)]"
           >
-            <Filter size={10} style={{ color: 'var(--color-text-muted)' }} />
+            <Filter size={10} className="text-[var(--color-text-muted)]" />
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as ActivityTypeFilter)}
-              style={{
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                padding: '4px 8px',
-                cursor: 'pointer',
-              }}
+              className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] py-1 px-2 cursor-pointer"
             >
               {ACTIVITY_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -192,12 +132,7 @@ export default function ActivityFeed() {
               ))}
             </select>
             <span
-              style={{
-                marginLeft: 'auto',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-text-muted)',
-              }}
+              className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] ml-auto"
             >
               {activities.length} events
             </span>
@@ -206,20 +141,11 @@ export default function ActivityFeed() {
           {/* Events list */}
           <div
             ref={scrollRef}
-            style={{
-              maxHeight: 320,
-              overflowY: 'auto',
-            }}
+            className="max-h-[320px] overflow-y-auto"
           >
             {activities.length === 0 ? (
               <div
-                style={{
-                  padding: 24,
-                  textAlign: 'center',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="p-6 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
               >
                 No activity events
               </div>
@@ -230,13 +156,7 @@ export default function ActivityFeed() {
                 return (
                   <div
                     key={event.id}
-                    style={{
-                      display: 'flex',
-                      gap: 10,
-                      padding: '8px 14px',
-                      borderBottom: '1px solid var(--color-border)',
-                      transition: 'background-color var(--transition)',
-                    }}
+                    className="flex gap-2.5 py-2 px-3.5 border-b border-b-[var(--color-border)] transition-colors duration-[var(--transition)]"
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLDivElement).style.backgroundColor =
                         'rgba(255,255,255,0.02)';
@@ -247,79 +167,38 @@ export default function ActivityFeed() {
                   >
                     {/* Type icon */}
                     <div
-                      style={{
-                        flexShrink: 0,
-                        width: 28,
-                        height: 28,
-                        borderRadius: 'var(--radius)',
-                        backgroundColor: `${cfg.color}18`,
-                        border: `1px solid ${cfg.color}40`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
+                      className="shrink-0 w-[28px] h-[28px] rounded-[var(--radius)] flex items-center justify-center" style={{ backgroundColor: `${cfg.color}18`, border: `1px solid ${cfg.color}40` }}
                     >
                       <IconComponent size={12} style={{ color: cfg.color }} />
                     </div>
 
                     {/* Content */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="flex-1 min-w-0">
                       <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          marginBottom: 2,
-                        }}
+                        className="flex items-center gap-1.5 mb-0.5"
                       >
                         <span
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 8,
-                            fontWeight: 700,
-                            letterSpacing: '1px',
-                            color: cfg.color,
-                            padding: '1px 4px',
-                            backgroundColor: `${cfg.color}15`,
-                            borderRadius: 2,
-                          }}
+                          className="font-[var(--font-mono)] text-[8px] font-bold tracking-[1px] py-px px-1 rounded-[2px]" style={{ color: cfg.color, backgroundColor: `${cfg.color}15` }}
                         >
                           {cfg.label}
                         </span>
                         {event.user_rank && event.user_name && (
                           <span
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 10,
-                              fontWeight: 600,
-                              color: 'var(--color-text-bright)',
-                            }}
+                            className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-bright)]"
                           >
                             {event.user_rank} {event.user_name}
                           </span>
                         )}
                         {event.unit_name && (
                           <span
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 9,
-                              color: 'var(--color-text-muted)',
-                            }}
+                            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                           >
                             [{event.unit_name}]
                           </span>
                         )}
                       </div>
                       <div
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 11,
-                          color: 'var(--color-text)',
-                          lineHeight: 1.4,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
+                        className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap"
                       >
                         {event.description}
                       </div>
@@ -327,14 +206,7 @@ export default function ActivityFeed() {
 
                     {/* Timestamp */}
                     <div
-                      style={{
-                        flexShrink: 0,
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        color: 'var(--color-text-muted)',
-                        whiteSpace: 'nowrap',
-                        paddingTop: 2,
-                      }}
+                      className="shrink-0 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap pt-0.5"
                     >
                       {timeAgo(event.created_at)}
                     </div>

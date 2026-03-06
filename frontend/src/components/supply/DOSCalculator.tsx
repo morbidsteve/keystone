@@ -16,20 +16,12 @@ export default function DOSCalculator() {
   return (
     <Card
       title="DOS CALCULATOR"
-      headerRight={<Calculator size={14} style={{ color: 'var(--color-text-muted)' }} />}
+      headerRight={<Calculator size={14} className="text-[var(--color-text-muted)]" />}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="flex flex-col gap-3">
         <div>
           <label
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              display: 'block',
-              marginBottom: 4,
-            }}
+            className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
           >
             ON HAND QUANTITY
           </label>
@@ -38,30 +30,13 @@ export default function DOSCalculator() {
             value={onHand || ''}
             onChange={(e) => setOnHand(Number(e.target.value))}
             placeholder="0"
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 13,
-              color: 'var(--color-text)',
-            }}
+            className="w-full py-2 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-[13px] text-[var(--color-text)]"
           />
         </div>
 
         <div>
           <label
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              display: 'block',
-              marginBottom: 4,
-            }}
+            className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
           >
             DAILY CONSUMPTION RATE
           </label>
@@ -70,50 +45,24 @@ export default function DOSCalculator() {
             value={rate || ''}
             onChange={(e) => setRate(Number(e.target.value))}
             placeholder="0"
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 13,
-              color: 'var(--color-text)',
-            }}
+            className="w-full py-2 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-[13px] text-[var(--color-text)]"
           />
         </div>
 
         <div
-          style={{
-            padding: '12px',
-            backgroundColor: 'var(--color-bg-surface)',
-            border: `1px solid ${color}`,
-            borderRadius: 'var(--radius)',
-            textAlign: 'center',
-          }}
+          className="bg-[var(--color-bg-surface)] rounded-[var(--radius)] text-center" style={{ padding: '12px', border: `1px solid ${color}` }}
         >
-          <div className="section-header" style={{ marginBottom: 6 }}>
+          <div className="section-header mb-1.5">
             PROJECTED DAYS OF SUPPLY
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 32,
-              fontWeight: 700,
-              color: color,
-              lineHeight: 1,
-            }}
+            className="font-[var(--font-mono)] text-[32px] font-bold leading-none" style={{ color: color }}
           >
             {dos}D
           </div>
           {exhaustionDate && onHand > 0 && rate > 0 && (
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-                marginTop: 6,
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-1.5"
             >
               EXHAUSTION: {format(exhaustionDate, 'dd MMM yyyy')}
             </div>

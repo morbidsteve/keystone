@@ -21,14 +21,13 @@ const STATUS_COLORS: Record<string, string> = {
 export default function InventoryPanel({ events, loading }: InventoryPanelProps) {
   if (loading) {
     return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
+      <div className="p-10 text-center">
         <div
-          className="skeleton"
-          style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+          className="skeleton w-[200px] h-[16px] mx-auto mb-3"
         />
         <div
-          className="skeleton"
-          style={{ width: 300, height: 12, margin: '0 auto' }}
+          className="skeleton w-[300px] h-[12px] mx-auto"
+          
         />
       </div>
     );
@@ -45,15 +44,10 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="flex flex-col gap-3">
       {/* Summary stats */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: 10,
-          marginBottom: 8,
-        }}
+        className="grid gap-2.5 mb-2 grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
       >
         {[
           {
@@ -79,33 +73,15 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
         ].map((stat) => (
           <div
             key={stat.label}
-            style={{
-              padding: '10px 12px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-2.5 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 8,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 4,
-              }}
+              className="font-[var(--font-mono)] text-[8px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1"
             >
               {stat.label}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 18,
-                fontWeight: 700,
-                color: stat.color,
-              }}
+              className="font-[var(--font-mono)] text-lg font-bold" style={{ color: stat.color }}
             >
               {stat.value}
             </div>
@@ -120,77 +96,41 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
         return (
           <div
             key={event.id}
-            style={{
-              padding: '12px 16px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              borderLeft: `3px solid ${statusColor}`,
-            }}
+            className="py-3 px-4 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]" style={{ borderLeft: `3px solid ${statusColor}` }}
           >
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 6,
-              }}
+              className="flex items-center justify-between mb-1.5"
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="flex items-center gap-2">
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
                 >
                   {event.inventory_type} INVENTORY
                 </span>
                 <span
-                  style={{
-                    padding: '2px 6px',
-                    borderRadius: 3,
-                    backgroundColor: `${statusColor}20`,
-                    color: statusColor,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 8,
-                    fontWeight: 700,
-                    letterSpacing: '0.5px',
-                  }}
+                  className="py-0.5 px-1.5 rounded-[3px] font-[var(--font-mono)] text-[8px] font-bold tracking-[0.5px]" style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
                 >
                   {event.status.replace(/_/g, ' ')}
                 </span>
               </div>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
                 {new Date(event.started_at).toLocaleString()}
               </span>
             </div>
 
             <div
-              style={{
-                display: 'flex',
-                gap: 16,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-                marginBottom: event.notes ? 6 : 0,
-              }}
+              className="flex gap-4 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]" style={{ marginBottom: event.notes ? 6 : 0 }}
             >
               <span>
-                Conducted by: <strong style={{ color: 'var(--color-text)' }}>{event.conducted_by_name ?? 'Unknown'}</strong>
+                Conducted by: <strong className="text-[var(--color-text)]">{event.conducted_by_name ?? 'Unknown'}</strong>
               </span>
               <span>
-                Verified: <strong style={{ color: 'var(--color-text)' }}>{event.total_items_verified}/{event.total_items_expected}</strong>
+                Verified: <strong className="text-[var(--color-text)]">{event.total_items_verified}/{event.total_items_expected}</strong>
               </span>
               {event.discrepancies > 0 && (
-                <span style={{ color: '#ef4444' }}>
+                <span className="text-[#ef4444]">
                   Discrepancies: <strong>{event.discrepancies}</strong>
                 </span>
               )}
@@ -198,14 +138,7 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
 
             {event.notes && (
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  fontStyle: 'italic',
-                  paddingTop: 4,
-                  borderTop: '1px solid var(--color-border)',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] pt-1 border-t border-t-[var(--color-border)] italic"
               >
                 {event.notes}
               </div>

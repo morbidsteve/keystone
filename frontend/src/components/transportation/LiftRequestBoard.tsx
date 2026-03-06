@@ -84,23 +84,19 @@ export default function LiftRequestBoard({
   if (isLoading) {
     return (
       <Card title="LIFT REQUESTS">
-        <div style={{ padding: 40, textAlign: 'center' }}>
-          <div className="skeleton" style={{ width: 200, height: 16, margin: '0 auto 12px' }} />
-          <div className="skeleton" style={{ width: 300, height: 12, margin: '0 auto' }} />
+        <div className="p-10 text-center">
+          <div className="skeleton w-[200px] h-[16px] mx-auto mb-3" />
+          <div className="skeleton w-[300px] h-[12px] mx-auto"  />
         </div>
       </Card>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Summary stats */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-4"
       >
         {[
           { label: 'TOTAL REQUESTS', value: stats.total, color: 'var(--color-text-bright)' },
@@ -110,33 +106,15 @@ export default function LiftRequestBoard({
         ].map((kpi) => (
           <div
             key={kpi.label}
-            style={{
-              padding: '14px 16px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-3.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 6,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1.5"
             >
               {kpi.label}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 22,
-                fontWeight: 700,
-                color: kpi.color,
-              }}
+              className="font-[var(--font-mono)] text-[22px] font-bold" style={{ color: kpi.color }}
             >
               {kpi.value}
             </div>
@@ -145,25 +123,10 @@ export default function LiftRequestBoard({
       </div>
 
       {/* Create button */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div className="flex justify-end">
         <button
           onClick={onCreateRequest}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '7px 14px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            color: 'var(--color-accent)',
-            backgroundColor: 'rgba(77, 171, 247, 0.1)',
-            border: '1px solid var(--color-accent)',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-          }}
+          className="inline-flex items-center gap-1.5 py-[7px] px-3.5 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase text-[var(--color-accent)] bg-[rgba(77,171,247,0.1)] border border-[var(--color-accent)] rounded-[var(--radius)] cursor-pointer"
         >
           <Plus size={13} /> NEW REQUEST
         </button>
@@ -171,74 +134,36 @@ export default function LiftRequestBoard({
 
       {/* Column board */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 12,
-          alignItems: 'start',
-        }}
+        className="grid gap-3" style={{ gridTemplateColumns: 'repeat(4, 1fr)', alignItems: 'start' }}
       >
         {DISPLAY_COLUMNS.map((col) => {
           const items = requestsByStatus[col.status] ?? [];
           return (
             <div
               key={col.status}
-              style={{
-                backgroundColor: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-border)',
-                borderTop: `3px solid ${col.accentColor}`,
-                borderRadius: 'var(--radius)',
-                minHeight: 200,
-              }}
+              className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] min-h-[200px]" style={{ borderTop: `3px solid ${col.accentColor}` }}
             >
               {/* Column header */}
               <div
-                style={{
-                  padding: '10px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+                className="py-2.5 px-3 border-b border-b-[var(--color-border)] flex items-center justify-between"
               >
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: '1.5px',
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)]"
                 >
                   {col.label}
                 </span>
                 <span
-                  style={{
-                    display: 'inline-block',
-                    padding: '1px 6px',
-                    borderRadius: 8,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: 700,
-                    backgroundColor: `${col.accentColor}20`,
-                    color: col.accentColor,
-                  }}
+                  className="inline-block py-px px-1.5 rounded-[8px] font-[var(--font-mono)] text-[9px] font-bold" style={{ backgroundColor: `${col.accentColor}20`, color: col.accentColor }}
                 >
                   {items.length}
                 </span>
               </div>
 
               {/* Cards */}
-              <div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="p-2 flex flex-col gap-2">
                 {items.length === 0 && (
                   <div
-                    style={{
-                      padding: 20,
-                      textAlign: 'center',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: 'var(--color-text-muted)',
-                    }}
+                    className="p-5 text-center font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                   >
                     No requests
                   </div>
@@ -250,40 +175,19 @@ export default function LiftRequestBoard({
                     <div
                       key={req.id}
                       onClick={() => setExpandedId(isExpanded ? null : req.id)}
-                      style={{
-                        padding: '10px 12px',
-                        backgroundColor: 'var(--color-bg-surface)',
-                        border: `1px solid ${req.priority === 'EMERGENCY' ? 'rgba(248, 113, 113, 0.4)' : 'var(--color-border)'}`,
-                        borderRadius: 'var(--radius)',
-                        cursor: 'pointer',
-                        transition: 'border-color 0.15s',
-                      }}
+                      className="py-2.5 px-3 bg-[var(--color-bg-surface)] rounded-[var(--radius)] cursor-pointer" style={{ border: `1px solid ${req.priority === 'EMERGENCY' ? 'rgba(248, 113, 113, 0.4)' : 'var(--color-border)'}`, transition: 'border-color 0.15s' }}
                     >
                       {/* Priority + cargo type */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <div className="flex items-center justify-between mb-1.5">
                         <span
-                          style={{
-                            display: 'inline-block',
-                            padding: '1px 6px',
-                            borderRadius: 2,
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 8,
-                            fontWeight: 700,
-                            color: pc.text,
-                            backgroundColor: pc.bg,
-                            border: `1px solid ${pc.border}`,
-                          }}
+                          className="inline-block py-px px-1.5 rounded-[2px] font-[var(--font-mono)] text-[8px] font-bold" style={{ color: pc.text, backgroundColor: pc.bg, border: `1px solid ${pc.border}` }}
                         >
                           {req.priority}
                         </span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <div className="flex items-center gap-1">
                           <CargoIcon type={req.cargo_type} />
                           <span
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 8,
-                              color: 'var(--color-text-muted)',
-                            }}
+                            className="font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)]"
                           >
                             {req.cargo_type}
                           </span>
@@ -292,38 +196,19 @@ export default function LiftRequestBoard({
 
                       {/* Pickup -> Delivery */}
                       <div
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-text)',
-                          marginBottom: 4,
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text)] mb-1"
                       >
                         {req.pickup_location}
                       </div>
                       <div
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-accent)',
-                          marginBottom: 6,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-accent)] mb-1.5 flex items-center gap-1"
                       >
-                        <span style={{ color: 'var(--color-text-muted)' }}>&#8594;</span> {req.delivery_location}
+                        <span className="text-[var(--color-text-muted)]">&#8594;</span> {req.delivery_location}
                       </div>
 
                       {/* Weight/PAX + date */}
                       <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 8,
-                          color: 'var(--color-text-muted)',
-                        }}
+                        className="flex justify-between font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)]"
                       >
                         <span>
                           {req.weight_lbs ? `${(req.weight_lbs / 1000).toFixed(1)}K lbs` : ''}
@@ -337,16 +222,7 @@ export default function LiftRequestBoard({
                       {/* Hazmat indicator */}
                       {req.hazmat && (
                         <div
-                          style={{
-                            marginTop: 4,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 4,
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 8,
-                            fontWeight: 700,
-                            color: '#fb923c',
-                          }}
+                          className="mt-1 flex items-center gap-1 font-[var(--font-mono)] text-[8px] font-bold text-[#fb923c]"
                         >
                           <AlertTriangle size={10} /> HAZMAT
                         </div>
@@ -355,28 +231,20 @@ export default function LiftRequestBoard({
                       {/* Expanded detail */}
                       {isExpanded && (
                         <div
-                          style={{
-                            marginTop: 8,
-                            paddingTop: 8,
-                            borderTop: '1px solid var(--color-border)',
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            color: 'var(--color-text)',
-                            lineHeight: 1.5,
-                          }}
+                          className="mt-2 pt-2 border-t border-t-[var(--color-border)] font-[var(--font-mono)] text-[9px] text-[var(--color-text)] leading-normal"
                         >
-                          <div style={{ marginBottom: 4 }}>
-                            <strong style={{ color: 'var(--color-text-muted)' }}>CARGO:</strong>{' '}
+                          <div className="mb-1">
+                            <strong className="text-[var(--color-text-muted)]">CARGO:</strong>{' '}
                             {req.cargo_description}
                           </div>
-                          <div style={{ marginBottom: 4 }}>
-                            <strong style={{ color: 'var(--color-text-muted)' }}>UNIT:</strong>{' '}
+                          <div className="mb-1">
+                            <strong className="text-[var(--color-text-muted)]">UNIT:</strong>{' '}
                             {req.requesting_unit_name}
                             {req.supporting_unit_name && ` (Spt: ${req.supporting_unit_name})`}
                           </div>
                           {req.cube_ft && (
                             <div>
-                              <strong style={{ color: 'var(--color-text-muted)' }}>CUBE:</strong>{' '}
+                              <strong className="text-[var(--color-text-muted)]">CUBE:</strong>{' '}
                               {req.cube_ft} ft3
                             </div>
                           )}

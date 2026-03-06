@@ -1,11 +1,20 @@
 """Pytest fixtures for KEYSTONE tests."""
 
 import asyncio
+import os
 from typing import AsyncGenerator, Generator
+
+# Force SQLite for all tests BEFORE importing app modules
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test.db"
+os.environ["DATABASE_URL_SYNC"] = "sqlite:///./test.db"
+os.environ["REDIS_URL"] = "redis://localhost:6379/0"
+os.environ["ENV_MODE"] = "development"
+os.environ["SKIP_SEEDS"] = "1"
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text, delete
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.auth import create_access_token, hash_password
@@ -17,7 +26,7 @@ from app.models.unit import Echelon, Unit
 from app.models.user import Role, User
 
 
-# Use in-memory SQLite for tests, or a test database
+# Use file-based SQLite for tests
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
 test_engine = create_async_engine(
@@ -40,14 +49,28 @@ def event_loop() -> Generator:
     loop.close()
 
 
-@pytest_asyncio.fixture(autouse=True)
-async def setup_database():
-    """Create tables before each test, drop after."""
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def create_tables():
+    """Create all tables once for the entire test session."""
     async with test_engine.begin() as conn:
+        await conn.execute(text("PRAGMA foreign_keys=OFF"))
         await conn.run_sync(Base.metadata.create_all)
     yield
     async with test_engine.begin() as conn:
+        await conn.execute(text("PRAGMA foreign_keys=OFF"))
         await conn.run_sync(Base.metadata.drop_all)
+    await test_engine.dispose()
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def clean_tables():
+    """Delete all data between tests (faster than recreating tables)."""
+    yield
+    async with test_engine.begin() as conn:
+        await conn.execute(text("PRAGMA foreign_keys=OFF"))
+        # Delete data from all tables in reverse dependency order
+        for table in reversed(Base.metadata.sorted_tables):
+            await conn.execute(delete(table))
 
 
 @pytest_asyncio.fixture

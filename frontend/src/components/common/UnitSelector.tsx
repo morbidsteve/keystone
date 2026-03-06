@@ -363,80 +363,37 @@ export default function UnitSelector({
   return (
     <div
       ref={containerRef}
-      style={{ position: 'relative' }}
-      className={className}
+      className={`relative ${className || ''}`}
     >
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '100%',
-          padding: '8px 10px',
-          backgroundColor: 'var(--color-bg)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius)',
-          color: 'var(--color-text)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          textAlign: 'left',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 6,
-          transition: 'border-color var(--transition)',
-        }}
+        className="w-full py-2 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px] text-left cursor-pointer flex justify-between items-center gap-1.5" style={{ transition: 'border-color var(--transition)' }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-          <Building2 size={12} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span className="flex items-center gap-1.5 min-w-[0px]">
+          <Building2 size={12} className="text-[var(--color-text-muted)] shrink-0" />
+          <span className="overflow-hidden text-ellipsis whitespace-nowrap">
             {loading ? 'Loading...' : selectedLabel}
           </span>
         </span>
         <ChevronDown
           size={14}
-          style={{
-            color: 'var(--color-text-muted)',
-            flexShrink: 0,
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 150ms',
-          }}
+          className="text-[var(--color-text-muted)] shrink-0" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 150ms' }}
         />
       </button>
 
       {/* Dropdown panel */}
       {isOpen && (
         <div
-          style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            marginTop: 4,
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            zIndex: 50,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: 360,
-          }}
+          className="absolute left-0 right-0 mt-1 bg-[var(--color-bg-surface)] border border-[var(--color-border-strong)] rounded-[var(--radius)] z-[50] flex flex-col max-h-[360px]" style={{ top: '100%', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
           onKeyDown={handleKeyDown}
         >
           {/* Search input */}
-          <div style={{ padding: '8px 8px 4px', borderBottom: '1px solid var(--color-border)' }}>
-            <div style={{ position: 'relative' }}>
+          <div className="border-b border-b-[var(--color-border)]" style={{ padding: '8px 8px 4px' }}>
+            <div className="relative">
               <Search
                 size={12}
-                style={{
-                  position: 'absolute',
-                  left: 8,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--color-text-muted)',
-                  pointerEvents: 'none',
-                }}
+                className="absolute left-2 text-[var(--color-text-muted)] top-1/2 -translate-y-1/2 pointer-events-none"
               />
               <input
                 ref={searchInputRef}
@@ -447,17 +404,7 @@ export default function UnitSelector({
                   setSearch(e.target.value);
                   setFocusedIndex(-1);
                 }}
-                style={{
-                  width: '100%',
-                  padding: '6px 8px 6px 26px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  color: 'var(--color-text)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  outline: 'none',
-                }}
+                className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] outline-none" style={{ padding: '6px 8px 6px 26px' }}
               />
             </div>
           </div>
@@ -465,21 +412,11 @@ export default function UnitSelector({
           {/* Scrollable list */}
           <div
             ref={listRef}
-            style={{
-              overflowY: 'auto',
-              flex: 1,
-              minHeight: 0,
-            }}
+            className="overflow-y-auto flex-1 min-h-[0px]"
           >
             {loading ? (
               <div
-                style={{
-                  padding: 16,
-                  textAlign: 'center',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="p-4 text-center font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
               >
                 Loading units...
               </div>
@@ -489,28 +426,11 @@ export default function UnitSelector({
                 <button
                   data-unit-row
                   onClick={() => handleSelect(null)}
-                  style={{
-                    width: '100%',
-                    padding: '7px 10px',
-                    backgroundColor:
-                      selectedUnitId === null
+                  className="w-full py-[7px] px-2.5 border-0 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-[var(--font-mono)] text-[11px] font-semibold text-left cursor-pointer flex items-center gap-1.5" style={{ backgroundColor: selectedUnitId === null
                         ? 'var(--color-bg-hover)'
                         : focusedIndex === 0
                           ? 'rgba(77, 171, 247, 0.08)'
-                          : 'transparent',
-                    border: 'none',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    transition: 'background-color 100ms',
-                  }}
+                          : 'transparent', transition: 'background-color 100ms' }}
                   onMouseEnter={(e) => {
                     if (selectedUnitId !== null)
                       e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
@@ -520,7 +440,7 @@ export default function UnitSelector({
                       e.currentTarget.style.backgroundColor = 'transparent';
                   }}
                 >
-                  <Building2 size={11} style={{ color: 'var(--color-accent)' }} />
+                  <Building2 size={11} className="text-[var(--color-accent)]" />
                   ALL UNITS
                 </button>
 
@@ -546,23 +466,11 @@ export default function UnitSelector({
                     <div
                       key={node.id}
                       data-unit-row
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        paddingLeft: indent,
-                        paddingRight: 8,
-                        paddingTop: 4,
-                        paddingBottom: 4,
-                        backgroundColor: isSelected
+                      className="flex items-center pr-2 pt-1 pb-1 cursor-pointer border-b border-b-[var(--color-border)]" style={{ paddingLeft: indent, backgroundColor: isSelected
                           ? 'var(--color-bg-hover)'
                           : isFocused
                             ? 'rgba(77, 171, 247, 0.08)'
-                            : 'transparent',
-                        cursor: 'pointer',
-                        transition: 'background-color 100ms',
-                        borderBottom: '1px solid var(--color-border)',
-                        opacity: search.trim() && !isDirectMatch ? 0.5 : 1,
-                      }}
+                            : 'transparent', transition: 'background-color 100ms', opacity: search.trim() && !isDirectMatch ? 0.5 : 1 }}
                       onMouseEnter={(e) => {
                         if (!isSelected)
                           e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
@@ -579,20 +487,7 @@ export default function UnitSelector({
                           e.stopPropagation();
                           if (hasChildren) toggle(node.id);
                         }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 14,
-                          height: 14,
-                          flexShrink: 0,
-                          background: 'none',
-                          border: 'none',
-                          padding: 0,
-                          cursor: hasChildren ? 'pointer' : 'default',
-                          color: hasChildren ? 'var(--color-text-muted)' : 'transparent',
-                          marginRight: 4,
-                        }}
+                        className="flex items-center justify-center w-[14px] h-[14px] shrink-0 bg-transparent border-0 p-0 mr-1" style={{ cursor: hasChildren ? 'pointer' : 'default', color: hasChildren ? 'var(--color-text-muted)' : 'transparent' }}
                         tabIndex={-1}
                       >
                         {hasChildren ? (
@@ -602,42 +497,20 @@ export default function UnitSelector({
                             <ChevronRight size={10} />
                           )
                         ) : (
-                          <span style={{ width: 10, display: 'inline-block' }} />
+                          <span className="w-[10px] inline-block" />
                         )}
                       </button>
 
                       {/* Echelon badge */}
                       <span
-                        style={{
-                          flexShrink: 0,
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 7,
-                          fontWeight: 700,
-                          letterSpacing: '0.3px',
-                          padding: '1px 4px',
-                          borderRadius: 2,
-                          marginRight: 6,
-                          minWidth: 22,
-                          textAlign: 'center',
-                          ...badgeStyle,
-                        }}
+                        className="shrink-0 font-[var(--font-mono)] text-[7px] font-bold tracking-[0.3px] py-px px-1 rounded-[2px] mr-1.5 min-w-[22px] text-center"
                       >
                         {abbrev}
                       </span>
 
                       {/* Unit name */}
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          fontWeight: isSelected ? 700 : 500,
-                          color: isSelected ? 'var(--color-text-bright)' : 'var(--color-text)',
-                          flex: 1,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          minWidth: 0,
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] flex-1 overflow-hidden text-ellipsis whitespace-nowrap min-w-[0px]" style={{ fontWeight: isSelected ? 700 : 500, color: isSelected ? 'var(--color-text-bright)' : 'var(--color-text)' }}
                         title={`${node.name}${node.abbreviation ? ` (${node.abbreviation})` : ''}`}
                       >
                         {node.abbreviation || node.name}
@@ -648,13 +521,7 @@ export default function UnitSelector({
 
                 {visibleRows.length === 0 && search.trim() && (
                   <div
-                    style={{
-                      padding: 16,
-                      textAlign: 'center',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: 'var(--color-text-muted)',
-                    }}
+                    className="p-4 text-center font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
                   >
                     No units match "{search}"
                   </div>

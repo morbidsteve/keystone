@@ -119,14 +119,13 @@ export default function MaintenanceDashboardPage() {
   // -------------------------------------------------------------------------
 
   const renderLoadingSkeleton = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
@@ -136,37 +135,19 @@ export default function MaintenanceDashboardPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            letterSpacing: '3px',
-            color: 'var(--color-text-bright)',
-            textTransform: 'uppercase',
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold tracking-[3px] text-[var(--color-text-bright)] uppercase"
         >
           MAINTENANCE MANAGEMENT
         </div>
         {analytics && (
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
+            className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex items-center gap-3"
           >
             <span>
               {analytics.manHoursLast30d.toLocaleString()} MAN-HRS (30D)
@@ -183,12 +164,11 @@ export default function MaintenanceDashboardPage() {
 
       {/* Analytics KPI row — always visible */}
       {analyticsLoading ? (
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div className="flex gap-3">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="skeleton"
-              style={{ flex: '1 1 0', height: 100, borderRadius: 'var(--radius)' }}
+              className="skeleton h-[100px] rounded-[var(--radius)] flex-1"
             />
           ))}
         </div>
@@ -198,38 +178,17 @@ export default function MaintenanceDashboardPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
           </button>
@@ -261,13 +220,9 @@ export default function MaintenanceDashboardPage() {
       )}
 
       {activeTab === 'analytics' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="flex flex-col gap-4">
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-              gap: 16,
-            }}
+            className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))' }}
           >
             <Card title="WEEKLY MAINTENANCE TREND">
               {analytics ? (
@@ -297,7 +252,7 @@ export default function MaintenanceDashboardPage() {
       )}
 
       {activeTab === 'predictive' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="flex flex-col gap-4">
           <Card title="PREDICTIVE MAINTENANCE ALERTS">
             <PredictiveAlertsPanel unitId={numericUnitId} />
           </Card>

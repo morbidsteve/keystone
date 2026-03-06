@@ -217,54 +217,26 @@ export default function TemplateManager() {
               resetForm();
               setShowForm(true);
             }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '4px 10px',
-              backgroundColor: 'var(--color-accent)',
-              border: 'none',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-bg)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              cursor: 'pointer',
-            }}
+            className="flex items-center gap-1 py-1 px-2.5 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] cursor-pointer"
           >
             <Plus size={10} /> ADD TEMPLATE
           </button>
         ) : undefined
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="flex flex-col gap-3">
         {/* Add/Edit Form */}
         {showForm && (
           <div
-            style={{
-              padding: 12,
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-            }}
+            className="p-3 bg-[var(--color-bg)] border border-[var(--color-accent)] rounded-[var(--radius)] flex flex-col gap-2.5"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 600,
-                color: 'var(--color-accent)',
-                letterSpacing: '1px',
-              }}
+              className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-accent)] tracking-[1px]"
             >
               {editingId ? 'EDIT TEMPLATE' : 'NEW TEMPLATE'}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div className="grid gap-2 grid-cols-2">
               <div>
                 <label style={labelStyle}>NAME</label>
                 <input
@@ -300,7 +272,7 @@ export default function TemplateManager() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div className="grid gap-2 grid-cols-2">
               <div>
                 <label style={labelStyle}>CLASSIFICATION</label>
                 <select
@@ -315,23 +287,15 @@ export default function TemplateManager() {
                   ))}
                 </select>
               </div>
-              <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 4 }}>
+              <div className="flex items-end pb-1">
                 <label
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text)',
-                    cursor: 'pointer',
-                  }}
+                  className="flex items-center gap-2 font-[var(--font-mono)] text-[10px] text-[var(--color-text)] cursor-pointer"
                 >
                   <input
                     type="checkbox"
                     checked={formIsDefault}
                     onChange={(e) => setFormIsDefault(e.target.checked)}
-                    style={{ accentColor: 'var(--color-accent)' }}
+                    className="accent-[var(--color-accent)]"
                   />
                   DEFAULT TEMPLATE
                 </label>
@@ -345,60 +309,31 @@ export default function TemplateManager() {
                 onChange={(e) => setFormBody(e.target.value)}
                 placeholder="Template body content..."
                 rows={4}
-                style={{
-                  ...inputStyle,
-                  resize: 'vertical',
-                  minHeight: 60,
-                }}
+                className="min-h-[60px]"
               />
             </div>
 
             <div>
               <label style={labelStyle}>SECTIONS</label>
               <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 6,
-                  padding: 8,
-                  backgroundColor: 'var(--color-bg-surface)',
-                  borderRadius: 'var(--radius)',
-                  border: '1px solid var(--color-border)',
-                }}
+                className="flex flex-wrap gap-1.5 p-2 bg-[var(--color-bg-surface)] rounded-[var(--radius)] border border-[var(--color-border)]"
               >
                 {SECTION_OPTIONS.map((section) => (
                   <label
                     key={section}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      padding: '3px 8px',
-                      backgroundColor: formSections.includes(section)
+                    className="flex items-center gap-1 py-[3px] px-2 rounded-[var(--radius)] font-[var(--font-mono)] text-[8px] cursor-pointer tracking-[0.5px]" style={{ backgroundColor: formSections.includes(section)
                         ? 'rgba(59,130,246,0.15)'
-                        : 'var(--color-bg)',
-                      border: formSections.includes(section)
+                        : 'var(--color-bg)', border: formSections.includes(section)
                         ? '1px solid var(--color-accent)'
-                        : '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 8,
-                      color: formSections.includes(section)
+                        : '1px solid var(--color-border)', color: formSections.includes(section)
                         ? 'var(--color-accent)'
-                        : 'var(--color-text-muted)',
-                      cursor: 'pointer',
-                      letterSpacing: '0.5px',
-                    }}
+                        : 'var(--color-text-muted)' }}
                   >
                     <input
                       type="checkbox"
                       checked={formSections.includes(section)}
                       onChange={() => toggleSection(section)}
-                      style={{
-                        accentColor: 'var(--color-accent)',
-                        width: 10,
-                        height: 10,
-                      }}
+                      className="w-[10px] h-[10px] accent-[var(--color-accent)]"
                     />
                     {section}
                   </label>
@@ -406,45 +341,18 @@ export default function TemplateManager() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 6 }}>
+            <div className="flex gap-1.5">
               <button
                 onClick={handleSave}
                 disabled={saving || !formName}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '6px 14px',
-                  backgroundColor: !formName || saving ? 'var(--color-bg-surface)' : 'var(--color-accent)',
-                  border: !formName || saving ? '1px solid var(--color-border)' : 'none',
-                  borderRadius: 'var(--radius)',
-                  color: !formName || saving ? 'var(--color-text-muted)' : 'var(--color-bg)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  cursor: !formName || saving ? 'not-allowed' : 'pointer',
-                }}
+                className="flex items-center gap-1 py-1.5 px-3.5 rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px]" style={{ backgroundColor: !formName || saving ? 'var(--color-bg-surface)' : 'var(--color-accent)', border: !formName || saving ? '1px solid var(--color-border)' : 'none', color: !formName || saving ? 'var(--color-text-muted)' : 'var(--color-bg)', cursor: !formName || saving ? 'not-allowed' : 'pointer' }}
               >
                 {saving ? <Loader size={10} className="animate-spin" /> : <Check size={10} />}
                 {saving ? 'SAVING...' : 'SAVE'}
               </button>
               <button
                 onClick={resetForm}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '6px 14px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  color: 'var(--color-text-muted)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  letterSpacing: '1px',
-                  cursor: 'pointer',
-                }}
+                className="flex items-center gap-1 py-1.5 px-3.5 bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[9px] tracking-[1px] cursor-pointer"
               >
                 <X size={10} /> CANCEL
               </button>
@@ -455,35 +363,20 @@ export default function TemplateManager() {
         {/* Template Table */}
         {loading ? (
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-muted)',
-              padding: 16,
-              textAlign: 'center',
-            }}
+            className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center"
           >
             Loading templates...
           </div>
         ) : templates.length === 0 ? (
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-muted)',
-              padding: 16,
-              textAlign: 'center',
-            }}
+            className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center"
           >
             No templates configured yet. Click ADD TEMPLATE to create one.
           </div>
         ) : (
-          <div style={{ overflow: 'auto' }}>
+          <div className="overflow-auto">
             <table
-              style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-              }}
+              className="w-full border-collapse"
             >
               <thead>
                 <tr>
@@ -499,27 +392,20 @@ export default function TemplateManager() {
                 {templates.map((t) => (
                   <tr key={t.id}>
                     <td style={tdStyle}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div className="flex items-center gap-1.5">
                         <FileText
                           size={12}
-                          style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}
+                          className="text-[var(--color-text-muted)] shrink-0"
                         />
                         <div>
                           <div
-                            style={{
-                              fontWeight: 600,
-                              color: 'var(--color-text-bright)',
-                            }}
+                            className="font-semibold text-[var(--color-text-bright)]"
                           >
                             {t.name}
                           </div>
                           {t.description && (
                             <div
-                              style={{
-                                fontSize: 8,
-                                color: 'var(--color-text-muted)',
-                                marginTop: 1,
-                              }}
+                              className="text-[8px] text-[var(--color-text-muted)] mt-px"
                             >
                               {t.description}
                             </div>
@@ -529,44 +415,26 @@ export default function TemplateManager() {
                     </td>
                     <td style={tdStyle}>
                       <span
-                        style={{
-                          padding: '2px 6px',
-                          borderRadius: 'var(--radius)',
-                          backgroundColor: 'var(--color-bg)',
-                          border: '1px solid var(--color-border)',
-                          fontSize: 8,
-                          letterSpacing: '0.5px',
-                        }}
+                        className="py-0.5 px-1.5 rounded-[var(--radius)] bg-[var(--color-bg)] border border-[var(--color-border)] text-[8px] tracking-[0.5px]"
                       >
                         {t.report_type}
                       </span>
                     </td>
                     <td style={tdStyle}>
                       <span
-                        style={{
-                          padding: '2px 6px',
-                          borderRadius: 'var(--radius)',
-                          backgroundColor:
-                            t.classification_default === 'SECRET' ||
+                        className="py-0.5 px-1.5 rounded-[var(--radius)] text-[8px] tracking-[0.5px]" style={{ backgroundColor: t.classification_default === 'SECRET' ||
                             t.classification_default === 'TS' ||
                             t.classification_default === 'TS_SCI'
                               ? 'rgba(239,68,68,0.1)'
-                              : 'var(--color-bg)',
-                          border:
-                            t.classification_default === 'SECRET' ||
+                              : 'var(--color-bg)', border: t.classification_default === 'SECRET' ||
                             t.classification_default === 'TS' ||
                             t.classification_default === 'TS_SCI'
                               ? '1px solid rgba(239,68,68,0.3)'
-                              : '1px solid var(--color-border)',
-                          color:
-                            t.classification_default === 'SECRET' ||
+                              : '1px solid var(--color-border)', color: t.classification_default === 'SECRET' ||
                             t.classification_default === 'TS' ||
                             t.classification_default === 'TS_SCI'
                               ? 'var(--color-red, #ef4444)'
-                              : 'var(--color-text-muted)',
-                          fontSize: 8,
-                          letterSpacing: '0.5px',
-                        }}
+                              : 'var(--color-text-muted)' }}
                       >
                         {t.classification_default}
                       </span>
@@ -574,37 +442,25 @@ export default function TemplateManager() {
                     <td style={tdStyle}>
                       {t.is_default && (
                         <span
-                          style={{
-                            padding: '2px 6px',
-                            borderRadius: 'var(--radius)',
-                            backgroundColor: 'rgba(34,197,94,0.1)',
-                            border: '1px solid rgba(34,197,94,0.3)',
-                            color: 'var(--color-green, #22c55e)',
-                            fontSize: 8,
-                            letterSpacing: '0.5px',
-                          }}
+                          className="py-0.5 px-1.5 rounded-[var(--radius)] bg-[rgba(34,197,94,0.1)] text-[var(--color-green, #22c55e)] text-[8px] tracking-[0.5px]" style={{ border: '1px solid rgba(34,197,94,0.3)' }}
                         >
                           YES
                         </span>
                       )}
                     </td>
                     <td style={tdStyle}>
-                      <span style={{ fontSize: 9, color: 'var(--color-text-muted)' }}>
+                      <span className="text-[9px] text-[var(--color-text-muted)]">
                         {t.sections.length} sections
                       </span>
                     </td>
                     <td style={tdStyle}>
-                      <div style={{ display: 'flex', gap: 4 }}>
+                      <div className="flex gap-1">
                         <button onClick={() => startEdit(t)} style={smallBtnStyle}>
                           <Edit2 size={9} /> EDIT
                         </button>
                         <button
                           onClick={() => handleDelete(t.id)}
-                          style={{
-                            ...smallBtnStyle,
-                            borderColor: 'rgba(239,68,68,0.3)',
-                            color: 'var(--color-red, #ef4444)',
-                          }}
+                          className="text-[var(--color-red, #ef4444)]"
                         >
                           <Trash2 size={9} /> DEL
                         </button>

@@ -54,23 +54,19 @@ export default function ActiveConvoyTracker({
   if (isLoading) {
     return (
       <Card title="ACTIVE CONVOYS">
-        <div style={{ padding: 40, textAlign: 'center' }}>
-          <div className="skeleton" style={{ width: 200, height: 16, margin: '0 auto 12px' }} />
-          <div className="skeleton" style={{ width: 300, height: 12, margin: '0 auto' }} />
+        <div className="p-10 text-center">
+          <div className="skeleton w-[200px] h-[16px] mx-auto mb-3" />
+          <div className="skeleton w-[300px] h-[12px] mx-auto"  />
         </div>
       </Card>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="flex flex-col gap-3">
       {/* Summary */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-4"
       >
         {[
           { label: 'ACTIVE CONVOYS', value: summary.active, color: 'var(--color-text-bright)' },
@@ -80,32 +76,15 @@ export default function ActiveConvoyTracker({
         ].map((kpi) => (
           <div
             key={kpi.label}
-            style={{
-              padding: '12px 14px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-3 px-3.5 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                marginBottom: 4,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] mb-1"
             >
               {kpi.label}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 20,
-                fontWeight: 700,
-                color: kpi.color,
-              }}
+              className="font-[var(--font-mono)] text-xl font-bold" style={{ color: kpi.color }}
             >
               {kpi.value}
             </div>
@@ -117,58 +96,29 @@ export default function ActiveConvoyTracker({
       {activeMovements.length === 0 ? (
         <Card>
           <div
-            style={{
-              padding: 30,
-              textAlign: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-muted)',
-            }}
+            className="p-[30px] text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
           >
             No active convoys at this time
           </div>
         </Card>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 12 }}>
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))' }}>
           {activeMovements.map((mov) => {
             const isDelayed = mov.status === MovementStatus.DELAYED;
             return (
               <div
                 key={mov.id}
-                style={{
-                  padding: '14px 16px',
-                  backgroundColor: 'var(--color-bg-elevated)',
-                  border: `1px solid ${isDelayed ? 'rgba(251, 146, 60, 0.5)' : 'var(--color-border)'}`,
-                  borderLeft: isDelayed ? '3px solid #fb923c' : '3px solid #4ade80',
-                  borderRadius: 'var(--radius)',
-                }}
+                className="py-3.5 px-4 bg-[var(--color-bg-elevated)] rounded-[var(--radius)]" style={{ border: `1px solid ${isDelayed ? 'rgba(251, 146, 60, 0.5)' : 'var(--color-border)'}`, borderLeft: isDelayed ? '3px solid #fb923c' : '3px solid #4ade80' }}
               >
                 {/* Header row */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div className="flex items-center justify-between mb-2">
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: 'var(--color-text-bright)',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
                   >
                     {mov.name}
                   </span>
                   <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      padding: '2px 8px',
-                      borderRadius: 2,
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      fontWeight: 700,
-                      color: isDelayed ? '#fb923c' : '#4ade80',
-                      backgroundColor: isDelayed ? 'rgba(251, 146, 60, 0.15)' : 'rgba(74, 222, 128, 0.15)',
-                      border: `1px solid ${isDelayed ? 'rgba(251, 146, 60, 0.4)' : 'rgba(74, 222, 128, 0.4)'}`,
-                    }}
+                    className="inline-flex items-center gap-1 py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[9px] font-bold" style={{ color: isDelayed ? '#fb923c' : '#4ade80', backgroundColor: isDelayed ? 'rgba(251, 146, 60, 0.15)' : 'rgba(74, 222, 128, 0.15)', border: `1px solid ${isDelayed ? 'rgba(251, 146, 60, 0.4)' : 'rgba(74, 222, 128, 0.4)'}` }}
                   >
                     {isDelayed && <AlertTriangle size={10} />}
                     {mov.status.replace('_', ' ')}
@@ -177,42 +127,29 @@ export default function ActiveConvoyTracker({
 
                 {/* Route */}
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text)',
-                    marginBottom: 8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)] mb-2 flex items-center gap-1.5"
                 >
-                  <Navigation size={10} style={{ color: 'var(--color-accent)' }} />
-                  {mov.originUnit} <span style={{ color: 'var(--color-text-muted)' }}>&#8594;</span> {mov.destinationUnit}
+                  <Navigation size={10} className="text-[var(--color-accent)]" />
+                  {mov.originUnit} <span className="text-[var(--color-text-muted)]">&#8594;</span> {mov.destinationUnit}
                 </div>
 
                 {/* Times */}
                 <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 6,
-                    marginBottom: 8,
-                  }}
+                  className="grid gap-1.5 mb-2 grid-cols-2"
                 >
                   <div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--color-text-muted)', letterSpacing: '0.5px' }}>
-                      <Clock size={8} style={{ verticalAlign: 'middle', marginRight: 3 }} />DEPARTED
+                    <div className="font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)] tracking-[0.5px]">
+                      <Clock size={8} className="align-middle mr-[3px]" />DEPARTED
                     </div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text)' }}>
+                    <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
                       {formatDate(mov.departureTime)}
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--color-text-muted)', letterSpacing: '0.5px' }}>
-                      <Clock size={8} style={{ verticalAlign: 'middle', marginRight: 3 }} />ETA
+                    <div className="font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)] tracking-[0.5px]">
+                      <Clock size={8} className="align-middle mr-[3px]" />ETA
                     </div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: isDelayed ? '#fb923c' : 'var(--color-accent)' }}>
+                    <div className="font-[var(--font-mono)] text-[10px]" style={{ color: isDelayed ? '#fb923c' : 'var(--color-accent)' }}>
                       {formatDate(mov.eta)}
                     </div>
                   </div>
@@ -220,19 +157,12 @@ export default function ActiveConvoyTracker({
 
                 {/* Vehicles/PAX */}
                 <div
-                  style={{
-                    display: 'flex',
-                    gap: 16,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    marginBottom: 6,
-                  }}
+                  className="flex gap-4 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mb-1.5"
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span className="flex items-center gap-1">
                     <Truck size={10} /> {mov.vehicles} VEH
                   </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span className="flex items-center gap-1">
                     <Users size={10} /> {mov.personnel} PAX
                   </span>
                 </div>
@@ -240,16 +170,7 @@ export default function ActiveConvoyTracker({
                 {/* Notes */}
                 {mov.notes && (
                   <div
-                    style={{
-                      marginTop: 4,
-                      padding: '6px 8px',
-                      backgroundColor: isDelayed ? 'rgba(251, 146, 60, 0.08)' : 'var(--color-bg-surface)',
-                      borderRadius: 2,
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: isDelayed ? '#fb923c' : 'var(--color-text-muted)',
-                      lineHeight: 1.4,
-                    }}
+                    className="mt-1 py-1.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[9px] leading-[1.4]" style={{ backgroundColor: isDelayed ? 'rgba(251, 146, 60, 0.08)' : 'var(--color-bg-surface)', color: isDelayed ? '#fb923c' : 'var(--color-text-muted)' }}
                   >
                     {mov.notes}
                   </div>
@@ -258,12 +179,7 @@ export default function ActiveConvoyTracker({
                 {/* Coordinates */}
                 {mov.originCoords && mov.destinationCoords && (
                   <div
-                    style={{
-                      marginTop: 6,
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 8,
-                      color: 'var(--color-text-muted)',
-                    }}
+                    className="mt-1.5 font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)]"
                   >
                     {mov.originCoords.lat.toFixed(2)}, {mov.originCoords.lon.toFixed(2)} &#8594;{' '}
                     {mov.destinationCoords.lat.toFixed(2)}, {mov.destinationCoords.lon.toFixed(2)}

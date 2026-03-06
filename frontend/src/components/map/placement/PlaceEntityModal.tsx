@@ -208,67 +208,26 @@ export default function PlaceEntityModal() {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 3000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(2px)',
-      }}
+      className="fixed z-[3000] flex items-center justify-center bg-[rgba(0,0,0,0.5)] inset-0 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) clearPlacement();
       }}
     >
       <div
-        style={{
-          width: 400,
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          backgroundColor: '#1a1f2e',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 8,
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)',
-          fontFamily: "'JetBrains Mono', monospace",
-        }}
+        className="w-[400px] max-h-[80vh] overflow-y-auto bg-[#1a1f2e] rounded-[8px]" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)', fontFamily: "'JetBrains Mono', monospace" }}
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
+          className="flex items-center justify-between py-3 px-4 border-b border-b-[rgba(255,255,255,0.1)]"
         >
           <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              color: '#e2e8f0',
-              textTransform: 'uppercase',
-            }}
+            className="text-[11px] font-bold tracking-[2px] text-[#e2e8f0] uppercase"
           >
             {getModalTitle(placement.type)}
           </span>
           <button
             onClick={clearPlacement}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              border: 'none',
-              borderRadius: 4,
-              backgroundColor: 'transparent',
-              color: '#94a3b8',
-              cursor: 'pointer',
-            }}
+            className="flex items-center justify-center w-[28px] h-[28px] border-0 rounded-[4px] bg-transparent text-[#94a3b8] cursor-pointer"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             }}
@@ -281,10 +240,10 @@ export default function PlaceEntityModal() {
         </div>
 
         {/* Body */}
-        <div style={{ padding: 16 }}>
+        <div className="p-4">
           {/* Unit placement form */}
           {placement.type === 'unit' && (
-            <div style={{ marginBottom: 12 }}>
+            <div className="mb-3">
               <label style={labelStyle}>SELECT UNIT</label>
               <select
                 value={selectedUnit}
@@ -304,7 +263,7 @@ export default function PlaceEntityModal() {
           {/* Supply point / maintenance / LZ-FARP forms */}
           {placement.type !== 'unit' && (
             <>
-              <div style={{ marginBottom: 12 }}>
+              <div className="mb-3">
                 <label style={labelStyle}>NAME</label>
                 <input
                   type="text"
@@ -316,7 +275,7 @@ export default function PlaceEntityModal() {
               </div>
 
               {placement.type !== 'maintenance_site' && (
-                <div style={{ marginBottom: 12 }}>
+                <div className="mb-3">
                   <label style={labelStyle}>TYPE</label>
                   <select
                     value={pointType}
@@ -333,7 +292,7 @@ export default function PlaceEntityModal() {
                 </div>
               )}
 
-              <div style={{ marginBottom: 12 }}>
+              <div className="mb-3">
                 <label style={labelStyle}>STATUS</label>
                 <select
                   value={status}
@@ -348,7 +307,7 @@ export default function PlaceEntityModal() {
                 </select>
               </div>
 
-              <div style={{ marginBottom: 12 }}>
+              <div className="mb-3">
                 <label style={labelStyle}>PARENT UNIT</label>
                 <select
                   value={parentUnit}
@@ -364,18 +323,14 @@ export default function PlaceEntityModal() {
                 </select>
               </div>
 
-              <div style={{ marginBottom: 12 }}>
+              <div className="mb-3">
                 <label style={labelStyle}>CAPACITY NOTES</label>
                 <textarea
                   value={capacityNotes}
                   onChange={(e) => setCapacityNotes(e.target.value)}
                   placeholder="e.g. Full capacity, 3-day surge stock"
                   rows={3}
-                  style={{
-                    ...inputStyle,
-                    resize: 'vertical',
-                    minHeight: 60,
-                  }}
+                  className="min-h-[60px]"
                 />
               </div>
             </>
@@ -383,10 +338,7 @@ export default function PlaceEntityModal() {
 
           {/* Coordinate input (all types) */}
           <div
-            style={{
-              padding: '12px 0',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
+            className="py-3 px-0 border-t border-t-[rgba(255,255,255,0.08)]"
           >
             <div
               style={{
@@ -406,15 +358,7 @@ export default function PlaceEntityModal() {
           {/* Error */}
           {error && (
             <div
-              style={{
-                padding: '8px 10px',
-                backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                border: '1px solid rgba(248, 113, 113, 0.3)',
-                borderRadius: 4,
-                color: '#f87171',
-                fontSize: 10,
-                marginBottom: 12,
-              }}
+              className="py-2 px-2.5 bg-[rgba(248,113,113,0.1)] rounded-[4px] text-[#f87171] text-[10px] mb-3 border border-[rgba(248,113,113,0.3)]"
             >
               {error}
             </div>
@@ -422,48 +366,19 @@ export default function PlaceEntityModal() {
 
           {/* Actions */}
           <div
-            style={{
-              display: 'flex',
-              gap: 8,
-              justifyContent: 'flex-end',
-              paddingTop: 8,
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
+            className="flex gap-2 justify-end pt-2 border-t border-t-[rgba(255,255,255,0.08)]"
           >
             <button
               onClick={clearPlacement}
               disabled={isSubmitting}
-              style={{
-                padding: '7px 16px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 4,
-                backgroundColor: 'transparent',
-                color: '#94a3b8',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '1px',
-                cursor: 'pointer',
-              }}
+              className="py-[7px] px-4 rounded-[4px] bg-transparent text-[#94a3b8] text-[10px] font-semibold tracking-[1px] cursor-pointer" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', fontFamily: "'JetBrains Mono', monospace" }}
             >
               CANCEL
             </button>
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              style={{
-                padding: '7px 16px',
-                border: '1px solid #60a5fa',
-                borderRadius: 4,
-                backgroundColor: 'rgba(96, 165, 250, 0.15)',
-                color: '#60a5fa',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: '1px',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                opacity: isSubmitting ? 0.6 : 1,
-              }}
+              className="py-[7px] px-4 rounded-[4px] bg-[rgba(96,165,250,0.15)] text-[#60a5fa] text-[10px] font-bold tracking-[1px]" style={{ border: '1px solid #60a5fa', fontFamily: "'JetBrains Mono', monospace", cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.6 : 1 }}
             >
               {isSubmitting ? 'PLACING...' : placement.type === 'unit' ? 'UPDATE POSITION' : 'CREATE'}
             </button>

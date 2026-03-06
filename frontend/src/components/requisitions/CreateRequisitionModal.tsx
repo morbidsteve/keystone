@@ -162,74 +162,33 @@ export default function CreateRequisitionModal({ isOpen, onClose, unitId }: Crea
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}
+      className="fixed top-0 left-0 right-0 bottom-0 bg-[rgba(0,0,0,0.6)] flex items-center justify-center z-[1000]"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        style={{
-          width: '100%',
-          maxWidth: 560,
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          backgroundColor: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius)',
-          boxShadow: '0 12px 48px rgba(0, 0, 0, 0.5)',
-        }}
+        className="w-full max-w-[560px] max-h-[90vh] overflow-y-auto bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]" style={{ boxShadow: '0 12px 48px rgba(0, 0, 0, 0.5)' }}
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            borderBottom: '1px solid var(--color-border)',
-          }}
+          className="flex items-center justify-between py-3 px-4 border-b border-b-[var(--color-border)]"
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-xs font-bold tracking-[2px] text-[var(--color-text-bright)] uppercase"
           >
             NEW REQUISITION
           </span>
           <button
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-              padding: 4,
-              display: 'flex',
-              alignItems: 'center',
-            }}
+            className="bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-1 flex items-center"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Body */}
-        <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="p-4 flex flex-col gap-3.5">
           {/* Supply item selector */}
           <div>
             <SupplySelector value={selectedItem} onChange={setSelectedItem} />
@@ -281,13 +240,7 @@ export default function CreateRequisitionModal({ isOpen, onClose, unitId }: Crea
 
         {/* Footer */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-            padding: '12px 16px',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="flex justify-end gap-2 py-3 px-4 border-t border-t-[var(--color-border)]"
         >
           <button
             style={btnStyle('var(--color-text-muted)')}

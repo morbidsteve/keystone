@@ -130,133 +130,62 @@ function TreeNodeRow({
 
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        padding: '6px 12px 6px 0',
-        paddingLeft: indent + 12,
-        backgroundColor: hovered ? 'var(--color-bg-hover)' : 'transparent',
-        transition: 'background-color var(--transition)',
-        borderBottom: '1px solid var(--color-border)',
-        position: 'relative',
-        minHeight: 36,
-      }}
+      className="flex items-center gap-2 border-b border-b-[var(--color-border)] relative min-h-[36px]" style={{ padding: '6px 12px 6px 0', paddingLeft: indent + 12, backgroundColor: hovered ? 'var(--color-bg-hover)' : 'transparent', transition: 'background-color var(--transition)' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Vertical tree line connector for depth > 0 */}
       {node.depth > 0 && (
         <div
-          style={{
-            position: 'absolute',
-            left: indent - 12,
-            top: 0,
-            bottom: 0,
-            width: 1,
-            backgroundColor: 'var(--color-border)',
-          }}
+          className="absolute top-0 bottom-0 w-[1px] bg-[var(--color-border)]" style={{ left: indent - 12 }}
         />
       )}
 
       {/* Horizontal connector line from vertical to node */}
       {node.depth > 0 && (
         <div
-          style={{
-            position: 'absolute',
-            left: indent - 12,
-            top: '50%',
-            width: 10,
-            height: 1,
-            backgroundColor: 'var(--color-border)',
-          }}
+          className="absolute w-[10px] h-[1px] bg-[var(--color-border)]" style={{ left: indent - 12, top: '50%' }}
         />
       )}
 
       {/* Expand/Collapse toggle */}
       <button
         onClick={hasChildren ? onToggle : undefined}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 16,
-          height: 16,
-          flexShrink: 0,
-          background: 'none',
-          border: 'none',
-          padding: 0,
-          cursor: hasChildren ? 'pointer' : 'default',
-          color: hasChildren ? 'var(--color-text-muted)' : 'transparent',
-        }}
+        className="flex items-center justify-center w-[16px] h-[16px] shrink-0 bg-transparent border-0 p-0" style={{ cursor: hasChildren ? 'pointer' : 'default', color: hasChildren ? 'var(--color-text-muted)' : 'transparent' }}
         tabIndex={hasChildren ? 0 : -1}
         aria-label={expanded ? 'Collapse' : 'Expand'}
       >
         {hasChildren ? (
           expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />
         ) : (
-          <span style={{ width: 12, display: 'inline-block' }} />
+          <span className="w-[12px] inline-block" />
         )}
       </button>
 
       {/* Echelon badge */}
       <span
-        style={{
-          flexShrink: 0,
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          fontWeight: 700,
-          letterSpacing: '0.5px',
-          padding: '1px 5px',
-          borderRadius: 2,
-          border: `1px solid ${isCustom ? 'var(--color-warning)' : 'var(--color-accent)'}`,
-          color: isCustom ? 'var(--color-warning)' : 'var(--color-accent)',
-          backgroundColor: isCustom
+        className="shrink-0 font-[var(--font-mono)] text-[9px] font-bold tracking-[0.5px] py-px px-1.5 rounded-[2px] min-w-[32px] text-center" style={{ border: `1px solid ${isCustom ? 'var(--color-warning)' : 'var(--color-accent)'}`, color: isCustom ? 'var(--color-warning)' : 'var(--color-accent)', backgroundColor: isCustom
             ? 'rgba(250, 176, 5, 0.08)'
-            : 'rgba(77, 171, 247, 0.08)',
-          minWidth: 32,
-          textAlign: 'center',
-        }}
+            : 'rgba(77, 171, 247, 0.08)' }}
       >
         {abbrev}
       </span>
 
       {/* Unit name + optional abbreviation */}
       <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          fontWeight: 600,
-          color: 'var(--color-text-bright)',
-          flex: 1,
-          minWidth: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
+        className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)] flex-1 min-w-[0px] overflow-hidden text-ellipsis whitespace-nowrap"
       >
         {node.name}
         {node.abbreviation && (
           <span
-            style={{
-              fontWeight: 400,
-              color: 'var(--color-text-muted)',
-              fontSize: 11,
-              marginLeft: 6,
-            }}
+            className="font-normal text-[var(--color-text-muted)] text-[11px] ml-1.5"
           >
             ({node.abbreviation})
           </span>
         )}
         {isCustom && node.customEchelonName && (
           <span
-            style={{
-              fontStyle: 'italic',
-              color: 'var(--color-warning)',
-              fontSize: 10,
-              fontWeight: 400,
-              marginLeft: 8,
-            }}
+            className="text-[var(--color-warning)] text-[10px] font-normal ml-2 italic"
           >
             {node.customEchelonName}
           </span>
@@ -265,20 +194,13 @@ function TreeNodeRow({
 
       {/* UIC */}
       <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          color: 'var(--color-text-muted)',
-          letterSpacing: '0.5px',
-          flexShrink: 0,
-          marginRight: 12,
-        }}
+        className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] tracking-[0.5px] shrink-0 mr-3"
       >
         {node.uic}
       </span>
 
       {/* Action buttons */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+      <div className="flex items-center gap-1 shrink-0">
         <button
           style={actionBtnStyle}
           onClick={() => onAddChild(node.id, node.echelon as Echelon)}
@@ -372,13 +294,7 @@ export default function UnitTreeView({
   if (units.length === 0) {
     return (
       <div
-        style={{
-          padding: 24,
-          textAlign: 'center',
-          color: 'var(--color-text-muted)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-        }}
+        className="p-6 text-center text-[var(--color-text-muted)] font-[var(--font-mono)] text-[11px]"
       >
         No units configured.
       </div>
@@ -389,12 +305,7 @@ export default function UnitTreeView({
     <div>
       {/* Controls */}
       <div
-        style={{
-          display: 'flex',
-          gap: 6,
-          padding: '8px 12px',
-          borderBottom: '1px solid var(--color-border)',
-        }}
+        className="flex gap-1.5 py-2 px-3 border-b border-b-[var(--color-border)]"
       >
         <button style={controlBtnStyle} onClick={expandAll}>
           EXPAND ALL

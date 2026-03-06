@@ -51,26 +51,11 @@ function ConnectionStatusPill({ status }: { status: string }) {
 
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 6,
-        padding: '2px 10px',
-        borderRadius: 2,
-        border: `1px solid ${info.color}`,
-        backgroundColor: `${info.color}15`,
-      }}
+      className="inline-flex items-center gap-1.5 py-0.5 px-2.5 rounded-[2px]" style={{ border: `1px solid ${info.color}`, backgroundColor: `${info.color}15` }}
     >
       <StatusDot status={info.dot} size={6} pulse={status === 'connected' || status === 'polling'} />
       <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          fontWeight: 500,
-          color: info.color,
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-        }}
+        className="font-[var(--font-mono)] text-[9px] font-medium uppercase tracking-[1px]" style={{ color: info.color }}
       >
         {info.label}
       </span>
@@ -146,15 +131,10 @@ function ConnectionForm({
   return (
     <form onSubmit={handleSubmit}>
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 12,
-          marginBottom: 16,
-        }}
+        className="grid gap-3 mb-4 grid-cols-2"
       >
         {/* Name */}
-        <div style={{ gridColumn: '1 / -1' }}>
+        <div className="col-span-full">
           <label style={labelStyle}>CONNECTION NAME</label>
           <input
             style={inputStyle}
@@ -221,25 +201,16 @@ function ConnectionForm({
         <div>
           <label style={labelStyle}>USE TLS</label>
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 0',
-            }}
+            className="flex items-center gap-2 py-2 px-0"
           >
             <input
               type="checkbox"
               checked={useTls}
               onChange={(e) => setUseTls(e.target.checked)}
-              style={{ accentColor: 'var(--color-accent)' }}
+              className="accent-[var(--color-accent)]"
             />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text)',
-              }}
+              className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
             >
               {useTls ? 'Enabled' : 'Disabled'}
             </span>
@@ -281,7 +252,7 @@ function ConnectionForm({
         </div>
 
         {/* CoT Types Filter */}
-        <div style={{ gridColumn: '1 / -1' }}>
+        <div className="col-span-full">
           <label style={labelStyle}>COT TYPE FILTERS (COMMA SEPARATED)</label>
           <input
             style={inputStyle}
@@ -290,12 +261,7 @@ function ConnectionForm({
             placeholder='e.g., a-f-G-.*, b-r-.*, b-m-p-s-p-loc'
           />
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              marginTop: 4,
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-1"
           >
             Leave empty to receive all CoT types. Uses regex patterns.
           </div>
@@ -303,41 +269,17 @@ function ConnectionForm({
       </div>
 
       {/* Buttons */}
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+      <div className="flex gap-2 justify-end">
         <button
           type="button"
           onClick={onCancel}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'transparent',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-text-muted)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-          }}
+          className="py-2 px-4 bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px] uppercase cursor-pointer"
         >
           CANCEL
         </button>
         <button
           type="submit"
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'var(--color-accent)',
-            border: 'none',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-bg)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-          }}
+          className="py-2 px-4 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px] uppercase cursor-pointer"
         >
           {initial ? 'UPDATE' : 'CREATE'} CONNECTION
         </button>
@@ -350,13 +292,7 @@ function MessageFeed({ messages }: { messages: TAKMessage[] }) {
   if (messages.length === 0) {
     return (
       <div
-        style={{
-          padding: '24px 16px',
-          textAlign: 'center',
-          color: 'var(--color-text-muted)',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-        }}
+        className="py-6 px-4 text-center text-[var(--color-text-muted)] font-[var(--font-mono)] text-[11px]"
       >
         NO MESSAGES RECEIVED
       </div>
@@ -364,47 +300,24 @@ function MessageFeed({ messages }: { messages: TAKMessage[] }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 300, overflowY: 'auto' }}>
+    <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto">
       {messages.map((msg) => (
         <div
           key={msg.id}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '6px 10px',
-            backgroundColor: 'var(--color-bg-surface)',
-            borderRadius: 'var(--radius)',
-            transition: 'background-color var(--transition)',
-          }}
+          className="flex items-center gap-2.5 py-1.5 px-2.5 bg-[var(--color-bg-surface)] rounded-[var(--radius)] transition-colors duration-[var(--transition)]"
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-surface)')}
         >
-          <MessageSquare size={12} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
-          <div style={{ flex: 1, minWidth: 0 }}>
+          <MessageSquare size={12} className="text-[var(--color-accent)] shrink-0" />
+          <div className="flex-1 min-w-0">
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text)',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
+              className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] whitespace-nowrap overflow-hidden text-ellipsis"
             >
               {msg.callsign || msg.uid || 'Unknown'}
             </div>
             {msg.content_preview && (
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  marginTop: 1,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-px whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {msg.content_preview}
               </div>
@@ -412,23 +325,13 @@ function MessageFeed({ messages }: { messages: TAKMessage[] }) {
           </div>
           {msg.channel && (
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-info)',
-                whiteSpace: 'nowrap',
-              }}
+              className="font-[var(--font-mono)] text-[9px] text-[var(--color-info)] whitespace-nowrap"
             >
               {msg.channel}
             </span>
           )}
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              whiteSpace: 'nowrap',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
           >
             {msg.received_at ? formatRelativeTime(msg.received_at) : '--'}
           </span>
@@ -577,28 +480,13 @@ export default function TAKManager() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       <Card
         title="TAK SERVERS"
         headerRight={
           <button
             onClick={() => setShowForm(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 10px',
-              backgroundColor: 'var(--color-accent)',
-              border: 'none',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-bg)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              cursor: 'pointer',
-            }}
+            className="flex items-center gap-1.5 py-1 px-2.5 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase cursor-pointer"
           >
             <Plus size={12} />
             ADD
@@ -608,31 +496,17 @@ export default function TAKManager() {
         {/* Error Banner */}
         {error && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 12px',
-              backgroundColor: 'rgba(255, 107, 107, 0.1)',
-              border: '1px solid var(--color-danger)',
-              borderRadius: 'var(--radius)',
-              marginBottom: 12,
-            }}
+            className="flex items-center gap-2 py-2 px-3 bg-[rgba(255,107,107,0.1)] border border-[var(--color-danger)] rounded-[var(--radius)] mb-3"
           >
-            <AlertTriangle size={14} style={{ color: 'var(--color-danger)' }} />
+            <AlertTriangle size={14} className="text-[var(--color-danger)]" />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-danger)',
-                flex: 1,
-              }}
+              className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger)] flex-1"
             >
               {error}
             </span>
             <button
               onClick={() => setError(null)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)', padding: 2 }}
+              className="bg-transparent border-0 cursor-pointer text-[var(--color-danger)] p-0.5"
             >
               <X size={12} />
             </button>
@@ -642,42 +516,24 @@ export default function TAKManager() {
         {/* Test Result Banner */}
         {testResult && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 12px',
-              backgroundColor: testResult.success
+            className="flex items-center gap-2 py-2 px-3 rounded-[var(--radius)] mb-3" style={{ backgroundColor: testResult.success
                 ? 'rgba(64, 192, 87, 0.1)'
-                : 'rgba(255, 107, 107, 0.1)',
-              border: `1px solid ${testResult.success ? 'var(--color-success)' : 'var(--color-danger)'}`,
-              borderRadius: 'var(--radius)',
-              marginBottom: 12,
-            }}
+                : 'rgba(255, 107, 107, 0.1)', border: `1px solid ${testResult.success ? 'var(--color-success)' : 'var(--color-danger)'}` }}
           >
             {testResult.success ? (
-              <Check size={14} style={{ color: 'var(--color-success)' }} />
+              <Check size={14} className="text-[var(--color-success)]" />
             ) : (
-              <AlertTriangle size={14} style={{ color: 'var(--color-danger)' }} />
+              <AlertTriangle size={14} className="text-[var(--color-danger)]" />
             )}
-            <div style={{ flex: 1 }}>
+            <div className="flex-1">
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: testResult.success ? 'var(--color-success)' : 'var(--color-danger)',
-                }}
+                className="font-[var(--font-mono)] text-[11px]" style={{ color: testResult.success ? 'var(--color-success)' : 'var(--color-danger)' }}
               >
                 {testResult.message}
               </div>
               {testResult.latency_ms !== null && (
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    marginTop: 2,
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-0.5"
                 >
                   Latency: {testResult.latency_ms}ms
                   {testResult.status_code && ` | HTTP ${testResult.status_code}`}
@@ -686,13 +542,7 @@ export default function TAKManager() {
             </div>
             <button
               onClick={() => setTestResult(null)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--color-text-muted)',
-                padding: 2,
-              }}
+              className="bg-transparent border-0 cursor-pointer text-[var(--color-text-muted)] p-0.5"
             >
               <X size={12} />
             </button>
@@ -702,64 +552,32 @@ export default function TAKManager() {
         {/* Loading */}
         {loading && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              padding: 32,
-              color: 'var(--color-text-muted)',
-            }}
+            className="flex items-center justify-center gap-2 p-8 text-[var(--color-text-muted)]"
           >
             <Loader size={16} className="animate-spin" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>LOADING...</span>
+            <span className="font-[var(--font-mono)] text-[11px]">LOADING...</span>
           </div>
         )}
 
         {/* Empty State */}
         {!loading && connections.length === 0 && (
           <div
-            style={{
-              textAlign: 'center',
-              padding: 32,
-            }}
+            className="text-center p-8"
           >
-            <Server size={32} style={{ color: 'var(--color-text-muted)', marginBottom: 8 }} />
+            <Server size={32} className="text-[var(--color-text-muted)] mb-2" />
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                color: 'var(--color-text)',
-                marginBottom: 4,
-              }}
+              className="font-[var(--font-mono)] text-xs text-[var(--color-text)] mb-1"
             >
               NO TAK SERVERS CONFIGURED
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-                marginBottom: 16,
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-4"
             >
               Add a TAK server connection to begin ingesting CoT data
             </div>
             <button
               onClick={() => setShowForm(true)}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: 'var(--color-accent)',
-                border: 'none',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-bg)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-              }}
+              className="py-2 px-4 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px] uppercase cursor-pointer"
             >
               ADD CONNECTION
             </button>
@@ -768,24 +586,15 @@ export default function TAKManager() {
 
         {/* Connection List */}
         {!loading && connections.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div className="flex flex-col gap-1.5">
             {connections.map((conn) => (
               <div
                 key={conn.id}
-                style={{
-                  padding: '10px 12px',
-                  backgroundColor:
-                    selectedConnection === conn.id
+                className="py-2.5 px-3 rounded-[var(--radius)] cursor-pointer" style={{ backgroundColor: selectedConnection === conn.id
                       ? 'var(--color-bg-hover)'
-                      : 'var(--color-bg-surface)',
-                  border:
-                    selectedConnection === conn.id
+                      : 'var(--color-bg-surface)', border: selectedConnection === conn.id
                       ? '1px solid var(--color-accent)'
-                      : '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  cursor: 'pointer',
-                  transition: 'all var(--transition)',
-                }}
+                      : '1px solid var(--color-border)', transition: 'all var(--transition)' }}
                 onClick={() =>
                   setSelectedConnection(selectedConnection === conn.id ? null : conn.id)
                 }
@@ -802,31 +611,17 @@ export default function TAKManager() {
               >
                 {/* Connection header row */}
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}
+                  className="flex items-center gap-2.5"
                 >
-                  <Radio size={14} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <Radio size={14} className="text-[var(--color-accent)] shrink-0" />
+                  <div className="flex-1 min-w-0">
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: 'var(--color-text-bright)',
-                      }}
+                      className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)]"
                     >
                       {conn.name}
                     </div>
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        color: 'var(--color-text-muted)',
-                        marginTop: 2,
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-0.5"
                     >
                       {conn.host}:{conn.api_port} ({conn.protocol.toUpperCase()})
                     </div>
@@ -837,14 +632,7 @@ export default function TAKManager() {
                 {/* Actions row (visible when selected) */}
                 {selectedConnection === conn.id && (
                   <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      marginTop: 10,
-                      paddingTop: 10,
-                      borderTop: '1px solid var(--color-border)',
-                    }}
+                    className="flex items-center gap-1.5 mt-2.5 pt-2.5 border-t border-t-[var(--color-border)]"
                   >
                     {/* Test button */}
                     <button
@@ -853,20 +641,7 @@ export default function TAKManager() {
                         handleTest(conn.id);
                       }}
                       disabled={testingId === conn.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '4px 8px',
-                        backgroundColor: 'transparent',
-                        border: '1px solid var(--color-border-strong)',
-                        borderRadius: 'var(--radius)',
-                        color: 'var(--color-text)',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        cursor: 'pointer',
-                        opacity: testingId === conn.id ? 0.5 : 1,
-                      }}
+                      className="flex items-center gap-1 py-1 px-2 bg-transparent border border-[var(--color-border-strong)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] cursor-pointer" style={{ opacity: testingId === conn.id ? 0.5 : 1 }}
                     >
                       {testingId === conn.id ? (
                         <Loader size={10} className="animate-spin" />
@@ -883,27 +658,13 @@ export default function TAKManager() {
                         handleTogglePolling(conn);
                       }}
                       disabled={togglingId === conn.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '4px 8px',
-                        backgroundColor: 'transparent',
-                        border: `1px solid ${
+                      className="flex items-center gap-1 py-1 px-2 bg-transparent rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] cursor-pointer" style={{ border: `1px solid ${
                           conn.connection_status === 'connected'
                             ? 'var(--color-danger)'
                             : 'var(--color-success)'
-                        }`,
-                        borderRadius: 'var(--radius)',
-                        color:
-                          conn.connection_status === 'connected'
+                        }`, color: conn.connection_status === 'connected'
                             ? 'var(--color-danger)'
-                            : 'var(--color-success)',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        cursor: 'pointer',
-                        opacity: togglingId === conn.id ? 0.5 : 1,
-                      }}
+                            : 'var(--color-success)', opacity: togglingId === conn.id ? 0.5 : 1 }}
                     >
                       {togglingId === conn.id ? (
                         <Loader size={10} className="animate-spin" />
@@ -925,25 +686,13 @@ export default function TAKManager() {
                         e.stopPropagation();
                         setEditingConnection(conn);
                       }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '4px 8px',
-                        backgroundColor: 'transparent',
-                        border: '1px solid var(--color-border-strong)',
-                        borderRadius: 'var(--radius)',
-                        color: 'var(--color-text)',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        cursor: 'pointer',
-                      }}
+                      className="flex items-center gap-1 py-1 px-2 bg-transparent border border-[var(--color-border-strong)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] cursor-pointer"
                     >
                       <Settings size={10} />
                       EDIT
                     </button>
 
-                    <div style={{ flex: 1 }} />
+                    <div className="flex-1" />
 
                     {/* Delete */}
                     <button
@@ -951,19 +700,7 @@ export default function TAKManager() {
                         e.stopPropagation();
                         handleDelete(conn.id);
                       }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '4px 8px',
-                        backgroundColor: 'transparent',
-                        border: '1px solid var(--color-danger)',
-                        borderRadius: 'var(--radius)',
-                        color: 'var(--color-danger)',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        cursor: 'pointer',
-                      }}
+                      className="flex items-center gap-1 py-1 px-2 bg-transparent border border-[var(--color-danger)] rounded-[var(--radius)] text-[var(--color-danger)] font-[var(--font-mono)] text-[10px] cursor-pointer"
                     >
                       <Trash2 size={10} />
                       DELETE
@@ -974,31 +711,14 @@ export default function TAKManager() {
                 {/* Error display */}
                 {conn.last_error && selectedConnection === conn.id && (
                   <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 6,
-                      marginTop: 8,
-                      padding: '6px 8px',
-                      backgroundColor: 'rgba(255, 107, 107, 0.08)',
-                      borderRadius: 'var(--radius)',
-                    }}
+                    className="flex items-start gap-1.5 mt-2 py-1.5 px-2 bg-[rgba(255,107,107,0.08)] rounded-[var(--radius)]"
                   >
                     <AlertTriangle
                       size={11}
-                      style={{
-                        color: 'var(--color-warning)',
-                        flexShrink: 0,
-                        marginTop: 1,
-                      }}
+                      className="text-[var(--color-warning)] shrink-0 mt-px"
                     />
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        color: 'var(--color-warning)',
-                        wordBreak: 'break-word',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)] break-words"
                     >
                       {conn.last_error}
                     </span>
@@ -1008,21 +728,13 @@ export default function TAKManager() {
                 {/* Connection metadata */}
                 {selectedConnection === conn.id && (
                   <div
-                    style={{
-                      display: 'flex',
-                      gap: 16,
-                      marginTop: 8,
-                    }}
+                    className="flex gap-4 mt-2"
                   >
                     {conn.last_connected && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Clock size={10} style={{ color: 'var(--color-text-muted)' }} />
+                      <div className="flex items-center gap-1">
+                        <Clock size={10} className="text-[var(--color-text-muted)]" />
                         <span
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            color: 'var(--color-text-muted)',
-                          }}
+                          className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                         >
                           Last: {formatRelativeTime(conn.last_connected)}
                         </span>
@@ -1030,22 +742,14 @@ export default function TAKManager() {
                     )}
                     {conn.channel_filter && (
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-info)',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-info)]"
                       >
                         CH: {conn.channel_filter}
                       </span>
                     )}
                     {conn.cot_types_filter && conn.cot_types_filter.length > 0 && (
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-text-muted)',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                       >
                         {conn.cot_types_filter.length} filter(s)
                       </span>
@@ -1071,19 +775,7 @@ export default function TAKManager() {
                   .catch(() => setMessages([]))
                   .finally(() => setMessagesLoading(false));
               }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '3px 8px',
-                backgroundColor: 'transparent',
-                border: '1px solid var(--color-border-strong)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text-muted)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                cursor: 'pointer',
-              }}
+              className="flex items-center gap-1 py-[3px] px-2 bg-transparent border border-[var(--color-border-strong)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[9px] cursor-pointer"
             >
               <RefreshCw size={10} className={messagesLoading ? 'animate-spin' : ''} />
               REFRESH
@@ -1092,17 +784,10 @@ export default function TAKManager() {
         >
           {messagesLoading ? (
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                padding: 24,
-                color: 'var(--color-text-muted)',
-              }}
+              className="flex items-center justify-center gap-2 p-6 text-[var(--color-text-muted)]"
             >
               <Loader size={14} className="animate-spin" />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>LOADING...</span>
+              <span className="font-[var(--font-mono)] text-[11px]">LOADING...</span>
             </div>
           ) : (
             <MessageFeed messages={messages} />

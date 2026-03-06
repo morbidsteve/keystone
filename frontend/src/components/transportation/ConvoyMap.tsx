@@ -161,19 +161,13 @@ export default function ConvoyMap({
 
   return (
     <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        height,
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-        border: '1px solid var(--color-border)',
-      }}
+      className="relative w-full overflow-hidden border border-[var(--color-border)]" style={{ height,
+        borderRadius: 'var(--radius)' }}
     >
       <MapContainer
         center={CAMP_PENDLETON_CENTER}
         zoom={DEFAULT_ZOOM}
-        style={{ height: '100%', width: '100%' }}
+        className="h-full w-full"
         zoomControl={true}
       >
         <TileLayer
@@ -226,31 +220,21 @@ export default function ConvoyMap({
             >
               <Popup className="keystone-popup">
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    padding: 10,
-                    minWidth: 180,
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] p-2.5 min-w-[180px]"
                 >
                   <div
-                    style={{
-                      fontWeight: 700,
-                      fontSize: 12,
-                      color: 'var(--color-text-bright)',
-                      marginBottom: 6,
-                    }}
+                    className="font-bold text-xs text-[var(--color-text-bright)] mb-1.5"
                   >
                     {mov.name}
                   </div>
-                  <div style={{ color, marginBottom: 4, fontSize: 10, letterSpacing: '1px' }}>
+                  <div className="text-[10px] tracking-[1px]" style={{ color, marginBottom: 4 }}>
                     {mov.status.replace('_', ' ')}
                   </div>
-                  <div style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>
+                  <div className="text-[var(--color-text-muted)] mb-1">
                     {mov.manifest ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <div className="flex flex-col gap-0.5">
                         {mov.manifest.cargo.map((c, i) => (
-                          <div key={i} style={{ fontSize: 10 }}>
+                          <div key={i} className="text-[10px]">
                             CL {c.supplyClass}: {c.quantity} {c.unit}
                           </div>
                         ))}
@@ -259,9 +243,9 @@ export default function ConvoyMap({
                       mov.cargo
                     )}
                   </div>
-                  <div style={{ color: 'var(--color-text-muted)', fontSize: 10 }}>
+                  <div className="text-[var(--color-text-muted)] text-[10px]">
                     {mov.manifest ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <div className="flex flex-col gap-px">
                         <div>{mov.manifest.vehicles.map(v => `${v.quantity}x ${v.type}`).join(', ')}</div>
                         <div>{mov.manifest.totalVehicles} VEH / {mov.manifest.totalPersonnel} PAX</div>
                       </div>
@@ -271,11 +255,7 @@ export default function ConvoyMap({
                   </div>
                   {mov.eta && (
                     <div
-                      style={{
-                        color: 'var(--color-text)',
-                        marginTop: 4,
-                        fontSize: 10,
-                      }}
+                      className="text-[var(--color-text)] mt-1 text-[10px]"
                     >
                       ETA: {new Date(mov.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
@@ -286,22 +266,7 @@ export default function ConvoyMap({
                         e.stopPropagation();
                         onViewDetail(mov);
                       }}
-                      style={{
-                        display: 'block',
-                        width: '100%',
-                        marginTop: 8,
-                        padding: '4px 0',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        fontWeight: 700,
-                        letterSpacing: '1px',
-                        color: 'var(--color-accent)',
-                        backgroundColor: 'rgba(77, 171, 247, 0.1)',
-                        border: '1px solid rgba(77, 171, 247, 0.3)',
-                        borderRadius: 'var(--radius)',
-                        cursor: 'pointer',
-                        textAlign: 'center',
-                      }}
+                      className="block w-full mt-2 py-1 px-0 font-[var(--font-mono)] text-[9px] font-bold tracking-[1px] text-[var(--color-accent)] bg-[rgba(77,171,247,0.1)] rounded-[var(--radius)] cursor-pointer text-center border border-[rgba(77,171,247,0.3)]"
                     >
                       VIEW DETAILS
                     </button>
@@ -317,26 +282,7 @@ export default function ConvoyMap({
       {onOpenRoutePlanner && (
         <button
           onClick={onOpenRoutePlanner}
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '6px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: 'var(--color-text-bright)',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-            transition: 'var(--transition)',
-          }}
+          className="absolute top-2.5 right-2.5 z-[1000] flex items-center gap-1.5 py-1.5 px-3 font-[var(--font-mono)] text-[10px] font-bold tracking-[1px] text-[var(--color-text-bright)] bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] cursor-pointer" style={{ transition: 'var(--transition)' }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = 'var(--color-accent)';
             e.currentTarget.style.color = 'var(--color-accent)';

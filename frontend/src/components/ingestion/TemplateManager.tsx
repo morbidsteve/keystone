@@ -82,15 +82,7 @@ function SourceTypeBadge({ type }: { type: string }) {
 
   return (
     <span
-      style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: 9,
-        padding: '2px 6px',
-        border: `1px solid ${colors[type] || 'var(--color-text-muted)'}`,
-        borderRadius: 'var(--radius)',
-        color: colors[type] || 'var(--color-text-muted)',
-        letterSpacing: '0.5px',
-      }}
+      className="font-[var(--font-mono)] text-[9px] py-0.5 px-1.5 rounded-[var(--radius)] tracking-[0.5px]" style={{ border: `1px solid ${colors[type] || 'var(--color-text-muted)'}`, color: colors[type] || 'var(--color-text-muted)' }}
     >
       {type}
     </span>
@@ -120,24 +112,12 @@ function TemplateRow({
 }) {
   return (
     <div
-      style={{
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-        backgroundColor: isExpanded ? 'var(--color-bg-surface)' : 'transparent',
-        transition: 'background-color var(--transition)',
-      }}
+      className="border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden" style={{ backgroundColor: isExpanded ? 'var(--color-bg-surface)' : 'transparent', transition: 'background-color var(--transition)' }}
     >
       {/* Header row */}
       <div
         onClick={onToggle}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          padding: '10px 12px',
-          cursor: 'pointer',
-        }}
+        className="flex items-center gap-2.5 py-2.5 px-3 cursor-pointer"
         onMouseEnter={(e) => {
           if (!isExpanded) e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
         }}
@@ -146,26 +126,18 @@ function TemplateRow({
         }}
       >
         {isExpanded ? (
-          <ChevronDown size={12} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+          <ChevronDown size={12} className="text-[var(--color-accent)] shrink-0" />
         ) : (
-          <ChevronRight size={12} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+          <ChevronRight size={12} className="text-[var(--color-text-muted)] shrink-0" />
         )}
-        <FileText size={14} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--color-text-bright)' }}>
+        <FileText size={14} className="text-[var(--color-text-muted)] shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-bright)]">
             {template.name}
           </div>
           {template.description && (
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-text-muted)',
-                marginTop: 1,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
+              className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-px whitespace-nowrap overflow-hidden text-ellipsis"
             >
               {template.description}
             </div>
@@ -173,22 +145,12 @@ function TemplateRow({
         </div>
         <SourceTypeBadge type={template.source_type} />
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: 'var(--color-text-muted)',
-            whiteSpace: 'nowrap',
-          }}
+          className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
         >
           {template.field_count} fields
         </span>
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: 'var(--color-text-muted)',
-            whiteSpace: 'nowrap',
-          }}
+          className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
         >
           v{template.version}
         </span>
@@ -197,20 +159,11 @@ function TemplateRow({
       {/* Expanded detail */}
       {isExpanded && (
         <div
-          style={{
-            padding: '0 12px 12px',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="border-t border-t-[var(--color-border)]" style={{ padding: '0 12px 12px' }}
         >
           {/* Actions */}
           <div
-            style={{
-              display: 'flex',
-              gap: 6,
-              padding: '10px 0',
-              borderBottom: '1px solid var(--color-border)',
-              marginBottom: 10,
-            }}
+            className="flex gap-1.5 py-2.5 px-0 border-b border-b-[var(--color-border)] mb-2.5"
           >
             <button onClick={onTest} disabled={isTesting} style={actionBtnStyle}>
               {isTesting ? <Loader size={10} className="animate-spin" /> : <Play size={10} />}
@@ -221,7 +174,7 @@ function TemplateRow({
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              style={{ ...actionBtnStyle, borderColor: 'var(--color-danger)', color: 'var(--color-danger)' }}
+              className="text-[var(--color-danger)]"
             >
               <Trash2 size={10} /> DELETE
             </button>
@@ -230,29 +183,20 @@ function TemplateRow({
           {/* Field mappings */}
           {expandedDetail && (
             <div>
-              <div className="section-header" style={{ marginBottom: 6 }}>FIELD MAPPINGS</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <div className="section-header mb-1.5">FIELD MAPPINGS</div>
+              <div className="flex flex-col gap-[3px]">
                 {Object.entries(expandedDetail.field_mappings).map(([srcCol, cfg]) => (
                   <div
                     key={srcCol}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '4px 8px',
-                      backgroundColor: 'var(--color-bg)',
-                      borderRadius: 'var(--radius)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                    }}
+                    className="flex items-center gap-2 py-1 px-2 bg-[var(--color-bg)] rounded-[var(--radius)] font-[var(--font-mono)] text-[10px]"
                   >
-                    <span style={{ color: 'var(--color-text)', minWidth: 80 }}>{srcCol}</span>
-                    <span style={{ color: 'var(--color-text-muted)' }}>-&gt;</span>
-                    <span style={{ color: 'var(--color-accent)' }}>
+                    <span className="text-[var(--color-text)] min-w-[80px]">{srcCol}</span>
+                    <span className="text-[var(--color-text-muted)]">-&gt;</span>
+                    <span className="text-[var(--color-accent)]">
                       {cfg.target_entity}.{cfg.target_field}
                     </span>
                     {cfg.transform && (
-                      <span style={{ color: 'var(--color-warning)', marginLeft: 'auto', fontSize: 9 }}>
+                      <span className="text-[var(--color-warning)] text-[9px] ml-auto">
                         [{cfg.transform}]
                       </span>
                     )}
@@ -264,21 +208,13 @@ function TemplateRow({
 
           {/* Header patterns */}
           {expandedDetail?.header_patterns && expandedDetail.header_patterns.length > 0 && (
-            <div style={{ marginTop: 10 }}>
-              <div className="section-header" style={{ marginBottom: 6 }}>AUTO-MATCH HEADERS</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <div className="mt-2.5">
+              <div className="section-header mb-1.5">AUTO-MATCH HEADERS</div>
+              <div className="flex flex-wrap gap-1">
                 {expandedDetail.header_patterns.map((h) => (
                   <span
                     key={h}
-                    style={{
-                      padding: '2px 6px',
-                      backgroundColor: 'var(--color-bg)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: 'var(--color-text)',
-                    }}
+                    className="py-0.5 px-1.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] text-[var(--color-text)]"
                   >
                     {h}
                   </span>
@@ -289,47 +225,31 @@ function TemplateRow({
 
           {/* Test results */}
           {testResult && (
-            <div style={{ marginTop: 10 }}>
-              <div className="section-header" style={{ marginBottom: 6 }}>TEST RESULTS</div>
+            <div className="mt-2.5">
+              <div className="section-header mb-1.5">TEST RESULTS</div>
               {testResult.length === 0 ? (
                 <div
-                  style={{
-                    padding: '12px',
-                    textAlign: 'center',
-                    color: 'var(--color-text-muted)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                  }}
+                  className="text-center text-[var(--color-text-muted)] font-[var(--font-mono)] text-[10px] p-3"
                 >
                   No sample data provided. Upload a file to test this template.
                 </div>
               ) : (
-                <div style={{ overflowX: 'auto' }}>
+                <div className="overflow-x-auto">
                   {testResult.slice(0, 5).map((row, idx) => (
                     <div
                       key={idx}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        padding: '4px 8px',
-                        backgroundColor: 'var(--color-bg)',
-                        borderRadius: 'var(--radius)',
-                        marginBottom: 2,
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                      }}
+                      className="flex items-center gap-1.5 py-1 px-2 bg-[var(--color-bg)] rounded-[var(--radius)] mb-0.5 font-[var(--font-mono)] text-[9px]"
                     >
-                      <span style={{ color: 'var(--color-text-muted)', minWidth: 16 }}>#{idx + 1}</span>
+                      <span className="text-[var(--color-text-muted)] min-w-[16px]">#{idx + 1}</span>
                       {row.errors.length > 0 ? (
-                        <span style={{ color: 'var(--color-danger)' }}>
-                          <AlertTriangle size={10} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                        <span className="text-[var(--color-danger)]">
+                          <AlertTriangle size={10} className="align-middle mr-1" />
                           {row.errors[0]}
                         </span>
                       ) : (
                         <>
-                          <Check size={10} style={{ color: 'var(--color-success)' }} />
-                          <span style={{ color: 'var(--color-text)' }}>
+                          <Check size={10} className="text-[var(--color-success)]" />
+                          <span className="text-[var(--color-text)]">
                             {Object.entries(row.mapped).slice(0, 4).map(([k, v]) => `${k.split('.').pop()}=${v}`).join(', ')}
                             {Object.keys(row.mapped).length > 4 && '...'}
                           </span>
@@ -344,22 +264,16 @@ function TemplateRow({
 
           {/* Metadata */}
           <div
-            style={{
-              display: 'flex',
-              gap: 16,
-              marginTop: 10,
-              paddingTop: 8,
-              borderTop: '1px solid var(--color-border)',
-            }}
+            className="flex gap-4 mt-2.5 pt-2 border-t border-t-[var(--color-border)]"
           >
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
               Created: {new Date(template.created_at).toLocaleDateString()}
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
               Version: {template.version}
             </span>
             {template.created_by && (
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+              <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
                 By: User #{template.created_by}
               </span>
             )}
@@ -524,19 +438,11 @@ export default function TemplateManager() {
     <Card
       title="SAVED TEMPLATES"
       headerRight={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="flex items-center gap-2">
           <select
             value={filterSource}
             onChange={(e) => setFilterSource(e.target.value)}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              padding: '2px 6px',
-              backgroundColor: 'var(--color-bg-surface)',
-              color: 'var(--color-text-muted)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="font-[var(--font-mono)] text-[9px] py-0.5 px-1.5 bg-[var(--color-bg-surface)] text-[var(--color-text-muted)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <option value="">ALL TYPES</option>
             <option value="EXCEL">EXCEL</option>
@@ -545,30 +451,24 @@ export default function TemplateManager() {
             <option value="TAK">TAK</option>
             <option value="CUSTOM">CUSTOM</option>
           </select>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text-muted)' }}>
+          <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
             {templates.length} TEMPLATES
           </span>
         </div>
       }
     >
       {isLoading ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
-          <Loader size={20} className="animate-spin" style={{ color: 'var(--color-accent)' }} />
+        <div className="flex items-center justify-center p-8">
+          <Loader size={20} className="animate-spin text-[var(--color-accent)]" />
         </div>
       ) : templates.length === 0 ? (
         <div
-          style={{
-            textAlign: 'center',
-            padding: '32px',
-            color: 'var(--color-text-muted)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="text-center text-[var(--color-text-muted)] font-[var(--font-mono)] text-[11px] p-8"
         >
           No saved templates yet. Use the Schema Mapper to create one.
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div className="flex flex-col gap-1">
           {templates.map((template) => (
             <TemplateRow
               key={template.id}

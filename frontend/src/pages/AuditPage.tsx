@@ -134,9 +134,9 @@ export default function AuditPage() {
   // -------------------------------------------------------------------------
 
   const renderAuditTrail = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+      <div className="flex gap-3 items-end">
         <div>
           <label style={labelStyle}>ENTITY TYPE</label>
           <select
@@ -178,9 +178,9 @@ export default function AuditPage() {
   // -------------------------------------------------------------------------
 
   const renderSecurityActions = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+      <div className="flex gap-3 items-end">
         <div>
           <label style={labelStyle}>TIME WINDOW</label>
           <select
@@ -201,25 +201,11 @@ export default function AuditPage() {
       {/* Security alert banner */}
       {(securityActions?.length ?? 0) > 0 && (
         <div
-          style={{
-            padding: '10px 14px',
-            backgroundColor: 'rgba(245, 158, 11, 0.08)',
-            border: '1px solid rgba(245, 158, 11, 0.25)',
-            borderRadius: 'var(--radius)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
+          className="py-2.5 px-3.5 bg-[rgba(245,158,11,0.08)] rounded-[var(--radius)] flex items-center gap-2" style={{ border: '1px solid rgba(245, 158, 11, 0.25)' }}
         >
-          <ShieldAlert size={14} style={{ color: '#f59e0b' }} />
+          <ShieldAlert size={14} className="text-[#f59e0b]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              color: '#f59e0b',
-              letterSpacing: '0.5px',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold text-[#f59e0b] tracking-[0.5px]"
           >
             {securityActions?.length} security-sensitive action
             {(securityActions?.length ?? 0) !== 1 ? 's' : ''} detected in the selected
@@ -239,25 +225,15 @@ export default function AuditPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 0 }}>
+    <div className="flex flex-col gap-4 p-0">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <FileText size={18} style={{ color: 'var(--color-accent)' }} />
+        <div className="flex items-center gap-2.5">
+          <FileText size={18} className="text-[var(--color-accent)]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 14,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-sm font-bold text-[var(--color-text-bright)] tracking-[1px]"
           >
             AUDIT & ACCOUNTABILITY
           </span>
@@ -266,11 +242,7 @@ export default function AuditPage() {
 
       {/* Summary KPI cards */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
       >
         {[
           {
@@ -300,42 +272,20 @@ export default function AuditPage() {
         ].map((kpi) => (
           <div
             key={kpi.label}
-            style={{
-              padding: '14px 16px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-3.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                marginBottom: 6,
-              }}
+              className="flex items-center gap-1.5 mb-1.5"
             >
-              <kpi.icon size={11} style={{ color: 'var(--color-text-muted)' }} />
+              <kpi.icon size={11} className="text-[var(--color-text-muted)]" />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase"
               >
                 {kpi.label}
               </span>
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: kpi.label === 'MOST ACTIVE' ? 12 : 22,
-                fontWeight: 700,
-                color: kpi.color,
-              }}
+              className="font-[var(--font-mono)] font-bold" style={{ fontSize: kpi.label === 'MOST ACTIVE' ? 12 : 22, color: kpi.color }}
             >
               {kpi.value}
             </div>
@@ -345,41 +295,17 @@ export default function AuditPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px] flex items-center gap-1.5" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
           </button>

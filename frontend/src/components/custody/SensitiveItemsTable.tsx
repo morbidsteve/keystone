@@ -63,14 +63,13 @@ export default function SensitiveItemsTable({
 }: SensitiveItemsTableProps) {
   if (loading) {
     return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
+      <div className="p-10 text-center">
         <div
-          className="skeleton"
-          style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+          className="skeleton w-[200px] h-[16px] mx-auto mb-3"
         />
         <div
-          className="skeleton"
-          style={{ width: 300, height: 12, margin: '0 auto' }}
+          className="skeleton w-[300px] h-[12px] mx-auto"
+          
         />
       </div>
     );
@@ -87,8 +86,8 @@ export default function SensitiveItemsTable({
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
         <thead>
           <tr>
             {['Serial #', 'Nomenclature', 'Type', 'Status', 'Condition', 'Holder', 'Last Inventory'].map(
@@ -109,7 +108,7 @@ export default function SensitiveItemsTable({
               <tr
                 key={item.id}
                 onClick={() => onSelectItem(item.id)}
-                style={{ cursor: 'pointer', transition: 'background-color 0.15s' }}
+                className="cursor-pointer transition-colors duration-150"
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.backgroundColor =
                     'var(--color-bg-hover)';
@@ -118,36 +117,20 @@ export default function SensitiveItemsTable({
                   (e.currentTarget as HTMLElement).style.backgroundColor = '';
                 }}
               >
-                <td style={{ ...tdStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                <td className="text-[var(--color-text-bright)]">
                   {item.serial_number}
                 </td>
                 <td style={tdStyle}>{item.nomenclature}</td>
                 <td style={tdStyle}>
                   <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: 3,
-                      backgroundColor: `${typeColor}20`,
-                      color: typeColor,
-                      fontWeight: 600,
-                      fontSize: 9,
-                      letterSpacing: '0.5px',
-                    }}
+                    className="py-0.5 px-2 rounded-[3px] font-semibold text-[9px] tracking-[0.5px]" style={{ backgroundColor: `${typeColor}20`, color: typeColor }}
                   >
                     {item.item_type}
                   </span>
                 </td>
                 <td style={tdStyle}>
                   <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: 3,
-                      backgroundColor: `${statusColor}20`,
-                      color: statusColor,
-                      fontWeight: 600,
-                      fontSize: 9,
-                      letterSpacing: '0.5px',
-                    }}
+                    className="py-0.5 px-2 rounded-[3px] font-semibold text-[9px] tracking-[0.5px]" style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
                   >
                     {item.status.replace(/_/g, ' ')}
                   </span>

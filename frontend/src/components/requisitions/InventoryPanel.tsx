@@ -60,82 +60,55 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
   };
 
   const renderLoading = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Low Stock Alerts */}
       {alertsLoading ? (
         renderLoading()
       ) : alerts && alerts.length > 0 ? (
         <Card title="LOW STOCK ALERTS" accentColor="var(--color-danger)">
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: 10,
-            }}
+            className="grid gap-2.5 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
           >
             {alerts.map((alert) => (
               <div
                 key={alert.inventory_record_id}
-                style={{
-                  padding: '10px 12px',
-                  backgroundColor: 'rgba(255, 107, 107, 0.05)',
-                  border: '1px solid rgba(255, 107, 107, 0.2)',
-                  borderRadius: 'var(--radius)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 6,
-                }}
+                className="py-2.5 px-3 bg-[rgba(255,107,107,0.05)] rounded-[var(--radius)] flex flex-col gap-1.5 border border-[rgba(255,107,107,0.2)]"
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <AlertTriangle size={12} style={{ color: 'var(--color-danger)', flexShrink: 0 }} />
+                <div className="flex items-center gap-1.5">
+                  <AlertTriangle size={12} className="text-[var(--color-danger)] shrink-0" />
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: 'var(--color-text-bright)',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
                   >
                     {alert.nomenclature}
                   </span>
                 </div>
                 <div
-                  style={{
-                    display: 'flex',
-                    gap: 12,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                  }}
+                  className="flex gap-3 font-[var(--font-mono)] text-[10px]"
                 >
-                  <span style={{ color: 'var(--color-text-muted)' }}>
-                    ON HAND: <span style={{ color: 'var(--color-danger)', fontWeight: 700 }}>{alert.quantity_on_hand}</span>
+                  <span className="text-[var(--color-text-muted)]">
+                    ON HAND: <span className="text-[var(--color-danger)] font-bold">{alert.quantity_on_hand}</span>
                   </span>
-                  <span style={{ color: 'var(--color-text-muted)' }}>
-                    REORDER PT: <span style={{ color: 'var(--color-text)', fontWeight: 600 }}>{alert.reorder_point}</span>
+                  <span className="text-[var(--color-text-muted)]">
+                    REORDER PT: <span className="text-[var(--color-text)] font-semibold">{alert.reorder_point}</span>
                   </span>
-                  <span style={{ color: 'var(--color-danger)', fontWeight: 700 }}>
+                  <span className="text-[var(--color-danger)] font-bold">
                     -{alert.quantity_below} BELOW
                   </span>
                 </div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                 >
                   {alert.location}
                 </div>
@@ -150,8 +123,8 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
         {invLoading ? (
           renderLoading()
         ) : inventory && inventory.length > 0 ? (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   <th style={headerStyle}>LOCATION</th>
@@ -170,13 +143,7 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
                   return (
                     <tr key={rec.id}>
                       <td
-                        style={{
-                          ...cellStyle,
-                          fontSize: 10,
-                          maxWidth: 180,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
+                        className="max-w-[180px] overflow-hidden text-ellipsis"
                       >
                         {rec.location}
                       </td>
@@ -185,12 +152,7 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
                       </td>
                       <td style={cellStyle}>{rec.nomenclature}</td>
                       <td
-                        style={{
-                          ...cellStyle,
-                          textAlign: 'right',
-                          fontWeight: 700,
-                          color: isLow ? 'var(--color-danger)' : 'var(--color-text-bright)',
-                        }}
+                        className="font-bold" style={{ color: isLow ? 'var(--color-danger)' : 'var(--color-text-bright)' }}
                       >
                         {rec.quantity_on_hand.toLocaleString()}
                       </td>
@@ -202,24 +164,14 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
                       </td>
                       <td style={cellStyle}>
                         <span
-                          style={{
-                            display: 'inline-block',
-                            padding: '1px 6px',
-                            borderRadius: 2,
-                            fontSize: 9,
-                            fontWeight: 700,
-                            letterSpacing: '0.5px',
-                            color: rec.condition_code === 'A' ? 'var(--color-success)' : 'var(--color-warning)',
-                            border: `1px solid ${rec.condition_code === 'A' ? 'var(--color-success)' : 'var(--color-warning)'}`,
-                            backgroundColor: rec.condition_code === 'A'
+                          className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-bold tracking-[0.5px]" style={{ color: rec.condition_code === 'A' ? 'var(--color-success)' : 'var(--color-warning)', border: `1px solid ${rec.condition_code === 'A' ? 'var(--color-success)' : 'var(--color-warning)'}`, backgroundColor: rec.condition_code === 'A'
                               ? 'rgba(64, 192, 87, 0.1)'
-                              : 'rgba(250, 176, 5, 0.1)',
-                          }}
+                              : 'rgba(250, 176, 5, 0.1)' }}
                         >
                           {rec.condition_code}
                         </span>
                       </td>
-                      <td style={{ ...cellStyle, fontSize: 10, color: 'var(--color-text-muted)' }}>
+                      <td className="text-[var(--color-text-muted)]">
                         {new Date(rec.last_inventory_date).toLocaleDateString()}
                       </td>
                     </tr>

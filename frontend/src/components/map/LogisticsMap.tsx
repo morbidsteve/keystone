@@ -90,19 +90,15 @@ export default function LogisticsMap({ data, convoyMovements, height = '100%' }:
   };
 
   return (
-    <div style={{ height, width: '100%', position: 'relative' }}>
+    <div className="relative" style={{ height, width: '100%' }}>
       {/* Map */}
       <div
-        style={{
-          height: '100%',
-          width: detailPanelOpen ? 'calc(100% - 400px)' : '100%',
-          transition: 'width 0.3s ease',
-        }}
+        className="h-full" style={{ width: detailPanelOpen ? 'calc(100% - 400px)' : '100%', transition: 'width 0.3s ease' }}
       >
         <MapContainer
           center={CAMP_PENDLETON_CENTER}
           zoom={DEFAULT_ZOOM}
-          style={{ height: '100%', width: '100%' }}
+          className="h-full w-full"
           zoomControl={true}
         >
           <TileLayer

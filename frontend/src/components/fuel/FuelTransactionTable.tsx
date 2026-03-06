@@ -75,8 +75,8 @@ export default function FuelTransactionTable({ transactions }: FuelTransactionTa
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
         <thead>
           <tr>
             <th style={headerStyle}>Date</th>
@@ -103,33 +103,18 @@ export default function FuelTransactionTable({ transactions }: FuelTransactionTa
                 <td style={cellStyle}>{formatDate(txn.transaction_date)}</td>
                 <td style={cellStyle}>
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      fontWeight: 600,
-                      padding: '2px 8px',
-                      borderRadius: 3,
-                      backgroundColor: badge.bg,
-                      color: badge.color,
-                      letterSpacing: '0.5px',
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] font-semibold py-0.5 px-2 rounded-[3px] tracking-[0.5px]" style={{ backgroundColor: badge.bg, color: badge.color }}
                   >
                     {txn.transaction_type}
                   </span>
                 </td>
                 <td style={cellStyle}>{txn.fuel_type}</td>
                 <td
-                  style={{
-                    ...cellStyle,
-                    textAlign: 'right',
-                    fontWeight: 600,
-                    color:
-                      txn.transaction_type === 'RECEIPT'
+                  className="font-semibold" style={{ color: txn.transaction_type === 'RECEIPT'
                         ? '#22c55e'
                         : txn.transaction_type === 'LOSS'
                           ? '#ef4444'
-                          : 'var(--color-text)',
-                  }}
+                          : 'var(--color-text)' }}
                 >
                   {formatQuantity(txn.transaction_type, txn.quantity_gallons)} gal
                 </td>
@@ -139,19 +124,12 @@ export default function FuelTransactionTable({ transactions }: FuelTransactionTa
                     ? `${txn.vehicle_bumper_number}${txn.vehicle_type ? ` (${txn.vehicle_type})` : ''}`
                     : txn.vehicle_type ?? '—'}
                 </td>
-                <td style={{ ...cellStyle, fontSize: 10, color: 'var(--color-text-muted)' }}>
+                <td className="text-[var(--color-text-muted)]">
                   {txn.document_number ?? '—'}
                 </td>
                 <td style={cellStyle}>{txn.performed_by_name ?? '—'}</td>
                 <td
-                  style={{
-                    ...cellStyle,
-                    fontSize: 10,
-                    color: 'var(--color-text-muted)',
-                    maxWidth: 200,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
+                  className="text-[var(--color-text-muted)] max-w-[200px] overflow-hidden text-ellipsis"
                   title={txn.notes ?? ''}
                 >
                   {txn.notes ?? '—'}

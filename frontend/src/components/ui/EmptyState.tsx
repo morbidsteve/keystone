@@ -12,50 +12,23 @@ interface EmptyStateProps {
 export default function EmptyState({ icon, title, message, actionLabel, onAction }: EmptyStateProps) {
   return (
     <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '48px 24px',
-        color: 'var(--color-text-muted)',
-      }}
+      className="flex flex-col items-center justify-center py-12 px-6 text-[var(--color-text-muted)]"
     >
-      <div style={{ marginBottom: 12, opacity: 0.5 }}>
+      <div className="mb-3 opacity-50">
         {icon || <Inbox size={32} />}
       </div>
       <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          fontWeight: 600,
-          letterSpacing: '1.5px',
-          textTransform: 'uppercase',
-          marginBottom: 4,
-        }}
+        className="font-[var(--font-mono)] text-xs font-semibold tracking-[1.5px] uppercase mb-1"
       >
         {title}
       </div>
       {message && (
-        <div style={{ fontSize: 13, opacity: 0.7 }}>{message}</div>
+        <div className="text-[13px] opacity-70">{message}</div>
       )}
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          style={{
-            marginTop: 16,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            padding: '8px 16px',
-            backgroundColor: 'var(--color-accent)',
-            color: 'var(--color-bg)',
-            border: 'none',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-          }}
+          className="mt-4 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase py-2 px-4 bg-[var(--color-accent)] text-[var(--color-bg)] border-0 rounded-[var(--radius)] cursor-pointer"
         >
           {actionLabel}
         </button>

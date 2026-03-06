@@ -15,26 +15,11 @@ export default function DataSourceStatusPill({ status }: { status: DataSourceSta
 
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 6,
-        padding: '2px 10px',
-        borderRadius: 2,
-        border: `1px solid ${info.color}`,
-        backgroundColor: `${info.color}15`,
-      }}
+      className="inline-flex items-center gap-1.5 py-0.5 px-2.5 rounded-[2px]" style={{ border: `1px solid ${info.color}`, backgroundColor: `${info.color}15` }}
     >
       <StatusDot status={info.dot} size={6} pulse={info.pulse} />
       <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          fontWeight: 500,
-          color: info.color,
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-        }}
+        className="font-[var(--font-mono)] text-[9px] font-medium uppercase tracking-[1px]" style={{ color: info.color }}
       >
         {info.label}
       </span>

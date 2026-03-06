@@ -1,28 +1,47 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { usePermission } from '@/hooks/usePermission';
 import MainLayout from '@/components/layout/MainLayout';
-import LoginPage from '@/pages/LoginPage';
-import DashboardPage from '@/pages/DashboardPage';
-import SupplyPage from '@/pages/SupplyPage';
-import EquipmentPage from '@/pages/EquipmentPage';
-import EquipmentDetailPage from '@/pages/EquipmentDetailPage';
-import TransportationPage from '@/pages/TransportationPage';
-import IngestionPage from '@/pages/IngestionPage';
-import DataSourcesPage from '@/pages/DataSourcesPage';
-import ReportsPage from '@/pages/ReportsPage';
-import AlertsPage from '@/pages/AlertsPage';
-import MapPage from '@/pages/MapPage';
-import AdminPage from '@/pages/AdminPage';
-import DocsPage from '@/pages/DocsPage';
-import ReadinessPage from '@/pages/ReadinessPage';
-import MaintenanceDashboardPage from '@/pages/MaintenanceDashboardPage';
-import RequisitionsPage from '@/pages/RequisitionsPage';
-import PersonnelPage from '@/pages/PersonnelPage';
-import MedicalPage from '@/pages/MedicalPage';
-import FuelPage from '@/pages/FuelPage';
-import CustodyPage from '@/pages/CustodyPage';
-import AuditPage from '@/pages/AuditPage';
+import LoadingFallback from '@/components/ui/LoadingFallback';
+
+// ---------------------------------------------------------------------------
+// Lazy-loaded page components (route-based code splitting)
+// ---------------------------------------------------------------------------
+
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
+const SupplyPage = lazy(() => import('@/pages/SupplyPage'));
+const EquipmentPage = lazy(() => import('@/pages/EquipmentPage'));
+const EquipmentDetailPage = lazy(() => import('@/pages/EquipmentDetailPage'));
+const TransportationPage = lazy(() => import('@/pages/TransportationPage'));
+const IngestionPage = lazy(() => import('@/pages/IngestionPage'));
+const DataSourcesPage = lazy(() => import('@/pages/DataSourcesPage'));
+const ReportsPage = lazy(() => import('@/pages/ReportsPage'));
+const AlertsPage = lazy(() => import('@/pages/AlertsPage'));
+const MapPage = lazy(() => import('@/pages/MapPage'));
+const AdminPage = lazy(() => import('@/pages/AdminPage'));
+const DocsPage = lazy(() => import('@/pages/DocsPage'));
+const ReadinessPage = lazy(() => import('@/pages/ReadinessPage'));
+const MaintenanceDashboardPage = lazy(() => import('@/pages/MaintenanceDashboardPage'));
+const RequisitionsPage = lazy(() => import('@/pages/RequisitionsPage'));
+const PersonnelPage = lazy(() => import('@/pages/PersonnelPage'));
+const MedicalPage = lazy(() => import('@/pages/MedicalPage'));
+const FuelPage = lazy(() => import('@/pages/FuelPage'));
+const CustodyPage = lazy(() => import('@/pages/CustodyPage'));
+const AuditPage = lazy(() => import('@/pages/AuditPage'));
+
+// ---------------------------------------------------------------------------
+// Suspense wrapper for lazy routes
+// ---------------------------------------------------------------------------
+
+function Lazy({ children }: { children: React.ReactNode }) {
+  return <Suspense fallback={<LoadingFallback />}>{children}</Suspense>;
+}
+
+// ---------------------------------------------------------------------------
+// Protected route with permission checking
+// ---------------------------------------------------------------------------
 
 function ProtectedRoute({
   children,
@@ -47,39 +66,19 @@ function ProtectedRoute({
     if (!permitted) {
       return (
         <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            padding: 40,
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--color-text-muted)',
-          }}
+          className="flex flex-col items-center justify-center h-full p-10 font-[var(--font-mono)] text-[var(--color-text-muted)]"
         >
           <div
-            style={{
-              fontSize: 48,
-              fontWeight: 700,
-              color: 'var(--color-danger)',
-              marginBottom: 16,
-            }}
+            className="text-[48px] font-bold text-[var(--color-danger)] mb-4"
           >
             403
           </div>
           <div
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: 'var(--color-text-bright)',
-              marginBottom: 8,
-              letterSpacing: '1px',
-            }}
+            className="text-sm font-semibold text-[var(--color-text-bright)] mb-2 tracking-[1px]"
           >
             ACCESS DENIED
           </div>
-          <div style={{ fontSize: 12, textAlign: 'center', maxWidth: 400 }}>
+          <div className="text-xs text-center max-w-[400px]">
             You do not have the required permissions to access this page.
             Contact your administrator to request access.
           </div>
@@ -94,7 +93,7 @@ function ProtectedRoute({
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<Lazy><LoginPage /></Lazy>} />
       <Route
         path="/"
         element={
@@ -104,24 +103,24 @@ export default function App() {
         }
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<ProtectedRoute requiredPermission="dashboard:view"><DashboardPage /></ProtectedRoute>} />
-        <Route path="map" element={<ProtectedRoute requiredPermission="map:view"><MapPage /></ProtectedRoute>} />
-        <Route path="supply" element={<ProtectedRoute requiredPermission="supply:view"><SupplyPage /></ProtectedRoute>} />
-        <Route path="equipment" element={<ProtectedRoute requiredPermission="equipment:view"><EquipmentPage /></ProtectedRoute>} />
-        <Route path="maintenance" element={<ProtectedRoute requiredPermission="maintenance:view"><MaintenanceDashboardPage /></ProtectedRoute>} />
-        <Route path="requisitions" element={<ProtectedRoute requiredPermission="requisitions:view"><RequisitionsPage /></ProtectedRoute>} />
-        <Route path="personnel" element={<ProtectedRoute requiredPermission="personnel:view"><PersonnelPage /></ProtectedRoute>} />
-        <Route path="medical" element={<ProtectedRoute requiredPermission="medical:view"><MedicalPage /></ProtectedRoute>} />
-        <Route path="fuel" element={<ProtectedRoute requiredPermission="fuel:view"><FuelPage /></ProtectedRoute>} />
-        <Route path="custody" element={<ProtectedRoute requiredPermission="custody:view"><CustodyPage /></ProtectedRoute>} />
-        <Route path="audit" element={<ProtectedRoute requiredPermission="audit:view"><AuditPage /></ProtectedRoute>} />
-        <Route path="equipment/:id" element={<ProtectedRoute requiredPermission="equipment:view"><EquipmentDetailPage /></ProtectedRoute>} />
-        <Route path="transportation" element={<ProtectedRoute requiredPermission="transportation:view"><TransportationPage /></ProtectedRoute>} />
+        <Route path="dashboard" element={<ProtectedRoute requiredPermission="dashboard:view"><Lazy><DashboardPage /></Lazy></ProtectedRoute>} />
+        <Route path="map" element={<ProtectedRoute requiredPermission="map:view"><Lazy><MapPage /></Lazy></ProtectedRoute>} />
+        <Route path="supply" element={<ProtectedRoute requiredPermission="supply:view"><Lazy><SupplyPage /></Lazy></ProtectedRoute>} />
+        <Route path="equipment" element={<ProtectedRoute requiredPermission="equipment:view"><Lazy><EquipmentPage /></Lazy></ProtectedRoute>} />
+        <Route path="maintenance" element={<ProtectedRoute requiredPermission="maintenance:view"><Lazy><MaintenanceDashboardPage /></Lazy></ProtectedRoute>} />
+        <Route path="requisitions" element={<ProtectedRoute requiredPermission="requisitions:view"><Lazy><RequisitionsPage /></Lazy></ProtectedRoute>} />
+        <Route path="personnel" element={<ProtectedRoute requiredPermission="personnel:view"><Lazy><PersonnelPage /></Lazy></ProtectedRoute>} />
+        <Route path="medical" element={<ProtectedRoute requiredPermission="medical:view"><Lazy><MedicalPage /></Lazy></ProtectedRoute>} />
+        <Route path="fuel" element={<ProtectedRoute requiredPermission="fuel:view"><Lazy><FuelPage /></Lazy></ProtectedRoute>} />
+        <Route path="custody" element={<ProtectedRoute requiredPermission="custody:view"><Lazy><CustodyPage /></Lazy></ProtectedRoute>} />
+        <Route path="audit" element={<ProtectedRoute requiredPermission="audit:view"><Lazy><AuditPage /></Lazy></ProtectedRoute>} />
+        <Route path="equipment/:id" element={<ProtectedRoute requiredPermission="equipment:view"><Lazy><EquipmentDetailPage /></Lazy></ProtectedRoute>} />
+        <Route path="transportation" element={<ProtectedRoute requiredPermission="transportation:view"><Lazy><TransportationPage /></Lazy></ProtectedRoute>} />
         <Route
           path="ingestion"
           element={
             <ProtectedRoute requiredPermission="ingestion:upload">
-              <IngestionPage />
+              <Lazy><IngestionPage /></Lazy>
             </ProtectedRoute>
           }
         />
@@ -129,22 +128,22 @@ export default function App() {
           path="data-sources"
           element={
             <ProtectedRoute requiredPermission="data_sources:view">
-              <DataSourcesPage />
+              <Lazy><DataSourcesPage /></Lazy>
             </ProtectedRoute>
           }
         />
-        <Route path="reports" element={<ProtectedRoute requiredPermission="reports:view"><ReportsPage /></ProtectedRoute>} />
-        <Route path="alerts" element={<ProtectedRoute requiredPermission="alerts:view"><AlertsPage /></ProtectedRoute>} />
-        <Route path="readiness" element={<ProtectedRoute requiredPermission="readiness:view"><ReadinessPage /></ProtectedRoute>} />
+        <Route path="reports" element={<ProtectedRoute requiredPermission="reports:view"><Lazy><ReportsPage /></Lazy></ProtectedRoute>} />
+        <Route path="alerts" element={<ProtectedRoute requiredPermission="alerts:view"><Lazy><AlertsPage /></Lazy></ProtectedRoute>} />
+        <Route path="readiness" element={<ProtectedRoute requiredPermission="readiness:view"><Lazy><ReadinessPage /></Lazy></ProtectedRoute>} />
         <Route
           path="admin"
           element={
             <ProtectedRoute requiredPermission={['admin:users', 'admin:settings', 'admin:roles']}>
-              <AdminPage />
+              <Lazy><AdminPage /></Lazy>
             </ProtectedRoute>
           }
         />
-        <Route path="docs" element={<DocsPage />} />
+        <Route path="docs" element={<Lazy><DocsPage /></Lazy>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

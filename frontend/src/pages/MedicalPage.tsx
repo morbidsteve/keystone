@@ -140,14 +140,13 @@ export default function MedicalPage() {
   // -------------------------------------------------------------------------
 
   const renderLoadingSkeleton = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
@@ -157,57 +156,28 @@ export default function MedicalPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}
+          className="flex items-center gap-2.5"
         >
-          <Heart size={18} style={{ color: 'var(--color-danger)' }} />
+          <Heart size={18} className="text-[var(--color-danger)]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 14,
-              fontWeight: 700,
-              letterSpacing: '3px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-sm font-bold tracking-[3px] text-[var(--color-text-bright)] uppercase"
           >
             MEDICAL &amp; CASEVAC
           </span>
         </div>
         {activeCasualties > 0 && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 10px',
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="flex items-center gap-1.5 py-1 px-2.5 bg-[rgba(239,68,68,0.12)] rounded-[var(--radius)] border border-[rgba(239,68,68,0.3)]"
           >
-            <AlertTriangle size={12} style={{ color: '#ef4444' }} />
+            <AlertTriangle size={12} className="text-[#ef4444]" />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#ef4444',
-                letterSpacing: '1px',
-              }}
+              className="font-[var(--font-mono)] text-[10px] font-bold text-[#ef4444] tracking-[1px]"
             >
               {activeCasualties} ACTIVE
             </span>
@@ -217,11 +187,7 @@ export default function MedicalPage() {
 
       {/* KPI Summary Row */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
       >
         {[
           {
@@ -251,42 +217,20 @@ export default function MedicalPage() {
         ].map((kpi) => (
           <div
             key={kpi.label}
-            style={{
-              padding: '14px 16px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-3.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                marginBottom: 6,
-              }}
+              className="flex items-center gap-1.5 mb-1.5"
             >
-              <kpi.icon size={11} style={{ color: 'var(--color-text-muted)' }} />
+              <kpi.icon size={11} className="text-[var(--color-text-muted)]" />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase"
               >
                 {kpi.label}
               </span>
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 22,
-                fontWeight: 700,
-                color: kpi.color,
-              }}
+              className="font-[var(--font-mono)] text-[22px] font-bold" style={{ color: kpi.color }}
             >
               {kpi.value}
             </div>
@@ -296,11 +240,7 @@ export default function MedicalPage() {
 
       {/* Sub-KPIs: Evacuating / At MTF */}
       <div
-        style={{
-          display: 'flex',
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
+        className="flex gap-3 flex-wrap"
       >
         {[
           { label: 'EVACUATING', value: evacuating, color: '#3b82f6' },
@@ -308,34 +248,15 @@ export default function MedicalPage() {
         ].map((sub) => (
           <div
             key={sub.label}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 14px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="flex items-center gap-2 py-1.5 px-3.5 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-              }}
+              className="font-[var(--font-mono)] text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] uppercase"
             >
               {sub.label}
             </span>
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 14,
-                fontWeight: 700,
-                color: sub.color,
-              }}
+              className="font-[var(--font-mono)] text-sm font-bold" style={{ color: sub.color }}
             >
               {sub.value}
             </span>
@@ -345,41 +266,17 @@ export default function MedicalPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px] flex items-center gap-1.5" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.key === 'nineline' && <Plus size={10} />}
             {tab.label}

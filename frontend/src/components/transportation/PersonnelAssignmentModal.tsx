@@ -192,50 +192,24 @@ export default function PersonnelAssignmentModal({
   if (!isOpen) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div onClick={onClose} style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)' }} />
+    <div className="fixed z-[1000] flex items-center justify-center inset-0">
+      <div onClick={onClose} className="absolute bg-[rgba(0,0,0,0.7)] inset-0" />
       <div
-        style={{
-          position: 'relative',
-          width: 700,
-          maxHeight: '80vh',
-          overflow: 'auto',
-          backgroundColor: 'var(--color-bg-card)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius)',
-          padding: 24,
-        }}
+        className="relative w-[700px] max-h-[80vh] overflow-auto bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-[var(--radius)] p-6"
       >
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Users size={16} style={{ color: 'var(--color-accent)' }} />
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2.5">
+            <Users size={16} className="text-[var(--color-accent)]" />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 13,
-                fontWeight: 700,
-                letterSpacing: '1px',
-                color: 'var(--color-text-bright)',
-              }}
+              className="font-[var(--font-mono)] text-[13px] font-bold tracking-[1px] text-[var(--color-text-bright)]"
             >
               ASSIGN PERSONNEL
             </span>
           </div>
           <button
             onClick={onClose}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              backgroundColor: 'transparent',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-            }}
+            className="flex items-center justify-center w-[28px] h-[28px] bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] cursor-pointer"
           >
             <X size={14} />
           </button>
@@ -243,51 +217,33 @@ export default function PersonnelAssignmentModal({
 
         {/* Vehicle Info */}
         <div
-          style={{
-            display: 'flex',
-            gap: 16,
-            padding: '10px 14px',
-            marginBottom: 20,
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-          }}
+          className="flex gap-4 py-2.5 px-3.5 mb-5 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
         >
           <div>
             <div style={labelStyle}>VEHICLE TYPE</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-bright)', fontWeight: 600 }}>
-              <Truck size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+            <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold">
+              <Truck size={12} className="mr-1 align-middle" />
               {vehicleType}
             </div>
           </div>
           <div>
             <div style={labelStyle}>BUMPER #</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text)', fontWeight: 600 }}>
+            <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] font-semibold">
               {bumperNumber}
             </div>
           </div>
           <div>
             <div style={labelStyle}>TAMCN</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-accent)', fontWeight: 600 }}>
+            <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-accent)] font-semibold">
               {vehicleTamcn}
             </div>
           </div>
         </div>
 
         {/* Crew Roles */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
+        <div className="flex flex-col gap-3.5 mb-5">
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase flex items-center gap-1.5"
           >
             <Shield size={12} /> CREW ASSIGNMENTS
           </div>
@@ -301,7 +257,7 @@ export default function PersonnelAssignmentModal({
 
             return (
               <div key={role.key}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                <div className="flex items-center gap-1.5 mb-1">
                   <span style={labelStyle}>{role.label}</span>
                   {role.required && (
                     <span style={requiredBadge}>REQUIRED</span>
@@ -327,7 +283,7 @@ export default function PersonnelAssignmentModal({
                 </select>
                 {/* Required qualifications badges */}
                 {requiredQuals.length > 0 && (
-                  <div style={{ marginTop: 4 }}>
+                  <div className="mt-1">
                     {requiredQuals.map((q) => (
                       <span key={q} style={badgeStyle}>{q.replace(/_/g, ' ')}</span>
                     ))}
@@ -336,15 +292,7 @@ export default function PersonnelAssignmentModal({
                 {/* No qualified personnel warning */}
                 {isEmpty && (
                   <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      marginTop: 4,
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: '#f87171',
-                    }}
+                    className="flex items-center gap-1 mt-1 font-[var(--font-mono)] text-[10px] text-[#f87171]"
                   >
                     <AlertTriangle size={11} />
                     No qualified personnel available
@@ -356,65 +304,31 @@ export default function PersonnelAssignmentModal({
         </div>
 
         {/* PAX Section */}
-        <div style={{ marginBottom: 20 }}>
+        <div className="mb-5">
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              marginBottom: 8,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase flex items-center gap-1.5 mb-2"
           >
             <Users size={12} /> PASSENGERS (PAX)
           </div>
 
           {/* Current PAX list */}
           {paxList.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
+            <div className="flex flex-col gap-1 mb-2">
               {paxList.map((pid) => {
                 const person = paxQuery.data?.personnel.find((p) => p.id === pid);
                 return (
                   <div
                     key={pid}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '4px 10px',
-                      backgroundColor: 'var(--color-bg-elevated)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius)',
-                    }}
+                    className="flex items-center justify-between py-1 px-2.5 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
                   >
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        color: 'var(--color-text)',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]"
                     >
                       {person ? formatPersonnel(person) : `Personnel #${pid}`}
                     </span>
                     <button
                       onClick={() => handleRemovePax(pid)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 20,
-                        height: 20,
-                        backgroundColor: 'transparent',
-                        border: '1px solid rgba(248,113,113,0.3)',
-                        borderRadius: 2,
-                        color: '#f87171',
-                        cursor: 'pointer',
-                      }}
+                      className="flex items-center justify-center w-[20px] h-[20px] bg-transparent rounded-[2px] text-[#f87171] cursor-pointer border border-[rgba(248,113,113,0.3)]"
                     >
                       <X size={10} />
                     </button>
@@ -425,7 +339,7 @@ export default function PersonnelAssignmentModal({
           )}
 
           {/* Add PAX dropdown + button */}
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="flex gap-2">
             <select
               value={paxDropdownValue ?? ''}
               onChange={(e) => setPaxDropdownValue(e.target.value ? Number(e.target.value) : null)}
@@ -444,21 +358,7 @@ export default function PersonnelAssignmentModal({
             <button
               onClick={handleAddPax}
               disabled={paxDropdownValue == null}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '6px 12px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                color: paxDropdownValue != null ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                backgroundColor: 'transparent',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                cursor: paxDropdownValue != null ? 'pointer' : 'default',
-                opacity: paxDropdownValue != null ? 1 : 0.5,
-              }}
+              className="flex items-center gap-1 py-1.5 px-3 font-[var(--font-mono)] text-[9px] font-semibold bg-transparent border border-[var(--color-border)] rounded-[var(--radius)]" style={{ color: paxDropdownValue != null ? 'var(--color-accent)' : 'var(--color-text-muted)', cursor: paxDropdownValue != null ? 'pointer' : 'default', opacity: paxDropdownValue != null ? 1 : 0.5 }}
             >
               <Plus size={12} /> ADD
             </button>
@@ -466,40 +366,17 @@ export default function PersonnelAssignmentModal({
         </div>
 
         {/* Footer buttons */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, borderTop: '1px solid var(--color-border)', paddingTop: 16 }}>
+        <div className="flex justify-end gap-2 border-t border-t-[var(--color-border)] pt-4">
           <button
             onClick={onClose}
-            style={{
-              padding: '6px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '0.5px',
-              color: 'var(--color-text-muted)',
-              backgroundColor: 'transparent',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-            }}
+            className="py-1.5 px-4 font-[var(--font-mono)] text-[10px] font-semibold tracking-[0.5px] text-[var(--color-text-muted)] bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] cursor-pointer"
           >
             CANCEL
           </button>
           <button
             onClick={handleSave}
             disabled={!canSave}
-            style={{
-              padding: '6px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '0.5px',
-              color: canSave ? '#4ade80' : 'var(--color-text-muted)',
-              backgroundColor: canSave ? 'rgba(74, 222, 128, 0.1)' : 'transparent',
-              border: canSave ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              cursor: canSave ? 'pointer' : 'default',
-              opacity: canSave ? 1 : 0.5,
-            }}
+            className="py-1.5 px-4 font-[var(--font-mono)] text-[10px] font-semibold tracking-[0.5px] rounded-[var(--radius)]" style={{ color: canSave ? '#4ade80' : 'var(--color-text-muted)', backgroundColor: canSave ? 'rgba(74, 222, 128, 0.1)' : 'transparent', border: canSave ? '1px solid rgba(74, 222, 128, 0.4)' : '1px solid var(--color-border)', cursor: canSave ? 'pointer' : 'default', opacity: canSave ? 1 : 0.5 }}
           >
             SAVE ASSIGNMENTS
           </button>

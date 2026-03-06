@@ -38,16 +38,9 @@ export default function ThroughputChart() {
     if (active && payload && payload.length) {
       return (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            padding: '8px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
         >
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>{label}</div>
+          <div className="text-[var(--color-text-muted)] mb-1">{label}</div>
           {payload.map((p, i) => (
             <div key={i} style={{ color: p.dataKey === 'tonnage' ? 'var(--color-accent)' : 'var(--color-success)' }}>
               {p.dataKey === 'tonnage' ? 'Tonnage' : 'Convoys'}: {p.value}
@@ -86,30 +79,23 @@ export default function ThroughputChart() {
       </ResponsiveContainer>
       {/* Summary */}
       <div
-        style={{
-          display: 'flex',
-          gap: 24,
-          justifyContent: 'center',
-          marginTop: 12,
-          paddingTop: 12,
-          borderTop: '1px solid var(--color-border)',
-        }}
+        className="flex gap-6 justify-center mt-3 pt-3 border-t border-t-[var(--color-border)]"
       >
-        <div style={{ textAlign: 'center' }}>
-          <div className="section-header" style={{ marginBottom: 4 }}>TOTAL TONNAGE</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--color-accent)' }}>
+        <div className="text-center">
+          <div className="section-header mb-1">TOTAL TONNAGE</div>
+          <div className="font-[var(--font-mono)] text-xl font-bold text-[var(--color-accent)]">
             {demoData.reduce((s, d) => s + d.tonnage, 0)}T
           </div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div className="section-header" style={{ marginBottom: 4 }}>TOTAL CONVOYS</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--color-success)' }}>
+        <div className="text-center">
+          <div className="section-header mb-1">TOTAL CONVOYS</div>
+          <div className="font-[var(--font-mono)] text-xl font-bold text-[var(--color-success)]">
             {demoData.reduce((s, d) => s + d.convoys, 0)}
           </div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div className="section-header" style={{ marginBottom: 4 }}>AVG/DAY</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: 'var(--color-text)' }}>
+        <div className="text-center">
+          <div className="section-header mb-1">AVG/DAY</div>
+          <div className="font-[var(--font-mono)] text-xl font-bold text-[var(--color-text)]">
             {Math.round(demoData.reduce((s, d) => s + d.tonnage, 0) / demoData.length)}T
           </div>
         </div>

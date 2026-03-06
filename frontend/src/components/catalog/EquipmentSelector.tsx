@@ -244,10 +244,10 @@ export default function EquipmentSelector({
   };
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', ...style }}>
+    <div ref={containerRef} className="relative">
       {/* Category filter (only show if no external filter locks it) */}
       {externalCategoryFilter === undefined && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+        <div className="flex items-center gap-2 mb-1">
           <label style={{ ...labelStyle, marginBottom: 0 }}>EQUIPMENT</label>
           <select
             value={categoryFilter}
@@ -266,17 +266,10 @@ export default function EquipmentSelector({
 
       {/* Search input */}
       {!value ? (
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <Search
             size={13}
-            style={{
-              position: 'absolute',
-              left: 10,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'var(--color-text-muted)',
-              pointerEvents: 'none',
-            }}
+            className="absolute left-2.5 text-[var(--color-text-muted)] top-1/2 -translate-y-1/2 pointer-events-none"
           />
           <input
             ref={inputRef}
@@ -290,14 +283,7 @@ export default function EquipmentSelector({
           {isLoading && (
             <Loader2
               size={13}
-              style={{
-                position: 'absolute',
-                right: 10,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-accent)',
-                animation: 'spin 1s linear infinite',
-              }}
+              className="absolute right-2.5 text-[var(--color-accent)]" style={{ top: '50%', transform: 'translateY(-50%)', animation: 'spin 1s linear infinite' }}
             />
           )}
         </div>
@@ -305,38 +291,18 @@ export default function EquipmentSelector({
         /* Selected item display */
         <div>
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '6px 10px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text-bright)',
-            }}
+            className="flex items-center gap-2 py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-accent)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)]"
           >
-            <span style={{ flex: 1 }}>
+            <span className="flex-1">
               {value.tamcn && (
-                <span style={{ fontWeight: 700, marginRight: 8 }}>{value.tamcn}</span>
+                <span className="font-bold mr-2">{value.tamcn}</span>
               )}
               {value.commonName || value.nomenclature}
             </span>
             <button
               onClick={handleClear}
               type="button"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'none',
-                border: 'none',
-                color: 'var(--color-text-muted)',
-                cursor: 'pointer',
-                padding: 2,
-              }}
+              className="flex items-center justify-center bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-0.5"
             >
               <X size={13} />
             </button>
@@ -355,34 +321,18 @@ export default function EquipmentSelector({
         <div style={dropdownStyle}>
           {flatResults.length === 0 && !isLoading && (
             <div
-              style={{
-                padding: '16px 10px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-                textAlign: 'center',
-              }}
+              className="py-4 px-2.5 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center"
             >
               {query ? 'No results found' : 'Type to search equipment catalog'}
             </div>
           )}
           {isLoading && flatResults.length === 0 && (
             <div
-              style={{
-                padding: '16px 10px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-                textAlign: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-              }}
+              className="py-4 px-2.5 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center flex items-center justify-center gap-2"
             >
               <Loader2
                 size={13}
-                style={{ animation: 'spin 1s linear infinite' }}
+                className="animate-spin"
               />
               Searching...
             </div>
@@ -407,18 +357,18 @@ export default function EquipmentSelector({
                           : 'transparent',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                      <div className="flex items-baseline gap-1.5">
                         {item.tamcn && (
-                          <span style={{ fontWeight: 700, color: 'var(--color-text-bright)', minWidth: 48 }}>
+                          <span className="font-bold text-[var(--color-text-bright)] min-w-[48px]">
                             {item.tamcn}
                           </span>
                         )}
                         <span>{item.nomenclature}</span>
                       </div>
                       {item.commonName && (
-                        <div style={{ fontSize: 9, color: 'var(--color-text-muted)', marginTop: 1 }}>
+                        <div className="text-[9px] text-[var(--color-text-muted)] mt-px">
                           {item.commonName}
-                          {item.nsn && <span style={{ marginLeft: 8 }}>NSN: {item.nsn}</span>}
+                          {item.nsn && <span className="ml-2">NSN: {item.nsn}</span>}
                         </div>
                       )}
                     </div>

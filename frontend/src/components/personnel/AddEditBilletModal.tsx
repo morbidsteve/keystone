@@ -166,22 +166,12 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
       <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div style={headerStyle}>
-          <span style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            fontWeight: 700,
-            letterSpacing: '2px',
-            color: 'var(--color-text-bright)',
-            textTransform: 'uppercase',
-          }}>
+          <span className="font-[var(--font-mono)] text-xs font-bold tracking-[2px] text-[var(--color-text-bright)] uppercase">
             {isEdit ? 'EDIT BILLET' : 'ADD BILLET'}
           </span>
           <button
             onClick={onClose}
-            style={{
-              background: 'none', border: 'none', color: 'var(--color-text-muted)',
-              cursor: 'pointer', padding: 4,
-            }}
+            className="bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-1"
           >
             <X size={16} />
           </button>
@@ -189,7 +179,7 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
 
         {/* Body */}
         <div style={bodyStyle}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="flex flex-col gap-0.5">
             <label style={labelStyle}>UNIT ID</label>
             <input
               type="number"
@@ -198,7 +188,7 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
               style={inputStyle}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="flex flex-col gap-0.5">
             <label style={labelStyle}>BILLET ID CODE</label>
             <input
               type="text"
@@ -207,7 +197,7 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
               style={inputStyle}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="flex flex-col gap-0.5">
             <label style={labelStyle}>BILLET TITLE</label>
             <input
               type="text"
@@ -216,7 +206,7 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
               style={inputStyle}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="flex flex-col gap-0.5">
             <label style={labelStyle}>MOS REQUIRED</label>
             <input
               type="text"
@@ -225,7 +215,7 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
               style={inputStyle}
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="flex flex-col gap-0.5">
             <label style={labelStyle}>RANK REQUIRED</label>
             <select
               value={rankRequired}
@@ -238,12 +228,12 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
               ))}
             </select>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={isKeyBillet}
               onChange={(e) => setIsKeyBillet(e.target.checked)}
-              style={{ accentColor: 'var(--color-accent)' }}
+              className="accent-[var(--color-accent)]"
             />
             <label style={{ ...labelStyle, marginBottom: 0 }}>KEY BILLET</label>
           </div>
@@ -253,24 +243,14 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
         <div style={footerStyle}>
           <button
             onClick={onClose}
-            style={{
-              ...btnBase,
-              backgroundColor: 'transparent',
-              color: 'var(--color-text-muted)',
-            }}
+            className="text-[var(--color-text-muted)]"
           >
             CANCEL
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{
-              ...btnBase,
-              backgroundColor: 'var(--color-accent)',
-              color: '#000',
-              border: '1px solid var(--color-accent)',
-              opacity: saving ? 0.6 : 1,
-            }}
+            className="text-[#000] border border-[var(--color-accent)]" style={{ opacity: saving ? 0.6 : 1 }}
           >
             {saving ? 'SAVING...' : 'SAVE'}
           </button>

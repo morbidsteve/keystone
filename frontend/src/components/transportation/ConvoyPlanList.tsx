@@ -30,18 +30,7 @@ function StatusBadge({ status }: { status: ConvoyPlanStatus }) {
   const c = STATUS_COLORS[status];
   return (
     <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: 2,
-        fontFamily: 'var(--font-mono)',
-        fontSize: 9,
-        fontWeight: 700,
-        letterSpacing: '0.5px',
-        color: c.text,
-        backgroundColor: c.bg,
-        border: `1px solid ${c.border}`,
-      }}
+      className="inline-block py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[9px] font-bold tracking-[0.5px]" style={{ color: c.text, backgroundColor: c.bg, border: `1px solid ${c.border}` }}
     >
       {status}
     </span>
@@ -49,21 +38,11 @@ function StatusBadge({ status }: { status: ConvoyPlanStatus }) {
 }
 
 function RiskBadge({ level }: { level: RiskAssessmentLevel | null }) {
-  if (!level) return <span style={{ color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)', fontSize: 9 }}>--</span>;
+  if (!level) return <span className="text-[var(--color-text-muted)] font-[var(--font-mono)] text-[9px]">--</span>;
   const c = RISK_COLORS[level];
   return (
     <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 6px',
-        borderRadius: 2,
-        fontFamily: 'var(--font-mono)',
-        fontSize: 9,
-        fontWeight: 600,
-        color: c.text,
-        backgroundColor: c.bg,
-        border: `1px solid ${c.border}`,
-      }}
+      className="inline-block py-0.5 px-1.5 rounded-[2px] font-[var(--font-mono)] text-[9px] font-semibold" style={{ color: c.text, backgroundColor: c.bg, border: `1px solid ${c.border}` }}
     >
       {level}
     </span>
@@ -137,9 +116,9 @@ export default function ConvoyPlanList({
   if (isLoading) {
     return (
       <Card title="CONVOY PLANS">
-        <div style={{ padding: 40, textAlign: 'center' }}>
-          <div className="skeleton" style={{ width: 200, height: 16, margin: '0 auto 12px' }} />
-          <div className="skeleton" style={{ width: 300, height: 12, margin: '0 auto' }} />
+        <div className="p-10 text-center">
+          <div className="skeleton w-[200px] h-[16px] mx-auto mb-3" />
+          <div className="skeleton w-[300px] h-[12px] mx-auto"  />
         </div>
       </Card>
     );
@@ -149,22 +128,11 @@ export default function ConvoyPlanList({
     <Card
       title="CONVOY PLANS"
       headerRight={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="flex items-center gap-2.5">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{
-              padding: '4px 8px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '0.5px',
-              color: 'var(--color-text)',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-            }}
+            className="py-1 px-2 font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[var(--color-text)] bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)] cursor-pointer"
           >
             <option value="ALL">ALL STATUS</option>
             <option value="DRAFT">DRAFT</option>
@@ -175,22 +143,7 @@ export default function ConvoyPlanList({
           </select>
           <button
             onClick={onCreatePlan}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '4px 10px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
-              color: 'var(--color-accent)',
-              backgroundColor: 'rgba(77, 171, 247, 0.1)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-            }}
+            className="inline-flex items-center gap-1 py-1 px-2.5 font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] uppercase text-[var(--color-accent)] bg-[rgba(77,171,247,0.1)] border border-[var(--color-accent)] rounded-[var(--radius)] cursor-pointer"
           >
             <Plus size={11} /> NEW PLAN
           </button>
@@ -199,19 +152,13 @@ export default function ConvoyPlanList({
     >
       {filteredPlans.length === 0 ? (
         <div
-          style={{
-            padding: 40,
-            textAlign: 'center',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text-muted)',
-          }}
+          className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
         >
           No convoy plans found
         </div>
       ) : (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
             <thead>
               <tr>
                 <th style={headerCellStyle}></th>
@@ -231,10 +178,7 @@ export default function ConvoyPlanList({
                 <>
                   <tr
                     key={plan.id}
-                    style={{
-                      cursor: 'pointer',
-                      transition: 'background-color 0.15s',
-                    }}
+                    className="cursor-pointer transition-colors duration-150"
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'var(--color-bg-hover)';
                     }}
@@ -250,7 +194,7 @@ export default function ConvoyPlanList({
                         <ChevronRight size={12} />
                       )}
                     </td>
-                    <td style={{ ...cellStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                    <td className="text-[var(--color-text-bright)]">
                       {plan.name}
                     </td>
                     <td style={cellStyle}>
@@ -268,23 +212,13 @@ export default function ConvoyPlanList({
                     <td style={cellStyle}>{plan.serials.length}</td>
                     <td style={cellStyle}>
                       <div
-                        style={{ display: 'flex', gap: 4 }}
+                        className="flex gap-1"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {plan.status === 'DRAFT' && (
                           <button
                             onClick={() => onApprovePlan(plan.id)}
-                            style={{
-                              padding: '2px 6px',
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 8,
-                              fontWeight: 600,
-                              color: '#60a5fa',
-                              backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                              border: '1px solid rgba(96, 165, 250, 0.3)',
-                              borderRadius: 2,
-                              cursor: 'pointer',
-                            }}
+                            className="py-0.5 px-1.5 font-[var(--font-mono)] text-[8px] font-semibold text-[#60a5fa] bg-[rgba(96,165,250,0.1)] rounded-[2px] cursor-pointer" style={{ border: '1px solid rgba(96, 165, 250, 0.3)' }}
                           >
                             APPROVE
                           </button>
@@ -292,17 +226,7 @@ export default function ConvoyPlanList({
                         {plan.status === 'APPROVED' && (
                           <button
                             onClick={() => onExecutePlan(plan.id)}
-                            style={{
-                              padding: '2px 6px',
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 8,
-                              fontWeight: 600,
-                              color: '#4ade80',
-                              backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                              border: '1px solid rgba(74, 222, 128, 0.3)',
-                              borderRadius: 2,
-                              cursor: 'pointer',
-                            }}
+                            className="py-0.5 px-1.5 font-[var(--font-mono)] text-[8px] font-semibold text-[#4ade80] bg-[rgba(74,222,128,0.1)] rounded-[2px] cursor-pointer" style={{ border: '1px solid rgba(74, 222, 128, 0.3)' }}
                           >
                             EXECUTE
                           </button>
@@ -310,34 +234,14 @@ export default function ConvoyPlanList({
                         {(plan.status === 'DRAFT' || plan.status === 'APPROVED') && (
                           <button
                             onClick={() => onCancelPlan(plan.id)}
-                            style={{
-                              padding: '2px 6px',
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 8,
-                              fontWeight: 600,
-                              color: '#f87171',
-                              backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                              border: '1px solid rgba(248, 113, 113, 0.3)',
-                              borderRadius: 2,
-                              cursor: 'pointer',
-                            }}
+                            className="py-0.5 px-1.5 font-[var(--font-mono)] text-[8px] font-semibold text-[#f87171] bg-[rgba(248,113,113,0.1)] rounded-[2px] cursor-pointer border border-[rgba(248,113,113,0.3)]"
                           >
                             CANCEL
                           </button>
                         )}
                         <button
                           onClick={() => onSelectPlan(plan)}
-                          style={{
-                            padding: '2px 6px',
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 8,
-                            fontWeight: 600,
-                            color: 'var(--color-accent)',
-                            backgroundColor: 'rgba(77, 171, 247, 0.1)',
-                            border: '1px solid rgba(77, 171, 247, 0.3)',
-                            borderRadius: 2,
-                            cursor: 'pointer',
-                          }}
+                          className="py-0.5 px-1.5 font-[var(--font-mono)] text-[8px] font-semibold text-[var(--color-accent)] bg-[rgba(77,171,247,0.1)] rounded-[2px] cursor-pointer border border-[rgba(77,171,247,0.3)]"
                         >
                           DETAIL
                         </button>
@@ -346,37 +250,31 @@ export default function ConvoyPlanList({
                   </tr>
                   {expandedId === plan.id && (
                     <tr key={`${plan.id}-detail`}>
-                      <td colSpan={10} style={{ padding: 0, borderBottom: '1px solid var(--color-border)' }}>
+                      <td colSpan={10} className="p-0 border-b border-b-[var(--color-border)]">
                         <div
-                          style={{
-                            padding: '12px 16px',
-                            backgroundColor: 'var(--color-bg-surface)',
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 1fr 1fr',
-                            gap: 16,
-                          }}
+                          className="py-3 px-4 bg-[var(--color-bg-surface)] grid gap-4 grid-cols-3"
                         >
                           <div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '1px', marginBottom: 4 }}>
+                            <div className="font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-text-muted)] tracking-[1px] mb-1">
                               ROUTE DESCRIPTION
                             </div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text)' }}>
+                            <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
                               {plan.route_description ?? 'No description'}
                             </div>
                           </div>
                           <div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '1px', marginBottom: 4 }}>
+                            <div className="font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-text-muted)] tracking-[1px] mb-1">
                               PRIMARY ROUTE
                             </div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text)' }}>
+                            <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
                               {plan.route_primary ?? '--'}
                             </div>
                           </div>
                           <div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '1px', marginBottom: 4 }}>
+                            <div className="font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-text-muted)] tracking-[1px] mb-1">
                               SERIALS SUMMARY
                             </div>
-                            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text)' }}>
+                            <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
                               {plan.serials.length} serials,{' '}
                               {plan.serials.reduce((a, s) => a + s.vehicle_count, 0)} vehicles,{' '}
                               {plan.serials.reduce((a, s) => a + s.pax_count, 0)} PAX

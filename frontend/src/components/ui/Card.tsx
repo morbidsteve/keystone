@@ -11,41 +11,21 @@ interface CardProps {
 export default function Card({ children, title, accentColor, style, headerRight }: CardProps) {
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        borderTop: accentColor ? `2px solid ${accentColor}` : undefined,
-        overflow: 'hidden',
-        ...style,
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden" style={{ borderTop: accentColor ? `2px solid ${accentColor}` : undefined }}
     >
       {title && (
         <div
-          style={{
-            padding: '12px 16px',
-            borderBottom: '1px solid var(--color-border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
+          className="py-3 px-4 border-b border-b-[var(--color-border)] flex items-center justify-between"
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)]"
           >
             {title}
           </span>
           {headerRight}
         </div>
       )}
-      <div style={{ padding: 16 }}>{children}</div>
+      <div className="p-4">{children}</div>
     </div>
   );
 }

@@ -45,22 +45,15 @@ export default function ReadinessTrendChart({
     if (active && payload && payload.length) {
       return (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            padding: '8px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
         >
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>
+          <div className="text-[var(--color-text-muted)] mb-1">
             {label}
           </div>
           {payload.map((p, i) => (
-            <div key={i} style={{ color: p.color, display: 'flex', gap: 8 }}>
-              <span style={{ textTransform: 'capitalize' }}>{p.dataKey}:</span>
-              <span style={{ fontWeight: 600 }}>{p.value}%</span>
+            <div key={i} className="flex gap-2" style={{ color: p.color }}>
+              <span className="capitalize">{p.dataKey}:</span>
+              <span className="font-semibold">{p.value}%</span>
             </div>
           ))}
         </div>
@@ -77,34 +70,15 @@ export default function ReadinessTrendChart({
     if (!payload) return null;
     return (
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 16,
-          marginTop: 4,
-        }}
+        className="flex justify-center gap-4 mt-1"
       >
         {payload.map((entry, i) => (
           <div
             key={i}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              color: 'var(--color-text-muted)',
-            }}
+            className="flex items-center gap-1.5 font-[var(--font-mono)] text-[9px] uppercase tracking-[0.5px] text-[var(--color-text-muted)]"
           >
             <div
-              style={{
-                width: 10,
-                height: 3,
-                backgroundColor: entry.color,
-                borderRadius: 1,
-              }}
+              className="w-[10px] h-[3px] rounded-[1px]" style={{ backgroundColor: entry.color }}
             />
             {entry.value}
           </div>

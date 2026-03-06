@@ -93,9 +93,9 @@ export default function ReportGenerator() {
   return (
     <Card
       title="GENERATE REPORT"
-      headerRight={<FileText size={14} style={{ color: 'var(--color-text-muted)' }} />}
+      headerRight={<FileText size={14} className="text-[var(--color-text-muted)]" />}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className="flex flex-col gap-3.5">
         <div>
           <label style={labelStyle}>REPORT TYPE</label>
           <select
@@ -110,13 +110,7 @@ export default function ReportGenerator() {
             ))}
           </select>
           {selectedTypeInfo && (
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              marginTop: 4,
-              lineHeight: 1.4,
-            }}>
+            <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-1 leading-[1.4]">
               {selectedTypeInfo.desc}
             </div>
           )}
@@ -137,7 +131,7 @@ export default function ReportGenerator() {
           </select>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div className="grid grid-cols-2 gap-3">
           <div>
             <label style={labelStyle}>START DATE</label>
             <input
@@ -159,15 +153,7 @@ export default function ReportGenerator() {
         </div>
 
         {error && (
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-red, #ff4444)',
-            padding: '6px 8px',
-            backgroundColor: 'rgba(255,68,68,0.08)',
-            borderRadius: 'var(--radius)',
-            border: '1px solid rgba(255,68,68,0.2)',
-          }}>
+          <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-red, #ff4444)] py-1.5 px-2 bg-[rgba(255,68,68,0.08)] rounded-[var(--radius)] border border-[rgba(255,68,68,0.2)]">
             {error}
           </div>
         )}
@@ -175,25 +161,7 @@ export default function ReportGenerator() {
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: isGenerating ? 'var(--color-muted)' : 'var(--color-accent)',
-            border: 'none',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-bg)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            cursor: isGenerating ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            transition: 'opacity var(--transition)',
-          }}
+          className="w-full border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-xs font-semibold tracking-[2px] uppercase flex items-center justify-center gap-2" style={{ padding: '10px', backgroundColor: isGenerating ? 'var(--color-muted)' : 'var(--color-accent)', cursor: isGenerating ? 'not-allowed' : 'pointer', transition: 'opacity var(--transition)' }}
         >
           {isGenerating ? (
             <>

@@ -64,37 +64,21 @@ export default function DeadlineBoard({ deadlines, onLift }: DeadlineBoardProps)
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="flex flex-col gap-5">
       {groups.map((group) => (
         <div key={group.label}>
           {/* Group header */}
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              marginBottom: 10,
-            }}
+            className="flex items-center gap-2 mb-2.5"
           >
             <AlertTriangle size={12} style={{ color: group.color }} />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: group.color,
-              }}
+              className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1.5px]" style={{ color: group.color }}
             >
               {group.label}
             </span>
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-text-muted)',
-                marginLeft: 4,
-              }}
+              className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] ml-1"
             >
               ({group.items.length})
             </span>
@@ -102,56 +86,29 @@ export default function DeadlineBoard({ deadlines, onLift }: DeadlineBoardProps)
 
           {/* Cards */}
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: 10,
-            }}
+            className="grid gap-2.5 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
           >
             {group.items.map((deadline) => (
               <div
                 key={deadline.id}
-                style={{
-                  padding: '12px 14px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border)',
-                  borderLeft: `3px solid ${REASON_COLORS[deadline.reason] || 'var(--color-text-muted)'}`,
-                  borderRadius: 'var(--radius)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
-                }}
+                className="py-3 px-3.5 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)] flex flex-col gap-2" style={{ borderLeft: `3px solid ${REASON_COLORS[deadline.reason] || 'var(--color-text-muted)'}` }}
               >
                 {/* Top row: bumper + days */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                      }}
+                      className="font-[var(--font-mono)] text-[13px] font-bold text-[var(--color-text-bright)]"
                     >
                       {deadline.bumperNumber || '---'}
                     </span>
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        color: 'var(--color-text-muted)',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
                     >
                       {deadline.nomenclature || '---'}
                     </span>
                   </div>
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: group.color,
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] font-bold" style={{ color: group.color }}
                   >
                     {deadline.daysDeadlined ?? 0}d
                   </span>
@@ -160,18 +117,7 @@ export default function DeadlineBoard({ deadlines, onLift }: DeadlineBoardProps)
                 {/* Reason badge */}
                 <div>
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 8,
-                      fontWeight: 600,
-                      letterSpacing: '1px',
-                      textTransform: 'uppercase',
-                      padding: '2px 8px',
-                      borderRadius: 'var(--radius)',
-                      backgroundColor: `${REASON_COLORS[deadline.reason] || 'var(--color-text-muted)'}18`,
-                      color: REASON_COLORS[deadline.reason] || 'var(--color-text-muted)',
-                      border: `1px solid ${REASON_COLORS[deadline.reason] || 'var(--color-text-muted)'}40`,
-                    }}
+                    className="font-[var(--font-mono)] text-[8px] font-semibold tracking-[1px] uppercase py-0.5 px-2 rounded-[var(--radius)]" style={{ backgroundColor: `${REASON_COLORS[deadline.reason] || 'var(--color-text-muted)'}18`, color: REASON_COLORS[deadline.reason] || 'var(--color-text-muted)', border: `1px solid ${REASON_COLORS[deadline.reason] || 'var(--color-text-muted)'}40` }}
                   >
                     {getReasonLabel(deadline.reason)}
                   </span>
@@ -180,12 +126,7 @@ export default function DeadlineBoard({ deadlines, onLift }: DeadlineBoardProps)
                 {/* Notes */}
                 {deadline.notes && (
                   <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: 'var(--color-text-muted)',
-                      lineHeight: 1.5,
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] leading-normal"
                   >
                     {deadline.notes}
                   </div>
@@ -195,21 +136,7 @@ export default function DeadlineBoard({ deadlines, onLift }: DeadlineBoardProps)
                 {onLift && (
                   <button
                     onClick={() => onLift(deadline.id)}
-                    style={{
-                      alignSelf: 'flex-start',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 8,
-                      fontWeight: 600,
-                      letterSpacing: '1px',
-                      textTransform: 'uppercase',
-                      padding: '4px 10px',
-                      borderRadius: 'var(--radius)',
-                      border: '1px solid var(--color-success)',
-                      backgroundColor: 'transparent',
-                      color: 'var(--color-success)',
-                      cursor: 'pointer',
-                      transition: 'all var(--transition)',
-                    }}
+                    className="self-start font-[var(--font-mono)] text-[8px] font-semibold tracking-[1px] uppercase py-1 px-2.5 rounded-[var(--radius)] border border-[var(--color-success)] bg-transparent text-[var(--color-success)] cursor-pointer transition-all duration-[var(--transition)]"
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.1)';
                     }}

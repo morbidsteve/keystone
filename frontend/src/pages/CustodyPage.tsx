@@ -166,14 +166,13 @@ export default function CustodyPage() {
   // -------------------------------------------------------------------------
 
   const renderLoadingSkeleton = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
@@ -224,28 +223,22 @@ export default function CustodyPage() {
   // -------------------------------------------------------------------------
 
   const renderRegistry = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+      <div className="flex gap-3 items-end">
         <div>
           <label style={labelStyle}>SEARCH</label>
-          <div style={{ position: 'relative' }}>
+          <div className="relative">
             <Search
               size={12}
-              style={{
-                position: 'absolute',
-                left: 8,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-text-muted)',
-              }}
+              className="absolute left-2 text-[var(--color-text-muted)]" style={{ top: '50%', transform: 'translateY(-50%)' }}
             />
             <input
               type="text"
               placeholder="Serial, nomenclature, holder..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ ...inputStyle, paddingLeft: 26, width: 240 }}
+              className="w-[240px]"
             />
           </div>
         </div>
@@ -270,11 +263,7 @@ export default function CustodyPage() {
 
       {/* Table + Detail split */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: selectedItemId ? '1fr 380px' : '1fr',
-          gap: 16,
-        }}
+        className="grid gap-4" style={{ gridTemplateColumns: selectedItemId ? '1fr 380px' : '1fr' }}
       >
         <Card title="SENSITIVE ITEMS REGISTRY">
           <SensitiveItemsTable
@@ -291,36 +280,20 @@ export default function CustodyPage() {
             headerRight={
               <button
                 onClick={() => setSelectedItemId(null)}
-                style={{
-                  ...buttonStyle,
-                  backgroundColor: 'transparent',
-                  color: 'var(--color-text-muted)',
-                  padding: '2px 6px',
-                  fontSize: 9,
-                }}
+                className="text-[var(--color-text-muted)] py-0.5 px-1.5 text-[9px]"
               >
                 CLOSE
               </button>
             }
           >
-            <div style={{ marginBottom: 12 }}>
+            <div className="mb-3">
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: 'var(--color-text-bright)',
-                  marginBottom: 2,
-                }}
+                className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)] mb-0.5"
               >
                 {selectedItem.nomenclature}
               </div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
               >
                 S/N: {selectedItem.serial_number}
               </div>
@@ -344,15 +317,11 @@ export default function CustodyPage() {
   // -------------------------------------------------------------------------
 
   const renderTransfers = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
         <button
           onClick={() => setShowNewTransferForm(!showNewTransferForm)}
-          style={{
-            ...buttonStyle,
-            backgroundColor: 'var(--color-accent)',
-            color: '#000',
-          }}
+          className="text-[#000]"
         >
           <Plus size={12} />
           {showNewTransferForm ? 'CANCEL' : 'NEW TRANSFER'}
@@ -363,11 +332,7 @@ export default function CustodyPage() {
       {showNewTransferForm && (
         <Card title="CREATE TRANSFER" accentColor="var(--color-accent)">
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: 12,
-            }}
+            className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]"
           >
             <div>
               <label style={labelStyle}>ITEM (SERIAL #)</label>
@@ -429,7 +394,7 @@ export default function CustodyPage() {
                 style={{ ...inputStyle, width: '100%' }}
               />
             </div>
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="col-span-full">
               <label style={labelStyle}>REASON</label>
               <input
                 type="text"
@@ -443,12 +408,7 @@ export default function CustodyPage() {
             </div>
             <div>
               <button
-                style={{
-                  ...buttonStyle,
-                  backgroundColor: 'var(--color-accent)',
-                  color: '#000',
-                  marginTop: 8,
-                }}
+                className="text-[#000] mt-2"
               >
                 <Plus size={12} />
                 SUBMIT TRANSFER
@@ -464,35 +424,19 @@ export default function CustodyPage() {
           renderLoadingSkeleton()
         ) : !transfers || transfers.length === 0 ? (
           <div
-            style={{
-              padding: 24,
-              textAlign: 'center',
-              color: 'var(--color-text-muted)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-            }}
+            className="p-6 text-center text-[var(--color-text-muted)] font-[var(--font-mono)] text-[11px]"
           >
             No transfers found
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   {['Date', 'Item', 'From', 'To', 'Type', 'Document #', 'Reason'].map((h) => (
                     <th
                       key={h}
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        fontWeight: 600,
-                        letterSpacing: '1.5px',
-                        textTransform: 'uppercase',
-                        color: 'var(--color-text-muted)',
-                        padding: '8px 10px',
-                        textAlign: 'left',
-                        borderBottom: '1px solid var(--color-border)',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] py-2 px-2.5 text-left border-b border-b-[var(--color-border)]"
                     >
                       {h}
                     </th>
@@ -510,101 +454,47 @@ export default function CustodyPage() {
                   return (
                     <tr key={transfer.id}>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          color: 'var(--color-text-muted)',
-                          whiteSpace: 'nowrap',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] whitespace-nowrap"
                       >
                         {new Date(transfer.transfer_date).toLocaleDateString()}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          color: 'var(--color-text-bright)',
-                          fontWeight: 600,
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
                       >
                         {matchItem?.serial_number ?? `Item #${transfer.sensitive_item_id}`}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          color: 'var(--color-text)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text)]"
                       >
                         {transfer.from_personnel_name ?? '—'}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          color: 'var(--color-text)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text)]"
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <div className="flex items-center gap-1">
                           <ChevronRight
                             size={10}
-                            style={{ color: 'var(--color-text-muted)' }}
+                            className="text-[var(--color-text-muted)]"
                           />
                           {transfer.to_personnel_name ?? '—'}
                         </div>
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         <span
-                          style={{
-                            padding: '2px 6px',
-                            borderRadius: 3,
-                            backgroundColor: `${typeColor}20`,
-                            color: typeColor,
-                            fontWeight: 600,
-                            fontSize: 9,
-                          }}
+                          className="py-0.5 px-1.5 rounded-[3px] font-semibold text-[9px]" style={{ backgroundColor: `${typeColor}20`, color: typeColor }}
                         >
                           {transfer.transfer_type.replace(/_/g, ' ')}
                         </span>
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          color: 'var(--color-text-muted)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
                       >
                         {transfer.document_number ?? '—'}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          color: 'var(--color-text-muted)',
-                          maxWidth: 200,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap"
                       >
                         {transfer.reason ?? '—'}
                       </td>
@@ -634,38 +524,20 @@ export default function CustodyPage() {
   // -------------------------------------------------------------------------
 
   const renderMissing = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {missingCount > 0 && (
         <div
-          style={{
-            padding: '12px 16px',
-            backgroundColor: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: 'var(--radius)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}
+          className="py-3 px-4 bg-[rgba(239,68,68,0.12)] rounded-[var(--radius)] flex items-center gap-2.5 border border-[rgba(239,68,68,0.3)]"
         >
-          <AlertTriangle size={16} style={{ color: '#ef4444', flexShrink: 0 }} />
+          <AlertTriangle size={16} className="text-[#ef4444] shrink-0" />
           <div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                fontWeight: 700,
-                color: '#ef4444',
-                marginBottom: 2,
-              }}
+              className="font-[var(--font-mono)] text-[11px] font-bold text-[#ef4444] mb-0.5"
             >
               {missingCount} SENSITIVE ITEM{missingCount !== 1 ? 'S' : ''} MISSING
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: '#f87171',
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[#f87171]"
             >
               Immediate action required. Notify chain of command and initiate FLIPL procedures.
             </div>
@@ -688,25 +560,15 @@ export default function CustodyPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 0 }}>
+    <div className="flex flex-col gap-4 p-0">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Shield size={18} style={{ color: 'var(--color-accent)' }} />
+        <div className="flex items-center gap-2.5">
+          <Shield size={18} className="text-[var(--color-accent)]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 14,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-sm font-bold text-[var(--color-text-bright)] tracking-[1px]"
           >
             CHAIN OF CUSTODY
           </span>
@@ -715,11 +577,7 @@ export default function CustodyPage() {
 
       {/* Summary KPI cards */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-          gap: 12,
-        }}
+        className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
       >
         {[
           {
@@ -751,42 +609,20 @@ export default function CustodyPage() {
         ].map((kpi) => (
           <div
             key={kpi.label}
-            style={{
-              padding: '14px 16px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="py-3.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                marginBottom: 6,
-              }}
+              className="flex items-center gap-1.5 mb-1.5"
             >
-              <kpi.icon size={11} style={{ color: 'var(--color-text-muted)' }} />
+              <kpi.icon size={11} className="text-[var(--color-text-muted)]" />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase"
               >
                 {kpi.label}
               </span>
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 22,
-                fontWeight: 700,
-                color: kpi.color,
-              }}
+              className="font-[var(--font-mono)] text-[22px] font-bold" style={{ color: kpi.color }}
             >
               {kpi.value}
             </div>
@@ -797,25 +633,11 @@ export default function CustodyPage() {
       {/* Missing items alert */}
       {missingCount > 0 && activeTab !== 'missing' && (
         <div
-          style={{
-            padding: '8px 12px',
-            backgroundColor: 'rgba(239, 68, 68, 0.08)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            borderRadius: 'var(--radius)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}
+          className="py-2 px-3 bg-[rgba(239,68,68,0.08)] rounded-[var(--radius)] flex items-center gap-2" style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}
         >
-          <AlertTriangle size={12} style={{ color: '#ef4444' }} />
+          <AlertTriangle size={12} className="text-[#ef4444]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 700,
-              color: '#ef4444',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-bold text-[#ef4444] tracking-[1px]"
           >
             {missingCount} MISSING ITEM{missingCount !== 1 ? 'S' : ''} — IMMEDIATE ACTION REQUIRED
           </span>
@@ -824,51 +646,21 @@ export default function CustodyPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px] flex items-center gap-1.5" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.key === 'missing' && missingCount > 0 && (
               <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  backgroundColor: '#ef4444',
-                  display: 'inline-block',
-                }}
+                className="w-[6px] h-[6px] bg-[#ef4444] inline-block rounded-full"
               />
             )}
             {tab.label}

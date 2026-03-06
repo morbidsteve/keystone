@@ -174,8 +174,8 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
         <thead>
           <tr>
             <th style={headerStyle}>CASUALTY ID</th>
@@ -190,11 +190,11 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
             <th style={headerStyle}>LOCATION</th>
             <th style={headerStyle}>MECHANISM</th>
             <th style={headerStyle} onClick={() => handleSort('patients')}>
-              <Users size={10} style={{ verticalAlign: 'middle', marginRight: 2 }} />
+              <Users size={10} className="align-middle mr-0.5" />
               PAX {sortField === 'patients' ? (sortAsc ? '\u25B2' : '\u25BC') : ''}
             </th>
             <th style={headerStyle} onClick={() => handleSort('reported')}>
-              <Clock size={10} style={{ verticalAlign: 'middle', marginRight: 2 }} />
+              <Clock size={10} className="align-middle mr-0.5" />
               REPORTED {sortField === 'reported' ? (sortAsc ? '\u25B2' : '\u25BC') : ''}
             </th>
           </tr>
@@ -209,7 +209,7 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-hover)'; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
             >
-              <td style={{ ...cellStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+              <td className="text-[var(--color-text-bright)]">
                 {c.casualty_id}
               </td>
               <td style={cellStyle}>
@@ -223,7 +223,7 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
                     {formatLabel(c.triage_category)}
                   </span>
                 ) : (
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: 10 }}>--</span>
+                  <span className="text-[var(--color-text-muted)] text-[10px]">--</span>
                 )}
               </td>
               <td style={cellStyle}>
@@ -236,17 +236,17 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
                   {c.evacuation_status ? formatLabel(c.evacuation_status) : '--'}
                 </span>
               </td>
-              <td style={{ ...cellStyle, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                <MapPin size={10} style={{ verticalAlign: 'middle', marginRight: 4, color: 'var(--color-text-muted)' }} />
+              <td className="overflow-hidden text-ellipsis">
+                <MapPin size={10} className="align-middle mr-1 text-[var(--color-text-muted)]" />
                 {c.location_description || c.location_mgrs || `${c.location_lat.toFixed(4)}, ${c.location_lon.toFixed(4)}`}
               </td>
-              <td style={{ ...cellStyle, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', fontSize: 10 }}>
+              <td className="overflow-hidden text-ellipsis text-[10px]">
                 {c.mechanism_of_injury || '--'}
               </td>
-              <td style={{ ...cellStyle, textAlign: 'center', fontWeight: 600 }}>
+              <td className="font-semibold">
                 {c.number_of_patients}
               </td>
-              <td style={{ ...cellStyle, color: 'var(--color-text-muted)', fontSize: 10 }}>
+              <td className="text-[10px]">
                 {relativeTime(c.reported_datetime)}
               </td>
             </tr>

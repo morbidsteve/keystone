@@ -36,14 +36,7 @@ function UnitMarker({
         opacity={0.95}
       >
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#111',
-            padding: '2px 4px',
-          }}
+          className="font-[var(--font-mono)] text-[10px] font-bold tracking-[1px] text-[#111] py-0.5 px-1"
         >
           {unit.abbreviation}
         </div>

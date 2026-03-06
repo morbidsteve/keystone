@@ -45,11 +45,7 @@ export default function FuelStorageCards({
 }: FuelStorageCardsProps) {
   return (
     <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-        gap: 12,
-      }}
+      className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
     >
       {storagePoints.map((sp) => {
         const isSelected = sp.id === selectedId;
@@ -60,83 +56,38 @@ export default function FuelStorageCards({
           <div
             key={sp.id}
             onClick={() => onSelect(sp.id)}
-            style={{
-              padding: 14,
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: isSelected
+            className="p-3.5 bg-[var(--color-bg-elevated)] rounded-[var(--radius)] cursor-pointer" style={{ border: isSelected
                 ? '2px solid var(--color-accent)'
-                : '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-            }}
+                : '1px solid var(--color-border)', transition: 'all var(--transition)' }}
           >
             {/* Header row */}
             <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: 10,
-              }}
+              className="flex justify-between items-start mb-2.5"
             >
               <div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    color: 'var(--color-text-bright)',
-                    marginBottom: 2,
-                  }}
+                  className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)] mb-0.5"
                 >
                   {sp.name}
                 </div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '1px',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px]"
                 >
                   {facilityTypeLabels[sp.facility_type] ?? sp.facility_type}
                 </div>
               </div>
               <div
-                style={{
-                  display: 'flex',
-                  gap: 6,
-                  alignItems: 'center',
-                }}
+                className="flex gap-1.5 items-center"
               >
                 {/* Fuel type badge */}
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    padding: '2px 6px',
-                    borderRadius: 3,
-                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                    color: '#3b82f6',
-                    letterSpacing: '0.5px',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] font-semibold py-0.5 px-1.5 rounded-[3px] bg-[rgba(59,130,246,0.15)] text-[#3b82f6] tracking-[0.5px]"
                 >
                   {sp.fuel_type}
                 </span>
                 {/* Status badge */}
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    padding: '2px 6px',
-                    borderRadius: 3,
-                    backgroundColor: `${statusColor}20`,
-                    color: statusColor,
-                    letterSpacing: '0.5px',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] font-semibold py-0.5 px-1.5 rounded-[3px] tracking-[0.5px]" style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
                 >
                   {getStatusLabel(sp.status)}
                 </span>
@@ -145,60 +96,29 @@ export default function FuelStorageCards({
 
             {/* Fill bar */}
             <div
-              style={{
-                width: '100%',
-                height: 8,
-                backgroundColor: 'var(--color-bg)',
-                borderRadius: 4,
-                overflow: 'hidden',
-                marginBottom: 8,
-              }}
+              className="w-full h-[8px] bg-[var(--color-bg)] rounded-[4px] overflow-hidden mb-2"
             >
               <div
-                style={{
-                  width: `${Math.min(sp.fill_percentage, 100)}%`,
-                  height: '100%',
-                  backgroundColor: fillColor,
-                  borderRadius: 4,
-                  transition: 'width 0.3s ease',
-                }}
+                className="h-full rounded-[4px]" style={{ width: `${Math.min(sp.fill_percentage, 100)}%`, backgroundColor: fillColor, transition: 'width 0.3s ease' }}
               />
             </div>
 
             {/* Stats row */}
             <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 6,
-              }}
+              className="flex justify-between items-center mb-1.5"
             >
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                }}
+                className="flex items-center gap-1"
               >
                 <Droplet size={10} style={{ color: fillColor }} />
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: fillColor,
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] font-bold" style={{ color: fillColor }}
                 >
                   {sp.fill_percentage.toFixed(1)}%
                 </span>
               </div>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
               >
                 {sp.current_gallons.toLocaleString()} / {sp.capacity_gallons.toLocaleString()} gal
               </span>
@@ -207,13 +127,7 @@ export default function FuelStorageCards({
             {/* MGRS location */}
             {sp.mgrs && (
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  letterSpacing: '0.5px',
-                  marginTop: 4,
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px] mt-1"
               >
                 MGRS: {sp.mgrs}
               </div>

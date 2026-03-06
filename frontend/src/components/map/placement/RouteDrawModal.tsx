@@ -176,53 +176,20 @@ export default function RouteDrawModal() {
   if (routeDrawing.addingWaypoint) {
     return (
       <div
-        style={{
-          position: 'fixed',
-          top: 16,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 3000,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '10px 20px',
-          backgroundColor: 'rgba(26, 31, 46, 0.95)',
-          border: '1px solid rgba(96, 165, 250, 0.4)',
-          borderRadius: 8,
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(8px)',
-          fontFamily: "'JetBrains Mono', monospace",
-        }}
+        className="fixed top-4 z-[3000] flex items-center gap-3 py-2.5 px-5 bg-[rgba(26,31,46,0.95)] rounded-[8px]" style={{ left: '50%', transform: 'translateX(-50%)', border: '1px solid rgba(96, 165, 250, 0.4)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(8px)', fontFamily: "'JetBrains Mono', monospace" }}
       >
         <div
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            backgroundColor: '#60a5fa',
-            animation: 'pulse 1.5s ease-in-out infinite',
-          }}
+          className="w-[8px] h-[8px] bg-[#60a5fa]" style={{ borderRadius: '50%', animation: 'pulse 1.5s ease-in-out infinite' }}
         />
-        <span style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600, letterSpacing: '1px' }}>
+        <span className="text-[#e2e8f0] text-[11px] font-semibold tracking-[1px]">
           CLICK MAP TO ADD WAYPOINT
         </span>
-        <span style={{ color: '#64748b', fontSize: 10 }}>
+        <span className="text-[#64748b] text-[10px]">
           ({routeDrawing.waypoints.length} placed)
         </span>
         <button
           onClick={() => setAddingWaypoint(false)}
-          style={{
-            padding: '4px 12px',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: 4,
-            backgroundColor: 'transparent',
-            color: '#94a3b8',
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 9,
-            fontWeight: 600,
-            letterSpacing: '0.5px',
-            cursor: 'pointer',
-          }}
+          className="py-1 px-3 rounded-[4px] bg-transparent text-[#94a3b8] text-[9px] font-semibold tracking-[0.5px] cursor-pointer" style={{ border: '1px solid rgba(255, 255, 255, 0.2)', fontFamily: "'JetBrains Mono', monospace" }}
         >
           DONE
         </button>
@@ -286,67 +253,26 @@ export default function RouteDrawModal() {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 3000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(2px)',
-      }}
+      className="fixed z-[3000] flex items-center justify-center bg-[rgba(0,0,0,0.5)] inset-0 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) clearRouteDrawing();
       }}
     >
       <div
-        style={{
-          width: 480,
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          backgroundColor: '#1a1f2e',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 8,
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)',
-          fontFamily: "'JetBrains Mono', monospace",
-        }}
+        className="w-[480px] max-h-[80vh] overflow-y-auto bg-[#1a1f2e] rounded-[8px]" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)', fontFamily: "'JetBrains Mono', monospace" }}
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
+          className="flex items-center justify-between py-3 px-4 border-b border-b-[rgba(255,255,255,0.1)]"
         >
           <span
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              color: '#e2e8f0',
-              textTransform: 'uppercase',
-            }}
+            className="text-[11px] font-bold tracking-[2px] text-[#e2e8f0] uppercase"
           >
             {routeDrawing.editingRouteId ? 'EDIT ROUTE' : 'DRAW ROUTE'}
           </span>
           <button
             onClick={clearRouteDrawing}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              border: 'none',
-              borderRadius: 4,
-              backgroundColor: 'transparent',
-              color: '#94a3b8',
-              cursor: 'pointer',
-            }}
+            className="flex items-center justify-center w-[28px] h-[28px] border-0 rounded-[4px] bg-transparent text-[#94a3b8] cursor-pointer"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             }}
@@ -359,9 +285,9 @@ export default function RouteDrawModal() {
         </div>
 
         {/* Body */}
-        <div style={{ padding: 16 }}>
+        <div className="p-4">
           {/* Name */}
-          <div style={{ marginBottom: 12 }}>
+          <div className="mb-3">
             <label style={labelStyle}>ROUTE NAME</label>
             <input
               type="text"
@@ -373,7 +299,7 @@ export default function RouteDrawModal() {
           </div>
 
           {/* Route Type */}
-          <div style={{ marginBottom: 12 }}>
+          <div className="mb-3">
             <label style={labelStyle}>ROUTE TYPE</label>
             <select
               value={routeType}
@@ -389,7 +315,7 @@ export default function RouteDrawModal() {
           </div>
 
           {/* Status */}
-          <div style={{ marginBottom: 12 }}>
+          <div className="mb-3">
             <label style={labelStyle}>STATUS</label>
             <select
               value={status}
@@ -405,57 +331,31 @@ export default function RouteDrawModal() {
           </div>
 
           {/* Description */}
-          <div style={{ marginBottom: 12 }}>
+          <div className="mb-3">
             <label style={labelStyle}>DESCRIPTION</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Route description..."
               rows={3}
-              style={{
-                ...inputStyle,
-                resize: 'vertical',
-                minHeight: 60,
-              }}
+              className="min-h-[60px]"
             />
           </div>
 
           {/* Waypoints */}
           <div
-            style={{
-              padding: '12px 0',
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
+            className="py-3 px-0 border-t border-t-[rgba(255,255,255,0.08)]"
           >
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 8,
-              }}
+              className="flex items-center justify-between mb-2"
             >
               <span style={labelStyle}>WAYPOINTS ({routeDrawing.waypoints.length})</span>
               <button
                 onClick={handleAddWaypoint}
                 disabled={routeDrawing.addingWaypoint}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '4px 10px',
-                  border: '1px solid rgba(96, 165, 250, 0.4)',
-                  borderRadius: 4,
-                  backgroundColor: routeDrawing.addingWaypoint
+                className="flex items-center gap-1 py-1 px-2.5 rounded-[4px] text-[#60a5fa] text-[9px] font-semibold tracking-[0.5px]" style={{ border: '1px solid rgba(96, 165, 250, 0.4)', backgroundColor: routeDrawing.addingWaypoint
                     ? 'rgba(96, 165, 250, 0.2)'
-                    : 'transparent',
-                  color: '#60a5fa',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '0.5px',
-                  cursor: routeDrawing.addingWaypoint ? 'default' : 'pointer',
-                }}
+                    : 'transparent', fontFamily: "'JetBrains Mono', monospace", cursor: routeDrawing.addingWaypoint ? 'default' : 'pointer' }}
               >
                 <Plus size={12} />
                 {routeDrawing.addingWaypoint ? 'CLICK MAP...' : 'ADD WAYPOINT'}
@@ -464,14 +364,7 @@ export default function RouteDrawModal() {
 
             {routeDrawing.waypoints.length === 0 && (
               <div
-                style={{
-                  padding: '16px',
-                  textAlign: 'center',
-                  color: '#64748b',
-                  fontSize: 10,
-                  border: '1px dashed rgba(255, 255, 255, 0.1)',
-                  borderRadius: 4,
-                }}
+                className="text-center text-[#64748b] text-[10px] rounded-[4px]" style={{ padding: '16px', border: '1px dashed rgba(255, 255, 255, 0.1)' }}
               >
                 No waypoints yet. Click "Add Waypoint" then click on the map.
               </div>
@@ -485,45 +378,20 @@ export default function RouteDrawModal() {
               return (
                 <div
                   key={idx}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                    borderRadius: 4,
-                    marginBottom: 4,
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                  }}
+                  className="flex items-center gap-2 py-1.5 px-2 bg-[rgba(255,255,255,0.02)] rounded-[4px] mb-1" style={{ border: '1px solid rgba(255, 255, 255, 0.05)' }}
                 >
                   {/* Dot */}
                   <div
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      backgroundColor: dotColor,
-                      flexShrink: 0,
-                    }}
+                    className="w-[8px] h-[8px] shrink-0" style={{ borderRadius: '50%', backgroundColor: dotColor }}
                   />
 
                   {/* Info */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="flex-1 min-w-0">
                     <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        marginBottom: 2,
-                      }}
+                      className="flex items-center gap-1.5 mb-0.5"
                     >
                       <span
-                        style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          color: '#e2e8f0',
-                          flexShrink: 0,
-                        }}
+                        className="text-[9px] font-bold text-[#e2e8f0] shrink-0"
                       >
                         WP {idx + 1}
                         {isFirst ? ' (START)' : isLast && routeDrawing.waypoints.length > 1 ? ' (END)' : ''}
@@ -533,33 +401,18 @@ export default function RouteDrawModal() {
                         value={waypointLabels[idx] ?? wp.label ?? ''}
                         onChange={(e) => handleLabelChange(idx, e.target.value)}
                         placeholder="Label..."
-                        style={{
-                          flex: 1,
-                          padding: '2px 4px',
-                          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
-                          borderRadius: 2,
-                          color: '#e2e8f0',
-                          fontFamily: "'JetBrains Mono', monospace",
-                          fontSize: 9,
-                          outline: 'none',
-                          minWidth: 0,
-                        }}
+                        className="flex-1 py-0.5 px-1 bg-[rgba(255,255,255,0.05)] rounded-[2px] text-[#e2e8f0] text-[9px] outline-none min-w-[0px]" style={{ border: '1px solid rgba(255, 255, 255, 0.08)', fontFamily: "'JetBrains Mono', monospace" }}
                       />
                     </div>
                     <div
-                      style={{
-                        fontSize: 9,
-                        color: '#64748b',
-                        fontFamily: "'JetBrains Mono', monospace",
-                      }}
+                      className="text-[9px] text-[#64748b] font-mono"
                     >
                       {wp.lat.toFixed(6)}, {wp.lon.toFixed(6)}
                     </div>
                   </div>
 
                   {/* Controls */}
-                  <div style={{ display: 'flex', gap: 2 }}>
+                  <div className="flex gap-0.5">
                     <button
                       onClick={() => handleMoveWaypoint(idx, 'up')}
                       disabled={isFirst}
@@ -604,15 +457,7 @@ export default function RouteDrawModal() {
           {/* Error */}
           {error && (
             <div
-              style={{
-                padding: '8px 10px',
-                backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                border: '1px solid rgba(248, 113, 113, 0.3)',
-                borderRadius: 4,
-                color: '#f87171',
-                fontSize: 10,
-                marginBottom: 12,
-              }}
+              className="py-2 px-2.5 bg-[rgba(248,113,113,0.1)] rounded-[4px] text-[#f87171] text-[10px] mb-3 border border-[rgba(248,113,113,0.3)]"
             >
               {error}
             </div>
@@ -620,48 +465,19 @@ export default function RouteDrawModal() {
 
           {/* Actions */}
           <div
-            style={{
-              display: 'flex',
-              gap: 8,
-              justifyContent: 'flex-end',
-              paddingTop: 8,
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
+            className="flex gap-2 justify-end pt-2 border-t border-t-[rgba(255,255,255,0.08)]"
           >
             <button
               onClick={clearRouteDrawing}
               disabled={isSubmitting}
-              style={{
-                padding: '7px 16px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 4,
-                backgroundColor: 'transparent',
-                color: '#94a3b8',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '1px',
-                cursor: 'pointer',
-              }}
+              className="py-[7px] px-4 rounded-[4px] bg-transparent text-[#94a3b8] text-[10px] font-semibold tracking-[1px] cursor-pointer" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', fontFamily: "'JetBrains Mono', monospace" }}
             >
               CANCEL
             </button>
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              style={{
-                padding: '7px 16px',
-                border: '1px solid #60a5fa',
-                borderRadius: 4,
-                backgroundColor: 'rgba(96, 165, 250, 0.15)',
-                color: '#60a5fa',
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: '1px',
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                opacity: isSubmitting ? 0.6 : 1,
-              }}
+              className="py-[7px] px-4 rounded-[4px] bg-[rgba(96,165,250,0.15)] text-[#60a5fa] text-[10px] font-bold tracking-[1px]" style={{ border: '1px solid #60a5fa', fontFamily: "'JetBrains Mono', monospace", cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.6 : 1 }}
             >
               {isSubmitting
                 ? 'SAVING...'

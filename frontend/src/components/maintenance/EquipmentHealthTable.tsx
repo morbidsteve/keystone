@@ -60,21 +60,13 @@ export default function EquipmentHealthTable({ unitId }: EquipmentHealthTablePro
   });
 
   if (isLoading) {
-    return <div className="skeleton" style={{ width: '100%', height: 300 }} />;
+    return <div className="skeleton w-full h-[300px]"  />;
   }
 
   if (!data || data.length === 0) {
     return (
       <div
-        style={{
-          height: 200,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="h-[200px] flex items-center justify-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No equipment health data available
       </div>
@@ -84,30 +76,16 @@ export default function EquipmentHealthTable({ unitId }: EquipmentHealthTablePro
   const headers = ['EQUIPMENT', 'MTBF (DAYS)', 'MTTR (HRS)', 'TREND', 'CORR. WOs', 'LAST CORR.', 'HEALTH'];
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div className="overflow-x-auto">
       <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-        }}
+        className="w-full border-collapse font-[var(--font-mono)] text-[11px]"
       >
         <thead>
           <tr>
             {headers.map((h) => (
               <th
                 key={h}
-                style={{
-                  textAlign: 'left',
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-text-muted)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  textTransform: 'uppercase',
-                }}
+                className="text-left py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] text-[9px] font-semibold tracking-[1px] uppercase"
               >
                 {h}
               </th>
@@ -120,68 +98,38 @@ export default function EquipmentHealthTable({ unitId }: EquipmentHealthTablePro
             return (
               <tr key={row.equipment_type}>
                 <td
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                    fontWeight: 600,
-                  }}
+                  className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
                 >
                   {row.equipment_type}
                 </td>
                 <td
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
                   {row.mtbf_days.toFixed(1)}
                 </td>
                 <td
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
                   {row.mttr_hours.toFixed(1)}
                 </td>
                 <td
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: trend.color,
-                    fontWeight: 700,
-                    fontSize: 14,
-                  }}
+                  className="py-2 px-3 border-b border-b-[var(--color-border)] font-bold text-sm" style={{ color: trend.color }}
                 >
                   {trend.symbol}{' '}
-                  <span style={{ fontSize: 9, fontWeight: 400 }}>{row.mtbf_trend}</span>
+                  <span className="text-[9px] font-normal">{row.mtbf_trend}</span>
                 </td>
                 <td
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
                   {row.corrective_wos_total}
                 </td>
                 <td
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
                 >
                   {formatDate(row.last_corrective_date)}
                 </td>
                 <td
-                  style={{
-                    padding: '8px 12px',
-                    borderBottom: '1px solid var(--color-border)',
-                  }}
+                  className="py-2 px-3 border-b border-b-[var(--color-border)]"
                 >
                   <span style={getHealthBadgeStyle(row.health_score)}>
                     {row.health_score}%

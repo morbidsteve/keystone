@@ -3,7 +3,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
@@ -27,6 +27,25 @@ from app.schemas.dashboard import (
 router = APIRouter()
 
 
+async def get_unit_subtree_ids(db: AsyncSession, root_unit_id: int) -> list[int]:
+    """Get all unit IDs in the subtree rooted at root_unit_id using recursive CTE.
+
+    Works with both PostgreSQL and SQLite (both support recursive CTEs).
+    Replaces the previous BFS loop that issued one SELECT per tree level (N+1 problem).
+    """
+    cte_query = text("""
+        WITH RECURSIVE unit_tree AS (
+            SELECT id FROM units WHERE id = :root_id
+            UNION ALL
+            SELECT u.id FROM units u
+            INNER JOIN unit_tree ut ON u.parent_id = ut.id
+        )
+        SELECT id FROM unit_tree
+    """)
+    result = await db.execute(cte_query, {"root_id": root_unit_id})
+    return [row[0] for row in result.all()]
+
+
 @router.get("/summary", response_model=DashboardSummary)
 async def get_dashboard_summary(
     unit_id: Optional[int] = Query(None, description="Unit ID to filter by"),
@@ -37,16 +56,8 @@ async def get_dashboard_summary(
     accessible = await get_accessible_units(db, current_user)
 
     if unit_id and unit_id in accessible:
-        # Re-calculate accessible from the specified unit down
-        target_user = User(unit_id=unit_id, role=current_user.role)
-        target_user.unit_id = unit_id
-        unit_ids = []
-        queue = [unit_id]
-        while queue:
-            cid = queue.pop(0)
-            unit_ids.append(cid)
-            result = await db.execute(select(Unit.id).where(Unit.parent_id == cid))
-            queue.extend([r[0] for r in result.all()])
+        # Fetch the full subtree in a single recursive CTE query (replaces N+1 BFS loop)
+        unit_ids = await get_unit_subtree_ids(db, unit_id)
     else:
         unit_ids = accessible
 

@@ -76,13 +76,7 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
   if (movementId <= 0) {
     return (
       <div
-        style={{
-          padding: 24,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="p-6 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No movement associated with this plan. Manifest will be available once a movement is created.
       </div>
@@ -92,13 +86,7 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
   if (isLoading) {
     return (
       <div
-        style={{
-          padding: 24,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="p-6 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         Loading manifest...
       </div>
@@ -108,13 +96,7 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
   if (error || !manifest) {
     return (
       <div
-        style={{
-          padding: 24,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: '#f87171',
-        }}
+        className="p-6 text-center font-[var(--font-mono)] text-[11px] text-[#f87171]"
       >
         Failed to load manifest data.
       </div>
@@ -122,9 +104,9 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="flex flex-col gap-3">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="flex items-center justify-between">
         <div style={sectionLabel}>
           <Truck size={12} />
           CONVOY {manifest.convoy_id} — {manifest.vehicles.length} VEHICLES
@@ -135,49 +117,28 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
       {manifest.vehicles.map((vehicle: FullManifestVehicle) => (
         <div
           key={vehicle.convoy_vehicle_id}
-          style={{
-            backgroundColor: 'var(--color-bg-card)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            padding: 14,
-          }}
+          className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-[var(--radius)] p-3.5"
         >
           {/* Vehicle header */}
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              marginBottom: 10,
-              paddingBottom: 8,
-              borderBottom: '1px solid var(--color-border)',
-            }}
+            className="flex items-center gap-3 mb-2.5 pb-2 border-b border-b-[var(--color-border)]"
           >
-            <Truck size={14} style={{ color: 'var(--color-accent)' }} />
+            <Truck size={14} className="text-[var(--color-accent)]" />
             <div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: 'var(--color-text-bright)',
-                }}
+                className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
               >
                 {vehicle.vehicle_type}
               </div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
                 BUMPER: {vehicle.bumper_number} | TAMCN: {vehicle.tamcn}
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div className="grid grid-cols-2 gap-3">
             {/* Crew section */}
             <div>
               <div style={{ ...sectionLabel, marginBottom: 6 }}>
@@ -185,43 +146,21 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
               </div>
               {vehicle.personnel.length === 0 ? (
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text-muted)',
-                    fontStyle: 'italic',
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] italic"
                 >
                   No crew assigned
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div className="flex flex-col gap-1">
                   {vehicle.personnel.map((p, idx) => {
                     const rc = getRoleColor(p.role);
                     return (
                       <div
                         key={`${p.id}-${idx}`}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                        }}
+                        className="flex items-center gap-2"
                       >
                         <span
-                          style={{
-                            display: 'inline-block',
-                            padding: '1px 6px',
-                            borderRadius: 2,
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 8,
-                            fontWeight: 700,
-                            letterSpacing: '0.5px',
-                            color: rc.text,
-                            backgroundColor: rc.bg,
-                            border: `1px solid ${rc.border}`,
-                            minWidth: 55,
-                            textAlign: 'center',
-                          }}
+                          className="inline-block py-px px-1.5 rounded-[2px] font-[var(--font-mono)] text-[8px] font-bold tracking-[0.5px] min-w-[55px] text-center" style={{ color: rc.text, backgroundColor: rc.bg, border: `1px solid ${rc.border}` }}
                         >
                           {p.role}
                         </span>
@@ -242,57 +181,30 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
               </div>
               {vehicle.cargo.length === 0 ? (
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text-muted)',
-                    fontStyle: 'italic',
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] italic"
                 >
                   No cargo loaded
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div className="flex flex-col gap-1">
                   {vehicle.cargo.map((c: ConvoyCargoItem) => (
                     <div
                       key={c.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 8,
-                      }}
+                      className="flex items-center justify-between gap-2"
                     >
-                      <span style={{ ...fieldValue, fontSize: 10, flex: 1 }}>
+                      <span className="flex-1">
                         {c.description ?? 'Unknown item'}
                         {c.is_hazmat && (
                           <span
-                            style={{
-                              display: 'inline-block',
-                              marginLeft: 6,
-                              padding: '0px 4px',
-                              borderRadius: 2,
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 8,
-                              fontWeight: 700,
-                              color: '#f87171',
-                              backgroundColor: 'rgba(248, 113, 113, 0.15)',
-                              border: '1px solid rgba(248, 113, 113, 0.4)',
-                              verticalAlign: 'middle',
-                            }}
+                            className="inline-block ml-1.5 py-0 px-1 rounded-[2px] font-[var(--font-mono)] text-[8px] font-bold text-[#f87171] bg-[rgba(248,113,113,0.15)] align-middle border border-[rgba(248,113,113,0.4)]"
                           >
-                            <AlertTriangle size={8} style={{ marginRight: 2, verticalAlign: 'middle' }} />
+                            <AlertTriangle size={8} className="mr-0.5 align-middle" />
                             HAZMAT
                           </span>
                         )}
                       </span>
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-text-muted)',
-                          whiteSpace: 'nowrap',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
                       >
                         x{c.quantity}
                         {c.weight_lbs != null && ` / ${c.weight_lbs} lbs`}
@@ -305,15 +217,7 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
               {/* Total weight */}
               {vehicle.total_cargo_weight > 0 && (
                 <div
-                  style={{
-                    marginTop: 6,
-                    paddingTop: 4,
-                    borderTop: '1px solid var(--color-border)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: 'var(--color-text-bright)',
-                  }}
+                  className="mt-1.5 pt-1 border-t border-t-[var(--color-border)] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-bright)]"
                 >
                   TOTAL: {vehicle.total_cargo_weight.toLocaleString()} lbs
                 </div>
@@ -325,13 +229,7 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
 
       {manifest.vehicles.length === 0 && (
         <div
-          style={{
-            padding: 20,
-            textAlign: 'center',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-text-muted)',
-          }}
+          className="p-5 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
         >
           No vehicles in this convoy manifest.
         </div>

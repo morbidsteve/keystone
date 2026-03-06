@@ -101,10 +101,10 @@ export default function S3View() {
   }, [selectedUnitId]);
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Unit Sustainability Cards */}
       <div>
-        <div className="section-header" style={{ marginBottom: 12, paddingLeft: 2 }}>
+        <div className="section-header mb-3 pl-0.5" >
           UNIT SUSTAINABILITY OVERLAY
         </div>
         <div className="grid-responsive-3col">
@@ -113,42 +113,20 @@ export default function S3View() {
             return (
               <div
                 key={unit.id}
-                style={{
-                  backgroundColor: 'var(--color-bg-elevated)',
-                  border: '1px solid var(--color-border)',
-                  borderTop: `2px solid ${color}`,
-                  borderRadius: 'var(--radius)',
-                  padding: 16,
-                }}
+                className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4" style={{ borderTop: `2px solid ${color}` }}
               >
                 {/* Unit Header */}
                 <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 12,
-                  }}
+                  className="flex justify-between items-center mb-3"
                 >
                   <div>
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 14,
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                      }}
+                      className="font-[var(--font-mono)] text-sm font-bold text-[var(--color-text-bright)]"
                     >
                       {unit.name}
                     </div>
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        color: 'var(--color-text-muted)',
-                        letterSpacing: '1px',
-                        textTransform: 'uppercase',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] uppercase"
                     >
                       {unit.echelon}
                     </div>
@@ -158,54 +136,36 @@ export default function S3View() {
 
                 {/* Key Stats */}
                 <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 8,
-                    marginBottom: 12,
-                    padding: '8px 0',
-                    borderTop: '1px solid var(--color-border)',
-                    borderBottom: '1px solid var(--color-border)',
-                  }}
+                  className="grid gap-2 mb-3 py-2 px-0 border-t border-t-[var(--color-border)] border-b border-b-[var(--color-border)] grid-cols-2"
                 >
                   <div>
-                    <div className="section-header" style={{ marginBottom: 2 }}>
+                    <div className="section-header mb-0.5">
                       READINESS
                     </div>
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 20,
-                        fontWeight: 700,
-                        color: getStatusColor(
+                      className="font-[var(--font-mono)] text-xl font-bold" style={{ color: getStatusColor(
                           unit.readiness >= 90
                             ? SupplyStatus.GREEN
                             : unit.readiness >= 75
                             ? SupplyStatus.AMBER
                             : SupplyStatus.RED,
-                        ),
-                      }}
+                        ) }}
                     >
                       {unit.readiness}%
                     </div>
                   </div>
                   <div>
-                    <div className="section-header" style={{ marginBottom: 2 }}>
+                    <div className="section-header mb-0.5">
                       SUSTAINABILITY
                     </div>
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 20,
-                        fontWeight: 700,
-                        color: getStatusColor(
+                      className="font-[var(--font-mono)] text-xl font-bold" style={{ color: getStatusColor(
                           unit.sustainability >= 7
                             ? SupplyStatus.GREEN
                             : unit.sustainability >= 3
                             ? SupplyStatus.AMBER
                             : SupplyStatus.RED,
-                        ),
-                      }}
+                        ) }}
                     >
                       {unit.sustainability}D
                     </div>
@@ -213,45 +173,28 @@ export default function S3View() {
                 </div>
 
                 {/* Supply DOS */}
-                <div style={{ marginBottom: 10 }}>
-                  <div className="section-header" style={{ marginBottom: 6 }}>
+                <div className="mb-2.5">
+                  <div className="section-header mb-1.5">
                     SUPPLY DOS
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div className="flex flex-col gap-1">
                     {unit.supplies.map((s) => (
                       <div
                         key={s.class}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                        }}
+                        className="flex items-center gap-2 font-[var(--font-mono)] text-[10px]"
                       >
                         <StatusDot status={s.status} size={6} />
-                        <span style={{ width: 50, color: 'var(--color-text-muted)' }}>
+                        <span className="w-[50px] text-[var(--color-text-muted)]">
                           {s.class}
                         </span>
                         <div
-                          style={{
-                            flex: 1,
-                            height: 4,
-                            backgroundColor: 'var(--color-bg)',
-                            borderRadius: 2,
-                            overflow: 'hidden',
-                          }}
+                          className="flex-1 h-[4px] bg-[var(--color-bg)] rounded-[2px] overflow-hidden"
                         >
                           <div
-                            style={{
-                              width: `${Math.min((s.dos / 14) * 100, 100)}%`,
-                              height: '100%',
-                              backgroundColor: getStatusColor(s.status),
-                              borderRadius: 2,
-                            }}
+                            className="h-full rounded-[2px]" style={{ width: `${Math.min((s.dos / 14) * 100, 100)}%`, backgroundColor: getStatusColor(s.status) }}
                           />
                         </div>
-                        <span style={{ width: 28, textAlign: 'right', color: getStatusColor(s.status) }}>
+                        <span className="w-[28px] text-right" style={{ color: getStatusColor(s.status) }}>
                           {s.dos}D
                         </span>
                       </div>
@@ -262,20 +205,13 @@ export default function S3View() {
                 {/* Constraints */}
                 {unit.constraints.length > 0 && (
                   <div>
-                    <div className="section-header" style={{ marginBottom: 4, color: 'var(--color-warning)' }}>
+                    <div className="section-header mb-1 text-[var(--color-warning)]" >
                       CONSTRAINTS
                     </div>
                     {unit.constraints.map((c, i) => (
                       <div
                         key={i}
-                        style={{
-                          fontSize: 10,
-                          color: 'var(--color-text-muted)',
-                          padding: '2px 0',
-                          borderLeft: '2px solid var(--color-warning)',
-                          paddingLeft: 8,
-                          marginBottom: 3,
-                        }}
+                        className="text-[10px] text-[var(--color-text-muted)] py-0.5 px-0 pl-2 mb-[3px]" style={{ borderLeft: '2px solid var(--color-warning)' }}
                       >
                         {c}
                       </div>
@@ -290,38 +226,20 @@ export default function S3View() {
 
       {/* Movement Feasibility */}
       <Card title="MOVEMENT ROUTE STATUS">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div className="flex flex-col gap-1.5">
           {movementFeasibility.map((route) => (
             <div
               key={route.name}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '8px 12px',
-                backgroundColor: 'var(--color-bg-surface)',
-                borderRadius: 'var(--radius)',
-                border: '1px solid var(--color-border)',
-              }}
+              className="flex items-center gap-3 py-2 px-3 bg-[var(--color-bg-surface)] rounded-[var(--radius)] border border-[var(--color-border)]"
             >
               <StatusDot status={route.status} />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: 'var(--color-text-bright)',
-                  width: 100,
-                }}
+                className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)] w-[100px]"
               >
                 {route.name}
               </span>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
               >
                 {route.detail}
               </span>

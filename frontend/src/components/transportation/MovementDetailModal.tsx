@@ -210,53 +210,22 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 3000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-      }}
+      className="fixed z-[3000] flex items-center justify-center bg-[rgba(0,0,0,0.85)] inset-0"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        style={{
-          width: '90%',
-          maxWidth: 900,
-          maxHeight: '90vh',
-          backgroundColor: 'var(--color-bg-card)',
-          border: '1px solid var(--color-border-strong)',
-          borderRadius: 'var(--radius)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
+        className="w-[90%] max-w-[900px] max-h-[90vh] bg-[var(--color-bg-card)] border border-[var(--color-border-strong)] rounded-[var(--radius)] flex flex-col overflow-hidden"
       >
         {/* ── Header ────────────────────────────────────────────────── */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '14px 16px',
-            borderBottom: '1px solid var(--color-border)',
-          }}
+          className="flex justify-between items-center py-3.5 px-4 border-b border-b-[var(--color-border)]"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <div className="flex items-center gap-2.5 flex-wrap">
             <Truck size={16} style={{ color: statusColor }} />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 14,
-                fontWeight: 700,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-bright)',
-                textDecoration: mov.status === MovementStatus.CANCELLED ? 'line-through' : undefined,
-              }}
+              className="font-[var(--font-mono)] text-sm font-bold tracking-[1.5px] text-[var(--color-text-bright)]" style={{ textDecoration: mov.status === MovementStatus.CANCELLED ? 'line-through' : undefined }}
             >
               {mov.name}
             </span>
@@ -271,48 +240,30 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
           </div>
           <button
             onClick={onClose}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-              padding: 4,
-            }}
+            className="flex items-center justify-center bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-1"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* ── Scrollable body ───────────────────────────────────────── */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+        <div className="flex-1 overflow-y-auto py-4 px-5">
           {/* ID + Last Updated */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div className="flex justify-between mb-4">
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-                letterSpacing: '0.5px',
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] tracking-[0.5px]"
             >
               ID: {mov.id}
             </span>
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
             >
               Updated: {formatDateShort(mov.lastUpdated)}
             </span>
           </div>
 
           {/* ── Route Section ─────────────────────────────────────── */}
-          <div style={{ marginBottom: 24 }}>
+          <div className="mb-6">
             <div style={sectionHeaderStyle}>
               <MapPin size={12} />
               ROUTE
@@ -320,23 +271,16 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
             {/* Origin -> Destination */}
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                marginBottom: 12,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-              }}
+              className="flex items-center gap-3 mb-3 font-[var(--font-mono)] text-xs"
             >
-              <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>{mov.originUnit}</span>
-              <ArrowRight size={14} style={{ color: 'var(--color-text-muted)' }} />
-              <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>{mov.destinationUnit}</span>
+              <span className="text-[var(--color-success)] font-semibold">{mov.originUnit}</span>
+              <ArrowRight size={14} className="text-[var(--color-text-muted)]" />
+              <span className="text-[var(--color-text-bright)] font-semibold">{mov.destinationUnit}</span>
             </div>
 
             {/* Coordinates grid */}
             {hasMapData && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+              <div className="grid gap-3 mb-3 grid-cols-2">
                 <div>
                   <div style={infoLabelStyle}>ORIGIN COORDS</div>
                   <div style={infoValueStyle}>
@@ -355,18 +299,12 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
             {/* Mini-map */}
             {hasMapData && mapBounds && (
               <div
-                style={{
-                  height: 200,
-                  borderRadius: 'var(--radius)',
-                  overflow: 'hidden',
-                  border: '1px solid var(--color-border)',
-                  marginBottom: 12,
-                }}
+                className="h-[200px] rounded-[var(--radius)] overflow-hidden border border-[var(--color-border)] mb-3"
               >
                 <MapContainer
                   center={[originCoord.lat, originCoord.lon]}
                   zoom={12}
-                  style={{ height: '100%', width: '100%' }}
+                  className="h-full w-full"
                   zoomControl={false}
                   attributionControl={false}
                 >
@@ -395,8 +333,8 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
             {/* Waypoints table */}
             {mov.routeWaypoints && mov.routeWaypoints.length > 0 && (
-              <div style={{ marginBottom: 4 }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <div className="mb-1">
+                <table className="w-full border-collapse">
                   <thead>
                     <tr>
                       <th style={thStyle()}>WP #</th>
@@ -421,12 +359,12 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
           </div>
 
           {/* ── Timeline Section ──────────────────────────────────── */}
-          <div style={{ marginBottom: 24 }}>
+          <div className="mb-6">
             <div style={sectionHeaderStyle}>
               <Clock size={12} />
               TIMELINE
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16 }}>
+            <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
               {mov.departureTime && (
                 <div>
                   <div style={infoLabelStyle}>DEPARTURE</div>
@@ -460,7 +398,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
           {/* ── Cargo Manifest Section ────────────────────────────── */}
           {manifest && manifest.cargo.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
+            <div className="mb-6">
               <div style={sectionHeaderStyle}>
                 <Package size={12} />
                 CARGO MANIFEST
@@ -468,7 +406,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
                   {manifest.totalWeightTons} TONS
                 </span>
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table className="w-full border-collapse">
                 <thead>
                   <tr>
                     <th style={thStyle()}>SUPPLY CLASS</th>
@@ -489,23 +427,13 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
                   <tr>
                     <td
                       colSpan={2}
-                      style={{
-                        ...tdStyle(),
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                        borderBottom: 'none',
-                      }}
+                      className="text-[var(--color-text-bright)] border-b-0"
                     >
                       TOTAL WEIGHT
                     </td>
                     <td
                       colSpan={2}
-                      style={{
-                        ...tdStyle('right'),
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                        borderBottom: 'none',
-                      }}
+                      className="text-[var(--color-text-bright)] border-b-0"
                     >
                       {manifest.totalWeightTons} T
                     </td>
@@ -517,7 +445,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
           {/* ── Vehicle Manifest Section ──────────────────────────── */}
           {manifest && manifest.vehicles.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
+            <div className="mb-6">
               <div style={sectionHeaderStyle}>
                 <Truck size={12} />
                 VEHICLE MANIFEST
@@ -525,7 +453,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
                   {manifest.totalVehicles} VEH
                 </span>
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table className="w-full border-collapse">
                 <thead>
                   <tr>
                     <th style={thStyle()}>TYPE</th>
@@ -546,23 +474,13 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
                   <tr>
                     <td
                       colSpan={2}
-                      style={{
-                        ...tdStyle(),
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                        borderBottom: 'none',
-                      }}
+                      className="text-[var(--color-text-bright)] border-b-0"
                     >
                       TOTAL
                     </td>
                     <td
                       colSpan={2}
-                      style={{
-                        ...tdStyle('right'),
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                        borderBottom: 'none',
-                      }}
+                      className="text-[var(--color-text-bright)] border-b-0"
                     >
                       {manifest.totalVehicles} VEH
                     </td>
@@ -574,7 +492,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
           {/* ── Personnel Section ─────────────────────────────────── */}
           {manifest && manifest.personnelByRole.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
+            <div className="mb-6">
               <div style={sectionHeaderStyle}>
                 <Users size={12} />
                 PERSONNEL
@@ -582,7 +500,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
                   {manifest.totalPersonnel} PAX
                 </span>
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <table className="w-full border-collapse">
                 <thead>
                   <tr>
                     <th style={thStyle()}>ROLE</th>
@@ -598,22 +516,12 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
                   ))}
                   <tr>
                     <td
-                      style={{
-                        ...tdStyle(),
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                        borderBottom: 'none',
-                      }}
+                      className="text-[var(--color-text-bright)] border-b-0"
                     >
                       TOTAL
                     </td>
                     <td
-                      style={{
-                        ...tdStyle('right'),
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                        borderBottom: 'none',
-                      }}
+                      className="text-[var(--color-text-bright)] border-b-0"
                     >
                       {manifest.totalPersonnel} PAX
                     </td>
@@ -625,7 +533,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
           {/* ── Convoy Manifest Section ───────────────────────────── */}
           {manifest?.convoyManifest && manifest.convoyManifest.vehicles.length > 0 && (
-            <div style={{ marginBottom: 24 }}>
+            <div className="mb-6">
               <div style={sectionHeaderStyle}>
                 <Truck size={12} />
                 CONVOY MANIFEST — VEHICLE ASSIGNMENTS
@@ -633,32 +541,15 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
               {manifest.convoyManifest.vehicles.map((cv) => (
                 <div
                   key={cv.id}
-                  style={{
-                    marginBottom: 12,
-                    padding: 12,
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius)',
-                  }}
+                  className="mb-3 p-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)]"
                 >
                   {/* Vehicle card header */}
                   <div
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      gap: 8,
-                      alignItems: 'center',
-                      marginBottom: 8,
-                    }}
+                    className="flex flex-wrap gap-2 items-center mb-2"
                   >
                     {cv.callSign && (
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: 'var(--color-text-bright)',
-                        }}
+                        className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)]"
                       >
                         {cv.callSign}
                       </span>
@@ -668,33 +559,21 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
                     </span>
                     {cv.tamcn && (
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-text-muted)',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                       >
                         TAMCN: {cv.tamcn}
                       </span>
                     )}
                     {cv.bumperNumber && (
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-text-muted)',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                       >
                         BN: {cv.bumperNumber}
                       </span>
                     )}
                     {cv.sequenceNumber != null && (
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          color: 'var(--color-text-muted)',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                       >
                         SEQ: {cv.sequenceNumber}
                       </span>
@@ -703,7 +582,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
                   {/* Assigned personnel table */}
                   {cv.assignedPersonnel.length > 0 && (
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table className="w-full border-collapse">
                       <thead>
                         <tr>
                           <th style={thStyle()}>NAME</th>
@@ -726,12 +605,7 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
                   {cv.assignedPersonnel.length === 0 && (
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        color: 'var(--color-text-muted)',
-                        fontStyle: 'italic',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] italic"
                     >
                       No personnel assigned
                     </div>
@@ -741,17 +615,9 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
               {manifest.convoyManifest.unassignedPersonnel.length > 0 && (
                 <div
-                  style={{
-                    padding: '8px 12px',
-                    backgroundColor: 'rgba(250, 176, 5, 0.08)',
-                    border: '1px solid rgba(250, 176, 5, 0.2)',
-                    borderRadius: 'var(--radius)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-warning)',
-                  }}
+                  className="py-2 px-3 bg-[rgba(250,176,5,0.08)] rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] text-[var(--color-warning)] border border-[rgba(250,176,5,0.2)]"
                 >
-                  <AlertTriangle size={10} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                  <AlertTriangle size={10} className="mr-1 align-middle" />
                   {manifest.convoyManifest.unassignedPersonnel.length} UNASSIGNED PERSONNEL
                 </div>
               )}
@@ -760,12 +626,12 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
           {/* ── Summary row (fallback when no manifest) ───────────── */}
           {!manifest && (
-            <div style={{ marginBottom: 24 }}>
+            <div className="mb-6">
               <div style={sectionHeaderStyle}>
                 <Package size={12} />
                 MOVEMENT SUMMARY
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16 }}>
+              <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
                 <div>
                   <div style={infoLabelStyle}>CARGO</div>
                   <div style={infoValueStyle}>{mov.cargo || '—'}</div>
@@ -784,22 +650,13 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
           {/* ── Notes Section ─────────────────────────────────────── */}
           {mov.notes && (
-            <div style={{ marginBottom: 24 }}>
+            <div className="mb-6">
               <div style={sectionHeaderStyle}>
                 <FileText size={12} />
                 NOTES
               </div>
               <div
-                style={{
-                  padding: '10px 14px',
-                  backgroundColor: 'rgba(250, 176, 5, 0.08)',
-                  border: '1px solid rgba(250, 176, 5, 0.2)',
-                  borderRadius: 'var(--radius)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-warning)',
-                  lineHeight: 1.6,
-                }}
+                className="py-2.5 px-3.5 bg-[rgba(250,176,5,0.08)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-warning)] leading-relaxed border border-[rgba(250,176,5,0.2)]"
               >
                 {mov.notes}
               </div>
@@ -809,27 +666,11 @@ export default function MovementDetailModal({ movement, onClose }: MovementDetai
 
         {/* ── Footer ────────────────────────────────────────────────── */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            padding: '12px 16px',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="flex justify-end py-3 px-4 border-t border-t-[var(--color-border)]"
         >
           <button
             onClick={onClose}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '6px 20px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text)',
-              cursor: 'pointer',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] py-1.5 px-5 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] cursor-pointer"
           >
             CLOSE
           </button>

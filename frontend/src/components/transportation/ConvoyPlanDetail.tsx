@@ -34,18 +34,7 @@ const RISK_COLORS: Record<RiskAssessmentLevel, { bg: string; text: string; borde
 function Badge({ label, colorSet }: { label: string; colorSet: { bg: string; text: string; border: string } }) {
   return (
     <span
-      style={{
-        display: 'inline-block',
-        padding: '3px 10px',
-        borderRadius: 2,
-        fontFamily: 'var(--font-mono)',
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: '0.5px',
-        color: colorSet.text,
-        backgroundColor: colorSet.bg,
-        border: `1px solid ${colorSet.border}`,
-      }}
+      className="inline-block py-[3px] px-2.5 rounded-[2px] font-[var(--font-mono)] text-[10px] font-bold tracking-[0.5px]" style={{ color: colorSet.text, backgroundColor: colorSet.bg, border: `1px solid ${colorSet.border}` }}
     >
       {label}
     </span>
@@ -160,37 +149,18 @@ export default function ConvoyPlanDetail({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
           <button
             onClick={onBack}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '4px 8px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              color: 'var(--color-text-muted)',
-              backgroundColor: 'transparent',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-            }}
+            className="flex items-center gap-1 py-1 px-2 font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-text-muted)] bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] cursor-pointer"
           >
             <ArrowLeft size={12} /> BACK
           </button>
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 14,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-sm font-bold text-[var(--color-text-bright)] tracking-[1px]"
           >
             {plan.name}
           </span>
@@ -199,21 +169,10 @@ export default function ConvoyPlanDetail({
             <Badge label={`RISK: ${plan.risk_assessment_level}`} colorSet={RISK_COLORS[plan.risk_assessment_level]} />
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="flex gap-2">
           <button
             onClick={() => onOpenMarchTable(plan.id)}
-            style={{
-              padding: '5px 12px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '0.5px',
-              color: 'var(--color-accent)',
-              backgroundColor: 'rgba(77, 171, 247, 0.1)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-            }}
+            className="py-1.5 px-3 font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[var(--color-accent)] bg-[rgba(77,171,247,0.1)] border border-[var(--color-accent)] rounded-[var(--radius)] cursor-pointer"
           >
             MARCH TABLE
           </button>
@@ -222,38 +181,14 @@ export default function ConvoyPlanDetail({
               setAssignVehicle({ id: 1, tamcn: 'D1100', vehicleType: 'HMMWV M1151', bumperNumber: 'S1-V1' });
               setAssignModalOpen(true);
             }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '5px 12px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '0.5px',
-              color: 'var(--color-accent)',
-              backgroundColor: 'rgba(77, 171, 247, 0.1)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              cursor: 'pointer',
-            }}
+            className="flex items-center gap-1 py-1.5 px-3 font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[var(--color-accent)] bg-[rgba(77,171,247,0.1)] border border-[var(--color-accent)] rounded-[var(--radius)] cursor-pointer"
           >
             <Users size={11} /> ASSIGN CREW
           </button>
           {plan.status === 'DRAFT' && (
             <button
               onClick={() => onApprovePlan(plan.id)}
-              style={{
-                padding: '5px 12px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                color: '#60a5fa',
-                backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                border: '1px solid rgba(96, 165, 250, 0.4)',
-                borderRadius: 'var(--radius)',
-                cursor: 'pointer',
-              }}
+              className="py-1.5 px-3 font-[var(--font-mono)] text-[9px] font-semibold text-[#60a5fa] bg-[rgba(96,165,250,0.1)] rounded-[var(--radius)] cursor-pointer" style={{ border: '1px solid rgba(96, 165, 250, 0.4)' }}
             >
               APPROVE
             </button>
@@ -261,17 +196,7 @@ export default function ConvoyPlanDetail({
           {plan.status === 'APPROVED' && (
             <button
               onClick={() => onExecutePlan(plan.id)}
-              style={{
-                padding: '5px 12px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                color: '#4ade80',
-                backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                border: '1px solid rgba(74, 222, 128, 0.4)',
-                borderRadius: 'var(--radius)',
-                cursor: 'pointer',
-              }}
+              className="py-1.5 px-3 font-[var(--font-mono)] text-[9px] font-semibold text-[#4ade80] bg-[rgba(74,222,128,0.1)] rounded-[var(--radius)] cursor-pointer border border-[rgba(74,222,128,0.4)]"
             >
               EXECUTE
             </button>
@@ -279,17 +204,7 @@ export default function ConvoyPlanDetail({
           {(plan.status === 'DRAFT' || plan.status === 'APPROVED') && (
             <button
               onClick={() => onCancelPlan(plan.id)}
-              style={{
-                padding: '5px 12px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                color: '#f87171',
-                backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                border: '1px solid rgba(248, 113, 113, 0.4)',
-                borderRadius: 'var(--radius)',
-                cursor: 'pointer',
-              }}
+              className="py-1.5 px-3 font-[var(--font-mono)] text-[9px] font-semibold text-[#f87171] bg-[rgba(248,113,113,0.1)] rounded-[var(--radius)] cursor-pointer border border-[rgba(248,113,113,0.4)]"
             >
               CANCEL
             </button>
@@ -299,7 +214,7 @@ export default function ConvoyPlanDetail({
 
       {/* Route Info */}
       <Card title="ROUTE INFORMATION">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <div style={fieldLabelStyle}>ROUTE NAME</div>
             <div style={fieldValueStyle}>{plan.route_name ?? '--'}</div>
@@ -308,7 +223,7 @@ export default function ConvoyPlanDetail({
             <div style={fieldLabelStyle}>MCN</div>
             <div style={fieldValueStyle}>{plan.movement_credit_number ?? 'Not assigned'}</div>
           </div>
-          <div style={{ gridColumn: '1 / -1' }}>
+          <div className="col-span-full">
             <div style={fieldLabelStyle}>DESCRIPTION</div>
             <div style={fieldValueStyle}>{plan.route_description ?? '--'}</div>
           </div>
@@ -322,13 +237,13 @@ export default function ConvoyPlanDetail({
           </div>
           <div>
             <div style={fieldLabelStyle}>TOTAL DISTANCE</div>
-            <div style={{ ...fieldValueStyle, fontWeight: 700, color: 'var(--color-text-bright)' }}>
+            <div className="text-[var(--color-text-bright)]">
               {plan.total_distance_km ? `${plan.total_distance_km} km` : '--'}
             </div>
           </div>
           <div>
             <div style={fieldLabelStyle}>ESTIMATED DURATION</div>
-            <div style={{ ...fieldValueStyle, fontWeight: 700, color: 'var(--color-text-bright)' }}>
+            <div className="text-[var(--color-text-bright)]">
               {plan.estimated_duration_hours ? `${plan.estimated_duration_hours} hours` : '--'}
             </div>
           </div>
@@ -337,7 +252,7 @@ export default function ConvoyPlanDetail({
 
       {/* Timing Section */}
       <Card title="TIMING">
-        <div style={{ display: 'flex', gap: 0, overflow: 'auto' }}>
+        <div className="flex gap-0 overflow-auto">
           {[
             { label: 'BRIEF', time: plan.brief_time, icon: Clock },
             { label: 'REHEARSAL', time: plan.rehearsal_time, icon: MapPin },
@@ -347,19 +262,14 @@ export default function ConvoyPlanDetail({
           ].map((item, idx) => (
             <div
               key={item.label}
-              style={{
-                flex: '1 1 0',
-                padding: '12px 14px',
-                borderRight: idx < 4 ? '1px solid var(--color-border)' : 'none',
-                textAlign: 'center',
-              }}
+              className="py-3 px-3.5 text-center" style={{ flex: '1 1 0', borderRight: idx < 4 ? '1px solid var(--color-border)' : 'none' }}
             >
               <item.icon
                 size={14}
-                style={{ color: 'var(--color-accent)', marginBottom: 6 }}
+                className="text-[var(--color-accent)] mb-1.5"
               />
               <div style={fieldLabelStyle}>{item.label}</div>
-              <div style={{ ...fieldValueStyle, fontSize: 10, fontWeight: 600 }}>
+              <div className="font-semibold">
                 {formatDate(item.time)}
               </div>
             </div>
@@ -369,8 +279,8 @@ export default function ConvoyPlanDetail({
 
       {/* Serials Table */}
       <Card title="SERIALS">
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
             <thead>
               <tr>
                 <th style={headerCellStyle}>Serial #</th>
@@ -385,7 +295,7 @@ export default function ConvoyPlanDetail({
             <tbody>
               {plan.serials.map((serial) => (
                 <tr key={serial.id}>
-                  <td style={{ ...cellStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                  <td className="text-[var(--color-text-bright)]">
                     {serial.serial_number}
                   </td>
                   <td style={cellStyle}>{serial.serial_commander_name ?? '--'}</td>
@@ -400,12 +310,7 @@ export default function ConvoyPlanDetail({
           </table>
         </div>
         <div
-          style={{
-            marginTop: 8,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-text-muted)',
-          }}
+          className="mt-2 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
         >
           Total: {plan.serials.reduce((a, s) => a + s.vehicle_count, 0)} vehicles,{' '}
           {plan.serials.reduce((a, s) => a + s.pax_count, 0)} PAX
@@ -418,7 +323,7 @@ export default function ConvoyPlanDetail({
       </Card>
 
       {/* Contingencies */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+      <div className="grid gap-4 grid-cols-3">
         <Card>
           <div style={sectionLabelStyle}>
             <Radio size={12} /> COMM PLAN

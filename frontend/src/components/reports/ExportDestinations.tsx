@@ -143,31 +143,22 @@ export default function ExportDestinations() {
         !showForm ? (
           <button
             onClick={() => { resetForm(); setShowForm(true); }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-              backgroundColor: 'var(--color-accent)', border: 'none',
-              borderRadius: 'var(--radius)', color: 'var(--color-bg)',
-              fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '1px', cursor: 'pointer',
-            }}
+            className="flex items-center gap-1 py-1 px-2.5 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] cursor-pointer"
           >
             <Plus size={10} /> ADD
           </button>
         ) : undefined
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {/* Add/Edit Form */}
         {showForm && (
-          <div style={{
-            padding: 12, backgroundColor: 'var(--color-bg)',
-            border: '1px solid var(--color-accent)', borderRadius: 'var(--radius)',
-            display: 'flex', flexDirection: 'column', gap: 10,
-          }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--color-accent)', letterSpacing: '1px' }}>
+          <div className="p-3 bg-[var(--color-bg)] border border-[var(--color-accent)] rounded-[var(--radius)] flex flex-col gap-2.5">
+            <div className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-accent)] tracking-[1px]">
               {editingId ? 'EDIT DESTINATION' : 'NEW DESTINATION'}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div className="grid gap-2 grid-cols-2">
               <div>
                 <label style={labelStyle}>NAME</label>
                 <input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="GCSS-MC API" style={inputStyle} />
@@ -197,39 +188,26 @@ export default function ExportDestinations() {
               </div>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={formActive}
                 onChange={(e) => setFormActive(e.target.checked)}
-                style={{ accentColor: 'var(--color-accent)' }}
+                className="accent-[var(--color-accent)]"
               />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--color-text)' }}>Active</span>
+              <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">Active</span>
             </div>
 
-            <div style={{ display: 'flex', gap: 6 }}>
+            <div className="flex gap-1.5">
               <button
                 onClick={handleSave}
                 disabled={saving || !formName || !formUrl}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px',
-                  backgroundColor: (!formName || !formUrl || saving) ? 'var(--color-bg-surface)' : 'var(--color-accent)',
-                  border: (!formName || !formUrl || saving) ? '1px solid var(--color-border)' : 'none',
-                  borderRadius: 'var(--radius)',
-                  color: (!formName || !formUrl || saving) ? 'var(--color-text-muted)' : 'var(--color-bg)',
-                  fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '1px',
-                  cursor: (!formName || !formUrl || saving) ? 'not-allowed' : 'pointer',
-                }}
+                className="flex items-center gap-1 py-1.5 px-3.5 rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px]" style={{ backgroundColor: (!formName || !formUrl || saving) ? 'var(--color-bg-surface)' : 'var(--color-accent)', border: (!formName || !formUrl || saving) ? '1px solid var(--color-border)' : 'none', color: (!formName || !formUrl || saving) ? 'var(--color-text-muted)' : 'var(--color-bg)', cursor: (!formName || !formUrl || saving) ? 'not-allowed' : 'pointer' }}
               >
                 {saving ? <Loader size={10} className="animate-spin" /> : <Check size={10} />}
                 {saving ? 'SAVING...' : 'SAVE'}
               </button>
-              <button onClick={resetForm} style={{
-                display: 'flex', alignItems: 'center', gap: 4, padding: '6px 14px',
-                backgroundColor: 'transparent', border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)', color: 'var(--color-text-muted)',
-                fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '1px', cursor: 'pointer',
-              }}>
+              <button onClick={resetForm} className="flex items-center gap-1 py-1.5 px-3.5 bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[9px] tracking-[1px] cursor-pointer">
                 <X size={10} /> CANCEL
               </button>
             </div>
@@ -238,53 +216,38 @@ export default function ExportDestinations() {
 
         {/* Destination List */}
         {loading ? (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', padding: 16, textAlign: 'center' }}>
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center">
             Loading destinations...
           </div>
         ) : destinations.length === 0 ? (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)', padding: 16, textAlign: 'center' }}>
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center">
             No export destinations configured yet.
           </div>
         ) : (
           destinations.map((d) => (
-            <div key={d.id} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '8px 10px', backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)', borderRadius: 'var(--radius)',
-            }}>
-              <Globe size={14} style={{ color: d.is_active ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)', flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+            <div key={d.id} className="flex items-center gap-2.5 py-2 px-2.5 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)]">
+              <Globe size={14} className="shrink-0" style={{ color: d.is_active ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)' }} />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold">
                     {d.name}
                   </span>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 8, padding: '1px 5px',
-                    borderRadius: 'var(--radius)', backgroundColor: d.is_active ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.05)',
-                    border: d.is_active ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--color-border)',
-                    color: d.is_active ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)',
-                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                  }}>
+                  <span className="font-[var(--font-mono)] text-[8px] py-px px-1.5 rounded-[var(--radius)] uppercase tracking-[0.5px]" style={{ backgroundColor: d.is_active ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.05)', border: d.is_active ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--color-border)', color: d.is_active ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)' }}>
                     {d.is_active ? 'ACTIVE' : 'INACTIVE'}
                   </span>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 8, padding: '1px 5px',
-                    borderRadius: 'var(--radius)', backgroundColor: 'var(--color-bg)',
-                    border: '1px solid var(--color-border)', color: 'var(--color-text-muted)',
-                    textTransform: 'uppercase', letterSpacing: '0.5px',
-                  }}>
+                  <span className="font-[var(--font-mono)] text-[8px] py-px px-1.5 rounded-[var(--radius)] bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text-muted)] uppercase tracking-[0.5px]">
                     {d.auth_type}
                   </span>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
                   {d.url}
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 4 }}>
+              <div className="flex gap-1">
                 <button onClick={() => startEdit(d)} style={smallBtnStyle}>
                   <Edit2 size={9} /> EDIT
                 </button>
-                <button onClick={() => handleDelete(d.id)} style={{ ...smallBtnStyle, borderColor: 'rgba(239,68,68,0.3)', color: 'var(--color-red, #ef4444)' }}>
+                <button onClick={() => handleDelete(d.id)} className="text-[var(--color-red, #ef4444)]">
                   <Trash2 size={9} /> DEL
                 </button>
               </div>

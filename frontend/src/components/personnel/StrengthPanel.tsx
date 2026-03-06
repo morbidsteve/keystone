@@ -55,38 +55,19 @@ export default function StrengthPanel({ mosFill, snapshots }: StrengthPanelProps
   }, [snapshots]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="flex flex-col gap-5">
       {/* Summary stats */}
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+      <div className="flex gap-4 flex-wrap">
         <div
-          style={{
-            padding: '12px 16px',
-            backgroundColor: 'var(--color-bg)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            minWidth: 140,
-          }}
+          className="py-3 px-4 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] min-w-[140px]"
         >
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              marginBottom: 4,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1"
           >
             TOTAL SHORTFALL
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 20,
-              fontWeight: 700,
-              color: totalShortfall > 0 ? '#f87171' : '#4ade80',
-            }}
+            className="font-[var(--font-mono)] text-xl font-bold" style={{ color: totalShortfall > 0 ? '#f87171' : '#4ade80' }}
           >
             {totalShortfall > 0 ? `-${totalShortfall}` : '0'}
           </div>
@@ -94,34 +75,15 @@ export default function StrengthPanel({ mosFill, snapshots }: StrengthPanelProps
 
         {worstMOS && worstMOS.shortfall > 0 && (
           <div
-            style={{
-              padding: '12px 16px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              minWidth: 200,
-            }}
+            className="py-3 px-4 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] min-w-[200px]"
           >
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 4,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1"
             >
               WORST SHORTFALL
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 600,
-                color: '#f87171',
-              }}
+              className="font-[var(--font-mono)] text-xs font-semibold text-[#f87171]"
             >
               {worstMOS.mos} ({`-${worstMOS.shortfall}`})
             </div>
@@ -132,15 +94,7 @@ export default function StrengthPanel({ mosFill, snapshots }: StrengthPanelProps
       {/* MOS Fill Bar Chart */}
       <div>
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            fontWeight: 600,
-            letterSpacing: '1.5px',
-            color: 'var(--color-text-muted)',
-            textTransform: 'uppercase',
-            marginBottom: 12,
-          }}
+          className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-3"
         >
           MOS FILL RATES
         </div>
@@ -183,15 +137,7 @@ export default function StrengthPanel({ mosFill, snapshots }: StrengthPanelProps
       {trendData.length > 0 && (
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              marginBottom: 12,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-3"
           >
             MANNING TREND
           </div>

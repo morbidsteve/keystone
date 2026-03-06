@@ -31,15 +31,10 @@ export default function IngestionPage() {
   });
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div className="animate-fade-in flex flex-col gap-0" >
       {/* Tab Bar */}
       <div
-        style={{
-          display: 'flex',
-          gap: 0,
-          borderBottom: '1px solid var(--color-border)',
-          marginBottom: 16,
-        }}
+        className="flex gap-0 border-b border-b-[var(--color-border)] mb-4"
       >
         <button style={tabStyle('files')} onClick={() => setActiveTab('files')}>
           FILE UPLOAD
@@ -54,8 +49,8 @@ export default function IngestionPage() {
 
       {/* Tab Content */}
       {activeTab === 'files' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <UploadPanel />
             <IngestionStatus />
           </div>
@@ -66,7 +61,7 @@ export default function IngestionPage() {
       {activeTab === 'tak' && <TAKManager />}
 
       {activeTab === 'schema-mapping' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="flex flex-col gap-4">
           <SchemaMapper />
           <TemplateManager />
         </div>
