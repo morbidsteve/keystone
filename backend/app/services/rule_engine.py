@@ -203,9 +203,7 @@ class RuleEngine:
                 from app.models.fuel import FuelStoragePoint
 
                 result = await self.db.execute(
-                    select(FuelStoragePoint).where(
-                        FuelStoragePoint.unit_id == unit.id
-                    )
+                    select(FuelStoragePoint).where(FuelStoragePoint.unit_id == unit.id)
                 )
                 storage = result.scalar_one_or_none()
                 if not storage or not storage.capacity_gallons:
