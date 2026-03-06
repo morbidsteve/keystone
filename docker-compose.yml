@@ -45,6 +45,8 @@ services:
     tmpfs:
       - /tmp
       - /run/postgresql
+    networks:
+      - backend
     restart: unless-stopped
 
   # ---------------------------------------------------------------------------
@@ -84,6 +86,8 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+    networks:
+      - backend
     restart: unless-stopped
 
   # ---------------------------------------------------------------------------
@@ -126,6 +130,9 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+    networks:
+      - frontend
+      - backend
     restart: unless-stopped
 
   # ---------------------------------------------------------------------------
@@ -166,6 +173,8 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+    networks:
+      - backend
     restart: unless-stopped
 
   # ---------------------------------------------------------------------------
@@ -203,6 +212,8 @@ services:
       - /tmp
       - /var/cache/nginx
       - /run
+    networks:
+      - frontend
     restart: unless-stopped
 
   # ---------------------------------------------------------------------------
@@ -230,8 +241,80 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+    networks:
+      - backend
     restart: "no"
+
+  # ---------------------------------------------------------------------------
+  # Prometheus (monitoring profile)
+  # ---------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    profiles: ["monitoring"]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # ---------------------------------------------------------------------------
+  # Grafana (monitoring profile)
+  # ---------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:10.4.0
+    profiles: ["monitoring"]
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=keystone_grafana_dev
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ---------------------------------------------------------------------------
+  # Database Backup (backup profile)
+  # ---------------------------------------------------------------------------
+  backup:
+    image: postgres:15-alpine
+    profiles: ["backup"]
+    environment:
+      PGHOST: db
+      PGUSER: keystone
+      PGPASSWORD: keystone_dev
+      PGDATABASE: keystone
+      BACKUP_DIR: /backups
+    volumes:
+      - ./scripts/backup-db.sh:/backup.sh:ro
+      - backup_data:/backups
+    entrypoint: ["/bin/sh", "-c", "chmod +x /backup.sh && /backup.sh"]
+    networks:
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
   redisdata:
+  grafana_data:
+  backup_data:
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge

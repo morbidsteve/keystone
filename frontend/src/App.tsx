@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { usePermission } from '@/hooks/usePermission';
 import MainLayout from '@/components/layout/MainLayout';
 import LoadingFallback from '@/components/ui/LoadingFallback';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 
 // ---------------------------------------------------------------------------
 // Lazy-loaded page components (route-based code splitting)
@@ -92,6 +93,7 @@ function ProtectedRoute({
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <Routes>
       <Route path="/login" element={<Lazy><LoginPage /></Lazy>} />
       <Route
@@ -147,5 +149,6 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </ErrorBoundary>
   );
 }

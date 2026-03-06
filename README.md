@@ -22,44 +22,68 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 
 ## Screenshots
 
-### Login & Role Picker
-![Demo mode login page with role picker showing 24 named users organized by Command Element, Battalion Staff, Battery Commanders, Operators, and Higher HQ -- each card displays rank, name, billet, unit, MOS, and role description](docs/images/login-page.png)
-
 ### Commander Dashboard
-![Commander dashboard with role-based tabs (Commander/S-4/S-3), grouped sidebar with collapsible sections and badge counts, breadcrumb navigation, 6 readiness KPI cards (Supply/Maintenance/Transportation/Engineering/Health Svcs/Services), supply class status grid, equipment readiness donut charts, sustainability projection and consumption rate charts, active alerts panel, and live activity feed with real-time simulation events](docs/images/dashboard.png)
+![Commander dashboard with role-based tabs (Commander/S-4/S-3), grouped sidebar with collapsible sections and badge counts, breadcrumb navigation, 6 readiness KPI cards (Supply 75%/Maintenance 87%/Transportation 91%/Engineering 95%/Health Svcs 92%/Services 78%), supply class status grid with percentage bars and DOS, equipment readiness donut charts (HMMWV 88%/MTVR 86%/LAV-25 79%/M777 89%/AN-PRC-117G 96%), sustainability projection bar chart, consumption rate trend line, active alerts panel, and live activity feed with real-time simulation events](docs/images/dashboard.png)
+
+### Sidebar — Collapsed Icon-Only Mode
+![Dashboard with sidebar collapsed to icon-only mode showing navigation icons, expand button at bottom, and maximized content area with full dashboard visible](docs/images/sidebar-collapsed.png)
 
 ### Interactive Map
-![Leaflet map centered on Camp Pendleton with military symbology (APP-6D SIDCs), unit positions, supply point markers (LOG BASE/AMMO SP/FARP/LZ/WATER PT), convoy routes, MSR/ASR overlays, collapsible layer control panel, base map switcher (OSM/Satellite/Topo), comprehensive legend, and search control](docs/images/map-view.png)
+![Leaflet map centered on Camp Pendleton with military symbology (APP-6D SIDCs), unit positions with blue friendly markers, supply point markers (LOG BASE/AMMO SP/FARP/LZ/WATER PT), convoy routes, MSR/ASR overlays, collapsible layer control panel with 8 toggleable layers, base map switcher (OSM/Satellite/Topo), comprehensive legend showing unit affiliation colors, supply status indicators, supply point types, route classifications, convoy status, vehicle status, and alert severity levels](docs/images/map.png)
 
 ### Readiness
-![Unit readiness overview with DRRS-style C-ratings, 5 donut gauges (Overall C-2 78%, Equipment R-2 87%, Supply S-2 80%, Personnel P-3 75%, Training T-2 85%), limiting factor banner, DRRS ratings cards, all-units overview grid showing each unit's C-rating, percentage, and LIMFAC, with tabs for Overview/Trend/Strength/Subordinates](docs/images/readiness.png)
+![Unit readiness overview with DRRS-style C-ratings, 5 donut gauges (Overall C-2 78%, Equipment R-2 87%, Supply S-2 80%, Personnel P-3 75%, Training T-2 85%), limiting factor banner warning about CL III bulk fuel, DRRS ratings cards, all-units overview grid showing each unit's C-rating with color-coded percentage bars and LIMFAC descriptions, tabs for Overview/Trend/Strength/Subordinates](docs/images/readiness.png)
 
 ### Supply Status
-![Supply tracking table with filterable supply class and status dropdowns, sortable columns for Unit, Class, Item, On Hand, Required, percentage, DOS, Rate, and traffic-light Status (GREEN/AMBER/RED), supply class by unit bar chart, consumption trend line chart, and DOS calculator tool](docs/images/supply-status.png)
+![Supply tracking table with filterable supply class and status dropdowns, searchable records, sortable columns for Unit, Class, Item, On Hand, Required, percentage, DOS, Rate, and traffic-light Status badges (GREEN/AMBER/RED), supply class by unit horizontal bar chart, consumption trend line chart, and interactive DOS calculator tool](docs/images/supply.png)
 
 ### Equipment Readiness
-![Equipment readiness table with sortable columns for Type, TAMCN, Unit, Authorized, On-Hand, MC, NMC, readiness percentage, and Status badges (GREEN/AMBER), expandable rows, maintenance work orders panel with priority-coded cards (URGENT/PRIORITY/ROUTINE), and readiness trend chart showing 7-day fleet trends](docs/images/equipment-readiness.png)
+![Equipment readiness table with sortable columns for Type, TAMCN, Unit, Authorized, On-Hand, MC, NMC, readiness percentage with color-coded bars, and Status badges (GREEN/AMBER/RED), maintenance work orders panel with priority-coded status cards, and readiness trend line chart showing 7-day fleet trends by equipment type](docs/images/equipment.png)
 
 ### Maintenance Management
-![Maintenance management page with KPI cards (Deadline Rate, MTTR, Parts Fill Rate, Cannibalization Rate), tabbed views (Work Orders/PM Schedule/Deadlines/Analytics/Predictive), work order cards color-coded by priority (URGENT red/PRIORITY yellow/ROUTINE green) showing status, parts count, labor hours, and assigned technician](docs/images/maintenance.png)
+![Maintenance management page with KPI summary cards (Deadline Rate, MTTR, Parts Fill Rate, Cannibalization Rate), tabbed views (Work Orders/PM Schedule/Deadlines/Analytics/Predictive), work order cards color-coded by priority (URGENT red/PRIORITY yellow/ROUTINE green) showing WO number, status, equipment, parts count, labor hours, and assigned technician](docs/images/maintenance.png)
 
-### Transportation & Convoy Tracking
-![Transportation page with Leaflet map showing active convoy routes, convoy status cards (EN ROUTE/PLANNED/DELAYED/ARRIVED) with origin-destination, cargo manifest, vehicle and PAX counts, departure/ETA times, tabs for Active Convoys/Convoy Planning/Lift Requests/Movement History, and throughput chart with 7-day tonnage statistics](docs/images/transportation.png)
-
-### Personnel & Manning
-![Personnel page with strength summary cards (Authorized 180, Assigned 162, Present 150, Fill Rate 90.0%), P-Rating badge, tabbed views (Alpha Roster/Strength/Billets/Qualifications/EAS Timeline), searchable roster with Name, EDIPI, Rank, Pay Grade, MOS, Billet, Status, Duty, Rifle qualification, PFT/CFT scores, and Location columns](docs/images/personnel.png)
+### Requisitions
+![Requisition management page with status filter tabs, requisition cards showing requisition number, priority level, requested items with quantities, requesting unit, submission date, and approval workflow status badges (SUBMITTED/APPROVED/FULFILLED/REJECTED)](docs/images/requisitions.png)
 
 ### Fuel / POL Management
-![Fuel management dashboard with critical fuel warning banner (2.8 DOS), capacity KPI cards (Total Capacity, On Hand, Days of Supply, Daily Consumption), storage point cards showing FARP-Alpha, FSP-Main, TFDS-1, and Bladder-South with fuel type, operational status, fill percentage bars, and MGRS coordinates, 14-day fuel projection chart with gallons and DOS dual axis, and op-tempo forecast metrics](docs/images/fuel.png)
+![Fuel management dashboard with critical fuel warning banner, capacity KPI cards (Total Capacity, On Hand, Days of Supply, Daily Consumption), storage point cards showing fuel type, operational status, fill percentage bars, and MGRS coordinates, 14-day fuel projection chart with gallons and DOS dual axis, and op-tempo forecast metrics](docs/images/fuel.png)
+
+### Transportation & Convoy Tracking
+![Transportation page with Leaflet map showing active convoy routes on Camp Pendleton, convoy summary KPI cards (active convoys, vehicles, PAX, tonnage), tabbed views (Active Convoys/Convoy Planning/Lift Requests/Movement History), convoy status cards with origin-destination, cargo manifest, vehicle and PAX counts, departure/ETA times](docs/images/transportation.png)
+
+### Custody & Sensitive Items
+![Custody tracking page for sensitive items with chain of custody audit trail, inventory management showing item serial numbers, custodian assignments, and accountability status](docs/images/custody.png)
+
+### Personnel & Manning
+![Personnel page with strength summary cards (Authorized, Assigned, Present, Fill Rate), P-Rating badge, tabbed views (Alpha Roster/Strength/Billets/Qualifications/EAS Timeline), searchable roster with Name, EDIPI, Rank, Pay Grade, MOS, Billet, Status, Duty, Rifle qualification, PFT/CFT scores, and Location columns](docs/images/personnel.png)
+
+### Medical / CASEVAC
+![Medical page with CASEVAC tracking, casualty reports, medical treatment facility management, and blood product inventory tracking with status indicators](docs/images/medical.png)
+
+### Data Ingestion
+![Data ingestion page with upload interface supporting mIRC chat logs, Excel spreadsheets, TAK CoT XML, and route files (GeoJSON/GPX/KML/KMZ), ingestion history with status indicators and parsed record counts](docs/images/ingestion.png)
+
+### Data Sources
+![Data sources management page showing configured external data sources with connection status, source type, last sync time, and configuration options](docs/images/datasources.png)
 
 ### SITREP Reports
-![Reports page with tabbed views (Reports/Generate/Templates/Schedules/Export), generated report list with status badges (FINALIZED/READY/DRAFT/GENERATING), selected Daily LOGSTAT preview showing supply class status, equipment readiness percentage, active convoys, and critical alerts with export options (PDF/API/TXT)](docs/images/reports.png)
+![Reports page with tabbed views (Reports/Generate/Templates/Schedules/Export), generated report list with status badges (FINALIZED/READY/DRAFT/GENERATING), report preview showing supply class status, equipment readiness, active convoys, and critical alerts with export options](docs/images/reports.png)
 
-### Alerts
-![Alerts dashboard with severity summary cards (Total Active 5, Critical 2, Warning 2, Info 1), tabbed views (Alerts/Rules/Notifications/Preferences/Predictions), severity filter dropdown, toggle for acknowledged/resolved, expandable alert cards with description, severity badge, unit, timestamp, and ACK/RESOLVE action buttons](docs/images/alerts.png)
+### Alerts & Predictions
+![Alerts dashboard with severity summary cards (Total Active, Critical, Warning, Info), tabbed views (Alerts/Rules/Notifications/Preferences/Predictions), severity filter, toggle for acknowledged/resolved, expandable alert cards with description, severity badge, unit, timestamp, and ACK/RESOLVE action buttons](docs/images/alerts.png)
+
+### Audit Log
+![System-wide audit log with comprehensive trail of user actions, filterable by action type, user, and date range, showing timestamps, user, action, target entity, and details](docs/images/audit.png)
 
 ### Administration
-![Admin panel with tabbed views (User Management/Unit Configuration/Classification/Map Tiles/Scenarios/Roles & Permissions/Simulation), user management table with status indicator, username, name, role badges (COMMANDER/S4/S3/OPERATOR/VIEWER), unit, last login, and edit actions, Add User button](docs/images/admin-panel.png)
+![Admin panel with tabbed views (User Management/Unit Configuration/Classification/Map Tiles/Scenarios/Roles & Permissions/Simulation), user management table with status indicator, username, name, role badges (ADMIN/COMMANDER/S4/S3/OPERATOR/VIEWER), unit, last login, and edit actions](docs/images/admin.png)
+
+### Documentation
+![Built-in documentation page with API reference, user guides, and system documentation accessible directly within the application](docs/images/docs.png)
+
+### Login & Role Picker (Demo Mode)
+![Demo mode login page with role picker showing 24 named users organized by Command Element, Battalion Staff, Battery Commanders, Operators, and Higher HQ -- each card displays rank, name, billet, unit, MOS, and role description](docs/images/login-page.png)
 
 ---
 

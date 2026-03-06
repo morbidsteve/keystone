@@ -23,6 +23,7 @@ from app.models.maintenance_schedule import (
     MaintenanceDeadline,
     PreventiveMaintenanceSchedule,
 )
+from app.middleware.audit import log_audit
 from app.models.user import Role, User
 from app.schemas.maintenance import (
     MaintenanceDeadlineCreate,
@@ -148,6 +149,17 @@ async def create_work_order(
     db.add(wo)
     await db.flush()
     await db.refresh(wo)
+
+    await log_audit(
+        db=db,
+        user_id=current_user.id,
+        action="CREATE",
+        entity_type="work_order",
+        entity_id=str(wo.id),
+        unit_id=wo.unit_id,
+        details={"work_order_number": wo.work_order_number},
+    )
+
     return wo
 
 
@@ -185,6 +197,17 @@ async def update_work_order(
 
     await db.flush()
     await db.refresh(wo)
+
+    await log_audit(
+        db=db,
+        user_id=current_user.id,
+        action="UPDATE",
+        entity_type="work_order",
+        entity_id=str(wo.id),
+        unit_id=wo.unit_id,
+        details={"updated_fields": list(update_data.keys())},
+    )
+
     return wo
 
 
@@ -209,6 +232,16 @@ async def delete_work_order(
     accessible = await get_accessible_units(db, current_user)
     if wo.unit_id not in accessible:
         raise NotFoundError("Work Order", wo_id)
+
+    await log_audit(
+        db=db,
+        user_id=current_user.id,
+        action="DELETE",
+        entity_type="work_order",
+        entity_id=str(wo_id),
+        unit_id=wo.unit_id,
+        details={"work_order_number": wo.work_order_number},
+    )
 
     await db.delete(wo)
     await db.flush()

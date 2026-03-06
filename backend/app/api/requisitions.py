@@ -18,6 +18,7 @@ from app.models.requisition import (
     RequisitionPriority,
     RequisitionStatus,
 )
+from app.middleware.audit import log_audit
 from app.models.user import Role, User
 from app.schemas.requisition import (
     RequisitionApprove,
@@ -143,7 +144,19 @@ async def create_requisition(
 ):
     """Create a new requisition in DRAFT status."""
     await check_unit_access(current_user, data.unit_id, db)
-    return await svc_create(db, current_user, data.unit_id, data)
+    req = await svc_create(db, current_user, data.unit_id, data)
+
+    await log_audit(
+        db=db,
+        user_id=current_user.id,
+        action="CREATE",
+        entity_type="requisition",
+        entity_id=str(req.id),
+        unit_id=data.unit_id,
+        details={"requisition_number": req.requisition_number},
+    )
+
+    return req
 
 
 # --- State transition endpoints ---

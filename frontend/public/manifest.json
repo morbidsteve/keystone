@@ -1,0 +1,13 @@
+{
+  "name": "KEYSTONE - Logistics COP",
+  "short_name": "KEYSTONE",
+  "description": "USMC Logistics Common Operating Picture",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#4dabf7",
+  "icons": [
+    { "src": "/keystone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/keystone-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

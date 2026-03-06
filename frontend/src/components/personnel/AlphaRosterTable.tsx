@@ -10,6 +10,8 @@ import StatusDot from '@/components/ui/StatusDot';
 import EmptyState from '@/components/ui/EmptyState';
 import AddEditPersonnelModal from './AddEditPersonnelModal';
 import { deletePersonnel } from '@/api/personnel';
+import ExportMenu from '@/components/common/ExportMenu';
+import { useVirtualRows } from '@/hooks/useVirtualRows';
 
 interface AlphaRosterTableProps {
   personnel: PersonnelRecord[];
@@ -146,6 +148,42 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
     return sorted;
   }, [personnel, search, sortKey, sortDir]);
 
+  const { parentRef, virtualizer } = useVirtualRows({ count: filtered.length, estimateSize: 36 });
+
+  const exportData = useMemo(
+    () =>
+      filtered.map((p) => ({
+        last_name: p.last_name,
+        first_name: p.first_name,
+        edipi: p.edipi,
+        rank: p.rank ?? '',
+        pay_grade: p.pay_grade ?? '',
+        mos: p.mos ?? '',
+        billet: p.billet ?? '',
+        status: p.status,
+        duty_status: p.duty_status,
+        rifle_qual: p.rifle_qual ?? '',
+        pft_score: p.pft_score ?? '',
+        cft_score: p.cft_score ?? '',
+      })) as Record<string, unknown>[],
+    [filtered],
+  );
+
+  const exportColumns = [
+    { key: 'last_name', header: 'Last Name' },
+    { key: 'first_name', header: 'First Name' },
+    { key: 'edipi', header: 'EDIPI' },
+    { key: 'rank', header: 'Rank' },
+    { key: 'pay_grade', header: 'Pay Grade' },
+    { key: 'mos', header: 'MOS' },
+    { key: 'billet', header: 'Billet' },
+    { key: 'status', header: 'Status' },
+    { key: 'duty_status', header: 'Duty Status' },
+    { key: 'rifle_qual', header: 'Rifle Qual' },
+    { key: 'pft_score', header: 'PFT' },
+    { key: 'cft_score', header: 'CFT' },
+  ];
+
   const columns: { key: SortKey; label: string; width?: number }[] = [
     { key: 'last_name', label: 'NAME' },
     { key: 'edipi', label: 'EDIPI', width: 100 },
@@ -209,6 +247,12 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
           <Plus size={12} />
           ADD MARINE
         </button>
+        <ExportMenu
+          data={exportData}
+          filename="alpha-roster"
+          title="Alpha Roster"
+          columns={exportColumns}
+        />
       </div>
 
       {/* Count */}
@@ -226,11 +270,11 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
           message="Personnel assigned to this unit will appear here"
         />
       ) : (
-      <div className="overflow-x-auto">
+      <div ref={parentRef} style={{ maxHeight: 600, overflow: 'auto' }}>
         <table
           className="w-full border-collapse min-w-[900px]"
         >
-          <thead>
+          <thead className="sticky top-0 z-10 bg-[var(--color-bg-elevated)]">
             <tr>
               {columns.map((col) => (
                 <th
@@ -253,11 +297,19 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
               <th className="text-center">ACTIONS</th>
             </tr>
           </thead>
-          <tbody>
-            {filtered.map((p) => (
+          <tbody style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
+            {virtualizer.getVirtualItems().map((virtualRow) => {
+              const p = filtered[virtualRow.index];
+              return (
               <tr
                 key={p.id}
                 style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: virtualRow.size,
+                  transform: `translateY(${virtualRow.start}px)`,
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {
@@ -339,7 +391,8 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

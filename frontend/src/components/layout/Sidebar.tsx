@@ -200,7 +200,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
   return (
     <aside
-      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''} bg-bg-elevated border-r border-border flex flex-col relative z-20 overflow-hidden h-[100vh]`}
+      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''} bg-bg-elevated border-r border-border flex flex-col relative z-20 overflow-hidden h-full`}
       role="complementary"
       aria-label="Sidebar"
       style={{ width: sidebarWidth, minWidth: sidebarWidth, transition: 'width 0.2s ease, min-width 0.2s ease' }}
@@ -360,9 +360,13 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
           onClick={toggleCollapsedMode}
           title={effectiveCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           aria-label={effectiveCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="bg-transparent border border-border rounded text-text-muted cursor-pointer w-full flex items-center justify-center gap-1.5 font-mono text-3xs tracking-[1px] py-1 px-2 transition-all duration-[var(--transition)]"
+          className={`border border-border rounded text-text-muted cursor-pointer w-full flex items-center justify-center gap-1.5 font-mono tracking-[1px] transition-all duration-[var(--transition)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text-bright)] hover:border-[var(--color-accent)] ${
+            effectiveCollapsed
+              ? 'bg-[var(--color-bg-hover)] py-2 px-2 text-xs'
+              : 'bg-transparent py-1 px-2 text-3xs'
+          }`}
         >
-          {effectiveCollapsed ? <ChevronsRight size={14} aria-hidden="true" /> : <ChevronsLeft size={14} aria-hidden="true" />}
+          {effectiveCollapsed ? <ChevronsRight size={18} aria-hidden="true" /> : <ChevronsLeft size={14} aria-hidden="true" />}
           {!effectiveCollapsed && <span>COLLAPSE</span>}
         </button>
       </div>

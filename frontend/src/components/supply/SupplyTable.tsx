@@ -16,6 +16,8 @@ import { SUPPLY_CLASS_SHORT } from '@/lib/constants';
 import { getStatusColor } from '@/lib/utils';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton';
+import ExportMenu from '@/components/common/ExportMenu';
+import { useVirtualRows } from '@/hooks/useVirtualRows';
 
 // Demo data for when API is not connected
 const demoData: SupplyRecord[] = [
@@ -143,11 +145,40 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  const rows = table.getRowModel().rows;
+  const { parentRef, virtualizer } = useVirtualRows({ count: rows.length, estimateSize: 36 });
+
+  const exportData = useMemo(
+    () =>
+      tableData.map((r) => ({
+        unitName: r.unitName,
+        supplyClass: SUPPLY_CLASS_SHORT[r.supplyClass] || r.supplyClass,
+        item: r.item,
+        onHand: r.onHand,
+        authorized: r.authorized,
+        dos: r.dos,
+        consumptionRate: r.consumptionRate,
+        status: r.status,
+      })) as Record<string, unknown>[],
+    [tableData],
+  );
+
+  const exportColumns = [
+    { key: 'unitName', header: 'Unit' },
+    { key: 'supplyClass', header: 'Class' },
+    { key: 'item', header: 'Item' },
+    { key: 'onHand', header: 'On Hand' },
+    { key: 'authorized', header: 'Required' },
+    { key: 'dos', header: 'DOS' },
+    { key: 'consumptionRate', header: 'Rate' },
+    { key: 'status', header: 'Status' },
+  ];
+
   if (isLoading) return <TableSkeleton rows={8} />;
 
   return (
     <div>
-      {/* Search */}
+      {/* Search + Export */}
       <div className="mb-3 flex items-center gap-2">
         <Filter size={14} className="text-[var(--color-text-muted)]" />
         <input
@@ -156,15 +187,23 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
           placeholder="Search supply records..."
           className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] py-1.5 px-2.5 font-[var(--font-mono)] text-xs text-[var(--color-text)] w-[260px]"
         />
+        <div className="ml-auto">
+          <ExportMenu
+            data={exportData}
+            filename="supply-status"
+            title="Supply Status Report"
+            columns={exportColumns}
+          />
+        </div>
       </div>
 
       {/* Table */}
       <div
         className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
       >
-        <div className="overflow-x-auto">
+        <div ref={parentRef} style={{ maxHeight: 600, overflow: 'auto' }}>
           <table className="w-full border-collapse">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-[var(--color-bg-elevated)]">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
@@ -192,32 +231,43 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
                 </tr>
               ))}
             </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="transition-colors duration-[var(--transition)]"
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'transparent')
-                  }
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text)]" style={{ textAlign: ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
-                            cell.column.id,
-                          )
-                            ? 'right'
-                            : 'left' }}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+            <tbody style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const row = rows[virtualRow.index];
+                return (
+                  <tr
+                    key={row.id}
+                    className="transition-colors duration-[var(--transition)]"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: virtualRow.size,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = 'transparent')
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text)]" style={{ textAlign: ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
+                              cell.column.id,
+                            )
+                              ? 'right'
+                              : 'left' }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

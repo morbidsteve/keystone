@@ -1,14 +1,16 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, Clock, HelpCircle, LogOut, Menu, RotateCcw, User } from 'lucide-react';
-import { useState } from 'react';
+import { Bell, ChevronDown, Clock, HelpCircle, LogOut, Menu, Moon, RotateCcw, Sun, User } from 'lucide-react';
+import { useState, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { useAlertStore } from '@/stores/alertStore';
 import { useHelpMode } from '@/hooks/useHelpMode';
+import { useThemeStore } from '@/stores/themeStore';
 import { resetGuidedTour } from '@/components/onboarding/GuidedTour';
 import { isDemoMode } from '@/api/mockClient';
 import { TIME_RANGES } from '@/lib/constants';
 import QuickActionsButton from '@/components/common/QuickActionsButton';
+import NotificationDrawer from '@/components/notifications/NotificationDrawer';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'DASHBOARD',
@@ -35,7 +37,10 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   const { timeRange, setTimeRange } = useDashboardStore();
   const unreadCount = useAlertStore((s) => s.unreadCount);
   const { isHelpMode, toggleHelpMode } = useHelpMode();
+  const { theme, toggleTheme } = useThemeStore();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const handleDrawerClose = useCallback(() => setDrawerOpen(false), []);
 
   const pageTitle = pageTitles[location.pathname] || 'KEYSTONE';
 
@@ -102,6 +107,22 @@ export default function Header({ onMenuToggle }: HeaderProps) {
           ))}
         </div>
 
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="flex items-center justify-center rounded cursor-pointer p-1"
+          style={{
+            background: 'none',
+            border: '1px solid transparent',
+            color: 'var(--color-text-muted)',
+            transition: 'all var(--transition)',
+          }}
+        >
+          {theme === 'dark' ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
+        </button>
+
         {/* Help Mode Toggle */}
         <button
           id="header-help-button"
@@ -122,7 +143,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
 
         {/* Alert Bell */}
         <button
-          onClick={() => navigate('/alerts')}
+          onClick={() => setDrawerOpen((v) => !v)}
           aria-label={`Alerts${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
           className="relative bg-transparent border-none cursor-pointer p-1"
           style={{
@@ -133,13 +154,16 @@ export default function Header({ onMenuToggle }: HeaderProps) {
           {unreadCount > 0 && (
             <span
               className="absolute top-0 right-0 w-4 h-4 rounded-full bg-danger font-mono text-3xs font-bold flex items-center justify-center text-[#fff]"
-              
+
               aria-hidden="true"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
         </button>
+
+        {/* Notification Drawer */}
+        <NotificationDrawer open={drawerOpen} onClose={handleDrawerClose} />
 
         {/* User Dropdown */}
         <div className="relative">

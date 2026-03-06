@@ -1,0 +1,55 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "keystone.fullname" . }}
+  labels:
+    {{- include "keystone.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          # Backend API routes
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "keystone.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.port }}
+          # Health endpoint
+          - path: /health
+            pathType: Exact
+            backend:
+              service:
+                name: {{ include "keystone.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.port }}
+          # Metrics endpoint
+          - path: /metrics
+            pathType: Exact
+            backend:
+              service:
+                name: {{ include "keystone.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.port }}
+          # Everything else goes to frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "keystone.fullname" . }}-frontend
+                port:
+                  number: {{ .Values.frontend.port }}
+{{- end }}

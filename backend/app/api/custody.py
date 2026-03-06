@@ -25,6 +25,7 @@ from app.models.custody import (
     SensitiveItemType,
     TransferType,
 )
+from app.middleware.audit import log_audit
 from app.models.user import Role, User
 from app.schemas.custody import (
     AuditLogResponse,
@@ -377,7 +378,7 @@ async def create_transfer(
     await db.flush()
     await db.refresh(transfer)
 
-    # Audit log
+    # Audit log (Custody-specific)
     await AuditService.log_action(
         db=db,
         user_id=current_user.id,
@@ -393,6 +394,22 @@ async def create_transfer(
         new_value=data.to_personnel_id,
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("user-agent"),
+    )
+
+    # General audit trail
+    await log_audit(
+        db=db,
+        user_id=current_user.id,
+        action="CREATE",
+        entity_type="custody_transfer",
+        entity_id=str(transfer.id),
+        unit_id=item.unit_id,
+        details={
+            "item_id": item.id,
+            "nomenclature": item.nomenclature,
+            "from_holder": old_holder_id,
+            "to_holder": data.to_personnel_id,
+        },
     )
 
     return transfer

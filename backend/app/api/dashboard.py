@@ -7,6 +7,7 @@ from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
+from app.core.cache import cache_get, cache_set
 from app.core.military import determine_supply_status_by_dos
 from app.core.permissions import get_accessible_units
 from app.database import get_db
@@ -70,6 +71,16 @@ async def get_dashboard_summary(
             total_alerts=0,
         )
 
+    # Check Redis cache first
+    cache_key = f"dashboard:overview:{unit_id}:{','.join(str(u) for u in sorted(unit_ids))}"
+    try:
+        cached = await cache_get(cache_key)
+        if cached:
+            return DashboardSummary(**cached)
+    except Exception:
+        # Redis unavailable — fall through to DB query
+        pass
+
     # Supply overview by class
     supply_overview = await _get_supply_overview(db, unit_ids)
 
@@ -132,7 +143,7 @@ async def get_dashboard_summary(
         for a in alerts_result.scalars().all()
     ]
 
-    return DashboardSummary(
+    summary = DashboardSummary(
         supply_overview=supply_overview,
         equipment_readiness=round(equipment_readiness, 1),
         active_movements=active_movements,
@@ -140,6 +151,14 @@ async def get_dashboard_summary(
         total_alerts=total_alerts,
         recent_alerts=recent_alerts,
     )
+
+    # Store in cache (30 second TTL)
+    try:
+        await cache_set(cache_key, summary.model_dump(), ttl=30)
+    except Exception:
+        pass  # Redis unavailable — continue without caching
+
+    return summary
 
 
 async def _get_supply_overview(
