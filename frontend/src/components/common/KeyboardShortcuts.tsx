@@ -5,6 +5,17 @@ interface ShortcutGroup {
 
 const shortcutGroups: ShortcutGroup[] = [
   {
+    title: 'Command Palette',
+    shortcuts: [
+      { keys: ['\u2318', 'K'], description: 'Open command palette' },
+      { keys: ['>'], description: 'Commands mode (in palette)' },
+      { keys: ['#'], description: 'Search NSN / TAMCN / DODIC (in palette)' },
+      { keys: ['@'], description: 'Search personnel (in palette)' },
+      { keys: ['!'], description: 'Search equipment by bumper / serial (in palette)' },
+      { keys: ['/'], description: 'Navigate to page (in palette)' },
+    ],
+  },
+  {
     title: 'Navigation',
     shortcuts: [
       { keys: ['G', 'D'], description: 'Go to Dashboard' },
@@ -18,9 +29,11 @@ const shortcutGroups: ShortcutGroup[] = [
     ],
   },
   {
-    title: 'Quick Actions',
+    title: 'Create',
     shortcuts: [
-      { keys: ['\u2318', 'K'], description: 'Command Palette' },
+      { keys: ['N', 'R'], description: 'New requisition' },
+      { keys: ['N', 'W'], description: 'New work order' },
+      { keys: ['N', 'C'], description: 'Plan convoy' },
     ],
   },
   {

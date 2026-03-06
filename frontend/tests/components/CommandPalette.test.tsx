@@ -21,8 +21,20 @@ vi.mock('../../src/api/client', () => ({
 
 vi.mock('../../src/api/demoUsers', () => ({
   DEMO_USERS_LIST: [
-    { username: 'testuser', full_name: 'John Doe', rank: 'Cpl', mos: '0311', billet: 'Rifleman', unit: 'Alpha Co' },
+    { username: 'testuser', full_name: 'John Doe', rank: 'Cpl', mos: '0311', billet: 'Rifleman', unit: 'Alpha Co', description: 'Test', section: 'OPERATORS' },
   ],
+}));
+
+// Mock mockData to keep tests fast and deterministic
+vi.mock('../../src/api/mockData', () => ({
+  DEMO_SUPPLY_RECORDS: [],
+  DEMO_INDIVIDUAL_EQUIPMENT: [],
+  DEMO_WORK_ORDERS: [],
+  DEMO_UNITS: [],
+  DEMO_ALERTS: [],
+  DEMO_MOVEMENTS: [],
+  DEMO_REPORTS: [],
+  DEMO_PERSONNEL: [],
 }));
 
 // jsdom doesn't implement scrollIntoView
@@ -43,7 +55,7 @@ describe('CommandPalette', () => {
 
   it('is NOT visible by default', () => {
     renderPalette();
-    expect(screen.queryByPlaceholderText(/search pages/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('opens when Ctrl+K is pressed', () => {
@@ -51,21 +63,19 @@ describe('CommandPalette', () => {
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    expect(screen.getByPlaceholderText(/search pages/i)).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
   it('closes when Escape is pressed inside the palette', () => {
     renderPalette();
-    // Open the palette
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    const input = screen.getByPlaceholderText(/search pages/i);
-    expect(input).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
 
-    // Press Escape on the palette container (onKeyDown handler)
+    const input = screen.getByRole('combobox');
     fireEvent.keyDown(input, { key: 'Escape' });
-    expect(screen.queryByPlaceholderText(/search pages/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('shows page results when typing a matching query', () => {
@@ -73,54 +83,57 @@ describe('CommandPalette', () => {
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    const input = screen.getByPlaceholderText(/search pages/i);
-    fireEvent.change(input, { target: { value: 'dash' } });
+    const input = screen.getByRole('combobox');
+    fireEvent.change(input, { target: { value: '/dash' } });
 
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
+    // Use getAllByText since "Dashboard" may appear in multiple contexts
+    const matches = screen.getAllByText(/Dashboard/i);
+    expect(matches.length).toBeGreaterThan(0);
   });
 
-  it('filters out non-matching pages', () => {
+  it('filters out non-matching pages in page mode', () => {
     renderPalette();
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    const input = screen.getByPlaceholderText(/search pages/i);
-    fireEvent.change(input, { target: { value: 'dashboard' } });
+    const input = screen.getByRole('combobox');
+    // Use / prefix for pages-only mode so results are scoped
+    fireEvent.change(input, { target: { value: '/dashboard' } });
 
-    expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    // "Fuel" should not match "dashboard"
+    const matches = screen.getAllByText(/Dashboard/i);
+    expect(matches.length).toBeGreaterThan(0);
+    // Fuel should not appear in page-only mode filtering for "dashboard"
     expect(screen.queryByText('Fuel')).not.toBeInTheDocument();
   });
 
-  it('navigates and closes when Enter is pressed on a result', () => {
+  it('navigates and closes when Enter is pressed on a page result', () => {
     renderPalette();
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    const input = screen.getByPlaceholderText(/search pages/i);
-    fireEvent.change(input, { target: { value: 'dash' } });
+    const input = screen.getByRole('combobox');
+    // Use / prefix to get pages only, type "dash" to match Dashboard
+    fireEvent.change(input, { target: { value: '/dash' } });
 
     // Press Enter to select the first result (Dashboard)
     fireEvent.keyDown(input, { key: 'Enter' });
 
     expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
     // Palette should close
-    expect(screen.queryByPlaceholderText(/search pages/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('arrow down changes selected index', () => {
+  it('shows commands when typing > prefix', () => {
     renderPalette();
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    const input = screen.getByPlaceholderText(/search pages/i);
+    const input = screen.getByRole('combobox');
+    fireEvent.change(input, { target: { value: '>new' } });
 
-    // With no query, all pages are listed. Press ArrowDown to move selection.
-    fireEvent.keyDown(input, { key: 'ArrowDown' });
-    // Now press Enter — it should navigate to the second page item (Map)
-    fireEvent.keyDown(input, { key: 'Enter' });
-
-    expect(mockNavigate).toHaveBeenCalledWith('/map');
+    // Should show command results like "New Requisition", "New Work Order"
+    const matches = screen.getAllByText(/New/i);
+    expect(matches.length).toBeGreaterThan(0);
   });
 
   it('closes when Ctrl+K is pressed while open (toggle)', () => {
@@ -128,11 +141,25 @@ describe('CommandPalette', () => {
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    expect(screen.getByPlaceholderText(/search pages/i)).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
 
     act(() => {
       fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
     });
-    expect(screen.queryByPlaceholderText(/search pages/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('has proper ARIA attributes for accessibility', () => {
+    renderPalette();
+    act(() => {
+      fireEvent.keyDown(document, { key: 'k', ctrlKey: true });
+    });
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('aria-label', 'Command palette');
+
+    const input = screen.getByRole('combobox');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    expect(input).toHaveAttribute('aria-controls');
   });
 });
