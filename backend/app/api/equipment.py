@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
@@ -25,6 +25,7 @@ router = APIRouter()
 @router.get("/", response_model=List[EquipmentResponse])
 async def list_equipment(
     unit_id: Optional[int] = Query(None),
+    search: Optional[str] = Query(None),
     limit: int = Query(100, le=500),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -36,6 +37,14 @@ async def list_equipment(
 
     if unit_id and unit_id in accessible:
         query = query.where(EquipmentStatus.unit_id == unit_id)
+    if search:
+        term = f"%{search}%"
+        query = query.where(
+            or_(
+                EquipmentStatus.tamcn.ilike(term),
+                EquipmentStatus.nomenclature.ilike(term),
+            )
+        )
 
     query = (
         query.order_by(EquipmentStatus.reported_at.desc()).offset(offset).limit(limit)

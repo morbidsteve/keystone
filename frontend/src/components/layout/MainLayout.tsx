@@ -11,6 +11,7 @@ import { useSidebarToggle } from '@/hooks/useMediaQuery';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import CommandPalette from '@/components/common/CommandPalette';
 import ToastContainer from '@/components/ui/ToastContainer';
+import GlobalModals from '@/components/common/GlobalModals';
 
 export default function MainLayout() {
   const fetchClassification = useClassificationStore((s) => s.fetchClassification);
@@ -74,6 +75,7 @@ export default function MainLayout() {
       <CommandPalette />
       <KeyboardShortcuts isOpen={showHelp} onClose={() => setShowHelp(false)} />
       <ToastContainer />
+      <GlobalModals />
     </div>
   );
 }

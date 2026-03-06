@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useModalStore, type ModalType } from '@/stores/modalStore';
 
 const NAV_SHORTCUTS: Record<string, string> = {
   'd': '/dashboard',
@@ -10,6 +11,12 @@ const NAV_SHORTCUTS: Record<string, string> = {
   't': '/transportation',
   'p': '/personnel',
   'a': '/alerts',
+};
+
+const MODAL_SHORTCUTS: Record<string, ModalType> = {
+  'r': 'create-requisition',
+  'w': 'create-work-order',
+  'c': 'plan-convoy',
 };
 
 const SEQUENCE_TIMEOUT = 1500;
@@ -25,6 +32,7 @@ function isEditableTarget(target: EventTarget | null): boolean {
 export function useKeyboardShortcuts() {
   const [showHelp, setShowHelp] = useState(false);
   const navigate = useNavigate();
+  const openModal = useModalStore((s) => s.openModal);
   const pendingKeyRef = useRef<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -55,14 +63,14 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      // Start "g" sequence
-      if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        if (pendingKeyRef.current === 'g') {
-          // Already pending, ignore double-g
+      // Start "g" or "n" sequence
+      if ((e.key === 'g' || e.key === 'n') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (pendingKeyRef.current === e.key) {
+          // Already pending, ignore double-press
           clearPending();
           return;
         }
-        pendingKeyRef.current = 'g';
+        pendingKeyRef.current = e.key;
         timeoutRef.current = setTimeout(clearPending, SEQUENCE_TIMEOUT);
         return;
       }
@@ -78,6 +86,18 @@ export function useKeyboardShortcuts() {
         clearPending();
         return;
       }
+
+      // Handle second key of n-sequence (new/create modals)
+      if (pendingKeyRef.current === 'n') {
+        const modal = MODAL_SHORTCUTS[e.key.toLowerCase()];
+        if (modal) {
+          e.preventDefault();
+          openModal(modal);
+          setShowHelp(false);
+        }
+        clearPending();
+        return;
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown);
@@ -85,7 +105,7 @@ export function useKeyboardShortcuts() {
       window.removeEventListener('keydown', handleKeyDown);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [navigate, clearPending]);
+  }, [navigate, openModal, clearPending]);
 
   return { showHelp, setShowHelp };
 }

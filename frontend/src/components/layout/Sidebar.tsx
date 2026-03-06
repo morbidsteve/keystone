@@ -33,6 +33,8 @@ import { isDemoMode } from '@/api/mockClient';
 import { usePermission } from '@/hooks/usePermission';
 import { useQuery } from '@tanstack/react-query';
 import { getRequisitions } from '@/api/requisitions';
+import { getWorkOrders } from '@/api/maintenance';
+import { WorkOrderStatus } from '@/lib/types';
 import UnitSelector from '@/components/common/UnitSelector';
 
 interface NavItem {
@@ -144,6 +146,18 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
     ? requisitionsData.filter((r) => r.status === 'SUBMITTED').length
     : 0;
 
+  // Maintenance work order badge
+  const { data: workOrdersData } = useQuery({
+    queryKey: ['maintenance-sidebar-count'],
+    queryFn: () => getWorkOrders(),
+    staleTime: 30_000,
+  });
+  const maintenanceCount = workOrdersData
+    ? workOrdersData.data.filter(
+        (wo) => wo.status === WorkOrderStatus.OPEN || wo.status === WorkOrderStatus.IN_PROGRESS,
+      ).length
+    : 0;
+
   // Build dynamic badge map keyed by route path
   const badgeMap: Record<string, { count: number; color: string; textColor: string }> = {};
   if (alertUnreadCount > 0) {
@@ -151,6 +165,9 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   }
   if (pendingRequisitions > 0) {
     badgeMap['/requisitions'] = { count: pendingRequisitions, color: 'var(--color-warning)', textColor: '#000' };
+  }
+  if (maintenanceCount > 0) {
+    badgeMap['/maintenance'] = { count: maintenanceCount, color: 'var(--color-warning)', textColor: '#000' };
   }
 
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>(loadCollapsedState);
