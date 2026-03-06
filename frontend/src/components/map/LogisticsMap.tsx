@@ -77,7 +77,7 @@ export default function LogisticsMap({ data, convoyMovements, height = '100%' }:
   });
 
   const [baseMap, setBaseMap] = useState<'osm' | 'satellite' | 'topo'>('osm');
-  const [controlsCollapsed, setControlsCollapsed] = useState(false);
+  const [controlsCollapsed, setControlsCollapsed] = useState(true);
 
   const tileUrl = useMemo(() => TILE_URLS[baseMap], [baseMap]);
   const tileAttribution = useMemo(() => TILE_ATTRIBUTIONS[baseMap], [baseMap]);

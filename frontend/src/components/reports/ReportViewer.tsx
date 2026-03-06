@@ -190,11 +190,7 @@ export default function ReportViewer() {
           {selectedReport.parsedContent
             ? <StructuredReportView content={selectedReport.parsedContent} reportType={selectedReport.type} />
             : selectedReport.content
-              ? (
-                <pre className="font-[var(--font-mono)] text-[11px] leading-relaxed text-[var(--color-text)] whitespace-pre-wrap p-3 bg-[var(--color-bg)] rounded-[var(--radius)] border border-[var(--color-border)] max-h-[500px] overflow-auto">
-                  {selectedReport.content}
-                </pre>
-              )
+              ? <FormattedRawReport content={selectedReport.content} />
               : (
                 <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] p-4 text-center">
                   Report content is still generating...
@@ -360,6 +356,93 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Formatted raw text report renderer
+// ---------------------------------------------------------------------------
+
+function FormattedRawReport({ content }: { content: string }) {
+  const lines = content.split('\n');
+
+  const isHeader = (line: string): boolean => {
+    const trimmed = line.trim();
+    if (!trimmed) return false;
+    // Match patterns like "SECTION I", "LOGISTICS STATUS", "=====", all-caps lines that look like titles
+    if (/^={3,}/.test(trimmed) || /^-{3,}/.test(trimmed)) return false;
+    if (/^SECTION\s+[IVX]+/i.test(trimmed)) return true;
+    if (/^[A-Z][A-Z\s/&()-]{4,}:?\s*$/.test(trimmed) && trimmed.length < 60) return true;
+    return false;
+  };
+
+  const isSeparator = (line: string): boolean => {
+    const trimmed = line.trim();
+    return /^[=\-]{3,}$/.test(trimmed);
+  };
+
+  const colorizeStatus = (text: string): React.ReactNode => {
+    // Split on status words and colorize them
+    const parts = text.split(/(GREEN|AMBER|RED|BLACK)/g);
+    if (parts.length === 1) return text;
+    return parts.map((part, i) => {
+      if (part === 'GREEN') return <span key={i} style={{ color: 'var(--color-green, #22c55e)', fontWeight: 700 }}>{part}</span>;
+      if (part === 'AMBER') return <span key={i} style={{ color: 'var(--color-amber, #f59e0b)', fontWeight: 700 }}>{part}</span>;
+      if (part === 'RED') return <span key={i} style={{ color: 'var(--color-red, #ef4444)', fontWeight: 700 }}>{part}</span>;
+      if (part === 'BLACK') return <span key={i} style={{ color: '#fff', fontWeight: 700 }}>{part}</span>;
+      return <span key={i}>{part}</span>;
+    });
+  };
+
+  return (
+    <div
+      className="p-3 bg-[var(--color-bg)] rounded-[var(--radius)] border border-[var(--color-border)] max-h-[500px] overflow-auto"
+      style={{ fontFamily: 'var(--font-mono)', fontSize: 11, lineHeight: 1.7 }}
+    >
+      {lines.map((line, i) => {
+        if (isSeparator(line)) {
+          return <hr key={i} className="border-0 border-t border-t-[var(--color-border)] my-2" />;
+        }
+
+        if (isHeader(line)) {
+          return (
+            <div
+              key={i}
+              className="mt-3 mb-1 pb-1 border-b border-b-[var(--color-border)]"
+              style={{
+                color: 'var(--color-accent)',
+                fontWeight: 700,
+                fontSize: 12,
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+              }}
+            >
+              {line}
+            </div>
+          );
+        }
+
+        if (!line.trim()) {
+          return <div key={i} className="h-2" />;
+        }
+
+        // Check if line contains numeric data (columns of numbers)
+        const hasNumbers = /\d+\s+\d+/.test(line) || /\d+%/.test(line);
+
+        return (
+          <div
+            key={i}
+            className="whitespace-pre-wrap"
+            style={{
+              color: 'var(--color-text)',
+              fontVariantNumeric: hasNumbers ? 'tabular-nums' : undefined,
+            }}
+          >
+            {colorizeStatus(line)}
+          </div>
+        );
+      })}
     </div>
   );
 }

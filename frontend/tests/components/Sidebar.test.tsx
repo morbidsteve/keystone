@@ -26,7 +26,7 @@ vi.mock('../../src/components/common/UnitSelector', () => ({
   default: () => <div data-testid="unit-selector">Unit Selector</div>,
 }));
 
-function renderSidebar(props: { isMobileOpen?: boolean; onClose?: () => void } = {}) {
+function renderSidebar(props: { isMobileOpen?: boolean; onClose?: () => void } = {}, initialRoute = '/dashboard') {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -50,7 +50,7 @@ function renderSidebar(props: { isMobileOpen?: boolean; onClose?: () => void } =
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[initialRoute]}>
         <Sidebar
           isMobileOpen={props.isMobileOpen ?? false}
           onClose={props.onClose ?? vi.fn()}
@@ -67,21 +67,22 @@ describe('Sidebar', () => {
 
   it('renders all navigation group labels', () => {
     renderSidebar();
+    // Group headers are always visible regardless of collapse state
     expect(screen.getByText('OPERATIONS')).toBeInTheDocument();
     expect(screen.getByText('LOGISTICS')).toBeInTheDocument();
-    // PERSONNEL appears as both a group label and a nav item; check both exist
-    expect(screen.getAllByText('PERSONNEL').length).toBeGreaterThanOrEqual(2);
+    // PERSONNEL appears as both a group label and possibly a nav item
+    expect(screen.getAllByText('PERSONNEL').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('DATA')).toBeInTheDocument();
     expect(screen.getByText('SECURITY')).toBeInTheDocument();
     expect(screen.getByText('SYSTEM')).toBeInTheDocument();
   });
 
-  it('renders navigation items within groups', () => {
+  it('renders navigation items within the active group', () => {
+    // Route is /dashboard which is in OPERATIONS group — that group should be expanded
     renderSidebar();
     expect(screen.getByText('DASHBOARD')).toBeInTheDocument();
     expect(screen.getByText('MAP')).toBeInTheDocument();
-    expect(screen.getByText('SUPPLY')).toBeInTheDocument();
-    expect(screen.getByText('EQUIPMENT')).toBeInTheDocument();
+    expect(screen.getByText('READINESS')).toBeInTheDocument();
   });
 
   it('renders KEYSTONE brand text', () => {
@@ -89,41 +90,48 @@ describe('Sidebar', () => {
     expect(screen.getByText('KEYSTONE')).toBeInTheDocument();
   });
 
-  it('clicking a group header collapses its items', () => {
+  it('clicking a group header expands it to show items', () => {
     renderSidebar();
 
-    // LOGISTICS group should show SUPPLY by default
-    expect(screen.getByText('SUPPLY')).toBeInTheDocument();
+    // LOGISTICS group should be collapsed by default (not the active group)
+    // Its items should not be visible
+    expect(screen.queryByText('SUPPLY')).not.toBeInTheDocument();
 
-    // Click the LOGISTICS group header to collapse it
+    // Click LOGISTICS header to expand it
     const logisticsHeader = screen.getByText('LOGISTICS');
     fireEvent.click(logisticsHeader);
 
-    // After collapsing, SUPPLY should be hidden
-    expect(screen.queryByText('SUPPLY')).not.toBeInTheDocument();
+    // After expanding, SUPPLY should be visible
+    expect(screen.getByText('SUPPLY')).toBeInTheDocument();
   });
 
-  it('clicking a collapsed group header expands it', () => {
+  it('clicking an expanded group header collapses it', () => {
     renderSidebar();
 
-    const logisticsHeader = screen.getByText('LOGISTICS');
-    // Collapse
-    fireEvent.click(logisticsHeader);
-    expect(screen.queryByText('SUPPLY')).not.toBeInTheDocument();
+    // OPERATIONS is the active group and should be expanded
+    expect(screen.getByText('DASHBOARD')).toBeInTheDocument();
 
-    // Expand
-    fireEvent.click(logisticsHeader);
-    expect(screen.getByText('SUPPLY')).toBeInTheDocument();
+    // Click OPERATIONS header to collapse it
+    const operationsHeader = screen.getByText('OPERATIONS');
+    fireEvent.click(operationsHeader);
+
+    // After collapsing, DASHBOARD should be hidden
+    expect(screen.queryByText('DASHBOARD')).not.toBeInTheDocument();
   });
 
   it('renders the user info when logged in', () => {
     renderSidebar();
     expect(screen.getByText('Admin User')).toBeInTheDocument();
-    expect(screen.getByText('admin')).toBeInTheDocument();
+    // Role text (rendered lowercase from user.role)
+    const roleElements = screen.getAllByText('admin');
+    expect(roleElements.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('shows alert badge count', () => {
+  it('shows alert badge count in the alerts nav item', () => {
     renderSidebar();
+    // Expand SECURITY group first to see ALERTS
+    const securityHeader = screen.getByText('SECURITY');
+    fireEvent.click(securityHeader);
     // The mock alertStore returns unreadCount: 3
     expect(screen.getByText('3')).toBeInTheDocument();
   });

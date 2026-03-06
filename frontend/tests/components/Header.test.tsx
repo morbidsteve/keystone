@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act } from '@testing-library/react';
 import Header from '../../src/components/layout/Header';
 import { useAuthStore } from '../../src/stores/authStore';
@@ -60,10 +61,16 @@ vi.mock('../../src/stores/alertStore', () => ({
 }));
 
 function renderHeader() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
   return render(
-    <MemoryRouter>
-      <Header onMenuToggle={vi.fn()} />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <Header onMenuToggle={vi.fn()} />
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 

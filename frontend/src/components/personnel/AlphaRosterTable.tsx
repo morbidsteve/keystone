@@ -8,10 +8,12 @@ import type { PersonnelRecord, RifleQual, DutyStatusType } from '@/lib/types';
 import { getStatusColor } from '@/lib/utils';
 import StatusDot from '@/components/ui/StatusDot';
 import EmptyState from '@/components/ui/EmptyState';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import AddEditPersonnelModal from './AddEditPersonnelModal';
 import { deletePersonnel } from '@/api/personnel';
+import { useToast } from '@/hooks/useToast';
 import ExportMenu from '@/components/common/ExportMenu';
-import { useVirtualRows } from '@/hooks/useVirtualRows';
+import TablePagination from '@/components/ui/TablePagination';
 
 interface AlphaRosterTableProps {
   personnel: PersonnelRecord[];
@@ -32,6 +34,17 @@ type SortKey =
   | 'cft_score';
 
 type SortDir = 'asc' | 'desc';
+
+const DUTY_STATUS_OPTIONS: Array<{ value: DutyStatusType | 'ALL'; label: string }> = [
+  { value: 'ALL', label: 'ALL' },
+  { value: 'PRESENT', label: 'PRESENT' },
+  { value: 'LIMDU', label: 'LIMDU' },
+  { value: 'PTAD', label: 'PTAD' },
+  { value: 'UA', label: 'UA' },
+  { value: 'AWOL', label: 'AWOL' },
+  { value: 'DESERTER', label: 'DESERTER' },
+  { value: 'CONFINEMENT', label: 'CONFINEMENT' },
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -76,10 +89,15 @@ function dutyStatusColor(status: DutyStatusType): string {
 
 export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTableProps) {
   const [search, setSearch] = useState('');
+  const [dutyStatusFilter, setDutyStatusFilter] = useState<DutyStatusType | 'ALL'>('ALL');
   const [sortKey, setSortKey] = useState<SortKey>('last_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [showModal, setShowModal] = useState(false);
   const [editingMarine, setEditingMarine] = useState<PersonnelRecord | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [deleteTarget, setDeleteTarget] = useState<PersonnelRecord | null>(null);
+  const toast = useToast();
 
   const handleAdd = () => {
     setEditingMarine(null);
@@ -91,14 +109,21 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
     setShowModal(true);
   };
 
-  const handleDelete = async (p: PersonnelRecord) => {
-    if (!window.confirm(`Delete ${p.rank ?? ''} ${p.last_name}, ${p.first_name}? This cannot be undone.`)) return;
+  const handleDeleteRequest = (p: PersonnelRecord) => {
+    setDeleteTarget(p);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
     try {
-      await deletePersonnel(p.id);
+      await deletePersonnel(deleteTarget.id);
+      toast.success(`${deleteTarget.rank ?? ''} ${deleteTarget.last_name} removed from roster`);
       onRefresh?.();
     } catch (err) {
       console.error('Delete failed:', err);
+      toast.danger('Failed to delete personnel record');
     }
+    setDeleteTarget(null);
   };
 
   const handleSaved = () => {
@@ -117,6 +142,8 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
   const filtered = useMemo(() => {
     const term = search.toLowerCase();
     let list = personnel;
+
+    // Text search
     if (term) {
       list = list.filter(
         (p) =>
@@ -128,6 +155,12 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
           (p.billet ?? '').toLowerCase().includes(term),
       );
     }
+
+    // Duty status filter
+    if (dutyStatusFilter !== 'ALL') {
+      list = list.filter((p) => p.duty_status === dutyStatusFilter);
+    }
+
     const sorted = [...list].sort((a, b) => {
       const dir = sortDir === 'asc' ? 1 : -1;
       switch (sortKey) {
@@ -146,9 +179,18 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
       }
     });
     return sorted;
-  }, [personnel, search, sortKey, sortDir]);
+  }, [personnel, search, dutyStatusFilter, sortKey, sortDir]);
 
-  const { parentRef, virtualizer } = useVirtualRows({ count: filtered.length, estimateSize: 36 });
+  // Reset page when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [search, dutyStatusFilter]);
+
+  // Paginated rows
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, currentPage, pageSize]);
 
   const exportData = useMemo(
     () =>
@@ -226,8 +268,8 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Search + Add */}
-      <div className="flex items-center gap-3">
+      {/* Search + Status Filter + Add */}
+      <div className="flex items-center gap-3 flex-wrap">
         <div className="relative max-w-[320px] flex-1">
           <Search
             size={14}
@@ -236,9 +278,27 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name, EDIPI, MOS, billet..."
+            placeholder="Search name, EDIPI, rank, MOS, billet..."
             className="w-full font-[var(--font-mono)] text-[11px] text-[var(--color-text)] bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]" style={{ padding: '7px 10px 7px 30px' }}
           />
+        </div>
+        <div>
+          <label
+            className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
+          >
+            DUTY STATUS
+          </label>
+          <select
+            value={dutyStatusFilter}
+            onChange={(e) => setDutyStatusFilter(e.target.value as DutyStatusType | 'ALL')}
+            className="py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
+          >
+            {DUTY_STATUS_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           onClick={handleAdd}
@@ -270,131 +330,135 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
           message="Personnel assigned to this unit will appear here"
         />
       ) : (
-      <div ref={parentRef} style={{ maxHeight: 600, overflow: 'auto' }}>
-        <table
-          className="w-full border-collapse min-w-[900px]"
-        >
-          <thead className="sticky top-0 z-10 bg-[var(--color-bg-elevated)]">
-            <tr>
-              {columns.map((col) => (
-                <th
-                  key={col.key}
-                  onClick={() => handleSort(col.key)}
+      <div className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden">
+        <div style={{ overflow: 'auto' }}>
+          <table
+            className="w-full border-collapse min-w-[900px]"
+          >
+            <thead className="sticky top-0 z-10 bg-[var(--color-bg-elevated)]">
+              <tr>
+                {columns.map((col) => (
+                  <th
+                    key={col.key}
+                    onClick={() => handleSort(col.key)}
+                    style={{
+                      ...headerStyle,
+                      width: col.width,
+                    }}
+                  >
+                    {col.label}
+                    {sortKey === col.key && (
+                      <span className="ml-1 opacity-60">
+                        {sortDir === 'asc' ? '\u25B2' : '\u25BC'}
+                      </span>
+                    )}
+                  </th>
+                ))}
+                <th className="cursor-default">LOCATION</th>
+                <th className="text-center">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedRows.map((p) => (
+                <tr
+                  key={p.id}
                   style={{
-                    ...headerStyle,
-                    width: col.width,
+                    transition: 'background-color 150ms',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-hover)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                   }}
                 >
-                  {col.label}
-                  {sortKey === col.key && (
-                    <span className="ml-1 opacity-60">
-                      {sortDir === 'asc' ? '\u25B2' : '\u25BC'}
+                  <td style={cellStyle}>
+                    <span className="text-[var(--color-text-bright)] font-semibold">
+                      {p.last_name}
                     </span>
-                  )}
-                </th>
+                    <span className="text-[var(--color-text-muted)]">, {p.first_name}</span>
+                  </td>
+                  <td style={cellStyle}>{p.edipi}</td>
+                  <td className="font-semibold">
+                    {p.rank ?? '—'}
+                  </td>
+                  <td style={cellStyle}>{p.pay_grade ?? '—'}</td>
+                  <td style={{ ...cellStyle, color: 'var(--color-accent)' }}>{p.mos ?? '—'}</td>
+                  <td style={{ ...cellStyle, maxWidth: 160 }}>{p.billet ?? '—'}</td>
+                  <td style={cellStyle}>
+                    <div className="flex items-center gap-1.5">
+                      <StatusDot status={p.status} />
+                      <span style={{ color: getStatusColor(p.status) }}>{p.status}</span>
+                    </div>
+                  </td>
+                  <td style={cellStyle}>
+                    <span
+                      className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-semibold font-[var(--font-mono)] tracking-[0.5px]" style={{ color: dutyStatusColor(p.duty_status), backgroundColor: `${dutyStatusColor(p.duty_status)}15`, border: `1px solid ${dutyStatusColor(p.duty_status)}40` }}
+                    >
+                      {p.duty_status}
+                    </span>
+                  </td>
+                  <td style={cellStyle}>
+                    <span
+                      className="font-semibold" style={{ color: rifleQualColor(p.rifle_qual) }}
+                    >
+                      {p.rifle_qual ?? '—'}
+                    </span>
+                  </td>
+                  <td style={{ ...cellStyle, fontWeight: 600, color: (p.pft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
+                    {p.pft_score ?? '—'}
+                  </td>
+                  <td style={{ ...cellStyle, fontWeight: 600, color: (p.cft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
+                    {p.cft_score ?? '—'}
+                  </td>
+                  <td style={cellStyle}>
+                    {p.current_movement_id ? (
+                      <span
+                        className="inline-block py-px px-1.5 rounded-[2px] font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[#fb923c] bg-[rgba(251,146,60,0.15)] cursor-pointer" style={{ border: '1px solid rgba(251, 146, 60, 0.4)' }}
+                        title={`Movement #${p.current_movement_id}`}
+                      >
+                        EN ROUTE
+                      </span>
+                    ) : (
+                      <span
+                        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
+                      >
+                        PRESENT
+                      </span>
+                    )}
+                  </td>
+                  <td style={{ ...cellStyle, textAlign: 'center' }}>
+                    <div className="flex gap-1.5 justify-center">
+                      <button
+                        onClick={() => handleEdit(p)}
+                        className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[var(--color-accent)] bg-transparent border border-[var(--color-border)] rounded-[2px] py-0.5 px-1.5 cursor-pointer"
+                      >
+                        EDIT
+                      </button>
+                      <button
+                        onClick={() => handleDeleteRequest(p)}
+                        className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[#f87171] bg-transparent rounded-[2px] py-0.5 px-1.5 cursor-pointer border border-[rgba(248,113,113,0.3)]"
+                      >
+                        DEL
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               ))}
-              <th className="cursor-default">LOCATION</th>
-              <th className="text-center">ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
-            {virtualizer.getVirtualItems().map((virtualRow) => {
-              const p = filtered[virtualRow.index];
-              return (
-              <tr
-                key={p.id}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: virtualRow.size,
-                  transform: `translateY(${virtualRow.start}px)`,
-                  transition: 'background-color 150ms',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-hover)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                }}
-              >
-                <td style={cellStyle}>
-                  <span className="text-[var(--color-text-bright)] font-semibold">
-                    {p.last_name}
-                  </span>
-                  <span className="text-[var(--color-text-muted)]">, {p.first_name}</span>
-                </td>
-                <td style={cellStyle}>{p.edipi}</td>
-                <td className="font-semibold">
-                  {p.rank ?? '—'}
-                </td>
-                <td style={cellStyle}>{p.pay_grade ?? '—'}</td>
-                <td style={{ ...cellStyle, color: 'var(--color-accent)' }}>{p.mos ?? '—'}</td>
-                <td style={{ ...cellStyle, maxWidth: 160 }}>{p.billet ?? '—'}</td>
-                <td style={cellStyle}>
-                  <div className="flex items-center gap-1.5">
-                    <StatusDot status={p.status} />
-                    <span style={{ color: getStatusColor(p.status) }}>{p.status}</span>
-                  </div>
-                </td>
-                <td style={cellStyle}>
-                  <span
-                    className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-semibold font-[var(--font-mono)] tracking-[0.5px]" style={{ color: dutyStatusColor(p.duty_status), backgroundColor: `${dutyStatusColor(p.duty_status)}15`, border: `1px solid ${dutyStatusColor(p.duty_status)}40` }}
-                  >
-                    {p.duty_status}
-                  </span>
-                </td>
-                <td style={cellStyle}>
-                  <span
-                    className="font-semibold" style={{ color: rifleQualColor(p.rifle_qual) }}
-                  >
-                    {p.rifle_qual ?? '—'}
-                  </span>
-                </td>
-                <td style={{ ...cellStyle, fontWeight: 600, color: (p.pft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
-                  {p.pft_score ?? '—'}
-                </td>
-                <td style={{ ...cellStyle, fontWeight: 600, color: (p.cft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
-                  {p.cft_score ?? '—'}
-                </td>
-                <td style={cellStyle}>
-                  {p.current_movement_id ? (
-                    <span
-                      className="inline-block py-px px-1.5 rounded-[2px] font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[#fb923c] bg-[rgba(251,146,60,0.15)] cursor-pointer" style={{ border: '1px solid rgba(251, 146, 60, 0.4)' }}
-                      title={`Movement #${p.current_movement_id}`}
-                    >
-                      EN ROUTE
-                    </span>
-                  ) : (
-                    <span
-                      className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
-                    >
-                      PRESENT
-                    </span>
-                  )}
-                </td>
-                <td style={{ ...cellStyle, textAlign: 'center' }}>
-                  <div className="flex gap-1.5 justify-center">
-                    <button
-                      onClick={() => handleEdit(p)}
-                      className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[var(--color-accent)] bg-transparent border border-[var(--color-border)] rounded-[2px] py-0.5 px-1.5 cursor-pointer"
-                    >
-                      EDIT
-                    </button>
-                    <button
-                      onClick={() => handleDelete(p)}
-                      className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[#f87171] bg-transparent rounded-[2px] py-0.5 px-1.5 cursor-pointer border border-[rgba(248,113,113,0.3)]"
-                    >
-                      DEL
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              );
-            })}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="border-t border-t-[var(--color-border)]">
+          <TablePagination
+            totalItems={filtered.length}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+          />
+        </div>
       </div>
       )}
 
@@ -403,6 +467,16 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
         onClose={() => setShowModal(false)}
         onSaved={handleSaved}
         initialData={editingMarine}
+      />
+
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        title="DELETE PERSONNEL"
+        message={deleteTarget ? `Delete ${deleteTarget.rank ?? ''} ${deleteTarget.last_name}, ${deleteTarget.first_name}? This action cannot be undone.` : ''}
+        confirmLabel="DELETE"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );

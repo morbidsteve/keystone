@@ -96,10 +96,10 @@ export default function CreateRequisitionModal({ isOpen, onClose, unitId }: Crea
       }
       return req;
     },
-    onSuccess: () => {
+    onSuccess: (_data, andSubmit) => {
       queryClient.invalidateQueries({ queryKey: ['requisitions'] });
       onClose();
-      toast.success('Requisition created successfully');
+      toast.success(andSubmit ? 'Requisition submitted successfully' : 'Requisition draft created');
     },
     onError: () => {
       toast.danger('Failed to create requisition');

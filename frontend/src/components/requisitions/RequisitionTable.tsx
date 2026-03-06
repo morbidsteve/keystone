@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp, ChevronRight, ClipboardList } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronRight, ClipboardList, Search } from 'lucide-react';
 import type { Requisition, RequisitionStatus, RequisitionPriority } from '@/lib/types';
 import EmptyState from '@/components/ui/EmptyState';
 import RequisitionDetail from './RequisitionDetail';
@@ -61,6 +61,7 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -71,8 +72,18 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
     }
   };
 
+  const filtered = useMemo(() => {
+    if (!searchQuery.trim()) return requisitions;
+    const q = searchQuery.toLowerCase();
+    return requisitions.filter((r) =>
+      r.requisition_number.toLowerCase().includes(q) ||
+      (r.requested_by_name && r.requested_by_name.toLowerCase().includes(q)) ||
+      r.nomenclature.toLowerCase().includes(q)
+    );
+  }, [requisitions, searchQuery]);
+
   const sorted = useMemo(() => {
-    const copy = [...requisitions];
+    const copy = [...filtered];
     copy.sort((a, b) => {
       const aVal = a[sortField];
       const bVal = b[sortField];
@@ -85,7 +96,7 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
       return sortDir === 'asc' ? cmp : -cmp;
     });
     return copy;
-  }, [requisitions, sortField, sortDir]);
+  }, [filtered, sortField, sortDir]);
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
@@ -130,6 +141,22 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
 
   return (
     <div className="overflow-x-auto">
+      {/* Search bar */}
+      <div className="flex items-center gap-2 px-2 py-2 border-b border-b-[var(--color-border)]">
+        <Search size={12} className="text-[var(--color-text-muted)] shrink-0" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by REQ #, requester, or item..."
+          className="flex-1 bg-transparent border-0 outline-none font-[var(--font-mono)] text-[11px] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]"
+        />
+        {searchQuery && (
+          <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
+            {sorted.length} result{sorted.length !== 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
       <table className="w-full border-collapse">
         <thead>
           <tr>
@@ -167,16 +194,16 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
                     onClick={() => setExpandedId(isExpanded ? null : req.id)}
                     className="grid items-center" style={{ gridTemplateColumns: '24px 130px 1fr 80px 80px 100px 110px 90px', backgroundColor: isExpanded ? 'var(--color-bg-hover)' : 'transparent', transition: 'background-color var(--transition)' }}
                   >
-                    <div className="items-center justify-center">
+                    <div style={cellStyle} className="flex items-center justify-center">
                       <ChevronRight
                         size={12}
                         className="text-[var(--color-text-muted)]" style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform var(--transition)' }}
                       />
                     </div>
-                    <div className="font-semibold">
+                    <div style={{ ...cellStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
                       {req.requisition_number}
                     </div>
-                    <div className="text-ellipsis">
+                    <div style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {req.nomenclature}
                     </div>
                     <div style={{ ...cellStyle, textAlign: 'right' }}>
@@ -199,7 +226,7 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
                         {req.status}
                       </span>
                     </div>
-                    <div className="text-[var(--color-text-muted)]">
+                    <div style={{ ...cellStyle, color: 'var(--color-text-muted)' }}>
                       {new Date(req.created_at).toLocaleDateString()}
                     </div>
                   </div>

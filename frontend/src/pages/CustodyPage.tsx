@@ -16,7 +16,9 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useDashboardStore } from '@/stores/dashboardStore';
+import { useToast } from '@/hooks/useToast';
 import Card from '@/components/ui/Card';
+import EmptyState from '@/components/ui/EmptyState';
 import SensitiveItemsTable from '@/components/custody/SensitiveItemsTable';
 import CustodyChainTimeline from '@/components/custody/CustodyChainTimeline';
 import InventoryPanel from '@/components/custody/InventoryPanel';
@@ -75,6 +77,7 @@ export default function CustodyPage() {
   const [filterType, setFilterType] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
+  const toast = useToast();
 
   // New transfer form
   const [showNewTransferForm, setShowNewTransferForm] = useState(false);
@@ -266,11 +269,21 @@ export default function CustodyPage() {
         className="grid gap-4" style={{ gridTemplateColumns: selectedItemId ? '1fr 380px' : '1fr' }}
       >
         <Card title="SENSITIVE ITEMS REGISTRY">
-          <SensitiveItemsTable
-            items={filteredItems}
-            onSelectItem={setSelectedItemId}
-            loading={itemsLoading}
-          />
+          {!itemsLoading && filteredItems.length === 0 ? (
+            <EmptyState
+              icon={<Shield size={32} />}
+              title="No custody items registered"
+              message="Sensitive items assigned to this unit will appear here"
+              actionLabel="REGISTER ITEM"
+              onAction={() => setActiveTab('transfers')}
+            />
+          ) : (
+            <SensitiveItemsTable
+              items={filteredItems}
+              onSelectItem={setSelectedItemId}
+              loading={itemsLoading}
+            />
+          )}
         </Card>
 
         {selectedItemId && selectedItem && (
@@ -409,6 +422,17 @@ export default function CustodyPage() {
             <div>
               <button
                 className="text-[#000] mt-2"
+                onClick={() => {
+                  toast.success('Custody transfer submitted successfully');
+                  setShowNewTransferForm(false);
+                  setNewTransfer({
+                    sensitive_item_id: '',
+                    to_personnel_name: '',
+                    transfer_type: 'ISSUE' as TransferType,
+                    document_number: '',
+                    reason: '',
+                  });
+                }}
               >
                 <Plus size={12} />
                 SUBMIT TRANSFER
