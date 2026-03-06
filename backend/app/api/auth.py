@@ -1,12 +1,15 @@
 """Authentication endpoints: login, register, user management."""
 
 import time
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
+from app.config import settings
 from app.core.auth import (
     create_access_token,
     get_current_user,
@@ -174,3 +177,85 @@ async def list_users(
     """List all users (admin only)."""
     result = await db.execute(select(User).order_by(User.id))
     return result.scalars().all()
+
+
+class DemoUserProfile(BaseModel):
+    """Public profile for a demo user shown in the role picker."""
+
+    username: str
+    full_name: str
+    rank: Optional[str] = None
+    billet: Optional[str] = None
+    unit: Optional[str] = None
+    description: Optional[str] = None
+    section: Optional[str] = None
+    role: str
+    mos: Optional[str] = None
+
+
+@router.post("/demo-users", response_model=List[DemoUserProfile])
+async def get_demo_users(
+    db: AsyncSession = Depends(get_db),
+) -> List[Dict[str, Any]]:
+    """Return list of demo user profiles for the role picker.
+
+    Only available in development mode. No authentication required.
+    """
+    if settings.ENV_MODE != "development":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo users are only available in development mode",
+        )
+
+    result = await db.execute(
+        select(User)
+        .options(joinedload(User.unit))
+        .where(User.demo_profile.isnot(None))
+        .order_by(User.id)
+    )
+    users = result.unique().scalars().all()
+
+    profiles: List[Dict[str, Any]] = []
+    for user in users:
+        profile = user.demo_profile or {}
+        billet = profile.get("billet", "")
+
+        # Determine section based on billet
+        section = "Command"
+        billet_lower = billet.lower()
+        if "supply" in billet_lower or "s-4" in billet_lower or "s4" in billet_lower:
+            section = "Logistics (S-4)"
+        elif (
+            "s-3" in billet_lower
+            or "s3" in billet_lower
+            or "operations" in billet_lower
+        ):
+            section = "Operations (S-3)"
+        elif "s-1" in billet_lower or "admin" in billet_lower:
+            section = "Administration (S-1)"
+        elif "maint" in billet_lower:
+            section = "Maintenance"
+        elif "motor" in billet_lower or "dispatch" in billet_lower:
+            section = "Motor Transport"
+        elif "surgeon" in billet_lower or "medical" in billet_lower:
+            section = "Medical"
+        elif "sergeant major" in billet_lower:
+            section = "Command"
+        elif "battery commander" in billet_lower:
+            section = "Command"
+
+        profiles.append(
+            {
+                "username": user.username,
+                "full_name": user.full_name,
+                "rank": profile.get("rank"),
+                "billet": billet,
+                "unit": user.unit.abbreviation if user.unit else None,
+                "description": profile.get("description"),
+                "section": section,
+                "role": user.role.value,
+                "mos": profile.get("mos"),
+            }
+        )
+
+    return profiles

@@ -164,6 +164,13 @@ export interface User {
   custom_role_id?: number;
   created_at?: string;
   updated_at?: string | null;
+  demo_profile?: {
+    rank: string;
+    billet: string;
+    edipi: string;
+    mos: string;
+    description: string;
+  };
 }
 
 export interface Unit {

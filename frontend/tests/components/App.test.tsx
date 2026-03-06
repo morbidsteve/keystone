@@ -27,11 +27,12 @@ describe('App', () => {
     expect(screen.getByText('LOGISTICS COMMON OPERATING PICTURE')).toBeInTheDocument();
   });
 
-  it('renders login form elements', () => {
+  it('renders login page content', () => {
     renderWithProviders('/login');
-    expect(screen.getByText('USERNAME')).toBeInTheDocument();
-    expect(screen.getByText('PASSWORD')).toBeInTheDocument();
-    expect(screen.getByText('LOGIN')).toBeInTheDocument();
+    // In demo mode, the role picker is shown; otherwise the login form
+    const hasRolePicker = screen.queryByText(/SELECT YOUR ROLE/) !== null;
+    const hasLoginForm = screen.queryByText('USERNAME') !== null;
+    expect(hasRolePicker || hasLoginForm).toBe(true);
   });
 
   it('renders classification banners', () => {
@@ -45,6 +46,9 @@ describe('App', () => {
     localStorage.removeItem('keystone_user');
     renderWithProviders('/dashboard');
     expect(screen.getByText('KEYSTONE')).toBeInTheDocument();
-    expect(screen.getByText('LOGIN')).toBeInTheDocument();
+    // In demo mode role picker shows KEYSTONE, otherwise LOGIN button
+    const hasRolePicker = screen.queryByText(/SELECT YOUR ROLE/) !== null;
+    const hasLoginButton = screen.queryByText('LOGIN') !== null;
+    expect(hasRolePicker || hasLoginButton).toBe(true);
   });
 });

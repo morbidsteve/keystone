@@ -171,6 +171,7 @@ from app.models.fuel import (
     FuelForecast,
 )
 from app.models.rbac import Permission, CustomRole, role_permissions
+from app.models.activity import Activity, ActivityType
 from app.models.custody import (
     SensitiveItem,
     SensitiveItemType,
@@ -357,4 +358,6 @@ __all__ = [
     "RecommendationStatus",
     "ConvoyCargo",
     "VEHICLE_LICENSE_REQUIREMENTS",
+    "Activity",
+    "ActivityType",
 ]
