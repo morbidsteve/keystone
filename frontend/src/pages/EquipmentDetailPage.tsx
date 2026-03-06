@@ -152,13 +152,9 @@ export default function EquipmentDetailPage() {
 
   if (loading) {
     return (
-      <div className="animate-fade-in" style={{ padding: 32, textAlign: 'center' }}>
+      <div className="animate-fade-in p-8 text-center">
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            color: 'var(--color-text-muted)',
-          }}
+          className="font-[var(--font-mono)] text-xs text-[var(--color-text-muted)]"
         >
           Loading equipment data...
         </div>
@@ -168,22 +164,13 @@ export default function EquipmentDetailPage() {
 
   if (!equipment) {
     return (
-      <div className="animate-fade-in" style={{ padding: 32, textAlign: 'center' }}>
-        <div style={{ fontSize: 14, color: 'var(--color-text-muted)', marginBottom: 16 }}>
+      <div className="animate-fade-in p-8 text-center">
+        <div className="text-sm text-[var(--color-text-muted)] mb-4">
           Equipment not found.
         </div>
         <button
           onClick={() => navigate('/equipment')}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            padding: '8px 16px',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            backgroundColor: 'var(--color-bg-elevated)',
-            color: 'var(--color-text)',
-            cursor: 'pointer',
-          }}
+          className="font-[var(--font-mono)] text-[11px] py-2 px-4 border border-[var(--color-border)] rounded-[var(--radius)] bg-[var(--color-bg-elevated)] text-[var(--color-text)] cursor-pointer"
         >
           Back to Equipment
         </button>
@@ -192,32 +179,15 @@ export default function EquipmentDetailPage() {
   }
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Header */}
       <div
-        className="equipment-detail-header"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 16,
-        }}
+        className="equipment-detail-header flex items-center gap-4"
+        
       >
         <button
           onClick={() => navigate('/equipment')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            padding: '6px 12px',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            backgroundColor: 'var(--color-bg-elevated)',
-            color: 'var(--color-text-muted)',
-            cursor: 'pointer',
-            transition: 'all var(--transition)',
-          }}
+          className="flex items-center gap-1.5 font-[var(--font-mono)] text-[11px] py-1.5 px-3 border border-[var(--color-border)] rounded-[var(--radius)] bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] cursor-pointer transition-all duration-[var(--transition)]"
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
             e.currentTarget.style.color = 'var(--color-text-bright)';
@@ -231,61 +201,30 @@ export default function EquipmentDetailPage() {
           EQUIPMENT
         </button>
 
-        <div className="equipment-info-line" style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+        <div className="equipment-info-line flex items-center gap-3 flex-1" >
           <span
-            style={{
-              display: 'inline-block',
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              backgroundColor: getItemStatusColor(equipment.status),
-              flexShrink: 0,
-            }}
+            className="inline-block w-[10px] h-[10px] shrink-0" style={{ borderRadius: '50%', backgroundColor: getItemStatusColor(equipment.status) }}
           />
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="flex items-center gap-2.5">
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 16,
-                  fontWeight: 600,
-                  color: 'var(--color-text-bright)',
-                }}
+                className="font-[var(--font-mono)] text-base font-semibold text-[var(--color-text-bright)]"
               >
                 {equipment.bumperNumber}
               </span>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  color: 'var(--color-text)',
-                }}
+                className="font-[var(--font-mono)] text-xs text-[var(--color-text)]"
               >
                 {equipment.equipmentType}
               </span>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  padding: '2px 8px',
-                  borderRadius: 2,
-                  border: `1px solid ${getItemStatusColor(equipment.status)}`,
-                  color: getItemStatusColor(equipment.status),
-                  backgroundColor: `${getItemStatusColor(equipment.status)}15`,
-                  letterSpacing: '1px',
-                  fontWeight: 500,
-                }}
+                className="font-[var(--font-mono)] text-[9px] py-0.5 px-2 rounded-[2px] tracking-[1px] font-medium" style={{ border: `1px solid ${getItemStatusColor(equipment.status)}`, color: getItemStatusColor(equipment.status), backgroundColor: `${getItemStatusColor(equipment.status)}15` }}
               >
                 {equipment.status}
               </span>
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-text-muted)',
-                marginTop: 2,
-              }}
+              className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-0.5"
             >
               {equipment.serialNumber} | {equipment.unitName} | TAMCN: {equipment.tamcn}
             </div>
@@ -295,37 +234,16 @@ export default function EquipmentDetailPage() {
 
       {/* Tab Navigation */}
       <div
-        className="responsive-tabs"
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="responsive-tabs flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
+        
       >
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              padding: '10px 16px',
-              border: 'none',
-              borderBottom: activeTab === tab.id
+            className="flex items-center gap-1.5 font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] py-2.5 px-4 border-0 bg-transparent cursor-pointer" style={{ borderBottom: activeTab === tab.id
                 ? '2px solid var(--color-text-bright)'
-                : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color: activeTab === tab.id ? 'var(--color-text-bright)' : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-            }}
+                : '2px solid transparent', color: activeTab === tab.id ? 'var(--color-text-bright)' : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
             onMouseEnter={(e) => {
               if (activeTab !== tab.id) {
                 e.currentTarget.style.color = 'var(--color-text)';
@@ -437,40 +355,18 @@ function FaultsTab({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div className="flex flex-col gap-2">
       {/* Header with action */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+      <div className="flex justify-between items-center mb-1">
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '1.5px',
-            color: 'var(--color-text-muted)',
-          }}
+          className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)]"
         >
           {faults.length} FAULTS RECORDED
         </span>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '4px 10px',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'transparent',
-              color: 'var(--color-accent)',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-            }}
+            className="inline-flex items-center gap-1 font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-1 px-2.5 border border-[var(--color-accent)] rounded-[var(--radius)] bg-transparent text-[var(--color-accent)] cursor-pointer uppercase"
           >
             <Plus size={10} />
             REPORT FAULT
@@ -481,18 +377,7 @@ function FaultsTab({
       {/* Error */}
       {error && (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 12px',
-            backgroundColor: 'var(--color-danger)15',
-            border: '1px solid var(--color-danger)',
-            borderRadius: 'var(--radius)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-danger)',
-          }}
+          className="flex items-center gap-2 py-2 px-3 bg-[var(--color-danger)15] border border-[var(--color-danger)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-danger)]"
         >
           <AlertTriangle size={12} />
           {error}
@@ -503,39 +388,24 @@ function FaultsTab({
       {showForm && (
         <form
           onSubmit={handleReportFault}
-          style={{
-            padding: '12px 16px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-accent)',
-            borderRadius: 'var(--radius)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-          }}
+          className="py-3 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-accent)] rounded-[var(--radius)] flex flex-col gap-2.5"
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-bright)] tracking-[1px] uppercase"
           >
             REPORT NEW FAULT
           </span>
           <div>
             <label style={formLabelStyle}>DESCRIPTION *</label>
             <textarea
-              style={{ ...inputStyle, minHeight: 50, resize: 'vertical' }}
+              className="resize-y"
               value={faultDesc}
               onChange={(e) => setFaultDesc(e.target.value)}
               placeholder="Describe the fault..."
               required
             />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
               <label style={formLabelStyle}>SEVERITY</label>
               <select
@@ -558,7 +428,7 @@ function FaultsTab({
               />
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <div className="flex gap-2 justify-end">
             <button
               type="button"
               onClick={() => setShowForm(false)}
@@ -581,15 +451,7 @@ function FaultsTab({
       {/* Fault List */}
       {sorted.length === 0 && !showForm && (
         <div
-          style={{
-            padding: 32,
-            textAlign: 'center',
-            color: 'var(--color-text-muted)',
-            fontSize: 12,
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-          }}
+          className="p-8 text-center text-[var(--color-text-muted)] text-xs bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
         >
           No faults reported for this equipment.
         </div>
@@ -598,63 +460,31 @@ function FaultsTab({
       {sorted.map((fault) => (
         <div
           key={fault.id}
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 12,
-            padding: '12px 16px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderLeft: `3px solid ${getFaultSeverityColor(fault.severity)}`,
-            borderRadius: 'var(--radius)',
-          }}
+          className="flex items-start gap-3 py-3 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]" style={{ borderLeft: `3px solid ${getFaultSeverityColor(fault.severity)}` }}
         >
           <AlertTriangle
             size={14}
-            style={{
-              color: getFaultSeverityColor(fault.severity),
-              marginTop: 2,
-              flexShrink: 0,
-            }}
+            className="mt-0.5 shrink-0" style={{ color: getFaultSeverityColor(fault.severity) }}
           />
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="flex-1">
+            <div className="flex justify-between mb-1">
+              <div className="flex items-center gap-2">
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    padding: '2px 6px',
-                    borderRadius: 2,
-                    border: `1px solid ${getFaultSeverityColor(fault.severity)}`,
-                    color: getFaultSeverityColor(fault.severity),
-                    backgroundColor: `${getFaultSeverityColor(fault.severity)}15`,
-                    letterSpacing: '1px',
-                    fontWeight: 600,
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] py-0.5 px-1.5 rounded-[2px] tracking-[1px] font-semibold" style={{ border: `1px solid ${getFaultSeverityColor(fault.severity)}`, color: getFaultSeverityColor(fault.severity), backgroundColor: `${getFaultSeverityColor(fault.severity)}15` }}
                 >
                   {fault.severity}
                 </span>
                 {fault.resolvedAt && (
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: 'var(--color-success)',
-                      fontWeight: 600,
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] text-[var(--color-success)] font-semibold"
                   >
                     RESOLVED
                   </span>
                 )}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="flex items-center gap-2">
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                 >
                   {formatRelativeTime(fault.reportedAt)}
                 </span>
@@ -678,34 +508,23 @@ function FaultsTab({
               </div>
             </div>
             <div
-              style={{
-                fontSize: 11,
-                color: 'var(--color-text)',
-                marginBottom: 6,
-                lineHeight: 1.5,
-              }}
+              className="text-[11px] text-[var(--color-text)] mb-1.5 leading-normal"
             >
               {fault.faultDescription}
             </div>
             <div
-              className="fault-metadata"
-              style={{
-                display: 'flex',
-                gap: 12,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                color: 'var(--color-text-muted)',
-              }}
+              className="fault-metadata flex gap-3 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
+              
             >
               <span>Reported by: {fault.reportedBy}</span>
               <span>{formatDate(fault.reportedAt, 'dd MMM yyyy HH:mm')}</span>
               {fault.workOrderId && (
-                <span style={{ color: 'var(--color-text)' }}>
+                <span className="text-[var(--color-text)]">
                   WO: {fault.workOrderId.toUpperCase()}
                 </span>
               )}
               {fault.resolvedAt && (
-                <span style={{ color: 'var(--color-success)' }}>
+                <span className="text-[var(--color-success)]">
                   Resolved: {formatDate(fault.resolvedAt, 'dd MMM yyyy')}
                 </span>
               )}
@@ -784,40 +603,18 @@ function DriversTab({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div className="flex flex-col gap-2">
       {/* Header with action */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+      <div className="flex justify-between items-center mb-1">
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '1.5px',
-            color: 'var(--color-text-muted)',
-          }}
+          className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)]"
         >
           {drivers.filter((d) => !d.releasedAt).length} ACTIVE / {drivers.length} TOTAL
         </span>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '4px 10px',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'transparent',
-              color: 'var(--color-accent)',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-            }}
+            className="inline-flex items-center gap-1 font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-1 px-2.5 border border-[var(--color-accent)] rounded-[var(--radius)] bg-transparent text-[var(--color-accent)] cursor-pointer uppercase"
           >
             <Plus size={10} />
             ASSIGN DRIVER
@@ -828,18 +625,7 @@ function DriversTab({
       {/* Error */}
       {error && (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 12px',
-            backgroundColor: 'var(--color-danger)15',
-            border: '1px solid var(--color-danger)',
-            borderRadius: 'var(--radius)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            color: 'var(--color-danger)',
-          }}
+          className="flex items-center gap-2 py-2 px-3 bg-[var(--color-danger)15] border border-[var(--color-danger)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-danger)]"
         >
           <AlertTriangle size={12} />
           {error}
@@ -850,29 +636,14 @@ function DriversTab({
       {showForm && (
         <form
           onSubmit={handleAssignDriver}
-          style={{
-            padding: '12px 16px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-accent)',
-            borderRadius: 'var(--radius)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-          }}
+          className="py-3 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-accent)] rounded-[var(--radius)] flex flex-col gap-2.5"
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-bright)] tracking-[1px] uppercase"
           >
             ASSIGN NEW DRIVER
           </span>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
               <label style={formLabelStyle}>PERSONNEL ID *</label>
               <input
@@ -896,31 +667,22 @@ function DriversTab({
           <div>
             <label style={formLabelStyle}>PRIMARY DRIVER</label>
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '4px 0',
-              }}
+              className="flex items-center gap-2 py-1 px-0"
             >
               <input
                 type="checkbox"
                 checked={isPrimary}
                 onChange={(e) => setIsPrimary(e.target.checked)}
-                style={{ accentColor: 'var(--color-accent)' }}
+                className="accent-[var(--color-accent)]"
               />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text)',
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
               >
                 {isPrimary ? 'Primary' : 'A-Driver'}
               </span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <div className="flex gap-2 justify-end">
             <button
               type="button"
               onClick={() => setShowForm(false)}
@@ -943,45 +705,22 @@ function DriversTab({
       {/* Drivers Table */}
       {sorted.length === 0 && !showForm ? (
         <div
-          style={{
-            padding: 32,
-            textAlign: 'center',
-            color: 'var(--color-text-muted)',
-            fontSize: 12,
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-          }}
+          className="p-8 text-center text-[var(--color-text-muted)] text-xs bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
         >
           No driver assignments on record.
         </div>
       ) : sorted.length > 0 && (
         <div
-          className="responsive-table-wrapper"
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            overflow: 'hidden',
-          }}
+          className="responsive-table-wrapper bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
+          
         >
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 500 }}>
+          <table className="w-full border-collapse min-w-[500px]">
             <thead>
               <tr>
                 {['STATUS', 'NAME', 'ROLE', 'ASSIGNED', 'RELEASED', 'ACTIONS'].map((h) => (
                   <th
                     key={h}
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '1.5px',
-                      color: 'var(--color-text-muted)',
-                      padding: '10px 12px',
-                      textAlign: 'left',
-                      borderBottom: '1px solid var(--color-border)',
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] py-2.5 px-3 text-left border-b border-b-[var(--color-border)]"
                   >
                     {h}
                   </th>
@@ -1006,87 +745,40 @@ function DriversTab({
                     }
                   >
                     <td
-                      style={{
-                        padding: '8px 12px',
-                        borderBottom: '1px solid var(--color-border)',
-                      }}
+                      className="py-2 px-3 border-b border-b-[var(--color-border)]"
                     >
                       <span
-                        style={{
-                          display: 'inline-block',
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: isCurrent ? 'var(--color-success)' : 'var(--color-text-muted)',
-                        }}
+                        className="inline-block w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: isCurrent ? 'var(--color-success)' : 'var(--color-text-muted)' }}
                       />
                     </td>
                     <td
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 12,
-                        padding: '8px 12px',
-                        color: isCurrent ? 'var(--color-text-bright)' : 'var(--color-text)',
-                        fontWeight: isCurrent ? 600 : 400,
-                        borderBottom: '1px solid var(--color-border)',
-                      }}
+                      className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)]" style={{ color: isCurrent ? 'var(--color-text-bright)' : 'var(--color-text)', fontWeight: isCurrent ? 600 : 400 }}
                     >
                       {d.personnelName || d.personnelId}
                     </td>
                     <td
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        padding: '8px 12px',
-                        color: 'var(--color-text-muted)',
-                        borderBottom: '1px solid var(--color-border)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] py-2 px-3 text-[var(--color-text-muted)] border-b border-b-[var(--color-border)] uppercase tracking-[0.5px]"
                     >
                       {d.isPrimary ? 'PRIMARY' : 'A-DRIVER'}
                     </td>
                     <td
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        padding: '8px 12px',
-                        color: 'var(--color-text)',
-                        borderBottom: '1px solid var(--color-border)',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] py-2 px-3 text-[var(--color-text)] border-b border-b-[var(--color-border)]"
                     >
                       {formatDate(d.assignedAt, 'dd MMM yyyy')}
                     </td>
                     <td
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        padding: '8px 12px',
-                        color: d.releasedAt ? 'var(--color-text-muted)' : 'var(--color-success)',
-                        borderBottom: '1px solid var(--color-border)',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] py-2 px-3 border-b border-b-[var(--color-border)]" style={{ color: d.releasedAt ? 'var(--color-text-muted)' : 'var(--color-success)' }}
                     >
                       {d.releasedAt ? formatDate(d.releasedAt, 'dd MMM yyyy') : 'CURRENT'}
                     </td>
                     <td
-                      style={{
-                        padding: '8px 12px',
-                        borderBottom: '1px solid var(--color-border)',
-                      }}
+                      className="py-2 px-3 border-b border-b-[var(--color-border)]"
                     >
                       {isCurrent && (
                         <button
                           onClick={() => handleRelease(d.id)}
                           disabled={releasingId === d.id}
-                          style={{
-                            ...actionBtnStyle(
-                              'transparent',
-                              'var(--color-warning)',
-                              releasingId === d.id,
-                            ),
-                            border: '1px solid var(--color-warning)',
-                            padding: '3px 10px',
-                          }}
+                          className="py-[3px] px-2.5"
                         >
                           <X size={9} />
                           {releasingId === d.id ? 'RELEASING...' : 'RELEASE'}
@@ -1111,33 +803,16 @@ function DriversTab({
 function ConvoysTab() {
   return (
     <div
-      style={{
-        padding: 32,
-        textAlign: 'center',
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-      }}
+      className="p-8 text-center bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
     >
-      <MapPin size={24} style={{ color: 'var(--color-text-muted)', marginBottom: 12 }} />
+      <MapPin size={24} className="text-[var(--color-text-muted)] mb-3" />
       <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          textTransform: 'uppercase',
-          letterSpacing: '1.5px',
-          color: 'var(--color-text-muted)',
-          marginBottom: 8,
-        }}
+        className="font-[var(--font-mono)] text-[10px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2"
       >
         CONVOY ASSIGNMENTS
       </div>
       <div
-        style={{
-          fontSize: 12,
-          color: 'var(--color-text-muted)',
-          lineHeight: 1.6,
-        }}
+        className="text-xs text-[var(--color-text-muted)] leading-relaxed"
       >
         Convoy and movement assignment history will be displayed here.
         <br />

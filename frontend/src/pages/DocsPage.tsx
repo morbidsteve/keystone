@@ -771,17 +771,12 @@ function QuickStartGuides() {
 
   return (
     <div>
-      <p style={{ color: 'var(--color-text-muted)', marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
+      <p className="text-[var(--color-text-muted)] mb-5 text-sm leading-relaxed">
         Select your role to see a tailored quick-start guide with step-by-step workflows.
       </p>
       {/* Role selector grid */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))',
-          gap: 12,
-          marginBottom: 28,
-        }}
+        className="grid gap-3 mb-7" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))' }}
       >
         {roleGuides.map((role) => {
           const active = selectedRole === role.id;
@@ -789,16 +784,7 @@ function QuickStartGuides() {
             <button
               key={role.id}
               onClick={() => setSelectedRole(role.id)}
-              style={{
-                background: active ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)',
-                border: `1px solid ${active ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                borderRadius: 'var(--radius)',
-                padding: '14px 12px',
-                cursor: 'pointer',
-                textAlign: 'center',
-                transition: 'var(--transition)',
-                outline: 'none',
-              }}
+              className="rounded-[var(--radius)] py-3.5 px-3 cursor-pointer text-center outline-none" style={{ background: active ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)', border: `1px solid ${active ? 'var(--color-accent)' : 'var(--color-border)'}`, transition: 'var(--transition)' }}
               onMouseEnter={(e) => {
                 if (!active) e.currentTarget.style.borderColor = 'var(--color-border-strong)';
               }}
@@ -806,8 +792,8 @@ function QuickStartGuides() {
                 if (!active) e.currentTarget.style.borderColor = 'var(--color-border)';
               }}
             >
-              <div style={{ fontSize: 28, marginBottom: 6 }}>{role.icon}</div>
-              <div style={{ color: active ? 'var(--color-accent)' : 'var(--color-text-bright)', fontSize: 13, fontWeight: 600 }}>
+              <div className="text-[28px] mb-1.5">{role.icon}</div>
+              <div className="text-[13px] font-semibold" style={{ color: active ? 'var(--color-accent)' : 'var(--color-text-bright)' }}>
                 {role.label}
               </div>
             </button>
@@ -818,20 +804,15 @@ function QuickStartGuides() {
       {/* Selected guide content */}
       {selectedGuide && (
         <div
-          style={{
-            background: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            padding: 24,
-          }}
+          className="border border-[var(--color-border)] rounded-[var(--radius)] p-6 bg-[var(--color-bg-surface)]"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-            <span style={{ fontSize: 28 }}>{selectedGuide.icon}</span>
-            <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--color-text-bright)', margin: 0 }}>
+          <div className="flex items-center gap-2.5 mb-3">
+            <span className="text-[28px]">{selectedGuide.icon}</span>
+            <h3 className="font-[var(--font-mono)] text-lg font-bold text-[var(--color-text-bright)] m-0">
               {selectedGuide.label}
             </h3>
           </div>
-          <p style={{ color: 'var(--color-text)', fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
+          <p className="text-[var(--color-text)] text-sm leading-relaxed mb-6">
             {selectedGuide.overview}
           </p>
 
@@ -841,45 +822,27 @@ function QuickStartGuides() {
           ))}
 
           {/* Keyboard Shortcuts */}
-          <div style={{ marginTop: 28, borderTop: '1px solid var(--color-border)', paddingTop: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-              <Keyboard size={16} style={{ color: 'var(--color-accent)' }} />
-              <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--color-text-bright)', margin: 0 }}>
+          <div className="mt-7 border-t border-t-[var(--color-border)] pt-5">
+            <div className="flex items-center gap-2 mb-3.5">
+              <Keyboard size={16} className="text-[var(--color-accent)]" />
+              <h4 className="font-[var(--font-mono)] text-sm font-semibold text-[var(--color-text-bright)] m-0">
                 Keyboard Shortcuts
               </h4>
             </div>
             <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                gap: 8,
-              }}
+              className="grid gap-2 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
             >
               {selectedGuide.shortcuts.map((sc, si) => (
                 <div
                   key={si}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '6px 0',
-                  }}
+                  className="flex items-center gap-2.5 py-1.5 px-0"
                 >
                   <kbd
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 12,
-                      background: 'var(--color-bg)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 4,
-                      padding: '2px 8px',
-                      color: 'var(--color-text-bright)',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="font-[var(--font-mono)] text-xs border border-[var(--color-border)] rounded-[4px] py-0.5 px-2 text-[var(--color-text-bright)] whitespace-nowrap" style={{ background: 'var(--color-bg)' }}
                   >
                     {sc.keys}
                   </kbd>
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{sc.action}</span>
+                  <span className="text-[var(--color-text-muted)] text-[13px]">{sc.action}</span>
                 </div>
               ))}
             </div>
@@ -895,63 +858,40 @@ function WorkflowBlock({ workflow, index }: { workflow: Workflow; index: number 
 
   return (
     <div
-      style={{
-        marginBottom: 12,
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        background: 'var(--color-bg-elevated)',
-        overflow: 'hidden',
-      }}
+      className="mb-3 border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden" style={{ background: 'var(--color-bg-elevated)' }}
     >
       <button
         onClick={() => setExpanded(!expanded)}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          padding: '12px 16px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          textAlign: 'left',
-          outline: 'none',
-        }}
+        className="w-full flex items-center gap-2.5 py-3 px-4 bg-transparent border-0 cursor-pointer text-left outline-none"
       >
         {expanded ? (
-          <ChevronDown size={16} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+          <ChevronDown size={16} className="text-[var(--color-accent)] shrink-0" />
         ) : (
-          <ChevronRight size={16} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+          <ChevronRight size={16} className="text-[var(--color-text-muted)] shrink-0" />
         )}
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            color: 'var(--color-accent)',
-            fontWeight: 700,
-            minWidth: 24,
-          }}
+          className="font-[var(--font-mono)] text-xs text-[var(--color-accent)] font-bold min-w-[24px]"
         >
           {String(index).padStart(2, '0')}
         </span>
-        <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+        <span className="text-sm font-semibold text-[var(--color-text-bright)]">
           {workflow.title}
         </span>
       </button>
       {expanded && (
         <div style={{ padding: '0 16px 16px 46px' }}>
-          <ol style={{ margin: 0, paddingLeft: 20, listStyleType: 'decimal' }}>
+          <ol className="m-0 pl-5 list-decimal">
             {workflow.steps.map((step, si) => {
               const isComplex = typeof step !== 'string';
               const text = isComplex ? (step as { text: string; substeps: string[] }).text : (step as string);
               const substeps = isComplex ? (step as { text: string; substeps: string[] }).substeps : [];
               return (
-                <li key={si} style={{ color: 'var(--color-text)', fontSize: 13, lineHeight: 1.7, marginBottom: substeps.length > 0 ? 8 : 4 }}>
-                  <span style={{ fontWeight: 600, color: 'var(--color-text-bright)' }}>{text}</span>
+                <li key={si} className="text-[var(--color-text)] text-[13px] leading-relaxed" style={{ marginBottom: substeps.length > 0 ? 8 : 4 }}>
+                  <span className="font-semibold text-[var(--color-text-bright)]">{text}</span>
                   {substeps.length > 0 && (
-                    <ul style={{ margin: '4px 0 0 0', paddingLeft: 18, listStyleType: 'disc' }}>
+                    <ul className="pl-[18px] list-disc" style={{ margin: '4px 0 0 0' }}>
                       {substeps.map((ss, ssi) => (
-                        <li key={ssi} style={{ color: 'var(--color-text-muted)', fontSize: 12, lineHeight: 1.6 }}>
+                        <li key={ssi} className="text-[var(--color-text-muted)] text-xs leading-relaxed">
                           {ss}
                         </li>
                       ))}
@@ -975,17 +915,12 @@ function ModuleReference() {
 
   return (
     <div>
-      <p style={{ color: 'var(--color-text-muted)', marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
+      <p className="text-[var(--color-text-muted)] mb-5 text-sm leading-relaxed">
         Select a module to view its detailed reference documentation.
       </p>
       {/* Module selector grid */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-          gap: 10,
-          marginBottom: 28,
-        }}
+        className="grid gap-2.5 mb-7" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}
       >
         {moduleRefs.map((mod) => {
           const active = selectedModule === mod.id;
@@ -993,16 +928,7 @@ function ModuleReference() {
             <button
               key={mod.id}
               onClick={() => setSelectedModule(mod.id)}
-              style={{
-                background: active ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)',
-                border: `1px solid ${active ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                borderRadius: 'var(--radius)',
-                padding: '12px 10px',
-                cursor: 'pointer',
-                textAlign: 'center',
-                transition: 'var(--transition)',
-                outline: 'none',
-              }}
+              className="rounded-[var(--radius)] py-3 px-2.5 cursor-pointer text-center outline-none" style={{ background: active ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)', border: `1px solid ${active ? 'var(--color-accent)' : 'var(--color-border)'}`, transition: 'var(--transition)' }}
               onMouseEnter={(e) => {
                 if (!active) e.currentTarget.style.borderColor = 'var(--color-border-strong)';
               }}
@@ -1010,8 +936,8 @@ function ModuleReference() {
                 if (!active) e.currentTarget.style.borderColor = 'var(--color-border)';
               }}
             >
-              <div style={{ fontSize: 22, marginBottom: 4 }}>{mod.icon}</div>
-              <div style={{ color: active ? 'var(--color-accent)' : 'var(--color-text-bright)', fontSize: 12, fontWeight: 600 }}>
+              <div className="text-[22px] mb-1">{mod.icon}</div>
+              <div className="text-xs font-semibold" style={{ color: active ? 'var(--color-accent)' : 'var(--color-text-bright)' }}>
                 {mod.label}
               </div>
             </button>
@@ -1022,28 +948,23 @@ function ModuleReference() {
       {/* Selected module content */}
       {selected && (
         <div
-          style={{
-            background: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            padding: 24,
-          }}
+          className="border border-[var(--color-border)] rounded-[var(--radius)] p-6 bg-[var(--color-bg-surface)]"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <span style={{ fontSize: 26 }}>{selected.icon}</span>
-            <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--color-text-bright)', margin: 0 }}>
+          <div className="flex items-center gap-2.5 mb-2">
+            <span className="text-[26px]">{selected.icon}</span>
+            <h3 className="font-[var(--font-mono)] text-lg font-bold text-[var(--color-text-bright)] m-0">
               {selected.label}
             </h3>
           </div>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 20, lineHeight: 1.6 }}>
+          <p className="text-[var(--color-text-muted)] text-[13px] mb-5 leading-relaxed">
             {selected.description}
           </p>
           {selected.sections.map((sec, si) => (
-            <div key={si} style={{ marginBottom: 18 }}>
-              <h4 style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--color-accent)', marginBottom: 6 }}>
+            <div key={si} className="mb-[18px]">
+              <h4 className="font-[var(--font-mono)] text-sm font-semibold text-[var(--color-accent)] mb-1.5">
                 {sec.title}
               </h4>
-              <p style={{ color: 'var(--color-text)', fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+              <p className="text-[var(--color-text)] text-[13px] leading-relaxed m-0">
                 {sec.content}
               </p>
             </div>
@@ -1070,39 +991,21 @@ function Glossary() {
 
   return (
     <div>
-      <p style={{ color: 'var(--color-text-muted)', marginBottom: 16, fontSize: 14, lineHeight: 1.6 }}>
+      <p className="text-[var(--color-text-muted)] mb-4 text-sm leading-relaxed">
         USMC logistics terminology and abbreviations used throughout KEYSTONE.
       </p>
       {/* Search input */}
-      <div style={{ position: 'relative', marginBottom: 20, maxWidth: 400 }}>
+      <div className="relative mb-5 max-w-[400px]">
         <Search
           size={16}
-          style={{
-            position: 'absolute',
-            left: 12,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            color: 'var(--color-text-muted)',
-            pointerEvents: 'none',
-          }}
+          className="absolute left-3 text-[var(--color-text-muted)] top-1/2 -translate-y-1/2 pointer-events-none"
         />
         <input
           type="text"
           placeholder="Search glossary..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px 12px 10px 36px',
-            background: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-text)',
-            fontSize: 14,
-            outline: 'none',
-            fontFamily: 'inherit',
-            boxSizing: 'border-box',
-          }}
+          className="w-full border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] text-sm outline-none" style={{ padding: '10px 12px 10px 36px', background: 'var(--color-bg-surface)', fontFamily: 'inherit', boxSizing: 'border-box' }}
           onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--color-accent)')}
           onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--color-border)')}
         />
@@ -1110,34 +1013,20 @@ function Glossary() {
 
       {/* Glossary items */}
       {filtered.length === 0 ? (
-        <p style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>No matching terms found.</p>
+        <p className="text-[var(--color-text-muted)] text-[13px]">No matching terms found.</p>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div className="flex flex-col gap-1.5">
           {filtered.map((item, i) => (
             <div
               key={i}
-              style={{
-                display: 'flex',
-                gap: 16,
-                padding: '10px 14px',
-                background: i % 2 === 0 ? 'var(--color-bg-surface)' : 'var(--color-bg-elevated)',
-                borderRadius: 'var(--radius)',
-                alignItems: 'baseline',
-              }}
+              className="flex gap-4 py-2.5 px-3.5 rounded-[var(--radius)] items-baseline" style={{ background: i % 2 === 0 ? 'var(--color-bg-surface)' : 'var(--color-bg-elevated)' }}
             >
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: 'var(--color-accent)',
-                  minWidth: 140,
-                  flexShrink: 0,
-                }}
+                className="font-[var(--font-mono)] text-[13px] font-bold text-[var(--color-accent)] min-w-[140px] shrink-0"
               >
                 {item.term}
               </span>
-              <span style={{ color: 'var(--color-text)', fontSize: 13, lineHeight: 1.6 }}>
+              <span className="text-[var(--color-text)] text-[13px] leading-relaxed">
                 {item.definition}
               </span>
             </div>
@@ -1159,49 +1048,33 @@ function FAQTroubleshooting() {
 
   return (
     <div>
-      <p style={{ color: 'var(--color-text-muted)', marginBottom: 20, fontSize: 14, lineHeight: 1.6 }}>
+      <p className="text-[var(--color-text-muted)] mb-5 text-sm leading-relaxed">
         Common questions and troubleshooting guidance for KEYSTONE users.
       </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="flex flex-col gap-2">
         {faqItems.map((item, i) => {
           const isOpen = expanded === i;
           return (
             <div
               key={i}
-              style={{
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                background: 'var(--color-bg-surface)',
-                overflow: 'hidden',
-              }}
+              className="border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden bg-[var(--color-bg-surface)]"
             >
               <button
                 onClick={() => toggle(i)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '14px 16px',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  outline: 'none',
-                }}
+                className="w-full flex items-center gap-2.5 py-3.5 px-4 bg-transparent border-0 cursor-pointer text-left outline-none"
               >
                 {isOpen ? (
-                  <ChevronDown size={16} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
+                  <ChevronDown size={16} className="text-[var(--color-accent)] shrink-0" />
                 ) : (
-                  <ChevronRight size={16} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+                  <ChevronRight size={16} className="text-[var(--color-text-muted)] shrink-0" />
                 )}
-                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                <span className="text-sm font-semibold text-[var(--color-text-bright)]">
                   {item.question}
                 </span>
               </button>
               {isOpen && (
                 <div style={{ padding: '0 16px 16px 42px' }}>
-                  <p style={{ color: 'var(--color-text)', fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+                  <p className="text-[var(--color-text)] text-[13px] leading-relaxed m-0">
                     {item.answer}
                   </p>
                 </div>
@@ -1227,18 +1100,12 @@ export default function DocsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('quickstart');
 
   return (
-    <div style={{ padding: 24, maxWidth: 1100, margin: '0 auto' }}>
+    <div className="p-6 max-w-[1100px] mx-auto">
       {/* Page Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
-        <BookOpen size={22} style={{ color: 'var(--color-accent)' }} />
+      <div className="flex items-center gap-2.5 mb-6">
+        <BookOpen size={22} className="text-[var(--color-accent)]" />
         <h1
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 22,
-            fontWeight: 700,
-            color: 'var(--color-text-bright)',
-            margin: 0,
-          }}
+          className="font-[var(--font-mono)] text-[22px] font-bold text-[var(--color-text-bright)] m-0"
         >
           Documentation
         </h1>
@@ -1246,12 +1113,7 @@ export default function DocsPage() {
 
       {/* Tab Navigation */}
       <div
-        style={{
-          display: 'flex',
-          gap: 0,
-          borderBottom: '1px solid var(--color-border)',
-          marginBottom: 28,
-        }}
+        className="flex gap-0 border-b border-b-[var(--color-border)] mb-7"
       >
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
@@ -1259,19 +1121,7 @@ export default function DocsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              style={{
-                padding: '10px 20px',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: `2px solid ${active ? 'var(--color-accent)' : 'transparent'}`,
-                cursor: 'pointer',
-                fontSize: 14,
-                fontWeight: active ? 600 : 400,
-                color: active ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                transition: 'var(--transition)',
-                outline: 'none',
-                fontFamily: 'var(--font-mono)',
-              }}
+              className="py-2.5 px-5 bg-transparent border-0 cursor-pointer text-sm outline-none font-[var(--font-mono)]" style={{ borderBottom: `2px solid ${active ? 'var(--color-accent)' : 'transparent'}`, fontWeight: active ? 600 : 400, color: active ? 'var(--color-accent)' : 'var(--color-text-muted)', transition: 'var(--transition)' }}
               onMouseEnter={(e) => {
                 if (!active) e.currentTarget.style.color = 'var(--color-text)';
               }}

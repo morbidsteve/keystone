@@ -48,25 +48,17 @@ export default function S4View() {
       : supplyData.filter((s) => s.supplyClass === supplyFilter);
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Supply Status */}
       <Card
         title="SUPPLY STATUS"
         headerRight={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Filter size={12} style={{ color: 'var(--color-text-muted)' }} />
+          <div className="flex items-center gap-1.5">
+            <Filter size={12} className="text-[var(--color-text-muted)]" />
             <select
               value={supplyFilter}
               onChange={(e) => setSupplyFilter(e.target.value)}
-              style={{
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                padding: '4px 8px',
-              }}
+              className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] py-1 px-2"
             >
               <option value="ALL">ALL CLASSES</option>
               {Object.values(SupplyClass).map((sc) => (
@@ -78,8 +70,8 @@ export default function S4View() {
           </div>
         }
       >
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
             <thead>
               <tr>
                 <th style={tableHeaderStyle}>UNIT</th>
@@ -99,7 +91,7 @@ export default function S4View() {
                 return (
                   <tr
                     key={row.id}
-                    style={{ transition: 'background-color var(--transition)' }}
+                    className="transition-colors duration-[var(--transition)]"
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
                     }
@@ -115,21 +107,16 @@ export default function S4View() {
                     <td style={{ ...tableCellStyle, textAlign: 'right' }}>
                       {row.onHand.toLocaleString()}
                     </td>
-                    <td style={{ ...tableCellStyle, textAlign: 'right', color: 'var(--color-text-muted)' }}>
+                    <td className="text-[var(--color-text-muted)]">
                       {row.authorized.toLocaleString()}
                     </td>
                     <td
-                      style={{
-                        ...tableCellStyle,
-                        textAlign: 'right',
-                        color: getStatusColor(row.status),
-                        fontWeight: 600,
-                      }}
+                      className="font-semibold" style={{ color: getStatusColor(row.status) }}
                     >
                       {pct}%
                     </td>
                     <td style={{ ...tableCellStyle, textAlign: 'right' }}>{row.dos}D</td>
-                    <td style={{ ...tableCellStyle, textAlign: 'right', color: 'var(--color-text-muted)' }}>
+                    <td className="text-[var(--color-text-muted)]">
                       {row.consumptionRate}/day
                     </td>
                     <td style={tableCellStyle}>
@@ -147,8 +134,8 @@ export default function S4View() {
       <div className="grid-responsive-2col">
         {/* Equipment Readiness */}
         <Card title="EQUIPMENT READINESS">
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   <th style={tableHeaderStyle}>TYPE</th>
@@ -163,7 +150,7 @@ export default function S4View() {
                 {equipmentData.map((eq) => (
                   <tr
                     key={eq.id}
-                    style={{ transition: 'background-color var(--transition)' }}
+                    className="transition-colors duration-[var(--transition)]"
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
                     }
@@ -175,19 +162,14 @@ export default function S4View() {
                       {eq.type}
                     </td>
                     <td style={tableCellStyle}>{eq.unitName}</td>
-                    <td style={{ ...tableCellStyle, textAlign: 'right', color: 'var(--color-success)' }}>
+                    <td className="text-[var(--color-success)]">
                       {eq.missionCapable}
                     </td>
-                    <td style={{ ...tableCellStyle, textAlign: 'right', color: 'var(--color-danger)' }}>
+                    <td className="text-[var(--color-danger)]">
                       {eq.notMissionCapable}
                     </td>
                     <td
-                      style={{
-                        ...tableCellStyle,
-                        textAlign: 'right',
-                        color: getStatusColor(eq.status),
-                        fontWeight: 600,
-                      }}
+                      className="font-semibold" style={{ color: getStatusColor(eq.status) }}
                     >
                       {eq.readinessPercent}%
                     </td>
@@ -203,7 +185,7 @@ export default function S4View() {
 
         {/* Active Movements */}
         <Card title="ACTIVE MOVEMENTS">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="flex flex-col gap-2">
             {movementData.map((mov) => {
               const movColor =
                 mov.status === MovementStatus.EN_ROUTE
@@ -214,51 +196,24 @@ export default function S4View() {
               return (
                 <div
                   key={mov.id}
-                  style={{
-                    padding: '10px 12px',
-                    backgroundColor: 'var(--color-bg-surface)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius)',
-                  }}
+                  className="py-2.5 px-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)]"
                 >
                   <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: 6,
-                    }}
+                    className="flex justify-between items-center mb-1.5"
                   >
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: 'var(--color-text-bright)',
-                      }}
+                      className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)]"
                     >
                       {mov.name}
                     </span>
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        color: movColor,
-                        fontWeight: 600,
-                        letterSpacing: '1px',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px]" style={{ color: movColor }}
                     >
                       {mov.status.replace('_', ' ')}
                     </span>
                   </div>
                   <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: 'var(--color-text-muted)',
-                      display: 'flex',
-                      gap: 16,
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex gap-4"
                   >
                     <span>{mov.originUnit} → {mov.destinationUnit}</span>
                     <span>{mov.cargo}</span>

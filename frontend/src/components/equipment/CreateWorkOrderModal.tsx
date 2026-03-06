@@ -119,66 +119,26 @@ export default function CreateWorkOrderModal({
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 3000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-      }}
+      className="fixed z-[3000] flex items-center justify-center bg-[rgba(0,0,0,0.85)] inset-0"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        style={{
-          width: '90%',
-          maxWidth: 600,
-          maxHeight: '90vh',
-          backgroundColor: 'var(--color-bg-card)',
-          border: '1px solid var(--color-border-strong)',
-          borderRadius: 'var(--radius)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
+        className="w-[90%] max-w-[600px] max-h-[90vh] bg-[var(--color-bg-card)] border border-[var(--color-border-strong)] rounded-[var(--radius)] flex flex-col overflow-hidden"
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '14px 16px',
-            borderBottom: '1px solid var(--color-border)',
-          }}
+          className="flex justify-between items-center py-3.5 px-4 border-b border-b-[var(--color-border)]"
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-xs font-bold tracking-[1.5px] text-[var(--color-text-bright)] uppercase"
           >
             CREATE WORK ORDER
           </span>
           <button
             onClick={onClose}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-              padding: 4,
-            }}
+            className="flex items-center justify-center bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-1"
           >
             <X size={16} />
           </button>
@@ -187,30 +147,11 @@ export default function CreateWorkOrderModal({
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          style={{
-            flex: 1,
-            minHeight: 0,
-            overflowY: 'auto',
-            padding: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-          }}
+          className="flex-1 min-h-[0px] overflow-y-auto p-4 flex flex-col gap-3"
         >
           {error && (
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '8px 12px',
-                backgroundColor: 'var(--color-danger)15',
-                border: '1px solid var(--color-danger)',
-                borderRadius: 'var(--radius)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-danger)',
-              }}
+              className="flex items-center gap-2 py-2 px-3 bg-[var(--color-danger)15] border border-[var(--color-danger)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-danger)]"
             >
               <AlertTriangle size={12} />
               {error}
@@ -218,11 +159,7 @@ export default function CreateWorkOrderModal({
           )}
 
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 12,
-            }}
+            className="grid gap-3 grid-cols-2"
           >
             {/* WO Number */}
             <div>
@@ -249,10 +186,10 @@ export default function CreateWorkOrderModal({
             </div>
 
             {/* Description */}
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="col-span-full">
               <label style={labelStyle}>DESCRIPTION *</label>
               <textarea
-                style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }}
+                className="resize-y"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe the maintenance requirement..."
@@ -276,7 +213,7 @@ export default function CreateWorkOrderModal({
             </div>
 
             {/* Equipment Catalog Selector */}
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="col-span-full">
               <EquipmentSelector
                 value={selectedEquipment}
                 onChange={(item) => {
@@ -350,31 +287,13 @@ export default function CreateWorkOrderModal({
 
         {/* Footer */}
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            gap: 8,
-            padding: '12px 16px',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="flex justify-end gap-2 py-3 px-4 border-t border-t-[var(--color-border)]"
         >
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '8px 20px',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'transparent',
-              color: 'var(--color-text-muted)',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] py-2 px-5 border border-[var(--color-border)] rounded-[var(--radius)] bg-transparent text-[var(--color-text-muted)] uppercase" style={{ cursor: isSubmitting ? 'not-allowed' : 'pointer' }}
           >
             CANCEL
           </button>
@@ -382,20 +301,7 @@ export default function CreateWorkOrderModal({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '8px 20px',
-              border: 'none',
-              borderRadius: 'var(--radius)',
-              backgroundColor: isSubmitting ? 'var(--color-text-muted)' : 'var(--color-accent)',
-              color: 'var(--color-bg)',
-              cursor: isSubmitting ? 'not-allowed' : 'pointer',
-              textTransform: 'uppercase',
-              opacity: isSubmitting ? 0.7 : 1,
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] py-2 px-5 border-0 rounded-[var(--radius)] text-[var(--color-bg)] uppercase" style={{ backgroundColor: isSubmitting ? 'var(--color-text-muted)' : 'var(--color-accent)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}
           >
             {isSubmitting ? 'CREATING...' : 'CREATE WORK ORDER'}
           </button>

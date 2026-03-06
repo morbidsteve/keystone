@@ -16,15 +16,10 @@ export default function ReadinessGauge({ percent, label, size = 80 }: ReadinessG
 
   return (
     <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 6,
-      }}
+      className="flex flex-col items-center gap-1.5"
     >
-      <div style={{ position: 'relative', width: size, height: size }}>
-        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
           {/* Background circle */}
           <circle
             cx={size / 2}
@@ -50,30 +45,13 @@ export default function ReadinessGauge({ percent, label, size = 80 }: ReadinessG
         </svg>
         {/* Center text */}
         <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: size > 60 ? 18 : 14,
-            fontWeight: 700,
-            color: color,
-          }}
+          className="absolute font-[var(--font-mono)] font-bold" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: size > 60 ? 18 : 14, color: color }}
         >
           {Math.round(percent)}%
         </div>
       </div>
       <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          color: 'var(--color-text-muted)',
-          textAlign: 'center',
-          maxWidth: size + 20,
-        }}
+        className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1px] text-[var(--color-text-muted)] text-center" style={{ maxWidth: size + 20 }}
       >
         {label}
       </span>

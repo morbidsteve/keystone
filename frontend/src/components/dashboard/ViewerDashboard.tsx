@@ -50,7 +50,7 @@ export default function ViewerDashboard() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="flex flex-col gap-4">
         <div className="grid-responsive-6col">
           {Array.from({ length: 6 }).map((_, i) => (
             <CardSkeleton key={i} />
@@ -61,17 +61,10 @@ export default function ViewerDashboard() {
   }
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Read-Only Status Overview */}
       <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          letterSpacing: '1.5px',
-          color: 'var(--color-text-muted)',
-          textTransform: 'uppercase',
-          marginBottom: -8,
-        }}
+        className="font-[var(--font-mono)] text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-[-8px]"
       >
         READ-ONLY VIEW
       </div>
@@ -83,44 +76,21 @@ export default function ViewerDashboard() {
           return (
             <div
               key={tile.label}
-              style={{
-                backgroundColor: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-border)',
-                borderTop: `2px solid ${color}`,
-                borderRadius: 'var(--radius)',
-                padding: '12px 14px',
-              }}
+              className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] py-3 px-3.5" style={{ borderTop: `2px solid ${color}` }}
             >
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 6,
-                }}
+                className="flex items-center justify-between mb-1.5"
               >
                 <span className="section-header">{tile.label}</span>
                 <StatusDot status={tile.status} pulse={tile.status === SupplyStatus.RED} />
               </div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 32,
-                  fontWeight: 700,
-                  color: color,
-                  lineHeight: 1,
-                  marginBottom: 4,
-                }}
+                className="font-[var(--font-mono)] text-[32px] font-bold leading-none mb-1" style={{ color: color }}
               >
                 {tile.value}%
               </div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  letterSpacing: '0.5px',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
               >
                 {tile.detail}
               </div>

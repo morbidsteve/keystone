@@ -75,34 +75,15 @@ export default function MaintenanceQueue() {
     <Card
       title="MAINTENANCE WORK ORDERS"
       headerRight={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="flex items-center gap-2.5">
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-            }}
+            className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
           >
             {workOrders.length} OPEN
           </span>
           <button
             onClick={() => setShowCreate(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              padding: '4px 10px',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'transparent',
-              color: 'var(--color-accent)',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-            }}
+            className="inline-flex items-center gap-1 font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-1 px-2.5 border border-[var(--color-accent)] rounded-[var(--radius)] bg-transparent text-[var(--color-accent)] cursor-pointer uppercase"
           >
             <Plus size={10} />
             NEW WO
@@ -110,7 +91,7 @@ export default function MaintenanceQueue() {
         </div>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div className="flex flex-col gap-1.5">
         {workOrders.length === 0 && (
           <EmptyState
             icon={<Wrench size={32} />}
@@ -125,84 +106,46 @@ export default function MaintenanceQueue() {
           return (
             <div
               key={wo.id}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 10,
-                padding: '10px 12px',
-                backgroundColor: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border)',
-                borderLeft: `3px solid ${getPriorityColor(wo.priority)}`,
-                borderRadius: 'var(--radius)',
-                transition: 'background-color var(--transition)',
-                cursor: 'pointer',
-              }}
+              className="flex items-start gap-2.5 py-2.5 px-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)] cursor-pointer" style={{ borderLeft: `3px solid ${getPriorityColor(wo.priority)}`, transition: 'background-color var(--transition)' }}
               onClick={() => setSelectedWO(wo)}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-bg-surface)')}
             >
-              <Wrench size={14} style={{ color: 'var(--color-text-muted)', marginTop: 2, flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Wrench size={14} className="text-[var(--color-text-muted)] mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center mb-1">
+                  <div className="flex items-center gap-2">
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 11,
-                        color: 'var(--color-text-bright)',
-                        fontWeight: 600,
-                      }}
+                      className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold"
                     >
                       {wo.workOrderNumber}
                     </span>
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        color: getPriorityColor(wo.priority),
-                        fontWeight: 600,
-                        letterSpacing: '1px',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px]" style={{ color: getPriorityColor(wo.priority) }}
                     >
                       {getPriorityLabel(wo.priority)}
                     </span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div className="flex items-center gap-1.5">
                     <StatusDot status={getWOStatusColor(wo.status)} size={6} />
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        color: 'var(--color-text-muted)',
-                        letterSpacing: '0.5px',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
                     >
                       {wo.status.replace(/_/g, ' ')}
                     </span>
                   </div>
                 </div>
                 <div
-                  style={{
-                    fontSize: 11,
-                    color: 'var(--color-text-muted)',
-                    marginBottom: 4,
-                  }}
+                  className="text-[11px] text-[var(--color-text-muted)] mb-1"
                 >
                   {wo.description || '---'}
                 </div>
                 <div
-                  style={{
-                    display: 'flex',
-                    gap: 12,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    marginBottom: 4,
-                  }}
+                  className="flex gap-3 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mb-1"
                 >
                   <span>{wo.workOrderNumber}</span>
                   <span>{wo.unitId}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <span className="flex items-center gap-[3px]">
                     <Clock size={9} />
                     {formatRelativeTime(wo.createdAt)}
                   </span>
@@ -211,19 +154,13 @@ export default function MaintenanceQueue() {
                   )}
                 </div>
                 <div
-                  style={{
-                    display: 'flex',
-                    gap: 12,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="flex gap-3 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <span className="flex items-center gap-[3px]">
                     <Package size={9} />
                     {wo.parts.length} {wo.parts.length === 1 ? 'part' : 'parts'}
                   </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <span className="flex items-center gap-[3px]">
                     <Clock size={9} />
                     {totalLabor}h labor
                   </span>

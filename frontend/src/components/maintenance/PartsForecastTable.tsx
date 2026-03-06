@@ -23,21 +23,13 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
   }, [data]);
 
   if (isLoading) {
-    return <div className="skeleton" style={{ width: '100%', height: 300 }} />;
+    return <div className="skeleton w-full h-[300px]"  />;
   }
 
   if (!sorted.length) {
     return (
       <div
-        style={{
-          height: 200,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="h-[200px] flex items-center justify-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No parts forecast data available
       </div>
@@ -48,30 +40,16 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
   const totalCost = sorted.reduce((s, p) => s + p.total_forecast_cost, 0);
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div className="overflow-x-auto">
       <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-        }}
+        className="w-full border-collapse font-[var(--font-mono)] text-[11px]"
       >
         <thead>
           <tr>
             {headers.map((h) => (
               <th
                 key={h}
-                style={{
-                  textAlign: 'left',
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-text-muted)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  textTransform: 'uppercase',
-                }}
+                className="text-left py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] text-[9px] font-semibold tracking-[1px] uppercase"
               >
                 {h}
               </th>
@@ -82,59 +60,32 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
           {sorted.map((row) => (
             <tr key={row.part_number}>
               <td
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-accent)',
-                  fontWeight: 600,
-                }}
+                className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-accent)] font-semibold"
               >
                 {row.part_number}
               </td>
               <td
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-text-bright)',
-                }}
+                className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
               >
                 {row.nomenclature}
               </td>
               <td
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-text-bright)',
-                  fontWeight: 600,
-                }}
+                className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
               >
                 {row.forecast_quantity}
               </td>
               <td
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-text-muted)',
-                }}
+                className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
               >
                 {row.equipment_types.join(', ')}
               </td>
               <td
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-text-bright)',
-                }}
+                className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
               >
                 ${row.avg_cost_per_part.toFixed(2)}
               </td>
               <td
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--color-border)',
-                  color: 'var(--color-warning)',
-                  fontWeight: 600,
-                }}
+                className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-warning)] font-semibold"
               >
                 ${row.total_forecast_cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
@@ -145,25 +96,12 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
           <tr>
             <td
               colSpan={5}
-              style={{
-                padding: '8px 12px',
-                borderTop: '2px solid var(--color-border)',
-                color: 'var(--color-text-bright)',
-                fontWeight: 700,
-                fontSize: 10,
-                letterSpacing: '1px',
-                textAlign: 'right',
-              }}
+              className="py-2 px-3 text-[var(--color-text-bright)] font-bold text-[10px] tracking-[1px] text-right border-t-2 border-t-[var(--color-border)]"
             >
               TOTAL FORECAST COST
             </td>
             <td
-              style={{
-                padding: '8px 12px',
-                borderTop: '2px solid var(--color-border)',
-                color: 'var(--color-warning)',
-                fontWeight: 700,
-              }}
+              className="py-2 px-3 text-[var(--color-warning)] font-bold border-t-2 border-t-[var(--color-border)]"
             >
               ${totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </td>

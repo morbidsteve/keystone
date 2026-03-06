@@ -82,13 +82,7 @@ export default function MeasurementOverlay() {
         >
           <Tooltip direction="top" offset={[0, -10]} permanent>
             <div
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#111',
-                padding: '2px 4px',
-              }}
+              className="text-[10px] font-bold text-[#111] py-0.5 px-1 font-mono"
             >
               Click to set end point
             </div>
@@ -144,21 +138,15 @@ export default function MeasurementOverlay() {
       >
         <Tooltip direction="top" offset={[0, -10]} permanent sticky={false}>
           <div
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 10,
-              color: '#111',
-              padding: '4px 6px',
-              textAlign: 'center',
-            }}
+            className="text-[10px] text-[#111] py-1 px-1.5 text-center font-mono"
           >
-            <div style={{ fontWeight: 700 }}>
+            <div className="font-bold">
               {distanceKm.toFixed(2)} km
             </div>
-            <div style={{ fontSize: 9, color: '#555' }}>
+            <div className="text-[9px] text-[#555]">
               {distanceMi.toFixed(2)} mi
             </div>
-            <div style={{ fontSize: 8, color: '#888', marginTop: 2 }}>
+            <div className="text-[8px] text-[#888] mt-0.5">
               Press Escape to exit
             </div>
           </div>

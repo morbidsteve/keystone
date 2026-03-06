@@ -51,22 +51,11 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
 
   return (
     <div
-      style={{
-        borderLeft: `3px solid ${borderColor}`,
-        marginBottom: 2,
-      }}
+      className="mb-0.5" style={{ borderLeft: `3px solid ${borderColor}` }}
     >
       <div
         onClick={handleRowClick}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          padding: '10px 12px',
-          backgroundColor: 'var(--color-bg-elevated)',
-          cursor: 'pointer',
-          transition: 'background-color var(--transition)',
-        }}
+        className="flex items-center gap-2.5 py-2.5 px-3 bg-[var(--color-bg-elevated)] cursor-pointer transition-colors duration-[var(--transition)]"
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
         }}
@@ -75,7 +64,7 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
         }}
       >
         {/* Expand/collapse icon */}
-        <span style={{ width: 14, flexShrink: 0, color: 'var(--color-text-muted)' }}>
+        <span className="w-[14px] shrink-0 text-[var(--color-text-muted)]">
           {sub.limitingFactor ? (
             expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />
           ) : null}
@@ -83,23 +72,12 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
 
         {/* Unit name + echelon label */}
         <span
-          style={{
-            flex: 1,
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            fontWeight: 600,
-            color: 'var(--color-text-bright)',
-          }}
+          className="flex-1 font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)]"
         >
           {sub.unitName}
           {sub.echelonLabel && (
             <span
-              style={{
-                fontWeight: 400,
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-                marginLeft: 6,
-              }}
+              className="font-normal text-[10px] text-[var(--color-text-muted)] ml-1.5"
             >
               ({sub.echelonLabel})
             </span>
@@ -111,14 +89,7 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
 
         {/* Percentage */}
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            color: pctColor,
-            minWidth: 50,
-            textAlign: 'right',
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold min-w-[50px] text-right" style={{ color: pctColor }}
         >
           {hasPct ? `${Math.round(sub.overallReadinessPct)}%` : 'N/A'}
         </span>
@@ -127,19 +98,10 @@ function SubordinateRow({ sub }: SubordinateRowProps) {
       {/* Expanded limiting factor detail */}
       {expanded && sub.limitingFactor && (
         <div
-          style={{
-            padding: '8px 12px 8px 40px',
-            backgroundColor: 'var(--color-bg)',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="bg-[var(--color-bg)] border-t border-t-[var(--color-border)]" style={{ padding: '8px 12px 8px 40px' }}
         >
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-warning)',
-              lineHeight: 1.4,
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-warning)] leading-[1.4]"
           >
             LIMFAC: {sub.limitingFactor}
           </span>
@@ -157,64 +119,31 @@ export default function ReadinessRollupTree({
   const avgColor = getTextColor(avgOverallPct);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div className="flex flex-col gap-0">
       {/* Parent header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '12px 16px',
-          backgroundColor: 'var(--color-bg)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius) var(--radius) 0 0',
-          marginBottom: 2,
-        }}
+        className="flex items-center justify-between py-3 px-4 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius) var(--radius) 0 0] mb-0.5"
       >
         <div>
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '0.5px',
-            }}
+            className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)] tracking-[0.5px]"
           >
             {parentUnitName}
           </span>
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              marginLeft: 10,
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] ml-2.5 uppercase tracking-[1px]"
           >
             {subordinates.length} SUBORDINATE{subordinates.length !== 1 ? 'S' : ''}
           </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <div className="flex items-baseline gap-1.5">
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] uppercase tracking-[1px]"
           >
             AVG
           </span>
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 18,
-              fontWeight: 700,
-              color: avgColor,
-            }}
+            className="font-[var(--font-mono)] text-lg font-bold" style={{ color: avgColor }}
           >
             {Math.round(avgOverallPct)}%
           </span>
@@ -223,12 +152,7 @@ export default function ReadinessRollupTree({
 
       {/* Subordinate rows */}
       <div
-        style={{
-          border: '1px solid var(--color-border)',
-          borderTop: 'none',
-          borderRadius: '0 0 var(--radius) var(--radius)',
-          overflow: 'hidden',
-        }}
+        className="border border-[var(--color-border)] rounded-[0 0 var(--radius) var(--radius)] overflow-hidden border-t-0"
       >
         {subordinates.map((sub) => (
           <SubordinateRow key={sub.unitId} sub={sub} />

@@ -4,7 +4,7 @@ import ReadinessTrend from '@/components/equipment/ReadinessTrend';
 
 export default function EquipmentPage() {
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Readiness Table */}
       <div className="responsive-table-wrapper">
         <ReadinessTable />

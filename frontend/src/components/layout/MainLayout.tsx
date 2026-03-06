@@ -33,39 +33,28 @@ export default function MainLayout() {
 
   return (
     <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        position: 'relative',
-        zIndex: 1,
-        paddingTop: 24,
-        paddingBottom: 24,
-      }}
+      className="flex flex-col h-screen relative z-[1] pt-6 pb-6"
     >
       <ClassificationBanner position="top" />
       <DemoBanner />
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      <div className="flex-1 flex overflow-hidden">
         {/* Mobile overlay */}
         <div
           className={`sidebar-overlay${isMobileOpen ? ' visible' : ''}`}
           onClick={close}
+          role="presentation"
         />
 
         <Sidebar isMobileOpen={isMobileOpen} onClose={close} />
 
         <div
-          className="main-content-area"
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+          className="main-content-area flex-1 flex flex-col overflow-hidden"
         >
           <Header onMenuToggle={toggle} />
           <main
-            className="main-content-padding"
-            style={{
-              flex: 1,
-              overflow: 'auto',
-              padding: '20px 24px',
-            }}
+            className="main-content-padding flex-1 overflow-auto p-5 px-6"
+            role="main"
+            id="main-content"
           >
             <Breadcrumb />
             <Outlet />

@@ -45,35 +45,16 @@ function getStatusLabel(status: EquipmentItemStatus): string {
 function DetailRow({ icon, label, value, mono = true }: { icon: React.ReactNode; label: string; value: React.ReactNode; mono?: boolean }) {
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '10px 0',
-        borderBottom: '1px solid var(--color-border)',
-      }}
+      className="flex items-center gap-3 py-2.5 px-0 border-b border-b-[var(--color-border)]"
     >
-      <span style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>{icon}</span>
+      <span className="text-[var(--color-text-muted)] shrink-0">{icon}</span>
       <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          color: 'var(--color-text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          minWidth: 120,
-          flexShrink: 0,
-        }}
+        className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] uppercase tracking-[1px] min-w-[120px] shrink-0"
       >
         {label}
       </span>
       <span
-        style={{
-          fontFamily: mono ? 'var(--font-mono)' : undefined,
-          fontSize: 12,
-          color: 'var(--color-text-bright)',
-          fontWeight: 500,
-        }}
+        className="text-xs text-[var(--color-text-bright)] font-medium" style={{ fontFamily: mono ? 'var(--font-mono)' : undefined }}
       >
         {value}
       </span>
@@ -85,56 +66,25 @@ export default function EquipmentOverviewTab({ equipment, currentDriver }: Equip
   const statusColor = getItemStatusColor(equipment.status);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+    <div className="grid grid-cols-2 gap-4">
       {/* Left Column — Equipment Details */}
       <div
-        style={{
-          backgroundColor: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius)',
-          padding: 16,
-        }}
+        className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4"
       >
         {/* Status Banner */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '12px 16px',
-            marginBottom: 16,
-            backgroundColor: `${statusColor}10`,
-            border: `1px solid ${statusColor}40`,
-            borderRadius: 'var(--radius)',
-          }}
+          className="flex items-center gap-2.5 py-3 px-4 mb-4 rounded-[var(--radius)]" style={{ backgroundColor: `${statusColor}10`, border: `1px solid ${statusColor}40` }}
         >
           <span
-            style={{
-              display: 'inline-block',
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              backgroundColor: statusColor,
-              flexShrink: 0,
-            }}
+            className="inline-block w-[10px] h-[10px] shrink-0" style={{ borderRadius: '50%', backgroundColor: statusColor }}
           />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              fontWeight: 600,
-              color: statusColor,
-              letterSpacing: '1px',
-            }}
+            className="font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px]" style={{ color: statusColor }}
           >
             {equipment.status}
           </span>
           <span
-            style={{
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              marginLeft: 4,
-            }}
+            className="text-[10px] text-[var(--color-text-muted)] ml-1"
           >
             {getStatusLabel(equipment.status)}
           </span>
@@ -162,86 +112,43 @@ export default function EquipmentOverviewTab({ equipment, currentDriver }: Equip
       </div>
 
       {/* Right Column — Driver + Notes */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="flex flex-col gap-4">
         {/* Current Driver */}
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            padding: 16,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4"
         >
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              marginBottom: 12,
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-3"
           >
             CURRENT DRIVER
           </div>
           {currentDriver ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="flex items-center gap-3">
               <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--color-bg-hover)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid var(--color-border)',
-                }}
+                className="w-[36px] h-[36px] bg-[var(--color-bg-hover)] flex items-center justify-center border border-[var(--color-border)] rounded-full"
               >
-                <User size={16} style={{ color: 'var(--color-text-muted)' }} />
+                <User size={16} className="text-[var(--color-text-muted)]" />
               </div>
               <div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    color: 'var(--color-text-bright)',
-                    fontWeight: 600,
-                  }}
+                  className="font-[var(--font-mono)] text-xs text-[var(--color-text-bright)] font-semibold"
                 >
                   {currentDriver.personnelName || currentDriver.personnelId}
                 </div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    marginTop: 2,
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-0.5"
                 >
                   {currentDriver.isPrimary ? 'PRIMARY' : 'A-DRIVER'} | Assigned{' '}
                   {formatDate(currentDriver.assignedAt, 'dd MMM yyyy')}
                 </div>
               </div>
               <span
-                style={{
-                  display: 'inline-block',
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--color-success)',
-                  marginLeft: 'auto',
-                }}
+                className="inline-block w-[8px] h-[8px] bg-[var(--color-success)]" style={{ borderRadius: '50%', marginLeft: 'auto' }}
               />
             </div>
           ) : (
             <div
-              style={{
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-                fontStyle: 'italic',
-              }}
+              className="text-[11px] text-[var(--color-text-muted)] italic"
             >
               No driver currently assigned
             </div>
@@ -250,34 +157,15 @@ export default function EquipmentOverviewTab({ equipment, currentDriver }: Equip
 
         {/* Notes */}
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            padding: 16,
-            flex: 1,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4 flex-1"
         >
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              marginBottom: 12,
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-3"
           >
             NOTES
           </div>
           <div
-            style={{
-              fontSize: 12,
-              color: equipment.notes ? 'var(--color-text)' : 'var(--color-text-muted)',
-              lineHeight: 1.6,
-              fontStyle: equipment.notes ? 'normal' : 'italic',
-            }}
+            className="text-xs leading-relaxed" style={{ color: equipment.notes ? 'var(--color-text)' : 'var(--color-text-muted)', fontStyle: equipment.notes ? 'normal' : 'italic' }}
           >
             {equipment.notes || 'No notes for this equipment.'}
           </div>
@@ -285,34 +173,15 @@ export default function EquipmentOverviewTab({ equipment, currentDriver }: Equip
 
         {/* Created */}
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            padding: 16,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4"
         >
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              marginBottom: 8,
-            }}
+            className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2"
           >
             RECORD INFO
           </div>
           <div
-            style={{
-              display: 'flex',
-              gap: 24,
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-            }}
+            className="flex gap-6 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
           >
             <span>Created: {formatDate(equipment.createdAt, 'dd MMM yyyy')}</span>
             <span>Updated: {formatDate(equipment.updatedAt, 'dd MMM yyyy HH:mm')}</span>

@@ -184,21 +184,11 @@ export function GuidedTour() {
 
   const overlay = createPortal(
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9998,
-      }}
+      className="fixed z-[9998] inset-0"
     >
       {/* SVG overlay with cutout */}
       <svg
-        style={{
-          position: 'fixed',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-        }}
+        className="fixed w-full h-full" style={{ inset: 0, pointerEvents: 'none' }}
       >
         <defs>
           <mask id="tour-spotlight-mask">
@@ -230,69 +220,29 @@ export function GuidedTour() {
       {/* Spotlight border highlight */}
       {hasTarget && (
         <div
-          style={{
-            position: 'fixed',
-            top: targetRect.top - padding,
-            left: targetRect.left - padding,
-            width: targetRect.width + padding * 2,
-            height: targetRect.height + padding * 2,
-            border: '2px solid var(--color-accent)',
-            borderRadius: 6,
-            pointerEvents: 'none',
-            boxShadow: '0 0 0 4px rgba(77, 171, 247, 0.2)',
-          }}
+          className="fixed rounded-[6px]" style={{ top: targetRect.top - padding, left: targetRect.left - padding, width: targetRect.width + padding * 2, height: targetRect.height + padding * 2, border: '2px solid var(--color-accent)', pointerEvents: 'none', boxShadow: '0 0 0 4px rgba(77, 171, 247, 0.2)' }}
         />
       )}
 
       {/* Tooltip */}
       <div
-        style={{
-          ...getTooltipStyle(),
-          width: 340,
-          backgroundColor: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-accent)',
-          borderRadius: 'var(--radius)',
-          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)',
-          zIndex: 9999,
-          overflow: 'hidden',
-        }}
+        className="bg-[var(--color-bg-surface)] border border-[var(--color-accent)] rounded-[var(--radius)] z-[9999] overflow-hidden" style={{ boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)' }}
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            borderBottom: '1px solid var(--color-border)',
-          }}
+          className="flex items-center justify-between py-3 px-4 border-b border-b-[var(--color-border)]"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Compass size={16} style={{ color: 'var(--color-accent)' }} />
+          <div className="flex items-center gap-2">
+            <Compass size={16} className="text-[var(--color-accent)]" />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 600,
-                letterSpacing: '1px',
-                color: 'var(--color-text-bright)',
-                textTransform: 'uppercase',
-              }}
+              className="font-[var(--font-mono)] text-xs font-semibold tracking-[1px] text-[var(--color-text-bright)] uppercase"
             >
               {currentStep.title}
             </span>
           </div>
           <button
             onClick={handleSkip}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text-muted)',
-              padding: 2,
-              display: 'flex',
-              alignItems: 'center',
-            }}
+            className="bg-transparent border-0 cursor-pointer text-[var(--color-text-muted)] p-0.5 flex items-center"
           >
             <X size={14} />
           </button>
@@ -300,59 +250,30 @@ export function GuidedTour() {
 
         {/* Content */}
         <div
-          style={{
-            padding: '14px 16px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            lineHeight: 1.6,
-            color: 'var(--color-text)',
-          }}
+          className="py-3.5 px-4 font-[var(--font-mono)] text-[11px] leading-relaxed text-[var(--color-text)]"
         >
           {currentStep.content}
         </div>
 
         {/* Footer */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '10px 16px',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className="flex items-center justify-between py-2.5 px-4 border-t border-t-[var(--color-border)]"
         >
           {/* Progress dots */}
-          <div style={{ display: 'flex', gap: 6 }}>
+          <div className="flex gap-1.5">
             {TOUR_STEPS.map((_, i) => (
               <div
                 key={i}
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  backgroundColor:
-                    i === step ? 'var(--color-accent)' : 'var(--color-border)',
-                  transition: 'background-color 0.2s',
-                }}
+                className="w-[6px] h-[6px]" style={{ borderRadius: '50%', backgroundColor: i === step ? 'var(--color-accent)' : 'var(--color-border)', transition: 'background-color 0.2s' }}
               />
             ))}
           </div>
 
           {/* Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="flex items-center gap-2">
             <button
               onClick={handleSkip}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                letterSpacing: '1px',
-                color: 'var(--color-text-muted)',
-                padding: '4px 8px',
-                textTransform: 'uppercase',
-              }}
+              className="bg-transparent border-0 cursor-pointer font-[var(--font-mono)] text-[10px] tracking-[1px] text-[var(--color-text-muted)] py-1 px-2 uppercase"
             >
               Skip
             </button>
@@ -360,21 +281,7 @@ export function GuidedTour() {
             {step > 0 && (
               <button
                 onClick={handlePrev}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  padding: '6px 10px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  letterSpacing: '1px',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  backgroundColor: 'transparent',
-                  color: 'var(--color-text)',
-                  cursor: 'pointer',
-                  textTransform: 'uppercase',
-                }}
+                className="flex items-center gap-1 py-1.5 px-2.5 font-[var(--font-mono)] text-[10px] tracking-[1px] border border-[var(--color-border)] rounded-[var(--radius)] bg-transparent text-[var(--color-text)] cursor-pointer uppercase"
               >
                 <ChevronLeft size={12} />
                 Prev
@@ -383,22 +290,7 @@ export function GuidedTour() {
 
             <button
               onClick={handleNext}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '6px 12px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '1px',
-                border: 'none',
-                borderRadius: 'var(--radius)',
-                backgroundColor: 'var(--color-accent)',
-                color: '#fff',
-                cursor: 'pointer',
-                textTransform: 'uppercase',
-              }}
+              className="flex items-center gap-1 py-1.5 px-3 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] border-0 rounded-[var(--radius)] bg-[var(--color-accent)] text-[#fff] cursor-pointer uppercase"
             >
               {step === TOUR_STEPS.length - 1 ? 'Finish' : 'Next'}
               {step < TOUR_STEPS.length - 1 && <ChevronRight size={12} />}

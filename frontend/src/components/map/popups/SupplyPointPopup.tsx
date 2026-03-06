@@ -45,59 +45,26 @@ function getSpStatusColor(status: string): string {
 export default function SupplyPointPopup({ supplyPoint }: SupplyPointPopupProps) {
   return (
     <div
-      style={{
-        minWidth: 200,
-        maxWidth: 260,
-        fontFamily: 'var(--font-mono)',
-        backgroundColor: 'var(--color-bg-elevated)',
-        color: 'var(--color-text)',
-        padding: 12,
-        borderRadius: 'var(--radius)',
-      }}
+      className="min-w-[200px] max-w-[260px] font-[var(--font-mono)] bg-[var(--color-bg-elevated)] text-[var(--color-text)] p-3 rounded-[var(--radius)]"
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: 8,
-        }}
+        className="flex justify-between items-start mb-2"
       >
         <div>
           <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-              letterSpacing: '0.5px',
-            }}
+            className="text-xs font-bold text-[var(--color-text-bright)] tracking-[0.5px]"
           >
             {supplyPoint.name}
           </div>
           <div
-            style={{
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              marginTop: 2,
-              letterSpacing: '1px',
-            }}
+            className="text-[9px] text-[var(--color-text-muted)] mt-0.5 tracking-[1px]"
           >
             {getPointTypeLabel(supplyPoint.point_type)}
           </div>
         </div>
         <span
-          style={{
-            display: 'inline-block',
-            padding: '2px 8px',
-            borderRadius: 10,
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#fff',
-            backgroundColor: getSpStatusColor(supplyPoint.status),
-            textTransform: 'uppercase',
-          }}
+          className="inline-block py-0.5 px-2 rounded-[10px] text-[9px] font-bold tracking-[1px] text-[#fff] uppercase" style={{ backgroundColor: getSpStatusColor(supplyPoint.status) }}
         >
           {supplyPoint.status}
         </span>
@@ -105,34 +72,23 @@ export default function SupplyPointPopup({ supplyPoint }: SupplyPointPopupProps)
 
       {/* Details */}
       <div
-        style={{
-          fontSize: 9,
-          borderTop: '1px solid var(--color-border)',
-          paddingTop: 6,
-        }}
+        className="text-[9px] border-t border-t-[var(--color-border)] pt-1.5"
       >
-        <div style={{ marginBottom: 4 }}>
-          <span style={{ color: 'var(--color-text-muted)' }}>OPERATING UNIT: </span>
-          <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+        <div className="mb-1">
+          <span className="text-[var(--color-text-muted)]">OPERATING UNIT: </span>
+          <span className="text-[var(--color-text-bright)] font-semibold">
             {supplyPoint.parent_unit_name}
           </span>
         </div>
-        <div style={{ marginBottom: 4 }}>
-          <span style={{ color: 'var(--color-text-muted)' }}>POSITION: </span>
-          <span style={{ color: 'var(--color-text-bright)' }}>
+        <div className="mb-1">
+          <span className="text-[var(--color-text-muted)]">POSITION: </span>
+          <span className="text-[var(--color-text-bright)]">
             {Math.abs(supplyPoint.latitude).toFixed(2)}{supplyPoint.latitude >= 0 ? 'N' : 'S'}, {Math.abs(supplyPoint.longitude).toFixed(2)}{supplyPoint.longitude >= 0 ? 'E' : 'W'}
           </span>
         </div>
         {supplyPoint.capacity_notes && (
           <div
-            style={{
-              marginTop: 6,
-              padding: '4px 6px',
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text-muted)',
-              lineHeight: 1.4,
-            }}
+            className="mt-1.5 py-1 px-1.5 bg-[rgba(255,255,255,0.03)] rounded-[var(--radius)] text-[var(--color-text-muted)] leading-[1.4]"
           >
             {supplyPoint.capacity_notes}
           </div>

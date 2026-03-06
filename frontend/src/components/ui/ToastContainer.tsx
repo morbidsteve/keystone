@@ -16,52 +16,21 @@ export default function ToastContainer() {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 32,
-        right: 24,
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        pointerEvents: 'none',
-      }}
+      role="status"
+      aria-live="polite"
+      aria-label="Notifications"
+      className="fixed top-8 right-6 z-[9999] flex flex-col gap-2 pointer-events-none"
     >
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          style={{
-            pointerEvents: 'auto',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            padding: '10px 14px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderLeft: `4px solid ${severityColors[toast.severity]}`,
-            borderRadius: 'var(--radius)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            color: 'var(--color-text-bright)',
-            minWidth: 280,
-            maxWidth: 420,
-            animation: 'slideInRight 0.3s ease forwards',
-          }}
+          className="flex items-center gap-3 py-2.5 px-3.5 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-xs text-[var(--color-text-bright)] min-w-[280px] max-w-[420px]" style={{ pointerEvents: 'auto', borderLeft: `4px solid ${severityColors[toast.severity]}`, animation: 'slideInRight 0.3s ease forwards' }}
         >
-          <span style={{ flex: 1 }}>{toast.message}</span>
+          <span className="flex-1">{toast.message}</span>
           <button
             onClick={() => removeToast(toast.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-              padding: 2,
-              flexShrink: 0,
-            }}
+            aria-label="Dismiss notification"
+            className="flex items-center justify-center bg-transparent border-0 text-[var(--color-text-muted)] cursor-pointer p-0.5 shrink-0"
           >
             <X size={14} />
           </button>

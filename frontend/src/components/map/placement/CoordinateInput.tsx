@@ -114,33 +114,17 @@ export default function CoordinateInput({
   };
 
   return (
-    <div style={{ marginBottom: 12 }}>
+    <div className="mb-3">
       {/* Mode toggle */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 8,
-        }}
+        className="flex items-center justify-between mb-2"
       >
-        <div style={{ display: 'flex', gap: 4 }}>
+        <div className="flex gap-1">
           <button
             type="button"
             onClick={() => setMode('gps')}
             disabled={disabled}
-            style={{
-              padding: '3px 10px',
-              border: `1px solid ${mode === 'gps' ? '#60a5fa' : 'rgba(255, 255, 255, 0.1)'}`,
-              borderRadius: 3,
-              backgroundColor: mode === 'gps' ? 'rgba(96, 165, 250, 0.15)' : 'transparent',
-              color: mode === 'gps' ? '#60a5fa' : '#94a3b8',
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: '1px',
-              cursor: disabled ? 'not-allowed' : 'pointer',
-            }}
+            className="py-[3px] px-2.5 rounded-[3px] text-[9px] font-bold tracking-[1px]" style={{ border: `1px solid ${mode === 'gps' ? '#60a5fa' : 'rgba(255, 255, 255, 0.1)'}`, backgroundColor: mode === 'gps' ? 'rgba(96, 165, 250, 0.15)' : 'transparent', color: mode === 'gps' ? '#60a5fa' : '#94a3b8', fontFamily: "'JetBrains Mono', monospace", cursor: disabled ? 'not-allowed' : 'pointer' }}
           >
             GPS
           </button>
@@ -148,18 +132,7 @@ export default function CoordinateInput({
             type="button"
             onClick={() => setMode('mgrs')}
             disabled={disabled}
-            style={{
-              padding: '3px 10px',
-              border: `1px solid ${mode === 'mgrs' ? '#60a5fa' : 'rgba(255, 255, 255, 0.1)'}`,
-              borderRadius: 3,
-              backgroundColor: mode === 'mgrs' ? 'rgba(96, 165, 250, 0.15)' : 'transparent',
-              color: mode === 'mgrs' ? '#60a5fa' : '#94a3b8',
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: '1px',
-              cursor: disabled ? 'not-allowed' : 'pointer',
-            }}
+            className="py-[3px] px-2.5 rounded-[3px] text-[9px] font-bold tracking-[1px]" style={{ border: `1px solid ${mode === 'mgrs' ? '#60a5fa' : 'rgba(255, 255, 255, 0.1)'}`, backgroundColor: mode === 'mgrs' ? 'rgba(96, 165, 250, 0.15)' : 'transparent', color: mode === 'mgrs' ? '#60a5fa' : '#94a3b8', fontFamily: "'JetBrains Mono', monospace", cursor: disabled ? 'not-allowed' : 'pointer' }}
           >
             MGRS
           </button>
@@ -168,19 +141,7 @@ export default function CoordinateInput({
           type="button"
           onClick={handleCopy}
           disabled={disabled}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '3px 8px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: 3,
-            backgroundColor: 'transparent',
-            color: '#94a3b8',
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 9,
-            cursor: disabled ? 'not-allowed' : 'pointer',
-          }}
+          className="flex items-center gap-1 py-[3px] px-2 rounded-[3px] bg-transparent text-[#94a3b8] text-[9px]" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', fontFamily: "'JetBrains Mono', monospace", cursor: disabled ? 'not-allowed' : 'pointer' }}
           title="Copy coordinates"
         >
           <Copy size={10} />
@@ -190,8 +151,8 @@ export default function CoordinateInput({
 
       {mode === 'gps' ? (
         <>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ flex: 1 }}>
+          <div className="flex gap-2">
+            <div className="flex-1">
               <div style={labelStyle}>LATITUDE</div>
               <input
                 type="number"
@@ -203,7 +164,7 @@ export default function CoordinateInput({
                 style={inputStyle(gpsError)}
               />
             </div>
-            <div style={{ flex: 1 }}>
+            <div className="flex-1">
               <div style={labelStyle}>LONGITUDE</div>
               <input
                 type="number"

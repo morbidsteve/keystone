@@ -162,14 +162,13 @@ export default function PersonnelPage() {
   // -------------------------------------------------------------------------
 
   const renderLoadingSkeleton = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
@@ -191,56 +190,27 @@ export default function PersonnelPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            letterSpacing: '3px',
-            color: 'var(--color-text-bright)',
-            textTransform: 'uppercase',
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold tracking-[3px] text-[var(--color-text-bright)] uppercase"
         >
           PERSONNEL &amp; MANNING
         </div>
         {readiness && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
+            className="flex items-center gap-2"
           >
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
             >
               P-RATING:
             </span>
             <span
-              style={{
-                display: 'inline-block',
-                padding: '2px 8px',
-                borderRadius: 2,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                fontWeight: 700,
-                color: pRatingColor(readiness.p_rating),
-                backgroundColor: `${pRatingColor(readiness.p_rating)}15`,
-                border: `1px solid ${pRatingColor(readiness.p_rating)}40`,
-              }}
+              className="inline-block py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[11px] font-bold" style={{ color: pRatingColor(readiness.p_rating), backgroundColor: `${pRatingColor(readiness.p_rating)}15`, border: `1px solid ${pRatingColor(readiness.p_rating)}40` }}
             >
               {readiness.p_rating}
             </span>
@@ -250,22 +220,17 @@ export default function PersonnelPage() {
 
       {/* KPI Summary Row */}
       {strengthLoading ? (
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div className="flex gap-3">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="skeleton"
-              style={{ flex: '1 1 0', height: 80, borderRadius: 'var(--radius)' }}
+              className="skeleton h-[80px] rounded-[var(--radius)] flex-1"
             />
           ))}
         </div>
       ) : strength ? (
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: 12,
-          }}
+          className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
         >
           {[
             { label: 'AUTHORIZED', value: strength.total_authorized, color: 'var(--color-text-bright)' },
@@ -279,33 +244,15 @@ export default function PersonnelPage() {
           ].map((kpi) => (
             <div
               key={kpi.label}
-              style={{
-                padding: '14px 16px',
-                backgroundColor: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-              }}
+              className="py-3.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
             >
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                  marginBottom: 6,
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1.5"
               >
                 {kpi.label}
               </div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: kpi.color,
-                }}
+                className="font-[var(--font-mono)] text-[22px] font-bold" style={{ color: kpi.color }}
               >
                 {kpi.value}
               </div>
@@ -316,38 +263,17 @@ export default function PersonnelPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
           </button>
@@ -373,13 +299,7 @@ export default function PersonnelPage() {
             <StrengthPanel mosFill={mosFill} snapshots={snapshots ?? []} />
           ) : (
             <div
-              style={{
-                padding: 40,
-                textAlign: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-              }}
+              className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
             >
               No strength data available
             </div>
@@ -405,13 +325,7 @@ export default function PersonnelPage() {
             <QualificationMatrix quals={quals} readiness={readinessDetail} />
           ) : (
             <div
-              style={{
-                padding: 40,
-                textAlign: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-muted)',
-              }}
+              className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
             >
               No qualification data available
             </div>

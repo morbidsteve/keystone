@@ -53,13 +53,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
   if (facilities.length === 0) {
     return (
       <div
-        style={{
-          padding: 40,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No medical facilities found
       </div>
@@ -68,11 +62,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
 
   return (
     <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-        gap: 12,
-      }}
+      className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
     >
       {facilities.map((f) => {
         const pct = f.capacity > 0 ? (f.current_census / f.capacity) * 100 : 0;
@@ -81,148 +71,71 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
         return (
           <div
             key={f.id}
-            style={{
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              borderTop: `2px solid ${color}`,
-              padding: 16,
-            }}
+            className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] p-4" style={{ borderTop: `2px solid ${color}` }}
           >
             {/* Header */}
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                marginBottom: 12,
-              }}
+              className="flex items-start justify-between mb-3"
             >
               <div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: 'var(--color-text-bright)',
-                    marginBottom: 2,
-                  }}
+                  className="font-[var(--font-mono)] text-[13px] font-bold text-[var(--color-text-bright)] mb-0.5"
                 >
                   {f.name}
                 </div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '0.5px',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
                 >
                   {facilityTypeLabel(f.facility_type)}
                 </div>
                 {f.callsign && (
                   <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: 'var(--color-accent)',
-                      marginTop: 2,
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] text-[var(--color-accent)] mt-0.5"
                   >
                     CALLSIGN: {f.callsign}
                   </div>
                 )}
               </div>
               <span
-                style={{
-                  display: 'inline-block',
-                  padding: '2px 8px',
-                  borderRadius: 2,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 8,
-                  fontWeight: 700,
-                  letterSpacing: '1px',
-                  color,
-                  backgroundColor: `${color}18`,
-                  border: `1px solid ${color}40`,
-                  textTransform: 'uppercase',
-                }}
+                className="inline-block py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[8px] font-bold tracking-[1px] uppercase" style={{ color,
+                  backgroundColor: `${color}18`, border: `1px solid ${color}40` }}
               >
                 {f.status.replace(/_/g, ' ')}
               </span>
             </div>
 
             {/* Capacity Bar */}
-            <div style={{ marginBottom: 12 }}>
+            <div className="mb-3">
               <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginBottom: 4,
-                }}
+                className="flex justify-between mb-1"
               >
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    letterSpacing: '1.5px',
-                    color: 'var(--color-text-muted)',
-                    textTransform: 'uppercase',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] uppercase"
                 >
                   CENSUS
                 </span>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    color: capacityColor(pct),
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] font-semibold" style={{ color: capacityColor(pct) }}
                 >
                   {f.current_census} / {f.capacity}
                 </span>
               </div>
               <div
-                style={{
-                  width: '100%',
-                  height: 6,
-                  backgroundColor: 'var(--color-border)',
-                  borderRadius: 3,
-                  overflow: 'hidden',
-                }}
+                className="w-full h-[6px] bg-[var(--color-border)] rounded-[3px] overflow-hidden"
               >
                 <div
-                  style={{
-                    width: `${Math.min(pct, 100)}%`,
-                    height: '100%',
-                    backgroundColor: capacityColor(pct),
-                    borderRadius: 3,
-                    transition: 'width var(--transition)',
-                  }}
+                  className="h-full rounded-[3px]" style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: capacityColor(pct), transition: 'width var(--transition)' }}
                 />
               </div>
             </div>
 
             {/* Capability Icons */}
             <div
-              style={{
-                display: 'flex',
-                gap: 12,
-                marginBottom: 12,
-                flexWrap: 'wrap',
-              }}
+              className="flex gap-3 mb-3 flex-wrap"
             >
               {f.surgical_capability && (
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: '#22c55e',
-                  }}
+                  className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[#22c55e]"
                 >
                   <Activity size={12} />
                   SURGICAL
@@ -230,14 +143,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
               )}
               {f.blood_bank && (
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: '#ef4444',
-                  }}
+                  className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[#ef4444]"
                 >
                   <Droplets size={12} />
                   BLOOD BANK
@@ -245,14 +151,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
               )}
               {f.vent_capacity > 0 && (
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: '#3b82f6',
-                  }}
+                  className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[#3b82f6]"
                 >
                   <Building size={12} />
                   VENT x{f.vent_capacity}
@@ -262,33 +161,16 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
 
             {/* Staffing */}
             <div
-              style={{
-                borderTop: '1px solid var(--color-border)',
-                paddingTop: 10,
-              }}
+              className="border-t border-t-[var(--color-border)] pt-2.5"
             >
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  textTransform: 'uppercase',
-                  marginBottom: 6,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                }}
+                className="font-[var(--font-mono)] text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-1.5 flex items-center gap-1"
               >
                 <Users size={10} />
                 STAFFING
               </div>
               <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: 8,
-                }}
+                className="grid gap-2 grid-cols-4"
               >
                 {[
                   { label: 'MD', value: f.physician_staffing },
@@ -296,25 +178,14 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
                   { label: 'MEDIC', value: f.medic_staffing },
                   { label: 'SURG', value: f.surgical_tech_staffing },
                 ].map((s) => (
-                  <div key={s.label} style={{ textAlign: 'center' }}>
+                  <div key={s.label} className="text-center">
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 16,
-                        fontWeight: 700,
-                        color: 'var(--color-text-bright)',
-                      }}
+                      className="font-[var(--font-mono)] text-base font-bold text-[var(--color-text-bright)]"
                     >
                       {s.value}
                     </div>
                     <div
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 8,
-                        letterSpacing: '1px',
-                        color: 'var(--color-text-muted)',
-                        textTransform: 'uppercase',
-                      }}
+                      className="font-[var(--font-mono)] text-[8px] tracking-[1px] text-[var(--color-text-muted)] uppercase"
                     >
                       {s.label}
                     </div>
@@ -326,14 +197,9 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
             {/* Contact Freq */}
             {f.contact_freq && (
               <div
-                style={{
-                  marginTop: 8,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="mt-2 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
-                FREQ: <span style={{ color: 'var(--color-text)' }}>{f.contact_freq}</span>
+                FREQ: <span className="text-[var(--color-text)]">{f.contact_freq}</span>
               </div>
             )}
           </div>

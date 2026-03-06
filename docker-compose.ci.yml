@@ -36,6 +36,14 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     read_only: true
     tmpfs:
       - /tmp
@@ -47,11 +55,20 @@ services:
   # ---------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
+    command: redis-server --requirepass keystone_ci_redis --maxmemory 200mb --maxmemory-policy allkeys-lru
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "keystone_ci_redis", "ping"]
       interval: 5s
       timeout: 5s
       retries: 10
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -77,7 +94,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://keystone_test:keystone_ci_password@db:5432/keystone_test
       DATABASE_URL_SYNC: postgresql://keystone_test:keystone_ci_password@db:5432/keystone_test
-      REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://:keystone_ci_redis@redis:6379/0
       SECRET_KEY: ci-ephemeral-secret-not-for-production
       CORS_ORIGINS: '["http://localhost:8080"]'
     depends_on:
@@ -89,6 +106,14 @@ services:
       timeout: 5s
       retries: 15
       start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -106,7 +131,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://keystone_test:keystone_ci_password@db:5432/keystone_test
       DATABASE_URL_SYNC: postgresql://keystone_test:keystone_ci_password@db:5432/keystone_test
-      REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://:keystone_ci_redis@redis:6379/0
       SECRET_KEY: ci-ephemeral-secret-not-for-production
     depends_on:
       db: { condition: service_healthy }
@@ -118,6 +143,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -140,6 +173,14 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
     security_opt:
       - no-new-privileges:true
     cap_drop:

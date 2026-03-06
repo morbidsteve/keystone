@@ -1,0 +1,29 @@
+repos:
+  - repo: local
+    hooks:
+      - id: backend-lint
+        name: Backend Lint (ruff)
+        entry: bash -c 'cd backend && ruff check .'
+        language: system
+        files: ^backend/
+        types: [python]
+
+      - id: backend-format
+        name: Backend Format (ruff)
+        entry: bash -c 'cd backend && ruff format --check .'
+        language: system
+        files: ^backend/
+        types: [python]
+
+      - id: frontend-typecheck
+        name: Frontend Type Check (tsc)
+        entry: bash -c 'cd frontend && npx tsc -b'
+        language: system
+        files: ^frontend/
+        types_or: [ts, tsx]
+
+      - id: no-secrets
+        name: Check for hardcoded secrets
+        entry: bash -c 'git diff --cached --diff-filter=ACM | grep -iE "(password|secret|api_key|token)\s*[:=]\s*[\"'"'"'][^\"'"'"']{8,}" && echo "Possible secret detected!" && exit 1 || exit 0'
+        language: system
+        always_run: true

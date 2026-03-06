@@ -26,43 +26,21 @@ export default function CustodyChainTimeline({
   currentHolderName,
 }: CustodyChainTimelineProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div className="flex flex-col gap-0">
       {/* Current holder banner */}
       {currentHolderName && (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '12px 16px',
-            marginBottom: 16,
-            backgroundColor: 'rgba(34, 197, 94, 0.08)',
-            border: '1px solid rgba(34, 197, 94, 0.25)',
-            borderRadius: 'var(--radius)',
-          }}
+          className="flex items-center gap-2.5 py-3 px-4 mb-4 bg-[rgba(34,197,94,0.08)] rounded-[var(--radius)]" style={{ border: '1px solid rgba(34, 197, 94, 0.25)' }}
         >
-          <User size={14} style={{ color: '#22c55e' }} />
+          <User size={14} className="text-[#22c55e]" />
           <div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 2,
-              }}
+              className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-0.5"
             >
               CURRENT HOLDER
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 700,
-                color: '#22c55e',
-              }}
+              className="font-[var(--font-mono)] text-xs font-bold text-[#22c55e]"
             >
               {currentHolderName}
             </div>
@@ -85,110 +63,52 @@ export default function CustodyChainTimeline({
           return (
             <div
               key={transfer.id}
-              style={{
-                display: 'flex',
-                gap: 12,
-                position: 'relative',
-                paddingBottom: isLast ? 0 : 20,
-              }}
+              className="flex gap-3 relative" style={{ paddingBottom: isLast ? 0 : 20 }}
             >
               {/* Timeline dot + line */}
               <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  width: 20,
-                  flexShrink: 0,
-                }}
+                className="flex flex-col items-center w-[20px] shrink-0"
               >
                 <div
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    backgroundColor: color,
-                    border: `2px solid ${color}`,
-                    flexShrink: 0,
-                  }}
+                  className="w-[10px] h-[10px] shrink-0" style={{ borderRadius: '50%', backgroundColor: color, border: `2px solid ${color}` }}
                 />
                 {!isLast && (
                   <div
-                    style={{
-                      width: 2,
-                      flex: 1,
-                      backgroundColor: 'var(--color-border)',
-                      marginTop: 4,
-                    }}
+                    className="w-[2px] flex-1 bg-[var(--color-border)] mt-1"
                   />
                 )}
               </div>
 
               {/* Content */}
               <div
-                style={{
-                  flex: 1,
-                  padding: '0 0 4px',
-                }}
+                className="flex-1" style={{ padding: '0 0 4px' }}
               >
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    marginBottom: 4,
-                  }}
+                  className="flex items-center gap-2 mb-1"
                 >
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      fontWeight: 600,
-                      color: 'var(--color-text-muted)',
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)]"
                   >
                     {new Date(transfer.transfer_date).toLocaleString()}
                   </span>
                   <span
-                    style={{
-                      padding: '1px 6px',
-                      borderRadius: 3,
-                      backgroundColor: `${color}20`,
-                      color: color,
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 8,
-                      fontWeight: 700,
-                      letterSpacing: '0.5px',
-                    }}
+                    className="py-px px-1.5 rounded-[3px] font-[var(--font-mono)] text-[8px] font-bold tracking-[0.5px]" style={{ backgroundColor: `${color}20`, color: color }}
                   >
                     {transfer.transfer_type.replace(/_/g, ' ')}
                   </span>
                 </div>
 
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-text)',
-                    marginBottom: 4,
-                  }}
+                  className="flex items-center gap-1.5 font-[var(--font-mono)] text-[11px] text-[var(--color-text)] mb-1"
                 >
                   <span>{transfer.from_personnel_name ?? 'N/A'}</span>
-                  <ArrowRight size={12} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-                  <span style={{ fontWeight: 600 }}>{transfer.to_personnel_name ?? 'N/A'}</span>
+                  <ArrowRight size={12} className="text-[var(--color-text-muted)] shrink-0" />
+                  <span className="font-semibold">{transfer.to_personnel_name ?? 'N/A'}</span>
                 </div>
 
                 {transfer.document_number && (
                   <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: 'var(--color-text-muted)',
-                      marginBottom: 2,
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mb-0.5"
                   >
                     DOC: {transfer.document_number}
                   </div>
@@ -196,12 +116,7 @@ export default function CustodyChainTimeline({
 
                 {transfer.reason && (
                   <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: 'var(--color-text-muted)',
-                      fontStyle: 'italic',
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] italic"
                   >
                     {transfer.reason}
                   </div>

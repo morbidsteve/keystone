@@ -134,33 +134,16 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
   const canCancel = ['DRAFT', 'SUBMITTED', 'APPROVED'].includes(requisition.status);
 
   return (
-    <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="p-4 flex flex-col gap-4">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="flex items-center gap-3">
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 13,
-            fontWeight: 700,
-            color: 'var(--color-text-bright)',
-            letterSpacing: '1px',
-          }}
+          className="font-[var(--font-mono)] text-[13px] font-bold text-[var(--color-text-bright)] tracking-[1px]"
         >
           {requisition.requisition_number}
         </span>
         <span
-          style={{
-            display: 'inline-block',
-            padding: '2px 8px',
-            borderRadius: 2,
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: '0.5px',
-            color: statusColor(requisition.status),
-            border: `1px solid ${statusColor(requisition.status)}`,
-            backgroundColor: `color-mix(in srgb, ${statusColor(requisition.status)} 10%, transparent)`,
-            fontFamily: 'var(--font-mono)',
-          }}
+          className="inline-block py-0.5 px-2 rounded-[2px] text-[10px] font-bold tracking-[0.5px] font-[var(--font-mono)]" style={{ color: statusColor(requisition.status), border: `1px solid ${statusColor(requisition.status)}`, backgroundColor: `color-mix(in srgb, ${statusColor(requisition.status)} 10%, transparent)` }}
         >
           {requisition.status}
         </span>
@@ -168,7 +151,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
 
       {/* Status Stepper */}
       {requisition.status !== 'DENIED' && requisition.status !== 'CANCELED' ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 0, padding: '4px 0' }}>
+        <div className="flex items-center gap-0 py-1 px-0">
           {(['SUBMITTED', 'APPROVED', 'SOURCING', 'SHIPPED', 'RECEIVED'] as const).map((step, idx) => {
             const STATUS_ORDER: Record<string, number> = {
               DRAFT: 0, SUBMITTED: 1, APPROVED: 2, SOURCING: 3, BACKORDERED: 3, SHIPPED: 4, RECEIVED: 5, DENIED: -1, CANCELED: -1,
@@ -179,59 +162,32 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
             const isCurrent = currentIdx === stepIdx;
             return (
               <React.Fragment key={step}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 70 }}>
+                <div className="flex flex-col items-center min-w-[70px]">
                   <div
-                    style={{
-                      width: 24, height: 24, borderRadius: '50%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
-                      backgroundColor: isCompleted ? 'var(--color-success)' : isCurrent ? 'var(--color-accent)' : 'var(--color-bg-elevated)',
-                      color: isCompleted || isCurrent ? '#fff' : 'var(--color-text-muted)',
-                      border: isCurrent ? '2px solid rgba(77, 171, 247, 0.5)' : '1px solid var(--color-border)',
-                      transition: 'all var(--transition)',
-                    }}
+                    className="w-[24px] h-[24px] flex items-center justify-center font-[var(--font-mono)] text-[10px] font-bold" style={{ borderRadius: '50%', backgroundColor: isCompleted ? 'var(--color-success)' : isCurrent ? 'var(--color-accent)' : 'var(--color-bg-elevated)', color: isCompleted || isCurrent ? '#fff' : 'var(--color-text-muted)', border: isCurrent ? '2px solid rgba(77, 171, 247, 0.5)' : '1px solid var(--color-border)', transition: 'all var(--transition)' }}
                   >
                     {isCompleted ? '✓' : idx + 1}
                   </div>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 8, fontWeight: 600,
-                    letterSpacing: '0.5px', marginTop: 4,
-                    color: isCompleted || isCurrent ? 'var(--color-text-bright)' : 'var(--color-text-muted)',
-                  }}>
+                  <span className="font-[var(--font-mono)] text-[8px] font-semibold tracking-[0.5px] mt-1" style={{ color: isCompleted || isCurrent ? 'var(--color-text-bright)' : 'var(--color-text-muted)' }}>
                     {step}
                   </span>
                 </div>
                 {idx < 4 && (
-                  <div style={{
-                    flex: 1, height: 2, minWidth: 20,
-                    backgroundColor: isCompleted ? 'var(--color-success)' : 'var(--color-border)',
-                    marginBottom: 16,
-                    transition: 'background-color var(--transition)',
-                  }} />
+                  <div className="flex-1 h-[2px] min-w-[20px] mb-4" style={{ backgroundColor: isCompleted ? 'var(--color-success)' : 'var(--color-border)', transition: 'background-color var(--transition)' }} />
                 )}
               </React.Fragment>
             );
           })}
         </div>
       ) : (
-        <div style={{
-          padding: '6px 12px', borderRadius: 'var(--radius)',
-          backgroundColor: requisition.status === 'DENIED' ? 'rgba(255, 107, 107, 0.1)' : 'rgba(148, 163, 184, 0.1)',
-          border: `1px solid ${requisition.status === 'DENIED' ? 'rgba(255, 107, 107, 0.2)' : 'rgba(148, 163, 184, 0.2)'}`,
-          fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700,
-          color: requisition.status === 'DENIED' ? 'var(--color-danger)' : 'var(--color-text-muted)',
-        }}>
+        <div className="py-1.5 px-3 rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] font-bold" style={{ backgroundColor: requisition.status === 'DENIED' ? 'rgba(255, 107, 107, 0.1)' : 'rgba(148, 163, 184, 0.1)', border: `1px solid ${requisition.status === 'DENIED' ? 'rgba(255, 107, 107, 0.2)' : 'rgba(148, 163, 184, 0.2)'}`, color: requisition.status === 'DENIED' ? 'var(--color-danger)' : 'var(--color-text-muted)' }}>
           {requisition.status === 'DENIED' ? '✗ DENIED' : '⊗ CANCELED'}
         </div>
       )}
 
       {/* Info grid */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: 12,
-        }}
+        className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}
       >
         <div>
           <div style={labelStyle}>NOMENCLATURE</div>
@@ -278,14 +234,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         <div>
           <div style={labelStyle}>JUSTIFICATION</div>
           <div
-            style={{
-              ...valueStyle,
-              padding: '8px 10px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              lineHeight: 1.5,
-            }}
+            className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] leading-normal"
           >
             {requisition.justification}
           </div>
@@ -297,15 +246,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         <div>
           <div style={{ ...labelStyle, color: 'var(--color-danger)' }}>DENIAL REASON</div>
           <div
-            style={{
-              ...valueStyle,
-              padding: '8px 10px',
-              backgroundColor: 'rgba(255, 107, 107, 0.05)',
-              border: '1px solid rgba(255, 107, 107, 0.2)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-danger)',
-              lineHeight: 1.5,
-            }}
+            className="bg-[rgba(255,107,107,0.05)] rounded-[var(--radius)] text-[var(--color-danger)] leading-normal border border-[rgba(255,107,107,0.2)]"
           >
             {requisition.denial_reason}
           </div>
@@ -314,54 +255,29 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
 
       {/* Quantities */}
       <div
-        style={{
-          display: 'flex',
-          gap: 16,
-          flexWrap: 'wrap',
-        }}
+        className="flex gap-4 flex-wrap"
       >
         <div
-          style={{
-            padding: '10px 16px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            textAlign: 'center',
-            minWidth: 100,
-          }}
+          className="py-2.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] text-center min-w-[100px]"
         >
           <div style={labelStyle}>REQUESTED</div>
-          <div style={{ ...valueStyle, fontSize: 18, fontWeight: 700 }}>
+          <div className="font-bold">
             {requisition.quantity_requested.toLocaleString()}
           </div>
         </div>
         <div
-          style={{
-            padding: '10px 16px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            textAlign: 'center',
-            minWidth: 100,
-          }}
+          className="py-2.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] text-center min-w-[100px]"
         >
           <div style={labelStyle}>APPROVED</div>
-          <div style={{ ...valueStyle, fontSize: 18, fontWeight: 700 }}>
+          <div className="font-bold">
             {requisition.quantity_approved?.toLocaleString() ?? '--'}
           </div>
         </div>
         <div
-          style={{
-            padding: '10px 16px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            textAlign: 'center',
-            minWidth: 100,
-          }}
+          className="py-2.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] text-center min-w-[100px]"
         >
           <div style={labelStyle}>ISSUED</div>
-          <div style={{ ...valueStyle, fontSize: 18, fontWeight: 700 }}>
+          <div className="font-bold">
             {requisition.quantity_issued?.toLocaleString() ?? '--'}
           </div>
         </div>
@@ -371,80 +287,42 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
       {requisition.status_history && requisition.status_history.length > 0 && (
         <div>
           <div style={{ ...labelStyle, marginBottom: 8 }}>STATUS HISTORY</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <div className="flex flex-col gap-0">
             {requisition.status_history.map((entry, idx) => (
               <div
                 key={entry.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 10,
-                  position: 'relative',
-                  paddingLeft: 20,
-                  paddingBottom: idx < requisition.status_history!.length - 1 ? 12 : 0,
-                }}
+                className="flex items-start gap-2.5 relative pl-5" style={{ paddingBottom: idx < requisition.status_history!.length - 1 ? 12 : 0 }}
               >
                 {/* Timeline connector */}
                 <div
-                  style={{
-                    position: 'absolute',
-                    left: 5,
-                    top: 0,
-                    bottom: 0,
-                    width: 1,
-                    backgroundColor: idx < requisition.status_history!.length - 1
+                  className="absolute left-1.5 top-0 bottom-0 w-[1px]" style={{ backgroundColor: idx < requisition.status_history!.length - 1
                       ? 'var(--color-border-strong)'
-                      : 'transparent',
-                  }}
+                      : 'transparent' }}
                 />
                 {/* Dot */}
                 <div
-                  style={{
-                    position: 'absolute',
-                    left: 1,
-                    top: 4,
-                    width: 9,
-                    height: 9,
-                    borderRadius: '50%',
-                    backgroundColor: statusColor(entry.new_status),
-                    border: '2px solid var(--color-bg)',
-                    zIndex: 1,
-                  }}
+                  className="absolute left-px top-1 w-[9px] h-[9px] z-[1]" style={{ borderRadius: '50%', backgroundColor: statusColor(entry.new_status), border: '2px solid var(--color-bg)' }}
                 />
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        fontWeight: 700,
-                        color: statusColor(entry.new_status),
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] font-bold" style={{ color: statusColor(entry.new_status) }}
                     >
                       {entry.new_status}
                     </span>
-                    <Clock size={10} style={{ color: 'var(--color-text-muted)' }} />
+                    <Clock size={10} className="text-[var(--color-text-muted)]" />
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        color: 'var(--color-text-muted)',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                     >
                       {new Date(entry.changed_at).toLocaleString()}
                     </span>
                   </div>
                   <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: 'var(--color-text)',
-                      marginTop: 2,
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)] mt-0.5"
                   >
                     {entry.changed_by_name ?? `User ${entry.changed_by_id}`}
                     {entry.notes && (
-                      <span style={{ color: 'var(--color-text-muted)', marginLeft: 6 }}>
+                      <span className="text-[var(--color-text-muted)] ml-1.5">
                         — {entry.notes}
                       </span>
                     )}
@@ -463,53 +341,28 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
           {requisition.approvals.map((a) => (
             <div
               key={a.id}
-              style={{
-                padding: '8px 10px',
-                backgroundColor: 'var(--color-bg-elevated)',
-                border: `1px solid ${a.action === 'APPROVE' ? 'rgba(64, 192, 87, 0.2)' : 'rgba(255, 107, 107, 0.2)'}`,
-                borderRadius: 'var(--radius)',
-                marginBottom: 6,
-              }}
+              className="py-2 px-2.5 bg-[var(--color-bg-elevated)] rounded-[var(--radius)] mb-1.5" style={{ border: `1px solid ${a.action === 'APPROVE' ? 'rgba(64, 192, 87, 0.2)' : 'rgba(255, 107, 107, 0.2)'}` }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="flex items-center gap-2">
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: a.action === 'APPROVE' ? 'var(--color-success)' : 'var(--color-danger)',
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] font-bold" style={{ color: a.action === 'APPROVE' ? 'var(--color-success)' : 'var(--color-danger)' }}
                 >
                   {a.action}
                 </span>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text)',
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]"
                 >
                   by {a.approver_name ?? `User ${a.approver_id}`}
                 </span>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                    marginLeft: 'auto',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] ml-auto"
                 >
                   {new Date(a.action_date).toLocaleString()}
                 </span>
               </div>
               {a.comments && (
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: 'var(--color-text-muted)',
-                    marginTop: 4,
-                  }}
+                  className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-1"
                 >
                   {a.comments}
                 </div>
@@ -520,7 +373,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
       )}
 
       {/* Action buttons */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      <div className="flex gap-2 flex-wrap items-start">
         {canSubmit && (
           <button
             style={btnStyle('var(--color-accent)')}
@@ -540,31 +393,14 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         )}
         {showApproveConfirm && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 8px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="flex items-center gap-1.5 py-1 px-2 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>QTY:</span>
+            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">QTY:</span>
             <input
               type="number"
               value={approveQty}
               onChange={(e) => setApproveQty(Number(e.target.value))}
-              style={{
-                width: 70,
-                padding: '4px 6px',
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-              }}
+              className="w-[70px] py-1 px-1.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
             />
             <button
               style={btnStyle('var(--color-success)')}
@@ -591,31 +427,14 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         )}
         {showDenyInput && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 8px',
-              backgroundColor: 'var(--color-bg-elevated)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="flex items-center gap-1.5 py-1 px-2 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
           >
             <input
               type="text"
               placeholder="Denial reason..."
               value={denyReason}
               onChange={(e) => setDenyReason(e.target.value)}
-              style={{
-                width: 200,
-                padding: '4px 6px',
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-              }}
+              className="w-[200px] py-1 px-1.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
             />
             <button
               style={btnStyle('var(--color-danger)')}

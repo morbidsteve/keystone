@@ -19,15 +19,8 @@ export default function MaintenanceTrendChart({ data, height = 280 }: Maintenanc
   if (data.length === 0) {
     return (
       <div
-        style={{
-          height,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="items-center justify-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]" style={{ height,
+          display: 'flex' }}
       >
         No trend data available
       </div>
@@ -46,16 +39,9 @@ export default function MaintenanceTrendChart({ data, height = 280 }: Maintenanc
     if (active && payload && payload.length) {
       return (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            padding: '8px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
         >
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>
+          <div className="text-[var(--color-text-muted)] mb-1">
             Week of {label}
           </div>
           {payload.map((p, i) => (
@@ -152,43 +138,23 @@ export default function MaintenanceTrendChart({ data, height = 280 }: Maintenanc
         </ComposedChart>
       </ResponsiveContainer>
       {/* Legend */}
-      <div style={{ display: 'flex', gap: 20, justifyContent: 'center', marginTop: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div className="flex gap-5 justify-center mt-2">
+        <div className="flex items-center gap-1.5">
           <div
-            style={{
-              width: 12,
-              height: 8,
-              backgroundColor: 'var(--color-accent)',
-              borderRadius: 1,
-              opacity: 0.6,
-            }}
+            className="w-[12px] h-[8px] bg-[var(--color-accent)] rounded-[1px] opacity-60"
           />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              letterSpacing: '0.5px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
           >
             LABOR HOURS
           </span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div className="flex items-center gap-1.5">
           <div
-            style={{
-              width: 12,
-              height: 2,
-              backgroundColor: 'var(--color-warning)',
-            }}
+            className="w-[12px] h-[2px] bg-[var(--color-warning)]"
           />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              letterSpacing: '0.5px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
           >
             WORK ORDERS
           </span>

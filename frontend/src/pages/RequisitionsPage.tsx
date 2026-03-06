@@ -108,14 +108,13 @@ export default function RequisitionsPage() {
   // -------------------------------------------------------------------------
 
   const renderLoadingSkeleton = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
@@ -125,43 +124,21 @@ export default function RequisitionsPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
-          }}
+          className="flex items-center gap-4"
         >
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 14,
-              fontWeight: 700,
-              letterSpacing: '3px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-sm font-bold tracking-[3px] text-[var(--color-text-bright)] uppercase"
           >
             REQUISITIONS
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-            }}
+            className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex items-center gap-3"
           >
             <span>{stats.total} TOTAL</span>
             <span
@@ -183,56 +160,28 @@ export default function RequisitionsPage() {
 
         <button
           onClick={() => setShowCreateModal(true)}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '7px 14px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            color: 'var(--color-accent)',
-            backgroundColor: 'rgba(77, 171, 247, 0.1)',
-            border: '1px solid var(--color-accent)',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-            transition: 'all var(--transition)',
-          }}
+          className="inline-flex items-center gap-1.5 py-[7px] px-3.5 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase text-[var(--color-accent)] bg-[rgba(77,171,247,0.1)] border border-[var(--color-accent)] rounded-[var(--radius)] cursor-pointer transition-all duration-[var(--transition)]"
         >
           <Plus size={13} /> NEW REQUISITION
         </button>
       </div>
 
       {/* View mode toggle */}
-      <div style={{ display: 'flex', gap: 2 }}>
+      <div className="flex gap-0.5">
         {(['ACTIVE', 'ARCHIVED', 'ALL'] as const).map((mode) => (
           <button
             key={mode}
             onClick={() => setViewMode(mode)}
-            style={{
-              padding: '5px 12px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: viewMode === mode ? 600 : 400,
-              letterSpacing: '1px',
-              border: 'none',
-              borderBottom: viewMode === mode ? '2px solid var(--color-accent)' : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color: viewMode === mode ? 'var(--color-accent)' : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-            }}
+            className="py-1.5 px-3 font-[var(--font-mono)] text-[9px] tracking-[1px] border-0 bg-transparent cursor-pointer" style={{ fontWeight: viewMode === mode ? 600 : 400, borderBottom: viewMode === mode ? '2px solid var(--color-accent)' : '2px solid transparent', color: viewMode === mode ? 'var(--color-accent)' : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {mode}
             {mode === 'ACTIVE' && (
-              <span style={{ marginLeft: 6, fontSize: 8, fontWeight: 700, color: 'var(--color-success)' }}>
+              <span className="ml-1.5 text-[8px] font-bold text-[var(--color-success)]">
                 {requisitions?.filter(r => ACTIVE_STATUSES.includes(r.status)).length ?? 0}
               </span>
             )}
             {mode === 'ARCHIVED' && (
-              <span style={{ marginLeft: 6, fontSize: 8, fontWeight: 700, color: 'var(--color-text-muted)' }}>
+              <span className="ml-1.5 text-[8px] font-bold text-[var(--color-text-muted)]">
                 {requisitions?.filter(r => ARCHIVED_STATUSES.includes(r.status)).length ?? 0}
               </span>
             )}
@@ -242,53 +191,22 @@ export default function RequisitionsPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
             {tab.key === 'pending' && stats.pending > 0 && (
               <span
-                style={{
-                  marginLeft: 6,
-                  display: 'inline-block',
-                  padding: '1px 5px',
-                  borderRadius: 8,
-                  fontSize: 8,
-                  fontWeight: 700,
-                  backgroundColor: 'var(--color-warning)',
-                  color: '#000',
-                  verticalAlign: 'middle',
-                }}
+                className="ml-1.5 inline-block py-px px-1.5 rounded-[8px] text-[8px] font-bold bg-[var(--color-warning)] text-[#000] align-middle"
               >
                 {stats.pending}
               </span>
@@ -325,10 +243,10 @@ export default function RequisitionsPage() {
       )}
 
       {activeTab === 'analytics' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="flex flex-col gap-4">
           {analytics && (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
+              <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
                 {[
                   { label: 'TOTAL', value: analytics.summary.total, color: 'var(--color-text-bright)' },
                   { label: 'ACTIVE', value: analytics.summary.active, color: 'var(--color-accent)' },
@@ -338,7 +256,7 @@ export default function RequisitionsPage() {
                   { label: 'APPROVAL RATE', value: `${analytics.summary.approvalRate}%`, color: 'var(--color-warning)' },
                 ].map((kpi) => (
                   <Card key={kpi.label} title={kpi.label}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: kpi.color, textAlign: 'center', padding: '8px 0' }}>
+                    <div className="font-[var(--font-mono)] text-[28px] font-bold text-center py-2 px-0" style={{ color: kpi.color }}>
                       {kpi.value}
                     </div>
                   </Card>
@@ -346,17 +264,17 @@ export default function RequisitionsPage() {
               </div>
 
               <Card title="STATUS BREAKDOWN">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 0' }}>
+                <div className="flex flex-col gap-2 py-2 px-0">
                   {Object.entries(analytics.byStatus).map(([status, count]) => {
                     const maxCount = Math.max(...Object.values(analytics.byStatus));
                     const pct = maxCount > 0 ? ((count as number) / maxCount) * 100 : 0;
                     return (
-                      <div key={status} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, width: 100, textAlign: 'right', color: 'var(--color-text-muted)' }}>{status}</span>
-                        <div style={{ flex: 1, height: 16, backgroundColor: 'var(--color-bg)', borderRadius: 2, overflow: 'hidden' }}>
-                          <div style={{ width: `${pct}%`, height: '100%', backgroundColor: 'var(--color-accent)', borderRadius: 2, transition: 'width 0.3s ease' }} />
+                      <div key={status} className="flex items-center gap-2.5">
+                        <span className="font-[var(--font-mono)] text-[10px] font-semibold w-[100px] text-right text-[var(--color-text-muted)]">{status}</span>
+                        <div className="flex-1 h-[16px] bg-[var(--color-bg)] rounded-[2px] overflow-hidden">
+                          <div className="h-full bg-[var(--color-accent)] rounded-[2px]" style={{ width: `${pct}%`, transition: 'width 0.3s ease' }} />
                         </div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, width: 30, color: 'var(--color-text-bright)' }}>{count as number}</span>
+                        <span className="font-[var(--font-mono)] text-[11px] font-bold w-[30px] text-[var(--color-text-bright)]">{count as number}</span>
                       </div>
                     );
                   })}
@@ -364,17 +282,17 @@ export default function RequisitionsPage() {
               </Card>
 
               <Card title="FULFILLMENT METRICS">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '8px 0' }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 600, letterSpacing: '1.5px', color: 'var(--color-text-muted)', textTransform: 'uppercase' as const }}>AVG FULFILLMENT TIME</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: 'var(--color-accent)' }}>{analytics.avgFulfillmentDays}d</div>
+                <div className="flex items-center gap-4 py-2 px-0">
+                  <div className="text-center">
+                    <div className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase">AVG FULFILLMENT TIME</div>
+                    <div className="font-[var(--font-mono)] text-[28px] font-bold text-[var(--color-accent)]">{analytics.avgFulfillmentDays}d</div>
                   </div>
                 </div>
               </Card>
             </>
           )}
           {!analytics && (
-            <div style={{ padding: 40, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)' }}>
+            <div className="p-10 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]">
               Loading analytics...
             </div>
           )}

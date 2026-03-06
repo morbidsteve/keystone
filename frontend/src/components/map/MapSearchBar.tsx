@@ -221,46 +221,15 @@ export default function MapSearchBar() {
   return (
     <div
       ref={containerRef}
-      style={{
-        position: 'absolute',
-        top: 10,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 1000,
-        fontFamily: "'JetBrains Mono', monospace",
-      }}
+      className="absolute top-2.5 z-[1000]" style={{ left: '50%', transform: 'translateX(-50%)', fontFamily: "'JetBrains Mono', monospace" }}
     >
       {/* Search bar */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          backgroundColor: 'rgba(26, 31, 46, 0.95)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: showResults ? '6px 6px 0 0' : 6,
-          backdropFilter: 'blur(8px)',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-          width: expanded ? 280 : 36,
-          height: 36,
-          transition: 'width 0.2s ease',
-          overflow: 'hidden',
-        }}
+        className="flex items-center bg-[rgba(26,31,46,0.95)] h-[36px] overflow-hidden" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: showResults ? '6px 6px 0 0' : 6, backdropFilter: 'blur(8px)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)', width: expanded ? 280 : 36, transition: 'width 0.2s ease' }}
       >
         <button
           onClick={expanded ? () => handleSearch(query) : handleExpand}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 36,
-            minWidth: 36,
-            height: 36,
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer',
-            color: '#60a5fa',
-            padding: 0,
-          }}
+          className="flex items-center justify-center w-[36px] min-w-[36px] h-[36px] border-0 bg-transparent cursor-pointer text-[#60a5fa] p-0"
           title="Search location"
         >
           {isSearching ? (
@@ -284,35 +253,12 @@ export default function MapSearchBar() {
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Lat,Lon / MGRS / Place..."
-              style={{
-                flex: 1,
-                height: '100%',
-                border: 'none',
-                background: 'transparent',
-                color: '#e2e8f0',
-                fontSize: 11,
-                fontFamily: "'JetBrains Mono', monospace",
-                outline: 'none',
-                padding: 0,
-                minWidth: 0,
-              }}
+              className="flex-1 h-full border-0 bg-transparent text-[#e2e8f0] text-[11px] outline-none p-0 min-w-[0px] font-mono"
             />
             {query && (
               <button
                 onClick={handleClear}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 28,
-                  minWidth: 28,
-                  height: 36,
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  color: '#64748b',
-                  padding: 0,
-                }}
+                className="flex items-center justify-center w-[28px] min-w-[28px] h-[36px] border-0 bg-transparent cursor-pointer text-[#64748b] p-0"
                 title="Clear"
               >
                 <X size={14} />
@@ -325,40 +271,15 @@ export default function MapSearchBar() {
       {/* Results dropdown */}
       {showResults && results.length > 0 && (
         <div
-          style={{
-            backgroundColor: 'rgba(26, 31, 46, 0.98)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderTop: 'none',
-            borderRadius: '0 0 6px 6px',
-            maxHeight: 200,
-            overflowY: 'auto',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-            width: 280,
-          }}
+          className="bg-[rgba(26,31,46,0.98)] max-h-[200px] overflow-y-auto w-[280px]" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderTop: 'none', borderRadius: '0 0 6px 6px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}
         >
           {results.map((result, idx) => (
             <button
               key={`${result.lat}-${result.lon}-${idx}`}
               onClick={() => handleSelectResult(result)}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: 8,
-                width: '100%',
-                padding: '8px 10px',
-                border: 'none',
-                borderBottom:
-                  idx < results.length - 1
+              className="flex items-start gap-2 w-full py-2 px-2.5 border-0 bg-transparent cursor-pointer text-left text-[#e2e8f0] text-[10px] leading-[1.4]" style={{ borderBottom: idx < results.length - 1
                     ? '1px solid rgba(255, 255, 255, 0.05)'
-                    : 'none',
-                background: 'transparent',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontFamily: "'JetBrains Mono', monospace",
-                color: '#e2e8f0',
-                fontSize: 10,
-                lineHeight: 1.4,
-              }}
+                    : 'none', fontFamily: "'JetBrains Mono', monospace" }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.backgroundColor =
                   'rgba(96, 165, 250, 0.1)';
@@ -370,20 +291,10 @@ export default function MapSearchBar() {
             >
               <MapPin
                 size={12}
-                style={{
-                  color: '#60a5fa',
-                  marginTop: 2,
-                  flexShrink: 0,
-                }}
+                className="text-[#60a5fa] mt-0.5 shrink-0"
               />
               <span
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                }}
+                className="overflow-hidden text-ellipsis" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
               >
                 {result.display_name}
               </span>

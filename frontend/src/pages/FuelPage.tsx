@@ -136,14 +136,13 @@ export default function FuelPage() {
   // -------------------------------------------------------------------------
 
   const renderLoadingSkeleton = () => (
-    <div style={{ padding: 40, textAlign: 'center' }}>
+    <div className="p-10 text-center">
       <div
-        className="skeleton"
-        style={{ width: 200, height: 16, margin: '0 auto 12px' }}
+        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
       />
       <div
-        className="skeleton"
-        style={{ width: 300, height: 12, margin: '0 auto' }}
+        className="skeleton w-[300px] h-[12px] mx-auto"
+        
       />
     </div>
   );
@@ -194,39 +193,21 @@ export default function FuelPage() {
   // -------------------------------------------------------------------------
 
   const renderDashboard = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Alert banner when DOS <= 3 */}
       {dashboard && dashboard.days_of_supply <= 3 && (
         <div
-          style={{
-            padding: '12px 16px',
-            backgroundColor: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: 'var(--radius)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}
+          className="py-3 px-4 bg-[rgba(239,68,68,0.12)] rounded-[var(--radius)] flex items-center gap-2.5 border border-[rgba(239,68,68,0.3)]"
         >
-          <AlertTriangle size={16} style={{ color: '#ef4444', flexShrink: 0 }} />
+          <AlertTriangle size={16} className="text-[#ef4444] shrink-0" />
           <div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                fontWeight: 700,
-                color: '#ef4444',
-                marginBottom: 2,
-              }}
+              className="font-[var(--font-mono)] text-[11px] font-bold text-[#ef4444] mb-0.5"
             >
               FUEL CRITICAL — {dashboard.days_of_supply.toFixed(1)} DAYS OF SUPPLY
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: '#f87171',
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[#f87171]"
             >
               Limiting fuel type: {dashboard.limiting_fuel_type ?? 'N/A'}. Resupply required NLT{' '}
               {dashboard.forecast.resupply_required_by}.
@@ -240,11 +221,7 @@ export default function FuelPage() {
         renderLoadingSkeleton()
       ) : (
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: 12,
-          }}
+          className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
         >
           {[
             {
@@ -292,42 +269,20 @@ export default function FuelPage() {
           ].map((kpi) => (
             <div
               key={kpi.label}
-              style={{
-                padding: '14px 16px',
-                backgroundColor: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-              }}
+              className="py-3.5 px-4 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]"
             >
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  marginBottom: 6,
-                }}
+                className="flex items-center gap-1.5 mb-1.5"
               >
-                <kpi.icon size={11} style={{ color: 'var(--color-text-muted)' }} />
+                <kpi.icon size={11} className="text-[var(--color-text-muted)]" />
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: '1.5px',
-                    color: 'var(--color-text-muted)',
-                    textTransform: 'uppercase',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase"
                 >
                   {kpi.label}
                 </span>
               </div>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: kpi.color,
-                }}
+                className="font-[var(--font-mono)] text-[22px] font-bold" style={{ color: kpi.color }}
               >
                 {kpi.value}
               </div>
@@ -357,13 +312,7 @@ export default function FuelPage() {
           <FuelForecastChart forecast={forecast} />
         ) : (
           <div
-            style={{
-              padding: 32,
-              textAlign: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              color: 'var(--color-text-muted)',
-            }}
+            className="p-8 text-center font-[var(--font-mono)] text-xs text-[var(--color-text-muted)]"
           >
             No forecast data available.
           </div>
@@ -377,21 +326,15 @@ export default function FuelPage() {
   // -------------------------------------------------------------------------
 
   const renderTransactions = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Filters + new transaction button */}
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-          flexWrap: 'wrap',
-          gap: 12,
-        }}
+        className="flex justify-between items-end flex-wrap gap-3"
       >
-        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div className="flex gap-3 items-end flex-wrap">
           <div>
             <span style={labelStyle}>
-              <Filter size={8} style={{ display: 'inline', marginRight: 4 }} />
+              <Filter size={8} className="inline mr-1" />
               TYPE
             </span>
             <select
@@ -453,11 +396,7 @@ export default function FuelPage() {
       {showNewTxnForm && (
         <Card title="RECORD NEW TRANSACTION" accentColor="#3b82f6">
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              gap: 12,
-            }}
+            className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(180px,1fr))]"
           >
             <div>
               <span style={labelStyle}>STORAGE POINT</span>
@@ -566,13 +505,9 @@ export default function FuelPage() {
               />
             </div>
           </div>
-          <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="mt-3 flex justify-end">
             <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: 'var(--color-accent)',
-                color: '#fff',
-              }}
+              className="text-[#fff]"
               onClick={() => setShowNewTxnForm(false)}
             >
               SUBMIT TRANSACTION
@@ -597,8 +532,8 @@ export default function FuelPage() {
   // -------------------------------------------------------------------------
 
   const renderStoragePoints = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-end">
         <button
           onClick={() => setShowNewSPForm((v) => !v)}
           style={{
@@ -616,11 +551,7 @@ export default function FuelPage() {
       {showNewSPForm && (
         <Card title="CREATE STORAGE POINT" accentColor="#22c55e">
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              gap: 12,
-            }}
+            className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(180px,1fr))]"
           >
             <div>
               <span style={labelStyle}>NAME</span>
@@ -701,13 +632,9 @@ export default function FuelPage() {
               />
             </div>
           </div>
-          <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="mt-3 flex justify-end">
             <button
-              style={{
-                ...buttonStyle,
-                backgroundColor: '#22c55e',
-                color: '#fff',
-              }}
+              className="text-[#fff]"
               onClick={() => setShowNewSPForm(false)}
             >
               CREATE STORAGE POINT
@@ -721,26 +648,15 @@ export default function FuelPage() {
         {storageLoading ? (
           renderLoadingSkeleton()
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   {['Name', 'Type', 'Fuel', 'Capacity', 'On Hand', 'Fill %', 'Status', 'MGRS', 'Last Resupply', 'Next ETA'].map(
                     (h) => (
                       <th
                         key={h}
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 9,
-                          fontWeight: 600,
-                          letterSpacing: '1.5px',
-                          textTransform: 'uppercase',
-                          color: 'var(--color-text-muted)',
-                          padding: '8px 10px',
-                          textAlign: 'left',
-                          borderBottom: '1px solid var(--color-border)',
-                          whiteSpace: 'nowrap',
-                        }}
+                        className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] py-2 px-2.5 text-left border-b border-b-[var(--color-border)] whitespace-nowrap"
                       >
                         {h}
                       </th>
@@ -766,127 +682,56 @@ export default function FuelPage() {
                   return (
                     <tr key={sp.id}>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 11,
-                          fontWeight: 600,
-                          color: 'var(--color-text-bright)',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-bright)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         {sp.name}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          color: 'var(--color-text)',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         {sp.facility_type}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          color: '#3b82f6',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] text-[#3b82f6] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         {sp.fuel_type}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 11,
-                          color: 'var(--color-text)',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          textAlign: 'right',
-                        }}
+                        className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                       >
                         {sp.capacity_gallons.toLocaleString()}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 11,
-                          color: 'var(--color-text)',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          textAlign: 'right',
-                        }}
+                        className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                       >
                         {sp.current_gallons.toLocaleString()}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 11,
-                          fontWeight: 600,
-                          color: fillColor,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                          textAlign: 'right',
-                        }}
+                        className="font-[var(--font-mono)] text-[11px] font-semibold py-2 px-2.5 border-b border-b-[var(--color-border)] text-right" style={{ color: fillColor }}
                       >
                         {sp.fill_percentage.toFixed(1)}%
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         <span
-                          style={{
-                            padding: '2px 8px',
-                            borderRadius: 3,
-                            backgroundColor: `${statusColor}20`,
-                            color: statusColor,
-                            fontWeight: 600,
-                            fontSize: 9,
-                          }}
+                          className="py-0.5 px-2 rounded-[3px] font-semibold text-[9px]" style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
                         >
                           {sp.status === 'NON_OPERATIONAL' ? 'NON-OP' : sp.status}
                         </span>
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          color: 'var(--color-text-muted)',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         {sp.mgrs ?? '—'}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          color: 'var(--color-text-muted)',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         {sp.last_resupply_date ?? '—'}
                       </td>
                       <td
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          color: 'var(--color-text-muted)',
-                          padding: '8px 10px',
-                          borderBottom: '1px solid var(--color-border)',
-                        }}
+                        className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
                         {sp.next_resupply_eta ?? '—'}
                       </td>
@@ -910,8 +755,8 @@ export default function FuelPage() {
       {ratesLoading ? (
         renderLoadingSkeleton()
       ) : (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
             <thead>
               <tr>
                 {[
@@ -926,18 +771,7 @@ export default function FuelPage() {
                 ].map((h) => (
                   <th
                     key={h}
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      fontWeight: 600,
-                      letterSpacing: '1.5px',
-                      textTransform: 'uppercase',
-                      color: 'var(--color-text-muted)',
-                      padding: '8px 10px',
-                      textAlign: 'left',
-                      borderBottom: '1px solid var(--color-border)',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] py-2 px-2.5 text-left border-b border-b-[var(--color-border)] whitespace-nowrap"
                   >
                     {h}
                   </th>
@@ -948,127 +782,60 @@ export default function FuelPage() {
               {(consumptionRates ?? []).map((rate: FuelConsumptionRate) => (
                 <tr key={rate.id}>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: 'var(--color-text-bright)',
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-bright)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                   >
                     {rate.equipment_name ?? `Item #${rate.equipment_catalog_item_id}`}
                   </td>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: '#3b82f6',
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] text-[#3b82f6] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                   >
                     {rate.fuel_type}
                   </td>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      color: 'var(--color-text)',
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                      textAlign: 'right',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                   >
                     {rate.gallons_per_hour_idle > 0 ? rate.gallons_per_hour_idle.toFixed(1) : '—'}
                   </td>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: 600,
-                      color: 'var(--color-text-bright)',
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                      textAlign: 'right',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-bright)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                   >
                     {rate.gallons_per_hour_tactical > 0
                       ? rate.gallons_per_hour_tactical.toFixed(1)
                       : '—'}
                   </td>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      color: 'var(--color-text)',
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                      textAlign: 'right',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                   >
                     {rate.gallons_per_mile != null ? rate.gallons_per_mile.toFixed(2) : '—'}
                   </td>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      fontWeight: rate.gallons_per_flight_hour != null ? 600 : 400,
-                      color:
-                        rate.gallons_per_flight_hour != null
+                    className="font-[var(--font-mono)] text-[11px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right" style={{ fontWeight: rate.gallons_per_flight_hour != null ? 600 : 400, color: rate.gallons_per_flight_hour != null
                           ? '#f59e0b'
-                          : 'var(--color-text-muted)',
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                      textAlign: 'right',
-                    }}
+                          : 'var(--color-text-muted)' }}
                   >
                     {rate.gallons_per_flight_hour != null
                       ? `${rate.gallons_per_flight_hour} gal/hr`
                       : '—'}
                   </td>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                   >
                     <span
-                      style={{
-                        padding: '2px 6px',
-                        borderRadius: 3,
-                        backgroundColor:
-                          rate.source === 'TM_REFERENCE'
+                      className="py-0.5 px-1.5 rounded-[3px] font-semibold" style={{ backgroundColor: rate.source === 'TM_REFERENCE'
                             ? 'rgba(34, 197, 94, 0.15)'
                             : rate.source === 'CALCULATED'
                               ? 'rgba(59, 130, 246, 0.15)'
-                              : 'rgba(148, 163, 184, 0.15)',
-                        color:
-                          rate.source === 'TM_REFERENCE'
+                              : 'rgba(148, 163, 184, 0.15)', color: rate.source === 'TM_REFERENCE'
                             ? '#22c55e'
                             : rate.source === 'CALCULATED'
                               ? '#3b82f6'
-                              : '#94a3b8',
-                        fontWeight: 600,
-                      }}
+                              : '#94a3b8' }}
                     >
                       {rate.source}
                     </span>
                   </td>
                   <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      color: 'var(--color-text-muted)',
-                      padding: '8px 10px',
-                      borderBottom: '1px solid var(--color-border)',
-                      maxWidth: 200,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap"
                     title={rate.notes ?? ''}
                   >
                     {rate.notes ?? '—'}
@@ -1087,57 +854,28 @@ export default function FuelPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-          }}
+          className="flex items-center gap-2.5"
         >
-          <Fuel size={18} style={{ color: '#f59e0b' }} />
+          <Fuel size={18} className="text-[#f59e0b]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 14,
-              fontWeight: 700,
-              letterSpacing: '3px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-sm font-bold tracking-[3px] text-[var(--color-text-bright)] uppercase"
           >
             FUEL / POL MANAGEMENT
           </span>
         </div>
         {dashboard && dashboard.alert && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 10px',
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="flex items-center gap-1.5 py-1 px-2.5 bg-[rgba(239,68,68,0.12)] rounded-[var(--radius)] border border-[rgba(239,68,68,0.3)]"
           >
-            <AlertTriangle size={12} style={{ color: '#ef4444' }} />
+            <AlertTriangle size={12} className="text-[#ef4444]" />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#ef4444',
-                letterSpacing: '1px',
-              }}
+              className="font-[var(--font-mono)] text-[10px] font-bold text-[#ef4444] tracking-[1px]"
             >
               {dashboard.days_of_supply.toFixed(1)} DOS
             </span>
@@ -1147,41 +885,17 @@ export default function FuelPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px] flex items-center gap-1.5" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
           </button>

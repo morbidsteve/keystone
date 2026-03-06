@@ -103,48 +103,19 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
 
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: priorityBorder(req.priority),
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-      }}
+      className="bg-[var(--color-bg-elevated)] rounded-[var(--radius)] overflow-hidden" style={{ border: priorityBorder(req.priority) }}
     >
       {/* Card header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px 14px',
-          borderBottom: '1px solid var(--color-border)',
-        }}
+        className="flex items-center justify-between py-2.5 px-3.5 border-b border-b-[var(--color-border)]"
       >
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 700,
-            color: 'var(--color-accent)',
-          }}
+          className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-accent)]"
         >
           {req.requisition_number}
         </span>
         <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '2px 6px',
-            borderRadius: 2,
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '0.5px',
-            color: priorityColor(req.priority),
-            border: `1px solid ${priorityColor(req.priority)}`,
-            backgroundColor: `color-mix(in srgb, ${priorityColor(req.priority)} 10%, transparent)`,
-            fontFamily: 'var(--font-mono)',
-          }}
+          className="inline-flex items-center gap-1 py-0.5 px-1.5 rounded-[2px] text-[9px] font-bold tracking-[0.5px] font-[var(--font-mono)]" style={{ color: priorityColor(req.priority), border: `1px solid ${priorityColor(req.priority)}`, backgroundColor: `color-mix(in srgb, ${priorityColor(req.priority)} 10%, transparent)` }}
         >
           {req.priority === '03' && <AlertTriangle size={9} />}
           {priorityLabel(req.priority)}
@@ -152,28 +123,18 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
       </div>
 
       {/* Card body */}
-      <div style={{ padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="py-2.5 px-3.5 flex flex-col gap-2">
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 600,
-            color: 'var(--color-text-bright)',
-          }}
+          className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-bright)]"
         >
           {req.nomenclature}
         </div>
 
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <div className="flex gap-4 flex-wrap">
           <div>
             <div style={labelStyle}>QTY</div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 700,
-                color: 'var(--color-text)',
-              }}
+              className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text)]"
             >
               {req.quantity_requested.toLocaleString()} {req.unit_of_issue}
             </div>
@@ -181,11 +142,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
           <div>
             <div style={labelStyle}>REQUESTED BY</div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text)',
-              }}
+              className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
             >
               {req.requested_by_name ?? `ID ${req.requested_by_id}`}
             </div>
@@ -193,16 +150,9 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
           <div>
             <div style={labelStyle}>SUBMITTED</div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
+              className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] flex items-center gap-1"
             >
-              <Clock size={10} style={{ color: 'var(--color-text-muted)' }} />
+              <Clock size={10} className="text-[var(--color-text-muted)]" />
               {req.submitted_at ? new Date(req.submitted_at).toLocaleDateString() : '--'}
             </div>
           </div>
@@ -210,15 +160,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
 
         {req.justification && (
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              padding: '6px 8px',
-              backgroundColor: 'var(--color-bg)',
-              borderRadius: 'var(--radius)',
-              lineHeight: 1.5,
-            }}
+            className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-1.5 px-2 bg-[var(--color-bg)] rounded-[var(--radius)] leading-normal"
           >
             {req.justification}
           </div>
@@ -227,14 +169,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
 
       {/* Action footer */}
       <div
-        style={{
-          display: 'flex',
-          gap: 6,
-          padding: '10px 14px',
-          borderTop: '1px solid var(--color-border)',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}
+        className="flex gap-1.5 py-2.5 px-3.5 border-t border-t-[var(--color-border)] flex-wrap items-center"
       >
         {!showApproveConfirm && !showDenyInput && (
           <>
@@ -254,22 +189,13 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
         )}
 
         {showApproveConfirm && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span style={{ ...labelStyle, marginBottom: 0 }}>QTY:</span>
             <input
               type="number"
               value={approveQty}
               onChange={(e) => setApproveQty(Number(e.target.value))}
-              style={{
-                width: 70,
-                padding: '4px 6px',
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-              }}
+              className="w-[70px] py-1 px-1.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
             />
             <button
               style={btnStyle('var(--color-success)')}
@@ -288,23 +214,13 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
         )}
 
         {showDenyInput && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', flex: 1 }}>
+          <div className="flex items-center gap-1.5 flex-wrap flex-1">
             <input
               type="text"
               placeholder="Reason for denial..."
               value={denyReason}
               onChange={(e) => setDenyReason(e.target.value)}
-              style={{
-                flex: 1,
-                minWidth: 120,
-                padding: '4px 6px',
-                backgroundColor: 'var(--color-bg)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-              }}
+              className="flex-1 min-w-[120px] py-1 px-1.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
             />
             <button
               style={btnStyle('var(--color-danger)')}
@@ -354,11 +270,7 @@ export default function ApprovalQueue({ requisitions, onRefresh }: ApprovalQueue
 
   return (
     <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-        gap: 12,
-      }}
+      className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(340px,1fr))]"
     >
       {pending.map((req) => (
         <ApprovalCard key={req.id} req={req} onRefresh={onRefresh} />

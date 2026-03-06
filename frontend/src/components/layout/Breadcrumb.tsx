@@ -43,54 +43,37 @@ export default function Breadcrumb() {
 
   return (
     <nav
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        fontFamily: 'var(--font-mono)',
-        fontSize: 11,
-        letterSpacing: '1px',
-        marginBottom: 12,
-      }}
+      aria-label="Breadcrumb"
+      className="flex items-center gap-1.5 font-mono text-[11px] tracking-[1px] mb-3"
     >
-      {crumbs.map((crumb, index) => {
-        const isLast = index === crumbs.length - 1;
+      <ol className="flex items-center gap-1.5 list-none p-0 m-0">
+        {crumbs.map((crumb, index) => {
+          const isLast = index === crumbs.length - 1;
 
-        return (
-          <span key={crumb.path} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            {index > 0 && (
-              <ChevronRight size={12} style={{ color: 'var(--color-text-muted)' }} />
-            )}
-            {isLast ? (
-              <span
-                style={{
-                  color: 'var(--color-text-bright)',
-                  fontWeight: 600,
-                }}
-              >
-                {crumb.label}
-              </span>
-            ) : (
-              <Link
-                to={crumb.path}
-                style={{
-                  color: 'var(--color-text-muted)',
-                  textDecoration: 'none',
-                  transition: 'color 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--color-accent)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text-muted)';
-                }}
-              >
-                {crumb.label}
-              </Link>
-            )}
-          </span>
-        );
-      })}
+          return (
+            <li key={`${index}-${crumb.path}`} className="flex items-center gap-1.5">
+              {index > 0 && (
+                <ChevronRight size={12} className="text-text-muted" aria-hidden="true" />
+              )}
+              {isLast ? (
+                <span
+                  className="text-text-bright font-semibold"
+                  aria-current="page"
+                >
+                  {crumb.label}
+                </span>
+              ) : (
+                <Link
+                  to={crumb.path}
+                  className="text-text-muted no-underline transition-colors duration-150 hover:text-accent"
+                >
+                  {crumb.label}
+                </Link>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </nav>
   );
 }

@@ -213,54 +213,31 @@ export default function MapContextMenu() {
 
   return (
     <div
-      style={{
-        position: 'absolute',
-        left: contextMenu.x,
-        top: contextMenu.y,
-        zIndex: 2000,
-        backgroundColor: 'rgba(17, 17, 17, 0.95)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: 6,
-        fontFamily: "'JetBrains Mono', monospace",
-        minWidth: 220,
-        backdropFilter: 'blur(12px)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
-        overflow: 'hidden',
-      }}
+      className="absolute z-[2000] bg-[rgba(17,17,17,0.95)] rounded-[6px] min-w-[220px] overflow-hidden" style={{ left: contextMenu.x, top: contextMenu.y, border: '1px solid rgba(255, 255, 255, 0.1)', fontFamily: "'JetBrains Mono', monospace", backdropFilter: 'blur(12px)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)' }}
       onContextMenu={(e) => e.preventDefault()}
     >
       {/* Coordinate header */}
       <div
-        style={{
-          padding: '8px 12px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          fontSize: 10,
-          color: '#94a3b8',
-          lineHeight: 1.6,
-        }}
+        className="py-2 px-3 text-[10px] text-[#94a3b8] leading-relaxed border-b border-b-[rgba(255,255,255,0.1)]"
       >
-        <div style={{ color: '#e2e8f0', fontWeight: 600 }}>
+        <div className="text-[#e2e8f0] font-semibold">
           {formatCoords(contextMenu.lat, contextMenu.lon)}
         </div>
         {mgrsStr && (
-          <div style={{ color: '#60a5fa', fontSize: 9, letterSpacing: '0.5px' }}>
+          <div className="text-[#60a5fa] text-[9px] tracking-[0.5px]">
             {mgrsStr}
           </div>
         )}
       </div>
 
       {/* Menu items */}
-      <div style={{ padding: '4px 0' }}>
+      <div className="py-1 px-0">
         {cleanEntries.map((entry, idx) => {
           if (isSeparator(entry)) {
             return (
               <div
                 key={`sep-${idx}`}
-                style={{
-                  height: 1,
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  margin: '4px 8px',
-                }}
+                className="h-[1px] bg-[rgba(255,255,255,0.08)]" style={{ margin: '4px 8px' }}
               />
             );
           }
@@ -271,21 +248,7 @@ export default function MapContextMenu() {
                 entry.onClick();
                 hideContextMenu();
               }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                width: '100%',
-                padding: '7px 12px',
-                border: 'none',
-                background: 'transparent',
-                color: '#e2e8f0',
-                fontSize: 11,
-                fontFamily: "'JetBrains Mono', monospace",
-                cursor: 'pointer',
-                textAlign: 'left',
-                transition: 'background-color 0.1s ease',
-              }}
+              className="flex items-center gap-2.5 w-full py-[7px] px-3 border-0 bg-transparent text-[#e2e8f0] text-[11px] cursor-pointer text-left" style={{ fontFamily: "'JetBrains Mono', monospace", transition: 'background-color 0.1s ease' }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
               }}
@@ -293,7 +256,7 @@ export default function MapContextMenu() {
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              <span style={{ color: '#60a5fa', display: 'flex', alignItems: 'center' }}>
+              <span className="text-[#60a5fa] flex items-center">
                 {entry.icon}
               </span>
               <span>{entry.label}</span>

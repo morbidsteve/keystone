@@ -68,19 +68,14 @@ export default function RouteLayer({ routes }: RouteLayerProps) {
           >
             <Tooltip sticky opacity={0.9}>
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: '#111',
-                  padding: '2px 4px',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[#111] py-0.5 px-1"
               >
-                <div style={{ fontWeight: 700 }}>{route.name}</div>
+                <div className="font-bold">{route.name}</div>
                 <div>
                   {route.route_type} | {route.status}
                 </div>
                 {route.description && (
-                  <div style={{ marginTop: 2, fontWeight: 400 }}>
+                  <div className="mt-0.5 font-normal">
                     {route.description}
                   </div>
                 )}

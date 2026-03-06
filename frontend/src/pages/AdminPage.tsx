@@ -382,9 +382,9 @@ export default function AdminPage() {
     units.some((u) => u.parentId === deleteConfirmUnit.id);
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Tab Selector */}
-      <div style={{ display: 'flex', gap: 2, borderBottom: '1px solid var(--color-border)' }}>
+      <div className="flex gap-0.5 border-b border-b-[var(--color-border)]">
         {[
           { key: 'users' as const, label: 'USER MANAGEMENT', icon: Users },
           { key: 'units' as const, label: 'UNIT CONFIGURATION', icon: Settings },
@@ -397,27 +397,9 @@ export default function AdminPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="flex items-center gap-1.5 py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key ? 'var(--color-accent)' : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              marginBottom: -1,
-            }}
+                  : '2px solid transparent', color: activeTab === tab.key ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
           >
             <tab.icon size={12} />
             {tab.label}
@@ -435,8 +417,8 @@ export default function AdminPage() {
             </button>
           }
         >
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
                   <th style={tableHeaderStyle}>STATUS</th>
@@ -452,7 +434,7 @@ export default function AdminPage() {
                 {users.map((user) => (
                   <tr
                     key={user.id}
-                    style={{ transition: 'background-color var(--transition)' }}
+                    className="transition-colors duration-[var(--transition)]"
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
                     }
@@ -469,17 +451,9 @@ export default function AdminPage() {
                     <td style={tableCellStyle}>{user.full_name}</td>
                     <td style={tableCellStyle}>
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          padding: '2px 6px',
-                          borderRadius: 2,
-                          border: '1px solid var(--color-border-strong)',
-                          color:
-                            user.role === Role.ADMIN || user.role === Role.COMMANDER
+                        className="font-[var(--font-mono)] text-[10px] py-0.5 px-1.5 rounded-[2px] border border-[var(--color-border-strong)]" style={{ color: user.role === Role.ADMIN || user.role === Role.COMMANDER
                               ? 'var(--color-accent)'
-                              : 'var(--color-text-muted)',
-                        }}
+                              : 'var(--color-text-muted)' }}
                       >
                         {user.role}
                       </span>
@@ -531,13 +505,7 @@ export default function AdminPage() {
         >
           {units.length === 0 ? (
             <div
-              style={{
-                padding: 24,
-                textAlign: 'center',
-                color: 'var(--color-text-muted)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-              }}
+              className="p-6 text-center text-[var(--color-text-muted)] font-[var(--font-mono)] text-[11px]"
             >
               Loading units...
             </div>
@@ -587,28 +555,15 @@ export default function AdminPage() {
       {/* ── Classification Tab ── */}
       {activeTab === 'classification' && (
         <Card title="CLASSIFICATION SETTINGS">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div className="flex flex-col gap-6">
             {/* Preview Banner */}
             <div>
               <label style={labelStyle}>BANNER PREVIEW</label>
               <div
-                style={{
-                  height: 24,
-                  backgroundColor: previewColors.bg,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 'var(--radius)',
-                }}
+                className="h-[24px] flex items-center justify-center rounded-[var(--radius)]" style={{ backgroundColor: previewColors.bg }}
               >
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: previewColors.text,
-                    letterSpacing: '3px',
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] font-bold tracking-[3px]" style={{ color: previewColors.text }}
                 >
                   {customBannerText}
                 </span>
@@ -644,13 +599,7 @@ export default function AdminPage() {
                 style={{ ...inputStyle, maxWidth: 400 }}
               />
               <p
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  marginTop: 4,
-                  letterSpacing: '0.5px',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-1 tracking-[0.5px]"
               >
                 Customize the text displayed on the classification banner. Defaults to the
                 standard label for the selected level.
@@ -660,50 +609,26 @@ export default function AdminPage() {
             {/* Color Reference Table */}
             <div>
               <label style={labelStyle}>CLASSIFICATION COLOR REFERENCE</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="flex flex-wrap gap-2">
                 {CLASSIFICATION_OPTIONS.map((option) => {
                   const colors = CLASSIFICATION_COLORS[option.color];
                   return (
                     <div
                       key={option.level}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        padding: '6px 12px',
-                        border:
-                          selectedLevel === option.level
+                      className="flex items-center gap-2 py-1.5 px-3 rounded-[var(--radius)] cursor-pointer" style={{ border: selectedLevel === option.level
                             ? '1px solid var(--color-accent)'
-                            : '1px solid var(--color-border)',
-                        borderRadius: 'var(--radius)',
-                        cursor: 'pointer',
-                        backgroundColor:
-                          selectedLevel === option.level
+                            : '1px solid var(--color-border)', backgroundColor: selectedLevel === option.level
                             ? 'rgba(77, 171, 247, 0.08)'
-                            : 'transparent',
-                      }}
+                            : 'transparent' }}
                       onClick={() => handleLevelChange(option.level)}
                     >
                       <div
-                        style={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: 2,
-                          backgroundColor: colors.bg,
-                          border: '1px solid rgba(255,255,255,0.1)',
-                        }}
+                        className="w-[12px] h-[12px] rounded-[2px]" style={{ backgroundColor: colors.bg, border: '1px solid rgba(255,255,255,0.1)' }}
                       />
                       <span
-                        style={{
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 10,
-                          color:
-                            selectedLevel === option.level
+                        className="font-[var(--font-mono)] text-[10px] tracking-[1px]" style={{ color: selectedLevel === option.level
                               ? 'var(--color-accent)'
-                              : 'var(--color-text-muted)',
-                          fontWeight: selectedLevel === option.level ? 600 : 400,
-                          letterSpacing: '1px',
-                        }}
+                              : 'var(--color-text-muted)', fontWeight: selectedLevel === option.level ? 600 : 400 }}
                       >
                         {option.level}
                       </span>
@@ -714,27 +639,11 @@ export default function AdminPage() {
             </div>
 
             {/* Save Button + Success Message */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="flex items-center gap-3">
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '8px 20px',
-                  backgroundColor: isSaving ? 'var(--color-muted)' : 'var(--color-accent)',
-                  border: 'none',
-                  borderRadius: 'var(--radius)',
-                  color: 'var(--color-bg)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: '1.5px',
-                  textTransform: 'uppercase',
-                  cursor: isSaving ? 'not-allowed' : 'pointer',
-                  transition: 'background-color var(--transition)',
-                }}
+                className="flex items-center gap-1.5 py-2 px-5 border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[11px] font-semibold tracking-[1.5px] uppercase" style={{ backgroundColor: isSaving ? 'var(--color-muted)' : 'var(--color-accent)', cursor: isSaving ? 'not-allowed' : 'pointer', transition: 'background-color var(--transition)' }}
               >
                 <Save size={12} />
                 {isSaving ? 'SAVING...' : 'SAVE CLASSIFICATION'}
@@ -742,15 +651,7 @@ export default function AdminPage() {
 
               {saveSuccess && (
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: '#40c057',
-                    letterSpacing: '1px',
-                  }}
+                  className="flex items-center gap-1 font-[var(--font-mono)] text-[10px] text-[#40c057] tracking-[1px]"
                 >
                   <Check size={12} />
                   CLASSIFICATION UPDATED SUCCESSFULLY
@@ -773,7 +674,7 @@ export default function AdminPage() {
       {/* ── Simulation Tab ── */}
       {activeTab === 'simulation' && (
         <Card>
-          <div style={{ padding: 16 }}>
+          <div className="p-4">
             <SimulationControls />
           </div>
         </Card>
@@ -794,7 +695,7 @@ export default function AdminPage() {
                 <X size={16} />
               </button>
             </div>
-            <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="p-4 flex flex-col gap-3">
               <div>
                 <label style={labelStyle}>USERNAME</label>
                 <input
@@ -825,8 +726,8 @@ export default function AdminPage() {
                   style={inputStyle}
                 />
               </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <div style={{ flex: 1 }}>
+              <div className="flex gap-3">
+                <div className="flex-1">
                   <label style={labelStyle}>ROLE</label>
                   <select
                     value={userForm.role}
@@ -840,7 +741,7 @@ export default function AdminPage() {
                     ))}
                   </select>
                 </div>
-                <div style={{ flex: 1 }}>
+                <div className="flex-1">
                   <label style={labelStyle}>UNIT ID</label>
                   <input
                     type="number"
@@ -851,7 +752,7 @@ export default function AdminPage() {
                   />
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={userForm.is_active}
@@ -862,51 +763,23 @@ export default function AdminPage() {
                 />
                 <label
                   htmlFor="user-active"
-                  style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}
+                  className="cursor-pointer"
                 >
                   ACTIVE
                 </label>
               </div>
               <div
-                style={{
-                  display: 'flex',
-                  gap: 8,
-                  justifyContent: 'flex-end',
-                  paddingTop: 8,
-                  borderTop: '1px solid var(--color-border)',
-                }}
+                className="flex gap-2 justify-end pt-2 border-t border-t-[var(--color-border)]"
               >
                 <button
                   onClick={() => setUserModalOpen(false)}
-                  style={{
-                    padding: '6px 16px',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: 'transparent',
-                    color: 'var(--color-text-muted)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="py-1.5 px-4 border border-[var(--color-border)] rounded-[var(--radius)] bg-transparent text-[var(--color-text-muted)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] cursor-pointer"
                 >
                   CANCEL
                 </button>
                 <button
                   onClick={handleSaveUser}
-                  style={{
-                    padding: '6px 16px',
-                    border: '1px solid var(--color-accent)',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: 'rgba(77, 171, 247, 0.15)',
-                    color: 'var(--color-accent)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="py-1.5 px-4 border border-[var(--color-accent)] rounded-[var(--radius)] bg-[rgba(77,171,247,0.15)] text-[var(--color-accent)] font-[var(--font-mono)] text-[10px] font-bold tracking-[1px] cursor-pointer"
                 >
                   {editingUser ? 'SAVE CHANGES' : 'CREATE USER'}
                 </button>
@@ -933,7 +806,7 @@ export default function AdminPage() {
                 <X size={16} />
               </button>
             </div>
-            <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="p-4 flex flex-col gap-3">
               {/* Name */}
               <div>
                 <label style={labelStyle}>UNIT NAME</label>
@@ -1029,45 +902,17 @@ export default function AdminPage() {
 
               {/* Footer buttons */}
               <div
-                style={{
-                  display: 'flex',
-                  gap: 8,
-                  justifyContent: 'flex-end',
-                  paddingTop: 8,
-                  borderTop: '1px solid var(--color-border)',
-                }}
+                className="flex gap-2 justify-end pt-2 border-t border-t-[var(--color-border)]"
               >
                 <button
                   onClick={() => setUnitModalOpen(false)}
-                  style={{
-                    padding: '6px 16px',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: 'transparent',
-                    color: 'var(--color-text-muted)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="py-1.5 px-4 border border-[var(--color-border)] rounded-[var(--radius)] bg-transparent text-[var(--color-text-muted)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] cursor-pointer"
                 >
                   CANCEL
                 </button>
                 <button
                   onClick={handleSaveUnit}
-                  style={{
-                    padding: '6px 16px',
-                    border: '1px solid var(--color-accent)',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: 'rgba(77, 171, 247, 0.15)',
-                    color: 'var(--color-accent)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="py-1.5 px-4 border border-[var(--color-accent)] rounded-[var(--radius)] bg-[rgba(77,171,247,0.15)] text-[var(--color-accent)] font-[var(--font-mono)] text-[10px] font-bold tracking-[1px] cursor-pointer"
                 >
                   {editingUnit ? 'SAVE CHANGES' : 'CREATE UNIT'}
                 </button>
@@ -1094,17 +939,12 @@ export default function AdminPage() {
                 <X size={16} />
               </button>
             </div>
-            <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="p-4 flex flex-col gap-3">
               <p
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 12,
-                  color: 'var(--color-text)',
-                  margin: 0,
-                }}
+                className="font-[var(--font-mono)] text-xs text-[var(--color-text)] m-0"
               >
                 Delete{' '}
-                <strong style={{ color: 'var(--color-text-bright)' }}>
+                <strong className="text-[var(--color-text-bright)]">
                   {deleteConfirmUnit.name}
                 </strong>
                 ?
@@ -1112,27 +952,13 @@ export default function AdminPage() {
 
               {deleteTargetHasChildren ? (
                 <p
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-danger)',
-                    margin: 0,
-                    padding: '8px 10px',
-                    border: '1px solid var(--color-danger)',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: 'rgba(255, 107, 107, 0.08)',
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger)] m-0 py-2 px-2.5 border border-[var(--color-danger)] rounded-[var(--radius)] bg-[rgba(255,107,107,0.08)]"
                 >
                   Cannot delete unit with sub-units. Remove or reassign sub-units first.
                 </p>
               ) : (
                 <p
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-text-muted)',
-                    margin: 0,
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] m-0"
                 >
                   This action cannot be undone.
                 </p>
@@ -1140,61 +966,25 @@ export default function AdminPage() {
 
               {deleteError && (
                 <p
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-danger)',
-                    margin: 0,
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger)] m-0"
                 >
                   {deleteError}
                 </p>
               )}
 
               <div
-                style={{
-                  display: 'flex',
-                  gap: 8,
-                  justifyContent: 'flex-end',
-                  paddingTop: 8,
-                  borderTop: '1px solid var(--color-border)',
-                }}
+                className="flex gap-2 justify-end pt-2 border-t border-t-[var(--color-border)]"
               >
                 <button
                   onClick={() => setDeleteConfirmUnit(null)}
-                  style={{
-                    padding: '6px 16px',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: 'transparent',
-                    color: 'var(--color-text-muted)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '1px',
-                    cursor: 'pointer',
-                  }}
+                  className="py-1.5 px-4 border border-[var(--color-border)] rounded-[var(--radius)] bg-transparent text-[var(--color-text-muted)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] cursor-pointer"
                 >
                   {deleteTargetHasChildren ? 'CLOSE' : 'CANCEL'}
                 </button>
                 {!deleteTargetHasChildren && (
                   <button
                     onClick={handleDeleteUnit}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      padding: '6px 16px',
-                      border: '1px solid var(--color-danger)',
-                      borderRadius: 'var(--radius)',
-                      backgroundColor: 'rgba(255, 107, 107, 0.15)',
-                      color: 'var(--color-danger)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      fontWeight: 700,
-                      letterSpacing: '1px',
-                      cursor: 'pointer',
-                    }}
+                    className="flex items-center gap-1 py-1.5 px-4 border border-[var(--color-danger)] rounded-[var(--radius)] bg-[rgba(255,107,107,0.15)] text-[var(--color-danger)] font-[var(--font-mono)] text-[10px] font-bold tracking-[1px] cursor-pointer"
                   >
                     <Trash2 size={10} /> DELETE
                   </button>

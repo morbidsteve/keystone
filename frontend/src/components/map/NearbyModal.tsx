@@ -71,75 +71,34 @@ export default function NearbyModal() {
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 3000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        backdropFilter: 'blur(2px)',
-      }}
+      className="fixed z-[3000] flex items-center justify-center bg-[rgba(0,0,0,0.5)] inset-0 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) clearNearby();
       }}
     >
       <div
-        style={{
-          width: 440,
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          backgroundColor: '#1a1f2e',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: 8,
-          boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)',
-          fontFamily: "'JetBrains Mono', monospace",
-        }}
+        className="w-[440px] max-h-[80vh] overflow-y-auto bg-[#1a1f2e] rounded-[8px]" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', boxShadow: '0 16px 48px rgba(0, 0, 0, 0.6)', fontFamily: "'JetBrains Mono', monospace" }}
       >
         {/* Header */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 16px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
+          className="flex items-center justify-between py-3 px-4 border-b border-b-[rgba(255,255,255,0.1)]"
         >
           <div>
             <div
-              style={{
-                fontSize: 11,
-                fontWeight: 700,
-                letterSpacing: '2px',
-                color: '#e2e8f0',
-                textTransform: 'uppercase',
-              }}
+              className="text-[11px] font-bold tracking-[2px] text-[#e2e8f0] uppercase"
             >
               NEARBY (5 KM)
             </div>
-            <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>
+            <div className="text-[10px] text-[#94a3b8] mt-0.5">
               {formatCoords(lat, lon)}
               {mgrsStr && (
-                <span style={{ color: '#60a5fa', marginLeft: 8 }}>{mgrsStr}</span>
+                <span className="text-[#60a5fa] ml-2">{mgrsStr}</span>
               )}
             </div>
           </div>
           <button
             onClick={clearNearby}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              border: 'none',
-              borderRadius: 4,
-              backgroundColor: 'transparent',
-              color: '#94a3b8',
-              cursor: 'pointer',
-            }}
+            className="flex items-center justify-center w-[28px] h-[28px] border-0 rounded-[4px] bg-transparent text-[#94a3b8] cursor-pointer"
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             }}
@@ -152,15 +111,10 @@ export default function NearbyModal() {
         </div>
 
         {/* Body */}
-        <div style={{ padding: 16 }}>
+        <div className="p-4">
           {totalCount === 0 ? (
             <div
-              style={{
-                textAlign: 'center',
-                padding: '24px 0',
-                color: '#64748b',
-                fontSize: 11,
-              }}
+              className="text-center py-6 px-0 text-[#64748b] text-[11px]"
             >
               No entities found within 5 km.
             </div>
@@ -168,7 +122,7 @@ export default function NearbyModal() {
             <>
               {/* Units */}
               {data.units.length > 0 && (
-                <div style={{ marginBottom: 16 }}>
+                <div className="mb-4">
                   <div style={{ ...labelStyle, color: '#60a5fa' }}>
                     <MapPin size={12} />
                     UNITS ({data.units.length})
@@ -188,28 +142,24 @@ export default function NearbyModal() {
                         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div className="flex justify-between items-center">
                         <div>
-                          <span style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                          <span className="text-[#e2e8f0] text-[11px] font-semibold">
                             {u.abbreviation}
                           </span>
-                          <span style={{ color: '#64748b', fontSize: 10, marginLeft: 8 }}>
+                          <span className="text-[#64748b] text-[10px] ml-2">
                             {u.name}
                           </span>
                         </div>
                         <span
-                          style={{
-                            fontSize: 9,
-                            fontWeight: 700,
-                            color: statusColor[u.supply_status] ?? '#94a3b8',
-                          }}
+                          className="text-[9px] font-bold" style={{ color: statusColor[u.supply_status] ?? '#94a3b8' }}
                         >
                           {u.supply_status}
                         </span>
                       </div>
-                      <div style={{ fontSize: 9, color: '#64748b', marginTop: 2 }}>
+                      <div className="text-[9px] text-[#64748b] mt-0.5">
                         {u.mgrs ?? formatCoords(u.latitude, u.longitude)}
-                        <span style={{ marginLeft: 8 }}>
+                        <span className="ml-2">
                           Readiness: {u.readiness_pct}%
                         </span>
                       </div>
@@ -220,7 +170,7 @@ export default function NearbyModal() {
 
               {/* Supply Points */}
               {data.supplyPoints.length > 0 && (
-                <div style={{ marginBottom: 16 }}>
+                <div className="mb-4">
                   <div style={{ ...labelStyle, color: '#22c55e' }}>
                     <Package size={12} />
                     SUPPLY POINTS ({data.supplyPoints.length})
@@ -240,17 +190,17 @@ export default function NearbyModal() {
                         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[#e2e8f0] text-[11px] font-semibold">
                           {sp.name}
                         </span>
-                        <span style={{ fontSize: 9, color: '#94a3b8' }}>
+                        <span className="text-[9px] text-[#94a3b8]">
                           {sp.point_type.replace(/_/g, ' ')}
                         </span>
                       </div>
-                      <div style={{ fontSize: 9, color: '#64748b', marginTop: 2 }}>
+                      <div className="text-[9px] text-[#64748b] mt-0.5">
                         {sp.mgrs ?? formatCoords(sp.latitude, sp.longitude)}
-                        <span style={{ marginLeft: 8 }}>
+                        <span className="ml-2">
                           Status: {sp.status}
                         </span>
                       </div>
@@ -281,21 +231,17 @@ export default function NearbyModal() {
                         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ color: '#e2e8f0', fontSize: 11, fontWeight: 600 }}>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[#e2e8f0] text-[11px] font-semibold">
                           {a.unit_name}
                         </span>
                         <span
-                          style={{
-                            fontSize: 9,
-                            fontWeight: 700,
-                            color: severityColor[a.severity] ?? '#94a3b8',
-                          }}
+                          className="text-[9px] font-bold" style={{ color: severityColor[a.severity] ?? '#94a3b8' }}
                         >
                           {a.severity}
                         </span>
                       </div>
-                      <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>
+                      <div className="text-[10px] text-[#94a3b8] mt-0.5">
                         {a.message}
                       </div>
                     </div>
@@ -308,26 +254,11 @@ export default function NearbyModal() {
 
         {/* Footer */}
         <div
-          style={{
-            padding: '8px 16px 12px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-            textAlign: 'right',
-          }}
+          className="text-right" style={{ padding: '8px 16px 12px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}
         >
           <button
             onClick={clearNearby}
-            style={{
-              padding: '6px 16px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 4,
-              backgroundColor: 'transparent',
-              color: '#94a3b8',
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              cursor: 'pointer',
-            }}
+            className="py-1.5 px-4 rounded-[4px] bg-transparent text-[#94a3b8] text-[10px] font-semibold tracking-[1px] cursor-pointer" style={{ border: '1px solid rgba(255, 255, 255, 0.1)', fontFamily: "'JetBrains Mono', monospace" }}
           >
             CLOSE
           </button>

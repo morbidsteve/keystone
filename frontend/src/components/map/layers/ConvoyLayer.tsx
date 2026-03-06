@@ -80,14 +80,7 @@ function ConvoyMarker({ convoy }: { convoy: MapConvoy }) {
     >
       <Tooltip direction="top" offset={[0, -14]} opacity={0.95}>
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#111',
-            padding: '2px 4px',
-          }}
+          className="font-[var(--font-mono)] text-[10px] font-bold tracking-[1px] text-[#111] py-0.5 px-1"
         >
           {convoy.name}
         </div>
@@ -140,12 +133,7 @@ function ConvoyRoute({ convoy, progressPercent }: { convoy: MapConvoy; progressP
       >
         <Tooltip sticky opacity={0.9}>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: '#111',
-              padding: '2px 4px',
-            }}
+            className="font-[var(--font-mono)] text-[9px] text-[#111] py-0.5 px-1"
           >
             {convoy.name} | {convoy.status.replace('_', ' ')}
           </div>
@@ -164,7 +152,7 @@ function ConvoyRoute({ convoy, progressPercent }: { convoy: MapConvoy; progressP
         }}
       >
         <Tooltip direction="bottom" offset={[0, 6]} opacity={0.9}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#111' }}>
+          <div className="font-[var(--font-mono)] text-[9px] text-[#111]">
             ORIGIN: {convoy.origin.name}
           </div>
         </Tooltip>
@@ -182,7 +170,7 @@ function ConvoyRoute({ convoy, progressPercent }: { convoy: MapConvoy; progressP
         }}
       >
         <Tooltip direction="bottom" offset={[0, 6]} opacity={0.9}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#111' }}>
+          <div className="font-[var(--font-mono)] text-[9px] text-[#111]">
             DEST: {convoy.destination.name}
           </div>
         </Tooltip>

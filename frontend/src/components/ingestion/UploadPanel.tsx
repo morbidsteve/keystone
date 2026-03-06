@@ -95,41 +95,19 @@ export default function UploadPanel() {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        style={{
-          border: `2px dashed ${isDragging ? 'var(--color-accent)' : 'var(--color-border-strong)'}`,
-          borderRadius: 'var(--radius)',
-          padding: '32px 24px',
-          textAlign: 'center',
-          cursor: 'pointer',
-          backgroundColor: isDragging ? 'rgba(77, 171, 247, 0.05)' : 'transparent',
-          transition: 'all var(--transition)',
-          marginBottom: 16,
-        }}
+        className="rounded-[var(--radius)] py-8 px-6 text-center cursor-pointer mb-4" style={{ border: `2px dashed ${isDragging ? 'var(--color-accent)' : 'var(--color-border-strong)'}`, backgroundColor: isDragging ? 'rgba(77, 171, 247, 0.05)' : 'transparent', transition: 'all var(--transition)' }}
       >
         <Upload
           size={28}
-          style={{
-            color: isDragging ? 'var(--color-accent)' : 'var(--color-text-muted)',
-            marginBottom: 8,
-          }}
+          className="mb-2" style={{ color: isDragging ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
         />
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            color: 'var(--color-text)',
-            marginBottom: 4,
-          }}
+          className="font-[var(--font-mono)] text-xs text-[var(--color-text)] mb-1"
         >
           DROP FILES HERE OR CLICK TO BROWSE
         </div>
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-text-muted)',
-            letterSpacing: '0.5px',
-          }}
+          className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] tracking-[0.5px]"
         >
           Accepted: .txt (mIRC), .csv, .xlsx
         </div>
@@ -139,68 +117,38 @@ export default function UploadPanel() {
           multiple
           accept={acceptedTypes.join(',')}
           onChange={(e) => e.target.files && handleFiles(e.target.files)}
-          style={{ display: 'none' }}
+          className="hidden"
         />
       </div>
 
       {/* File List */}
       {files.length > 0 && (
         <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+          <div className="flex flex-col gap-1.5 mb-3">
             {files.map((f, i) => (
               <div
                 key={`${f.file.name}-${i}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '8px 12px',
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                }}
+                className="flex items-center gap-2.5 py-2 px-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)]"
               >
-                <FileText size={14} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <FileText size={14} className="text-[var(--color-text-muted)] shrink-0" />
+                <div className="flex-1 min-w-0">
                   <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      color: 'var(--color-text)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
+                    className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] whitespace-nowrap overflow-hidden text-ellipsis"
                   >
                     {f.file.name}
                   </div>
                   {f.status === 'uploading' && (
                     <div
-                      style={{
-                        marginTop: 4,
-                        height: 3,
-                        backgroundColor: 'var(--color-bg)',
-                        borderRadius: 2,
-                        overflow: 'hidden',
-                      }}
+                      className="mt-1 h-[3px] bg-[var(--color-bg)] rounded-[2px] overflow-hidden"
                     >
                       <div
-                        style={{
-                          width: `${f.progress}%`,
-                          height: '100%',
-                          backgroundColor: 'var(--color-accent)',
-                          transition: 'width 0.3s ease',
-                        }}
+                        className="h-full bg-[var(--color-accent)]" style={{ width: `${f.progress}%`, transition: 'width 0.3s ease' }}
                       />
                     </div>
                   )}
                 </div>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    color: 'var(--color-text-muted)',
-                  }}
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                 >
                   {(f.file.size / 1024).toFixed(1)} KB
                 </span>
@@ -210,22 +158,16 @@ export default function UploadPanel() {
                       e.stopPropagation();
                       removeFile(i);
                     }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: 'var(--color-text-muted)',
-                      padding: 2,
-                    }}
+                    className="bg-transparent border-0 cursor-pointer text-[var(--color-text-muted)] p-0.5"
                   >
                     <X size={12} />
                   </button>
                 )}
                 {f.status === 'uploading' && (
-                  <Loader size={14} className="animate-spin" style={{ color: 'var(--color-accent)' }} />
+                  <Loader size={14} className="animate-spin text-[var(--color-accent)]" />
                 )}
                 {f.status === 'success' && (
-                  <Check size={14} style={{ color: 'var(--color-success)' }} />
+                  <Check size={14} className="text-[var(--color-success)]" />
                 )}
               </div>
             ))}
@@ -235,21 +177,7 @@ export default function UploadPanel() {
           {files.some((f) => f.status === 'pending') && (
             <button
               onClick={uploadAll}
-              style={{
-                width: '100%',
-                padding: '10px',
-                backgroundColor: 'var(--color-accent)',
-                border: 'none',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-bg)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 600,
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                transition: 'opacity var(--transition)',
-              }}
+              className="w-full bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-xs font-semibold tracking-[2px] uppercase cursor-pointer" style={{ padding: '10px', transition: 'opacity var(--transition)' }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
             >

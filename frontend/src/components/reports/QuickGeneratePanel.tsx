@@ -155,61 +155,34 @@ export default function QuickGeneratePanel() {
   return (
     <Card
       title="QUICK GENERATE"
-      headerRight={<Zap size={14} style={{ color: 'var(--color-amber, #f59e0b)' }} />}
+      headerRight={<Zap size={14} className="text-[var(--color-amber, #f59e0b)]" />}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className="flex flex-col gap-3.5">
         {/* Report type grid */}
         <div>
           <label style={labelStyle}>REPORT TYPE</label>
           <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-              gap: 6,
-            }}
+            className="grid gap-1.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))' }}
           >
             {QUICK_REPORT_TYPES.map((rt) => (
               <button
                 key={rt.type}
                 onClick={() => setSelectedType(rt.type)}
-                style={{
-                  padding: '8px 10px',
-                  backgroundColor:
-                    selectedType === rt.type
+                className="py-2 px-2.5 rounded-[var(--radius)] cursor-pointer text-left" style={{ backgroundColor: selectedType === rt.type
                       ? 'rgba(59,130,246,0.12)'
-                      : 'var(--color-bg)',
-                  border:
-                    selectedType === rt.type
+                      : 'var(--color-bg)', border: selectedType === rt.type
                       ? '1px solid var(--color-accent)'
-                      : '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  transition: 'all var(--transition)',
-                }}
+                      : '1px solid var(--color-border)', transition: 'all var(--transition)' }}
               >
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color:
-                      selectedType === rt.type
+                  className="font-[var(--font-mono)] text-[10px] font-bold tracking-[1px]" style={{ color: selectedType === rt.type
                         ? 'var(--color-accent)'
-                        : 'var(--color-text-bright)',
-                    letterSpacing: '1px',
-                  }}
+                        : 'var(--color-text-bright)' }}
                 >
                   {rt.label}
                 </div>
                 <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 8,
-                    color: 'var(--color-text-muted)',
-                    marginTop: 2,
-                    lineHeight: 1.3,
-                  }}
+                  className="font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)] mt-0.5 leading-[1.3]"
                 >
                   {rt.desc}
                 </div>
@@ -253,11 +226,7 @@ export default function QuickGeneratePanel() {
                 onChange={(e) => setSpotrepSituation(e.target.value)}
                 placeholder="Describe the situation..."
                 rows={3}
-                style={{
-                  ...inputStyle,
-                  resize: 'vertical',
-                  minHeight: 50,
-                }}
+                className="min-h-[50px]"
               />
             </div>
           </>
@@ -284,15 +253,7 @@ export default function QuickGeneratePanel() {
         {/* Error */}
         {error && (
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-red, #ff4444)',
-              padding: '6px 8px',
-              backgroundColor: 'rgba(255,68,68,0.08)',
-              borderRadius: 'var(--radius)',
-              border: '1px solid rgba(255,68,68,0.2)',
-            }}
+            className="font-[var(--font-mono)] text-[10px] text-[var(--color-red, #ff4444)] py-1.5 px-2 bg-[rgba(255,68,68,0.08)] rounded-[var(--radius)] border border-[rgba(255,68,68,0.2)]"
           >
             {error}
           </div>
@@ -302,25 +263,7 @@ export default function QuickGeneratePanel() {
         <button
           onClick={handleGenerate}
           disabled={isGenerating}
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: isGenerating ? 'var(--color-muted)' : 'var(--color-accent)',
-            border: 'none',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-bg)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            fontWeight: 600,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            cursor: isGenerating ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            transition: 'opacity var(--transition)',
-          }}
+          className="w-full border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-xs font-semibold tracking-[2px] uppercase flex items-center justify-center gap-2" style={{ padding: '10px', backgroundColor: isGenerating ? 'var(--color-muted)' : 'var(--color-accent)', cursor: isGenerating ? 'not-allowed' : 'pointer', transition: 'opacity var(--transition)' }}
         >
           {isGenerating ? (
             <>
@@ -339,41 +282,17 @@ export default function QuickGeneratePanel() {
         {generatedContent && (
           <div>
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                marginBottom: 6,
-              }}
+              className="flex items-center gap-1.5 mb-1.5"
             >
-              <FileText size={12} style={{ color: 'var(--color-green, #22c55e)' }} />
+              <FileText size={12} className="text-[var(--color-green, #22c55e)]" />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  fontWeight: 600,
-                  color: 'var(--color-green, #22c55e)',
-                  letterSpacing: '1px',
-                  textTransform: 'uppercase',
-                }}
+                className="font-[var(--font-mono)] text-[9px] font-semibold text-[var(--color-green, #22c55e)] tracking-[1px] uppercase"
               >
                 REPORT GENERATED - VIEW IN REPORTS TAB
               </span>
             </div>
             <pre
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                lineHeight: 1.5,
-                color: 'var(--color-text)',
-                whiteSpace: 'pre-wrap',
-                padding: 10,
-                backgroundColor: 'var(--color-bg)',
-                borderRadius: 'var(--radius)',
-                border: '1px solid var(--color-border)',
-                maxHeight: 300,
-                overflow: 'auto',
-              }}
+              className="font-[var(--font-mono)] text-[10px] leading-normal text-[var(--color-text)] whitespace-pre-wrap p-2.5 bg-[var(--color-bg)] rounded-[var(--radius)] border border-[var(--color-border)] max-h-[300px] overflow-auto"
             >
               {generatedContent}
             </pre>

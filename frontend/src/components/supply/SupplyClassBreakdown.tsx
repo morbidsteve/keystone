@@ -40,19 +40,12 @@ export default function SupplyClassBreakdown({ className, data }: SupplyClassBre
       const d = payload[0].payload;
       return (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            padding: '8px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
         >
-          <div style={{ color: 'var(--color-text-bright)', marginBottom: 4 }}>
+          <div className="text-[var(--color-text-bright)] mb-1">
             {d.unit}
           </div>
-          <div style={{ color: 'var(--color-text-muted)' }}>
+          <div className="text-[var(--color-text-muted)]">
             {d.onHand.toLocaleString()} / {d.authorized.toLocaleString()} ({d.percentage}%)
           </div>
         </div>

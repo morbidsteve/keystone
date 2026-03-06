@@ -80,24 +80,7 @@ export default function HelpTooltip({
     visible && isHelpMode
       ? createPortal(
           <div
-            style={{
-              position: 'fixed',
-              top: tooltipPos.top,
-              left: tooltipPos.left,
-              transform: getTransformOrigin(),
-              zIndex: 10000,
-              maxWidth: 280,
-              padding: '8px 12px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              lineHeight: 1.5,
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
-              pointerEvents: 'none',
-            }}
+            className="fixed z-[10000] max-w-[280px] py-2 px-3 bg-[var(--color-bg-surface)] border border-[var(--color-accent)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px] leading-normal" style={{ top: tooltipPos.top, left: tooltipPos.left, transform: getTransformOrigin(), boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)', pointerEvents: 'none' }}
           >
             {content}
           </div>,
@@ -110,21 +93,13 @@ export default function HelpTooltip({
       ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        position: 'relative',
-        outline: isHelpMode ? '1px dashed rgba(77, 171, 247, 0.3)' : undefined,
-        borderRadius: isHelpMode ? 'var(--radius)' : undefined,
-        cursor: isHelpMode ? 'help' : undefined,
-      }}
+      className="inline-flex items-center gap-1 relative" style={{ outline: isHelpMode ? '1px dashed rgba(77, 171, 247, 0.3)' : undefined, borderRadius: isHelpMode ? 'var(--radius)' : undefined, cursor: isHelpMode ? 'help' : undefined }}
     >
       {children}
       {icon && isHelpMode && (
         <HelpCircle
           size={12}
-          style={{ color: 'var(--color-accent)', flexShrink: 0 }}
+          className="text-[var(--color-accent)] shrink-0"
         />
       )}
       {tooltip}

@@ -68,88 +68,41 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
   return (
     <div
       onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 100,
-      }}
+      className="fixed bg-[rgba(0,0,0,0.6)] flex items-center justify-center z-[100] inset-0"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{
-          backgroundColor: 'var(--color-bg-elevated)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 8,
-          maxWidth: 500,
-          width: '90%',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-          padding: '24px',
-        }}
+        className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[8px] max-w-[500px] w-[90%] max-h-[80vh] overflow-y-auto" style={{ padding: '24px' }}
       >
         <h2
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            letterSpacing: '2px',
-            color: 'var(--color-text-bright)',
-            marginBottom: 20,
-            textTransform: 'uppercase',
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold tracking-[2px] text-[var(--color-text-bright)] mb-5 uppercase"
         >
           Keyboard Shortcuts
         </h2>
 
         {shortcutGroups.map((group) => (
-          <div key={group.title} style={{ marginBottom: 20 }}>
+          <div key={group.title} className="mb-5">
             <h3
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                color: 'var(--color-text-muted)',
-                textTransform: 'uppercase',
-                marginBottom: 8,
-              }}
+              className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-2"
             >
               {group.title}
             </h3>
             {group.shortcuts.map((shortcut) => (
               <div
                 key={shortcut.description}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '6px 0',
-                  borderBottom: '1px solid var(--color-border)',
-                }}
+                className="flex justify-between items-center py-1.5 px-0 border-b border-b-[var(--color-border)]"
               >
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    color: 'var(--color-text)',
-                  }}
+                  className="font-[var(--font-mono)] text-xs text-[var(--color-text)]"
                 >
                   {shortcut.description}
                 </span>
-                <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                <span className="flex gap-1 items-center">
                   {shortcut.keys.map((key, i) => (
                     <span key={i}>
                       {i > 0 && (
                         <span
-                          style={{
-                            color: 'var(--color-text-muted)',
-                            fontSize: 10,
-                            marginRight: 4,
-                          }}
+                          className="text-[var(--color-text-muted)] text-[10px] mr-1"
                         >
                           +
                         </span>

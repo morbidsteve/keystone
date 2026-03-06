@@ -91,11 +91,7 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
             <div style={styles.statusRow}>
               <span style={styles.mutedText}>Overall Readiness</span>
               <span
-                style={{
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: getReadinessColor(data.readiness_pct),
-                }}
+                className="text-base font-bold" style={{ color: getReadinessColor(data.readiness_pct) }}
               >
                 {Math.round(data.readiness_pct)}%
               </span>
@@ -105,7 +101,7 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
           {/* Coordinates */}
           <div style={styles.section}>
             <div style={styles.sectionHeader}>
-              <MapPin size={11} style={{ marginRight: 4 }} />
+              <MapPin size={11} className="mr-1" />
               POSITION
             </div>
             <div style={styles.coordBlock}>
@@ -150,19 +146,12 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
                     <span style={styles.supplyClassName}>
                       CL {s.supply_class} - {s.name}
                     </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div className="flex items-center gap-1.5">
                       <span style={styles.mutedText}>
                         {Math.round(s.percentage)}% | {s.dos} DOS
                       </span>
                       <span
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: getStatusColor(s.status),
-                          display: 'inline-block',
-                          flexShrink: 0,
-                        }}
+                        className="w-[8px] h-[8px] inline-block shrink-0" style={{ borderRadius: '50%', backgroundColor: getStatusColor(s.status) }}
                       />
                     </div>
                   </div>
@@ -187,16 +176,11 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
               {data.inbound_convoys.map((cv) => (
                 <div key={cv.convoy_id} style={styles.convoyCard}>
                   <div style={styles.convoyHeader}>
-                    <span style={{ color: '#e2e8f0', fontWeight: 600, fontSize: 11 }}>
+                    <span className="text-[#e2e8f0] font-semibold text-[11px]">
                       {cv.name}
                     </span>
                     <span
-                      style={{
-                        ...styles.statusPill,
-                        backgroundColor: cv.status === 'EN_ROUTE' ? '#4ade80' : '#fbbf24',
-                        fontSize: 8,
-                        padding: '1px 6px',
-                      }}
+                      className="text-[8px] py-px px-1.5" style={{ color: cv.status === 'EN_ROUTE' ? '#4ade80' : '#fbbf24' }}
                     >
                       {cv.status.replace('_', ' ')}
                     </span>
@@ -219,11 +203,7 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
             <div style={{ ...styles.statusRow, marginBottom: 12 }}>
               <span style={styles.mutedText}>Overall</span>
               <span
-                style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: getReadinessColor(data.readiness_pct),
-                }}
+                className="text-lg font-bold" style={{ color: getReadinessColor(data.readiness_pct) }}
               >
                 {Math.round(data.readiness_pct)}%
               </span>
@@ -235,34 +215,24 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
               <div style={styles.sectionHeader}>BY TYPE</div>
               {/* Table header */}
               <div style={styles.tableHeader}>
-                <span style={{ flex: 2 }}>Type</span>
-                <span style={{ flex: 1, textAlign: 'right' }}>MC</span>
-                <span style={{ flex: 1, textAlign: 'right' }}>Total</span>
-                <span style={{ flex: 1, textAlign: 'right' }}>MC%</span>
+                <span className="flex-[2]">Type</span>
+                <span className="flex-1 text-right">MC</span>
+                <span className="flex-1 text-right">Total</span>
+                <span className="flex-1 text-right">MC%</span>
               </div>
               {data.equipment_summary.map((eq) => (
                 <div key={eq.type} style={styles.tableRow}>
-                  <span style={{ flex: 2, color: '#e2e8f0' }}>{eq.type}</span>
+                  <span className="text-[#e2e8f0] flex-[2]">{eq.type}</span>
                   <span
-                    style={{
-                      flex: 1,
-                      textAlign: 'right',
-                      color: getReadinessColor(eq.readiness_pct),
-                      fontWeight: 600,
-                    }}
+                    className="flex-1 text-right font-semibold" style={{ color: getReadinessColor(eq.readiness_pct) }}
                   >
                     {eq.mission_capable}
                   </span>
-                  <span style={{ flex: 1, textAlign: 'right', color: '#94a3b8' }}>
+                  <span className="flex-1 text-right text-[#94a3b8]">
                     {eq.total}
                   </span>
                   <span
-                    style={{
-                      flex: 1,
-                      textAlign: 'right',
-                      color: getReadinessColor(eq.readiness_pct),
-                      fontWeight: 600,
-                    }}
+                    className="flex-1 text-right font-semibold" style={{ color: getReadinessColor(eq.readiness_pct) }}
                   >
                     {Math.round(eq.readiness_pct)}%
                   </span>
@@ -281,13 +251,13 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
         <div style={styles.tabContent}>
           <div style={styles.section}>
             <div style={styles.sectionHeader}>
-              <Users size={11} style={{ marginRight: 4 }} />
+              <Users size={11} className="mr-1" />
               PERSONNEL
             </div>
             <div style={styles.placeholder}>
-              <Users size={32} style={{ color: '#334155', marginBottom: 8 }} />
+              <Users size={32} className="text-[#334155] mb-2" />
               <div>Personnel data not yet available.</div>
-              <div style={{ fontSize: 10, marginTop: 4, color: '#475569' }}>
+              <div className="text-[10px] mt-1 text-[#475569]">
                 {data.name} | {data.echelon}
               </div>
             </div>
@@ -299,14 +269,14 @@ export function UnitDetailPanel({ data }: UnitDetailPanelProps) {
         <div style={styles.tabContent}>
           <div style={styles.section}>
             <div style={styles.sectionHeader}>
-              <Clock size={11} style={{ marginRight: 4 }} />
+              <Clock size={11} className="mr-1" />
               ACTIVITY TIMELINE
             </div>
             <div style={styles.placeholder}>
-              <Clock size={32} style={{ color: '#334155', marginBottom: 8 }} />
+              <Clock size={32} className="text-[#334155] mb-2" />
               <div>Timeline data not yet available.</div>
               {data.last_updated && (
-                <div style={{ fontSize: 10, marginTop: 4, color: '#475569' }}>
+                <div className="text-[10px] mt-1 text-[#475569]">
                   Last update: {formatRelativeTime(data.last_updated)}
                 </div>
               )}

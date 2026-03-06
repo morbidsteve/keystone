@@ -46,21 +46,7 @@ export default function RatingBadge({ rating }: RatingBadgeProps) {
 
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'var(--font-mono)',
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: '0.5px',
-        padding: '2px 8px',
-        borderRadius: 'var(--radius)',
-        backgroundColor: colors.bg,
-        border: `1px solid ${colors.border}`,
-        color: colors.text,
-        whiteSpace: 'nowrap',
-      }}
+      className="inline-flex items-center justify-center font-[var(--font-mono)] text-[10px] font-bold tracking-[0.5px] py-0.5 px-2 rounded-[var(--radius)] whitespace-nowrap" style={{ backgroundColor: colors.bg, border: `1px solid ${colors.border}`, color: colors.text }}
     >
       {rating}
     </span>

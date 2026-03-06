@@ -123,23 +123,10 @@ function PermissionCategory({
 
   return (
     <div
-      style={{
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        marginBottom: 8,
-        overflow: 'hidden',
-      }}
+      className="border border-[var(--color-border)] rounded-[var(--radius)] mb-2 overflow-hidden"
     >
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '8px 12px',
-          backgroundColor: 'var(--color-bg)',
-          cursor: 'pointer',
-          userSelect: 'none',
-        }}
+        className="flex items-center gap-2 py-2 px-3 bg-[var(--color-bg)] cursor-pointer select-none"
         onClick={() => setExpanded(!expanded)}
       >
         {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -152,27 +139,15 @@ function PermissionCategory({
           onChange={toggleAll}
           disabled={disabled}
           onClick={(e) => e.stopPropagation()}
-          style={{ accentColor: 'var(--color-accent)' }}
+          className="accent-[var(--color-accent)]"
         />
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            color: 'var(--color-text-bright)',
-          }}
+          className="font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px] uppercase text-[var(--color-text-bright)]"
         >
           {category}
         </span>
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            color: 'var(--color-text-muted)',
-            marginLeft: 'auto',
-          }}
+          className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] ml-auto"
         >
           {permissions.filter((p) => selectedIds.has(p.id)).length}/{permissions.length}
         </span>
@@ -182,38 +157,22 @@ function PermissionCategory({
           {permissions.map((perm) => (
             <label
               key={perm.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '4px 0',
-                cursor: disabled ? 'default' : 'pointer',
-                opacity: disabled ? 0.6 : 1,
-              }}
+              className="flex items-center gap-2 py-1 px-0" style={{ cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.6 : 1 }}
             >
               <input
                 type="checkbox"
                 checked={selectedIds.has(perm.id)}
                 onChange={() => onToggle(perm.id)}
                 disabled={disabled}
-                style={{ accentColor: 'var(--color-accent)' }}
+                className="accent-[var(--color-accent)]"
               />
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text)',
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
               >
                 {perm.display_name}
               </span>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  marginLeft: 'auto',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] ml-auto"
               >
                 {perm.code}
               </span>
@@ -350,13 +309,7 @@ export default function RoleManager() {
     return (
       <Card title="ROLES & PERMISSIONS">
         <div
-          style={{
-            padding: 40,
-            textAlign: 'center',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            color: 'var(--color-text-muted)',
-          }}
+          className="p-10 text-center font-[var(--font-mono)] text-xs text-[var(--color-text-muted)]"
         >
           Loading roles...
         </div>
@@ -365,7 +318,7 @@ export default function RoleManager() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Role list */}
       <Card
         title="ROLES"
@@ -375,7 +328,7 @@ export default function RoleManager() {
           </button>
         }
       >
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="w-full border-collapse">
           <thead>
             <tr>
               <th style={tableHeaderStyle}>ROLE</th>
@@ -389,53 +342,39 @@ export default function RoleManager() {
             {roles.map((role) => (
               <tr
                 key={role.id}
-                style={{
-                  cursor: 'pointer',
-                  backgroundColor:
-                    selectedRole?.id === role.id ? 'var(--color-bg-hover)' : 'transparent',
-                }}
+                className="cursor-pointer" style={{ backgroundColor: selectedRole?.id === role.id ? 'var(--color-bg-hover)' : 'transparent' }}
                 onClick={() => openRole(role)}
               >
                 <td style={tableCellStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Shield size={14} style={{ color: 'var(--color-accent)' }} />
-                    <span style={{ fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                  <div className="flex items-center gap-2">
+                    <Shield size={14} className="text-[var(--color-accent)]" />
+                    <span className="font-semibold text-[var(--color-text-bright)]">
                       {role.name}
                     </span>
                   </div>
                 </td>
-                <td style={{ ...tableCellStyle, color: 'var(--color-text-muted)', maxWidth: 300 }}>
+                <td className="max-w-[300px]">
                   {role.description || '--'}
                 </td>
                 <td style={tableCellStyle}>
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      fontWeight: 600,
-                      letterSpacing: '1px',
-                      padding: '2px 8px',
-                      borderRadius: 'var(--radius)',
-                      backgroundColor: role.is_system
+                    className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-0.5 px-2 rounded-[var(--radius)]" style={{ backgroundColor: role.is_system
                         ? 'rgba(77, 171, 247, 0.12)'
-                        : 'rgba(64, 192, 87, 0.12)',
-                      color: role.is_system ? 'var(--color-accent)' : 'var(--color-success)',
-                      border: role.is_system
+                        : 'rgba(64, 192, 87, 0.12)', color: role.is_system ? 'var(--color-accent)' : 'var(--color-success)', border: role.is_system
                         ? '1px solid rgba(77, 171, 247, 0.3)'
-                        : '1px solid rgba(64, 192, 87, 0.3)',
-                    }}
+                        : '1px solid rgba(64, 192, 87, 0.3)' }}
                   >
                     {role.is_system ? 'SYSTEM' : 'CUSTOM'}
                   </span>
                 </td>
                 <td style={tableCellStyle}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>
+                  <span className="font-[var(--font-mono)] text-[11px]">
                     {role.permissions.length}
                   </span>
                 </td>
                 <td style={{ ...tableCellStyle, textAlign: 'right' }}>
                   <div
-                    style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}
+                    className="flex gap-1.5 justify-end"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
@@ -448,7 +387,7 @@ export default function RoleManager() {
                     {!role.is_system && (
                       <>
                         {deleteConfirm === role.id ? (
-                          <div style={{ display: 'flex', gap: 4 }}>
+                          <div className="flex gap-1">
                             <button
                               style={btnDangerStyle}
                               onClick={() => handleDelete(role.id)}
@@ -500,10 +439,10 @@ export default function RoleManager() {
             </button>
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 4 }}>
+          <div className="flex flex-col gap-4 p-1">
             {/* Name + description fields */}
-            <div style={{ display: 'flex', gap: 16 }}>
-              <div style={{ flex: 1 }}>
+            <div className="flex gap-4">
+              <div className="flex-1">
                 <label style={labelStyle}>ROLE NAME</label>
                 <input
                   type="text"
@@ -514,7 +453,7 @@ export default function RoleManager() {
                   disabled={formMode === 'view'}
                 />
               </div>
-              <div style={{ flex: 2 }}>
+              <div className="flex-[2]">
                 <label style={labelStyle}>DESCRIPTION</label>
                 <input
                   type="text"
@@ -532,7 +471,7 @@ export default function RoleManager() {
               <label style={labelStyle}>
                 PERMISSIONS ({formPermissionIds.size} / {permissions.length} SELECTED)
               </label>
-              <div style={{ maxHeight: 400, overflowY: 'auto', paddingRight: 4 }}>
+              <div className="max-h-[400px] overflow-y-auto pr-1">
                 {Object.entries(permsByCategory).map(([cat, perms]) => (
                   <PermissionCategory
                     key={cat}
@@ -548,7 +487,7 @@ export default function RoleManager() {
 
             {/* Actions */}
             {formMode !== 'view' && (
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <div className="flex gap-2 justify-end">
                 <button style={btnSecondaryStyle} onClick={() => setFormOpen(false)}>
                   CANCEL
                 </button>

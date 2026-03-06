@@ -121,8 +121,8 @@ export default function BurnRateTable({ burnRates }: BurnRateTableProps) {
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
         <thead>
           <tr>
             <th style={headerStyle} onClick={() => handleSort('name')}>
@@ -151,57 +151,37 @@ export default function BurnRateTable({ burnRates }: BurnRateTableProps) {
             return (
               <tr
                 key={br.id}
-                style={{ transition: 'background-color var(--transition)' }}
+                className="transition-colors duration-[var(--transition)]"
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-hover)'; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
               >
-                <td style={{ ...cellStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
+                <td className="text-[var(--color-text-bright)]">
                   {isCritical && (
                     <AlertTriangle
                       size={11}
-                      style={{
-                        verticalAlign: 'middle',
-                        marginRight: 6,
-                        color: '#ef4444',
-                      }}
+                      className="align-middle mr-1.5 text-[#ef4444]"
                     />
                   )}
                   {br.supply_name}
                 </td>
-                <td style={{ ...cellStyle, textAlign: 'right', fontWeight: 600 }}>
+                <td className="font-semibold">
                   {br.quantity_on_hand}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'right' }}>
                   {br.burn_rate_per_day.toFixed(2)}
                 </td>
                 <td
-                  style={{
-                    ...cellStyle,
-                    textAlign: 'right',
-                    fontWeight: 700,
-                    color,
-                  }}
+                  className="font-bold"
                 >
                   {br.days_of_supply !== null ? br.days_of_supply : '--'}
                 </td>
-                <td style={{ ...cellStyle, color: 'var(--color-text-muted)', fontSize: 10 }}>
+                <td className="text-[10px]">
                   {formatDate(br.projected_exhaustion_date)}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
                   <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '2px 8px',
-                      borderRadius: 2,
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 8,
-                      fontWeight: 700,
-                      letterSpacing: '1px',
-                      color,
-                      backgroundColor: `${color}18`,
-                      border: `1px solid ${color}40`,
-                      textTransform: 'uppercase',
-                    }}
+                    className="inline-block py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[8px] font-bold tracking-[1px] uppercase" style={{ color,
+                      backgroundColor: `${color}18`, border: `1px solid ${color}40` }}
                   >
                     {br.days_of_supply === null
                       ? 'UNKNOWN'

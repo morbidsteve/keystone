@@ -109,108 +109,47 @@ export default function LoginPage() {
   if (!isDemoMode || showCustomLogin) {
     return (
       <div
-        className="crt-scanlines"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'var(--color-bg)',
-          overflow: 'hidden',
-          zIndex: 1,
-        }}
+        className="crt-scanlines fixed flex items-center justify-center bg-[var(--color-bg)] overflow-hidden z-[1] inset-0"
       >
         {/* Radial gradient light sources */}
         <div
-          style={{
-            position: 'absolute',
-            top: '20%',
-            left: '30%',
-            width: 600,
-            height: 600,
-            background: 'radial-gradient(circle, rgba(77, 171, 247, 0.06) 0%, transparent 70%)',
-            pointerEvents: 'none',
-          }}
+          className="absolute w-[600px] h-[600px]" style={{ top: '20%', left: '30%', background: 'radial-gradient(circle, rgba(77, 171, 247, 0.06) 0%, transparent 70%)', pointerEvents: 'none' }}
         />
         <div
-          style={{
-            position: 'absolute',
-            bottom: '10%',
-            right: '20%',
-            width: 500,
-            height: 500,
-            background: 'radial-gradient(circle, rgba(64, 192, 87, 0.04) 0%, transparent 70%)',
-            pointerEvents: 'none',
-          }}
+          className="absolute w-[500px] h-[500px]" style={{ bottom: '10%', right: '20%', background: 'radial-gradient(circle, rgba(64, 192, 87, 0.04) 0%, transparent 70%)', pointerEvents: 'none' }}
         />
 
         <ClassificationBanner position="top" />
 
         <div
-          className="animate-fade-in"
-          style={{
-            width: 380,
-            padding: '40px 32px',
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            position: 'relative',
-            zIndex: 12,
-          }}
+          className="animate-fade-in w-[380px] py-10 px-8 bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] relative z-[12]"
+          
         >
           {/* Logo */}
           <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              marginBottom: 32,
-            }}
+            className="flex flex-col items-center mb-8"
           >
             <Shield
               size={36}
-              style={{ color: 'var(--color-accent)', marginBottom: 12 }}
+              className="text-[var(--color-accent)] mb-3"
             />
             <h1
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 24,
-                fontWeight: 700,
-                letterSpacing: '4px',
-                color: 'var(--color-text-bright)',
-                margin: 0,
-              }}
+              className="font-[var(--font-mono)] text-2xl font-bold tracking-[4px] text-[var(--color-text-bright)] m-0"
             >
               KEYSTONE
             </h1>
             <p
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                letterSpacing: '2px',
-                color: 'var(--color-text-muted)',
-                marginTop: 6,
-                textTransform: 'uppercase',
-              }}
+              className="font-[var(--font-mono)] text-[9px] tracking-[2px] text-[var(--color-text-muted)] mt-1.5 uppercase"
             >
               LOGISTICS COMMON OPERATING PICTURE
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
             <div>
               <label
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  display: 'block',
-                  marginBottom: 4,
-                }}
+                className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
               >
                 USERNAME
               </label>
@@ -220,30 +159,13 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 autoFocus
                 autoComplete="username"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 13,
-                  color: 'var(--color-text)',
-                }}
+                className="w-full py-2.5 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-[13px] text-[var(--color-text)]"
               />
             </div>
 
             <div>
               <label
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  color: 'var(--color-text-muted)',
-                  display: 'block',
-                  marginBottom: 4,
-                }}
+                className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
               >
                 PASSWORD
               </label>
@@ -252,30 +174,13 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 13,
-                  color: 'var(--color-text)',
-                }}
+                className="w-full py-2.5 px-3 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-[13px] text-[var(--color-text)]"
               />
             </div>
 
             {error && (
               <div
-                style={{
-                  padding: '8px 12px',
-                  backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                  border: '1px solid var(--color-danger)',
-                  borderRadius: 'var(--radius)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-danger)',
-                }}
+                className="py-2 px-3 bg-[rgba(255,107,107,0.1)] border border-[var(--color-danger)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-danger)]"
               >
                 {error}
               </div>
@@ -284,29 +189,9 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading || !username || (!isDemoMode && !password)}
-              style={{
-                width: '100%',
-                padding: '12px',
-                backgroundColor:
-                  isLoading || !username || (!isDemoMode && !password)
+              className="w-full border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-xs font-bold tracking-[2px] uppercase flex items-center justify-center gap-2 mt-1" style={{ padding: '12px', backgroundColor: isLoading || !username || (!isDemoMode && !password)
                     ? 'var(--color-muted)'
-                    : 'var(--color-accent)',
-                border: 'none',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-bg)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                cursor: isLoading || !username || (!isDemoMode && !password) ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                marginTop: 4,
-                transition: 'background-color var(--transition)',
-              }}
+                    : 'var(--color-accent)', cursor: isLoading || !username || (!isDemoMode && !password) ? 'not-allowed' : 'pointer', transition: 'background-color var(--transition)' }}
             >
               {isLoading ? (
                 <>
@@ -321,20 +206,10 @@ export default function LoginPage() {
 
           {/* Back to role picker link (only in demo mode) */}
           {isDemoMode && (
-            <div style={{ marginTop: 16, textAlign: 'center' }}>
+            <div className="mt-4 text-center">
               <button
                 onClick={() => setShowCustomLogin(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: 'var(--color-accent)',
-                  cursor: 'pointer',
-                  letterSpacing: '0.5px',
-                  textDecoration: 'underline',
-                  textUnderlineOffset: 3,
-                }}
+                className="bg-transparent border-0 font-[var(--font-mono)] text-[10px] text-[var(--color-accent)] cursor-pointer tracking-[0.5px] underline underline-offset-[3px]"
               >
                 Back to role picker
               </button>
@@ -342,14 +217,7 @@ export default function LoginPage() {
           )}
 
           <div
-            style={{
-              marginTop: 24,
-              textAlign: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              color: 'var(--color-text-muted)',
-              letterSpacing: '0.5px',
-            }}
+            className="mt-6 text-center font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
           >
             USMC LOGISTICS INTELLIGENCE SYSTEM v0.1.0
           </div>
@@ -363,111 +231,43 @@ export default function LoginPage() {
   // ── Demo mode: Role Picker ──
   return (
     <div
-      className="crt-scanlines"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        backgroundColor: 'var(--color-bg)',
-        overflow: 'hidden',
-        zIndex: 1,
-      }}
+      className="crt-scanlines fixed flex flex-col items-center bg-[var(--color-bg)] overflow-hidden z-[1] inset-0"
     >
       {/* Radial gradient light sources */}
       <div
-        style={{
-          position: 'absolute',
-          top: '10%',
-          left: '20%',
-          width: 700,
-          height: 700,
-          background: 'radial-gradient(circle, rgba(77, 171, 247, 0.05) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
+        className="absolute w-[700px] h-[700px]" style={{ top: '10%', left: '20%', background: 'radial-gradient(circle, rgba(77, 171, 247, 0.05) 0%, transparent 70%)', pointerEvents: 'none' }}
       />
       <div
-        style={{
-          position: 'absolute',
-          bottom: '5%',
-          right: '15%',
-          width: 600,
-          height: 600,
-          background: 'radial-gradient(circle, rgba(64, 192, 87, 0.03) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
+        className="absolute w-[600px] h-[600px]" style={{ bottom: '5%', right: '15%', background: 'radial-gradient(circle, rgba(64, 192, 87, 0.03) 0%, transparent 70%)', pointerEvents: 'none' }}
       />
 
       <ClassificationBanner position="top" />
 
       {/* Scrollable content */}
       <div
-        style={{
-          flex: 1,
-          width: '100%',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          paddingTop: 36,
-          paddingBottom: 36,
-          position: 'relative',
-          zIndex: 12,
-        }}
+        className="flex-1 w-full overflow-y-auto flex flex-col items-center pt-9 pb-9 relative z-[12]"
       >
         {/* Header */}
         <div
-          className="animate-fade-in"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: 24,
-          }}
+          className="animate-fade-in flex flex-col items-center mb-6"
+          
         >
           <Shield
             size={40}
-            style={{ color: 'var(--color-accent)', marginBottom: 10 }}
+            className="text-[var(--color-accent)] mb-2.5"
           />
           <h1
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 28,
-              fontWeight: 700,
-              letterSpacing: '6px',
-              color: 'var(--color-text-bright)',
-              margin: 0,
-            }}
+            className="font-[var(--font-mono)] text-[28px] font-bold tracking-[6px] text-[var(--color-text-bright)] m-0"
           >
             KEYSTONE
           </h1>
           <p
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              letterSpacing: '3px',
-              color: 'var(--color-text-muted)',
-              marginTop: 6,
-              textTransform: 'uppercase',
-            }}
+            className="font-[var(--font-mono)] text-[9px] tracking-[3px] text-[var(--color-text-muted)] mt-1.5 uppercase"
           >
             LOGISTICS COMMON OPERATING PICTURE
           </p>
           <div
-            style={{
-              marginTop: 10,
-              padding: '4px 14px',
-              backgroundColor: 'rgba(77, 171, 247, 0.12)',
-              border: '1px solid var(--color-accent)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '2px',
-              color: 'var(--color-accent)',
-              textTransform: 'uppercase',
-            }}
+            className="mt-2.5 py-1 px-3.5 bg-[rgba(77,171,247,0.12)] border border-[var(--color-accent)] rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] font-semibold tracking-[2px] text-[var(--color-accent)] uppercase"
           >
             DEMO MODE — SELECT YOUR ROLE
           </div>
@@ -476,19 +276,7 @@ export default function LoginPage() {
         {/* Error */}
         {error && (
           <div
-            style={{
-              maxWidth: 600,
-              width: '100%',
-              padding: '8px 14px',
-              marginBottom: 12,
-              backgroundColor: 'rgba(255, 107, 107, 0.1)',
-              border: '1px solid var(--color-danger)',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-danger)',
-              textAlign: 'center',
-            }}
+            className="max-w-[600px] w-full py-2 px-3.5 mb-3 bg-[rgba(255,107,107,0.1)] border border-[var(--color-danger)] rounded-[var(--radius)] font-[var(--font-mono)] text-[11px] text-[var(--color-danger)] text-center"
           >
             {error}
           </div>
@@ -496,58 +284,28 @@ export default function LoginPage() {
 
         {/* Search bar */}
         <div
-          style={{
-            width: '100%',
-            maxWidth: 900,
-            padding: '0 24px',
-            marginBottom: 20,
-          }}
+          className="w-full max-w-[900px] py-0 px-6 mb-5"
         >
           <div
-            style={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-            }}
+            className="relative flex items-center"
           >
             <Search
               size={14}
-              style={{
-                position: 'absolute',
-                left: 12,
-                color: 'var(--color-text-muted)',
-                pointerEvents: 'none',
-              }}
+              className="absolute left-3 text-[var(--color-text-muted)] pointer-events-none"
             />
             <input
               type="text"
               placeholder="Search by name, rank, billet, or unit..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 12px 10px 34px',
-                backgroundColor: 'var(--color-bg-elevated)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                color: 'var(--color-text)',
-              }}
+              className="w-full bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-xs text-[var(--color-text)]" style={{ padding: '10px 12px 10px 34px' }}
             />
           </div>
         </div>
 
         {/* User cards grouped by section */}
         <div
-          style={{
-            width: '100%',
-            maxWidth: 900,
-            padding: '0 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 24,
-          }}
+          className="w-full max-w-[900px] py-0 px-6 flex flex-col gap-6"
         >
           {SECTION_ORDER.map((section) => {
             const users = groupedUsers[section];
@@ -556,41 +314,21 @@ export default function LoginPage() {
               <div key={section}>
                 {/* Section header */}
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    marginBottom: 10,
-                  }}
+                  className="flex items-center gap-2.5 mb-2.5"
                 >
                   <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      fontWeight: 700,
-                      letterSpacing: '2.5px',
-                      color: 'var(--color-text-muted)',
-                      textTransform: 'uppercase',
-                    }}
+                    className="font-[var(--font-mono)] text-[9px] font-bold tracking-[2.5px] text-[var(--color-text-muted)] uppercase"
                   >
                     {SECTION_TITLES[section] ?? section}
                   </span>
                   <div
-                    style={{
-                      flex: 1,
-                      height: 1,
-                      backgroundColor: 'var(--color-border)',
-                    }}
+                    className="flex-1 h-[1px] bg-[var(--color-border)]"
                   />
                 </div>
 
                 {/* Cards grid */}
                 <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                    gap: 10,
-                  }}
+                  className="grid gap-2.5 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
                 >
                   {users.map((user) => {
                     const rankColor = getRankColor(user.rank);
@@ -602,84 +340,34 @@ export default function LoginPage() {
                         key={user.username}
                         onMouseEnter={() => setHoveredCard(user.username)}
                         onMouseLeave={() => setHoveredCard(null)}
-                        style={{
-                          padding: '14px 16px',
-                          backgroundColor: isHovered
+                        className="py-3.5 px-4 rounded-[var(--radius)] cursor-pointer flex flex-col gap-2 relative overflow-hidden" style={{ backgroundColor: isHovered
                             ? 'rgba(255,255,255,0.04)'
-                            : 'var(--color-bg-elevated)',
-                          border: `1px solid ${isHovered ? rankColor + '60' : 'var(--color-border)'}`,
-                          borderRadius: 'var(--radius)',
-                          cursor: 'pointer',
-                          transition: 'all var(--transition)',
-                          boxShadow: isHovered
+                            : 'var(--color-bg-elevated)', border: `1px solid ${isHovered ? rankColor + '60' : 'var(--color-border)'}`, transition: 'all var(--transition)', boxShadow: isHovered
                             ? `0 0 20px ${rankColor}15, 0 4px 12px rgba(0,0,0,0.3)`
-                            : 'none',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: 8,
-                          position: 'relative',
-                          overflow: 'hidden',
-                        }}
+                            : 'none' }}
                         onClick={() => handleDemoLogin(user)}
                       >
                         {/* Top accent bar */}
                         <div
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: 2,
-                            backgroundColor: rankColor,
-                            opacity: isHovered ? 1 : 0.3,
-                            transition: 'opacity var(--transition)',
-                          }}
+                          className="absolute top-0 left-0 right-0 h-[2px]" style={{ backgroundColor: rankColor, opacity: isHovered ? 1 : 0.3, transition: 'opacity var(--transition)' }}
                         />
 
                         {/* Rank badge + name row */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div className="flex items-center gap-2.5">
                           {/* Rank badge */}
                           <div
-                            style={{
-                              flexShrink: 0,
-                              width: 36,
-                              height: 36,
-                              borderRadius: 'var(--radius)',
-                              backgroundColor: `${rankColor}18`,
-                              border: `1px solid ${rankColor}40`,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 9,
-                              fontWeight: 700,
-                              color: rankColor,
-                              letterSpacing: '0.5px',
-                            }}
+                            className="shrink-0 w-[36px] h-[36px] rounded-[var(--radius)] flex items-center justify-center font-[var(--font-mono)] text-[9px] font-bold tracking-[0.5px]" style={{ backgroundColor: `${rankColor}18`, border: `1px solid ${rankColor}40`, color: rankColor }}
                           >
                             {user.rank}
                           </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
+                          <div className="flex-1 min-w-0">
                             <div
-                              style={{
-                                fontFamily: 'var(--font-mono)',
-                                fontSize: 12,
-                                fontWeight: 700,
-                                color: 'var(--color-text-bright)',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}
+                              className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)] whitespace-nowrap overflow-hidden text-ellipsis"
                             >
                               {user.full_name}
                             </div>
                             <div
-                              style={{
-                                fontFamily: 'var(--font-mono)',
-                                fontSize: 10,
-                                color: rankColor,
-                                fontWeight: 600,
-                              }}
+                              className="font-[var(--font-mono)] text-[10px] font-semibold" style={{ color: rankColor }}
                             >
                               {user.billet}
                             </div>
@@ -688,43 +376,20 @@ export default function LoginPage() {
 
                         {/* Unit + MOS */}
                         <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                          }}
+                          className="flex items-center gap-2"
                         >
                           <span
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 9,
-                              color: 'var(--color-text-muted)',
-                              letterSpacing: '0.5px',
-                            }}
+                            className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
                           >
                             {user.unit}
                           </span>
                           <span
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 8,
-                              color: 'var(--color-text-muted)',
-                              padding: '1px 5px',
-                              backgroundColor: 'rgba(255,255,255,0.05)',
-                              borderRadius: 2,
-                              letterSpacing: '0.5px',
-                            }}
+                            className="font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)] py-px px-1.5 bg-[rgba(255,255,255,0.05)] rounded-[2px] tracking-[0.5px]"
                           >
                             MOS {user.mos}
                           </span>
                           <span
-                            style={{
-                              fontFamily: 'var(--font-mono)',
-                              fontSize: 8,
-                              color: rankColor,
-                              opacity: 0.7,
-                              letterSpacing: '0.5px',
-                            }}
+                            className="font-[var(--font-mono)] text-[8px] opacity-70 tracking-[0.5px]" style={{ color: rankColor }}
                           >
                             {getRankCategory(user.rank)}
                           </span>
@@ -732,12 +397,7 @@ export default function LoginPage() {
 
                         {/* Description */}
                         <div
-                          style={{
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 10,
-                            color: 'var(--color-text-muted)',
-                            lineHeight: 1.4,
-                          }}
+                          className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] leading-[1.4]"
                         >
                           {user.description}
                         </div>
@@ -749,24 +409,7 @@ export default function LoginPage() {
                             handleDemoLogin(user);
                           }}
                           disabled={isThisLogging}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 6,
-                            padding: '7px 12px',
-                            backgroundColor: isHovered ? rankColor : 'transparent',
-                            border: `1px solid ${rankColor}60`,
-                            borderRadius: 'var(--radius)',
-                            color: isHovered ? '#000' : rankColor,
-                            fontFamily: 'var(--font-mono)',
-                            fontSize: 9,
-                            fontWeight: 700,
-                            letterSpacing: '1.5px',
-                            cursor: isThisLogging ? 'wait' : 'pointer',
-                            transition: 'all var(--transition)',
-                            opacity: isThisLogging ? 0.7 : 1,
-                          }}
+                          className="flex items-center justify-center gap-1.5 py-[7px] px-3 rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] font-bold tracking-[1.5px]" style={{ backgroundColor: isHovered ? rankColor : 'transparent', border: `1px solid ${rankColor}60`, color: isHovered ? '#000' : rankColor, cursor: isThisLogging ? 'wait' : 'pointer', transition: 'all var(--transition)', opacity: isThisLogging ? 0.7 : 1 }}
                         >
                           {isThisLogging ? (
                             <>
@@ -790,13 +433,7 @@ export default function LoginPage() {
 
           {filteredUsers.length === 0 && (
             <div
-              style={{
-                padding: 32,
-                textAlign: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                color: 'var(--color-text-muted)',
-              }}
+              className="p-8 text-center font-[var(--font-mono)] text-xs text-[var(--color-text-muted)]"
             >
               No users match your search.
             </div>
@@ -804,20 +441,10 @@ export default function LoginPage() {
         </div>
 
         {/* Custom login link */}
-        <div style={{ marginTop: 24, textAlign: 'center' }}>
+        <div className="mt-6 text-center">
           <button
             onClick={() => setShowCustomLogin(true)}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              color: 'var(--color-text-muted)',
-              cursor: 'pointer',
-              letterSpacing: '0.5px',
-              textDecoration: 'underline',
-              textUnderlineOffset: 3,
-            }}
+            className="bg-transparent border-0 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] cursor-pointer tracking-[0.5px] underline underline-offset-[3px]"
           >
             Use custom login
           </button>
@@ -825,21 +452,14 @@ export default function LoginPage() {
 
         {/* Demo Walkthrough (demo mode only) */}
         {isDemoMode && (
-          <div style={{ marginTop: 24, textAlign: 'center' }}>
+          <div className="mt-6 text-center">
             <DemoWalkthrough />
           </div>
         )}
 
         {/* Footer */}
         <div
-          style={{
-            marginTop: 16,
-            textAlign: 'center',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 9,
-            color: 'var(--color-text-muted)',
-            letterSpacing: '0.5px',
-          }}
+          className="mt-4 text-center font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
         >
           USMC LOGISTICS INTELLIGENCE SYSTEM v0.1.0
         </div>

@@ -41,16 +41,9 @@ export default function ReadinessTrend() {
     if (active && payload && payload.length) {
       return (
         <div
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border-strong)',
-            borderRadius: 'var(--radius)',
-            padding: '8px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-          }}
+          className="bg-[var(--color-bg-elevated)] border border-[var(--color-border-strong)] rounded-[var(--radius)] py-2 px-3 font-[var(--font-mono)] text-[11px]"
         >
-          <div style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>{label}</div>
+          <div className="text-[var(--color-text-muted)] mb-1">{label}</div>
           {payload.map((p, i) => (
             <div key={i} style={{ color: p.color }}>
               {p.dataKey.toUpperCase()}: {p.value}%
@@ -95,16 +88,16 @@ export default function ReadinessTrend() {
         </LineChart>
       </ResponsiveContainer>
       {/* Legend */}
-      <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 8 }}>
+      <div className="flex gap-4 justify-center mt-2">
         {[
           { key: 'HMMWV', color: 'var(--color-accent)' },
           { key: 'MTVR', color: 'var(--color-warning)' },
           { key: 'LAV', color: 'var(--color-success)' },
           { key: 'AAV', color: 'var(--color-danger)' },
         ].map((item) => (
-          <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: 12, height: 2, backgroundColor: item.color }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)', letterSpacing: '0.5px' }}>
+          <div key={item.key} className="flex items-center gap-1">
+            <div className="w-[12px] h-[2px]" style={{ backgroundColor: item.color }} />
+            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]">
               {item.key}
             </span>
           </div>

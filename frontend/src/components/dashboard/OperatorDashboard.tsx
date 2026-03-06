@@ -61,33 +61,19 @@ function getActionColor(action: string): string {
 
 export default function OperatorDashboard() {
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* My Assigned Tasks */}
       <Card title="MY ASSIGNED TASKS" accentColor="var(--color-accent)">
-        <div style={{ overflowX: 'auto' }}>
+        <div className="overflow-x-auto">
           <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-            }}
+            className="w-full border-collapse font-[var(--font-mono)] text-[11px]"
           >
             <thead>
               <tr>
                 {['TASK', 'TYPE', 'STATUS', 'DUE DATE', 'PRIORITY'].map((header) => (
                   <th
                     key={header}
-                    style={{
-                      textAlign: 'left',
-                      padding: '8px 12px',
-                      fontWeight: 600,
-                      fontSize: 9,
-                      letterSpacing: '1.5px',
-                      color: 'var(--color-text-muted)',
-                      borderBottom: '1px solid var(--color-border)',
-                      textTransform: 'uppercase',
-                    }}
+                    className="text-left py-2 px-3 font-semibold text-[9px] tracking-[1.5px] text-[var(--color-text-muted)] border-b border-b-[var(--color-border)] uppercase"
                   >
                     {header}
                   </th>
@@ -98,11 +84,7 @@ export default function OperatorDashboard() {
               {demoTasks.map((task) => (
                 <tr
                   key={task.id}
-                  style={{
-                    borderBottom: '1px solid var(--color-border)',
-                    transition: 'background-color var(--transition)',
-                    cursor: 'pointer',
-                  }}
+                  className="border-b border-b-[var(--color-border)] cursor-pointer transition-colors duration-[var(--transition)]"
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
                   }
@@ -110,33 +92,23 @@ export default function OperatorDashboard() {
                     (e.currentTarget.style.backgroundColor = 'transparent')
                   }
                 >
-                  <td style={{ padding: '10px 12px', color: 'var(--color-text)' }}>
+                  <td className="py-2.5 px-3 text-[var(--color-text)]">
                     {task.task}
                   </td>
-                  <td style={{ padding: '10px 12px' }}>
+                  <td className="py-2.5 px-3">
                     <StatusBadge status={task.type} label={task.type} />
                   </td>
-                  <td style={{ padding: '10px 12px' }}>
+                  <td className="py-2.5 px-3">
                     <StatusBadge status={task.status} label={task.status.replace('_', ' ')} />
                   </td>
                   <td
-                    style={{
-                      padding: '10px 12px',
-                      color: 'var(--color-text-muted)',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="py-2.5 px-3 text-[var(--color-text-muted)] whitespace-nowrap"
                   >
                     {task.dueDate}
                   </td>
-                  <td style={{ padding: '10px 12px' }}>
+                  <td className="py-2.5 px-3">
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 10,
-                        fontWeight: 600,
-                        color: getPriorityColor(task.priority),
-                        letterSpacing: '1px',
-                      }}
+                      className="font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px]" style={{ color: getPriorityColor(task.priority) }}
                     >
                       {task.priority}
                     </span>
@@ -150,48 +122,24 @@ export default function OperatorDashboard() {
 
       {/* Recent Activity */}
       <Card title="RECENT ACTIVITY">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <div className="flex flex-col gap-0">
           {demoRecentActivity.map((item) => (
             <div
               key={item.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                padding: '8px 0',
-                borderBottom: '1px solid var(--color-border)',
-              }}
+              className="flex items-center gap-3 py-2 px-0 border-b border-b-[var(--color-border)]"
             >
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 8,
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  color: getActionColor(item.action),
-                  minWidth: 60,
-                  textTransform: 'uppercase',
-                }}
+                className="font-[var(--font-mono)] text-[8px] font-semibold tracking-[1px] min-w-[60px] uppercase" style={{ color: getActionColor(item.action) }}
               >
                 {item.action}
               </span>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text)',
-                  flex: 1,
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] flex-1"
               >
                 {item.description}
               </span>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  whiteSpace: 'nowrap',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
               >
                 {item.timestamp}
               </span>

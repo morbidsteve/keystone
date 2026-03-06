@@ -38,85 +38,39 @@ export default function AlertBanner({ alerts, onAcknowledge, maxItems = 5 }: Ale
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div className="flex flex-col gap-1">
       {displayAlerts.map((alert) => {
         const color = getSeverityColor(alert.severity);
         return (
           <div
             key={alert.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: '8px 12px',
-              backgroundColor: 'var(--color-bg-surface)',
-              border: '1px solid',
-              borderColor: color,
-              borderRadius: 'var(--radius)',
-              borderLeftWidth: 3,
-              animation: alert.severity === 'CRITICAL' ? 'pulse 2s ease-in-out infinite' : undefined,
-            }}
+            className="flex items-center gap-2.5 py-2 px-3 bg-[var(--color-bg-surface)] rounded-[var(--radius)]" style={{ border: '1px solid', borderColor: color, borderLeftWidth: 3, animation: alert.severity === 'CRITICAL' ? 'pulse 2s ease-in-out infinite' : undefined }}
           >
             <span style={{ color, flexShrink: 0 }}>{getSeverityIcon(alert.severity)}</span>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="flex-1 min-w-0">
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text-bright)',
-                  fontWeight: 600,
-                }}
+                className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold"
               >
                 {alert.title}
               </div>
               <div
-                style={{
-                  fontSize: 11,
-                  color: 'var(--color-text-muted)',
-                  marginTop: 1,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
+                className="text-[11px] text-[var(--color-text-muted)] mt-px whitespace-nowrap overflow-hidden text-ellipsis"
               >
                 {alert.message}
               </div>
             </div>
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                flexShrink: 0,
-              }}
+              className="flex items-center gap-2 shrink-0"
             >
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  whiteSpace: 'nowrap',
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
               >
                 {alert.unitName} / {formatRelativeTime(alert.createdAt)}
               </span>
               {onAcknowledge && !alert.acknowledged && (
                 <button
                   onClick={() => onAcknowledge(alert.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '3px 8px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid var(--color-border-strong)',
-                    borderRadius: 'var(--radius)',
-                    color: 'var(--color-text-muted)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    cursor: 'pointer',
-                    transition: 'all var(--transition)',
-                  }}
+                  className="flex items-center gap-1 py-[3px] px-2 bg-transparent border border-[var(--color-border-strong)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[9px] cursor-pointer transition-all duration-[var(--transition)]"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--color-accent)';
                     e.currentTarget.style.color = 'var(--color-accent)';

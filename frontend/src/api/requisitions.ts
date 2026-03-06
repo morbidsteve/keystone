@@ -15,6 +15,26 @@ import type {
 } from '@/lib/types';
 
 // ---------------------------------------------------------------------------
+// Analytics summary shape
+// ---------------------------------------------------------------------------
+
+export interface RequisitionAnalytics {
+  summary: {
+    total: number;
+    active: number;
+    fulfilled: number;
+    denied: number;
+    canceled: number;
+    approvalRate: number;
+  };
+  byStatus: Record<string, number>;
+  byPriority: Record<string, number>;
+  bySupplyClass: Array<{ supplyClass: string; count: number; fulfilled: number }>;
+  avgFulfillmentDays: number;
+  recentTrend: Array<{ date: string; submitted: number; fulfilled: number }>;
+}
+
+// ---------------------------------------------------------------------------
 // Helper: date string N days ago (ISO short form)
 // ---------------------------------------------------------------------------
 
@@ -1019,14 +1039,7 @@ export async function cancelRequisition(
 // API Functions — Requisition Analytics
 // ---------------------------------------------------------------------------
 
-export async function getRequisitionAnalytics(): Promise<{
-  summary: { total: number; active: number; fulfilled: number; denied: number; canceled: number; approvalRate: number };
-  byStatus: Record<string, number>;
-  byPriority: Record<string, number>;
-  bySupplyClass: Array<{ supplyClass: string; count: number; fulfilled: number }>;
-  avgFulfillmentDays: number;
-  recentTrend: Array<{ date: string; submitted: number; fulfilled: number }>;
-}> {
+export async function getRequisitionAnalytics(): Promise<RequisitionAnalytics> {
   if (isDemoMode) {
     await mockDelay();
     const all = getRequisitionsStore();
@@ -1076,7 +1089,7 @@ export async function getRequisitionAnalytics(): Promise<{
       recentTrend,
     };
   }
-  const response = await apiClient.get<{ data: any }>('/requisitions/analytics/summary');
+  const response = await apiClient.get<{ data: RequisitionAnalytics }>('/requisitions/analytics/summary');
   return response.data.data;
 }
 

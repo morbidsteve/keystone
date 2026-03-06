@@ -59,13 +59,7 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
   if (entries.length === 0) {
     return (
       <div
-        style={{
-          padding: 32,
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="p-8 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No items added. Click inventory items above to add to manifest.
       </div>
@@ -76,80 +70,41 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
   const totalWeight = entries.reduce((acc, e) => acc + (e.weight_lbs ?? 0), 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div className="flex flex-col gap-2.5">
       {/* Summary metrics row */}
-      <div style={{ display: 'flex', gap: 24 }}>
+      <div className="flex gap-6">
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              marginBottom: 2,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] text-[var(--color-text-muted)] uppercase mb-0.5"
           >
             TOTAL ITEMS
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 16,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-            }}
+            className="font-[var(--font-mono)] text-base font-bold text-[var(--color-text-bright)]"
           >
             {totalItems}
           </div>
         </div>
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              marginBottom: 2,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] text-[var(--color-text-muted)] uppercase mb-0.5"
           >
             TOTAL WEIGHT
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 16,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-            }}
+            className="font-[var(--font-mono)] text-base font-bold text-[var(--color-text-bright)]"
           >
             {totalWeight.toLocaleString()} lbs
           </div>
         </div>
         <div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1px',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              marginBottom: 2,
-            }}
+            className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] text-[var(--color-text-muted)] uppercase mb-0.5"
           >
             LINE ITEMS
           </div>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 16,
-              fontWeight: 700,
-              color: 'var(--color-text-bright)',
-            }}
+            className="font-[var(--font-mono)] text-base font-bold text-[var(--color-text-bright)]"
           >
             {entries.length}
           </div>
@@ -157,8 +112,8 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
           <thead>
             <tr>
               <th style={headerCellStyle}>ITEM</th>
@@ -166,7 +121,7 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
               <th style={{ ...headerCellStyle, textAlign: 'right' }}>WEIGHT</th>
               <th style={headerCellStyle}>PRIORITY</th>
               <th style={headerCellStyle}>HANDLING</th>
-              <th style={{ ...headerCellStyle, textAlign: 'center', width: 60 }}></th>
+              <th className="w-[60px]"></th>
             </tr>
           </thead>
           <tbody>
@@ -175,19 +130,11 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
               return (
                 <tr key={entry.item_id}>
                   <td
-                    style={{
-                      ...cellStyle,
-                      fontWeight: 600,
-                      color: 'var(--color-text-bright)',
-                      maxWidth: 240,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}
+                    className="text-[var(--color-text-bright)] max-w-[240px] overflow-hidden text-ellipsis whitespace-nowrap"
                   >
                     {entry.nomenclature}
                   </td>
-                  <td style={{ ...cellStyle, textAlign: 'right', fontWeight: 600 }}>
+                  <td className="font-semibold">
                     {entry.quantity}
                   </td>
                   <td style={{ ...cellStyle, textAlign: 'right' }}>
@@ -195,70 +142,29 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
                   </td>
                   <td style={cellStyle}>
                     <span
-                      style={{
-                        display: 'inline-block',
-                        padding: '2px 6px',
-                        borderRadius: 2,
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        fontWeight: 700,
-                        letterSpacing: '0.5px',
-                        color: pColor.text,
-                        backgroundColor: pColor.bg,
-                        border: `1px solid ${pColor.border}`,
-                      }}
+                      className="inline-block py-0.5 px-1.5 rounded-[2px] font-[var(--font-mono)] text-[9px] font-bold tracking-[0.5px]" style={{ color: pColor.text, backgroundColor: pColor.bg, border: `1px solid ${pColor.border}` }}
                     >
                       {entry.priority}
                     </span>
                   </td>
                   <td
-                    style={{
-                      ...cellStyle,
-                      maxWidth: 140,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      color: 'var(--color-text-muted)',
-                      fontSize: 9,
-                    }}
+                    className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--color-text-muted)] text-[9px]"
                   >
                     {entry.special_handling ?? '--'}
                   </td>
                   <td style={{ ...cellStyle, textAlign: 'center' }}>
-                    <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+                    <div className="flex gap-1 justify-center">
                       <button
                         onClick={() => onEdit(entry)}
                         title="Edit"
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 22,
-                          height: 22,
-                          background: 'none',
-                          border: '1px solid var(--color-border)',
-                          borderRadius: 'var(--radius)',
-                          color: 'var(--color-text-muted)',
-                          cursor: 'pointer',
-                        }}
+                        className="flex items-center justify-center w-[22px] h-[22px] bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] cursor-pointer"
                       >
                         <Pencil size={10} />
                       </button>
                       <button
                         onClick={() => onRemove(entry.item_id)}
                         title="Remove"
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 22,
-                          height: 22,
-                          background: 'none',
-                          border: '1px solid rgba(248, 113, 113, 0.4)',
-                          borderRadius: 'var(--radius)',
-                          color: '#f87171',
-                          cursor: 'pointer',
-                        }}
+                        className="flex items-center justify-center w-[22px] h-[22px] bg-transparent rounded-[var(--radius)] text-[#f87171] cursor-pointer border border-[rgba(248,113,113,0.4)]"
                       >
                         <X size={10} />
                       </button>

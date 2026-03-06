@@ -158,8 +158,8 @@ export function RouteDetailPanel({ data }: RouteDetailPanelProps) {
               <Trash2 size={13} />
             </button>
           )}
-          <div style={{ flex: 1 }} />
-          <div style={{ display: 'flex', gap: 4 }}>
+          <div className="flex-1" />
+          <div className="flex gap-1">
             {(['OPEN', 'RESTRICTED', 'CLOSED'] as const).map((s) => (
               <button
                 key={s}
@@ -177,7 +177,7 @@ export function RouteDetailPanel({ data }: RouteDetailPanelProps) {
       {/* Details */}
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <Route size={11} style={{ marginRight: 4 }} />
+          <Route size={11} className="mr-1" />
           ROUTE DETAILS
         </div>
         <div style={styles.detailRow}>
@@ -211,7 +211,7 @@ export function RouteDetailPanel({ data }: RouteDetailPanelProps) {
       {data.waypoints && data.waypoints.length > 0 && (
         <div style={styles.section}>
           <div style={styles.sectionHeader}>
-            <MapPin size={11} style={{ marginRight: 4 }} />
+            <MapPin size={11} className="mr-1" />
             WAYPOINTS ({data.waypoints.length})
           </div>
           <div style={styles.waypointList}>

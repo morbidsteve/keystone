@@ -49,58 +49,22 @@ export default function MapControls({
 
   return (
     <div
-      style={{
-        position: 'absolute',
-        top: 10,
-        left: 10,
-        zIndex: 1000,
-        backgroundColor: 'rgba(17, 17, 17, 0.92)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        fontFamily: 'var(--font-mono)',
-        minWidth: collapsed ? 40 : 200,
-        backdropFilter: 'blur(8px)',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-        transition: 'min-width 0.2s ease',
-      }}
+      className="absolute top-2.5 left-2.5 z-[1000] bg-[rgba(17,17,17,0.92)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)]" style={{ minWidth: collapsed ? 40 : 200, backdropFilter: 'blur(8px)', boxShadow: '0 4px 16px rgba(0,0,0,0.5)', transition: 'min-width 0.2s ease' }}
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: collapsed ? '8px' : '8px 12px',
-          borderBottom: collapsed ? 'none' : '1px solid var(--color-border)',
-          cursor: 'pointer',
-        }}
+        className="flex items-center justify-between cursor-pointer" style={{ padding: collapsed ? '8px' : '8px 12px', borderBottom: collapsed ? 'none' : '1px solid var(--color-border)' }}
         onClick={onToggleCollapsed}
       >
         {!collapsed && (
           <span
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: '2px',
-              color: 'var(--color-text-bright)',
-              textTransform: 'uppercase',
-            }}
+            className="text-[10px] font-bold tracking-[2px] text-[var(--color-text-bright)] uppercase"
           >
             LAYERS
           </span>
         )}
         <span
-          style={{
-            fontSize: 14,
-            color: 'var(--color-text-muted)',
-            transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)',
-            transition: 'transform 0.2s ease',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 20,
-            height: 20,
-          }}
+          className="text-sm text-[var(--color-text-muted)] flex items-center justify-center w-[20px] h-[20px]" style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease' }}
         >
           {collapsed ? '\u2630' : '\u00AB'}
         </span>
@@ -109,27 +73,15 @@ export default function MapControls({
       {!collapsed && (
         <>
           {/* Layer toggles */}
-          <div style={{ padding: '6px 0' }}>
+          <div className="py-1.5 px-0">
             {layerConfig.map((layer) => (
               <label
                 key={layer.key}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '6px 12px',
-                  cursor: 'pointer',
-                  fontSize: 10,
-                  letterSpacing: '1px',
-                  color: layers[layer.key]
+                className="flex items-center gap-2 py-1.5 px-3 cursor-pointer text-[10px] tracking-[1px]" style={{ color: layers[layer.key]
                     ? 'var(--color-text-bright)'
-                    : 'var(--color-text-muted)',
-                  backgroundColor:
-                    hoveredItem === layer.key
+                    : 'var(--color-text-muted)', backgroundColor: hoveredItem === layer.key
                       ? 'rgba(255,255,255,0.05)'
-                      : 'transparent',
-                  transition: 'all 0.15s ease',
-                }}
+                      : 'transparent', transition: 'all 0.15s ease' }}
                 onMouseEnter={() => setHoveredItem(layer.key)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
@@ -137,20 +89,10 @@ export default function MapControls({
                   type="checkbox"
                   checked={layers[layer.key]}
                   onChange={() => onToggleLayer(layer.key)}
-                  style={{
-                    width: 14,
-                    height: 14,
-                    accentColor: 'var(--color-accent)',
-                    cursor: 'pointer',
-                    margin: 0,
-                  }}
+                  className="w-[14px] h-[14px] cursor-pointer m-0 accent-[var(--color-accent)]"
                 />
                 <span
-                  style={{
-                    fontSize: 12,
-                    width: 16,
-                    textAlign: 'center',
-                  }}
+                  className="text-xs w-[16px] text-center"
                 >
                   {layer.icon}
                 </span>
@@ -161,51 +103,27 @@ export default function MapControls({
 
           {/* Base map selector */}
           <div
-            style={{
-              borderTop: '1px solid var(--color-border)',
-              padding: '8px 12px',
-            }}
+            className="border-t border-t-[var(--color-border)] py-2 px-3"
           >
             <div
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: '2px',
-                color: 'var(--color-text-bright)',
-                marginBottom: 6,
-                textTransform: 'uppercase',
-              }}
+              className="text-[10px] font-bold tracking-[2px] text-[var(--color-text-bright)] mb-1.5 uppercase"
             >
               BASE MAP
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div className="flex flex-col gap-1">
               {baseMapOptions.map((option) => (
                 <label
                   key={option.value}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    cursor: 'pointer',
-                    fontSize: 10,
-                    letterSpacing: '1px',
-                    color:
-                      baseMap === option.value
+                  className="flex items-center gap-2 cursor-pointer text-[10px] tracking-[1px] py-[3px] px-0" style={{ color: baseMap === option.value
                         ? 'var(--color-accent)'
-                        : 'var(--color-text-muted)',
-                    padding: '3px 0',
-                  }}
+                        : 'var(--color-text-muted)' }}
                 >
                   <input
                     type="radio"
                     name="baseMap"
                     checked={baseMap === option.value}
                     onChange={() => onChangeBaseMap(option.value)}
-                    style={{
-                      accentColor: 'var(--color-accent)',
-                      cursor: 'pointer',
-                      margin: 0,
-                    }}
+                    className="cursor-pointer m-0 accent-[var(--color-accent)]"
                   />
                   <span>{option.label}</span>
                 </label>

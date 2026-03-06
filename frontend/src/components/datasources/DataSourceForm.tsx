@@ -103,15 +103,10 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
   return (
     <form onSubmit={handleSubmit}>
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 12,
-          marginBottom: 16,
-        }}
+        className="grid gap-3 mb-4 grid-cols-2"
       >
         {/* Name - always shown */}
-        <div style={{ gridColumn: '1 / -1' }}>
+        <div className="col-span-full">
           <label style={labelStyle}>SOURCE NAME</label>
           <input
             style={inputStyle}
@@ -125,7 +120,7 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
         {/* MIRC Directory fields */}
         {sourceType === 'mirc_directory' && (
           <>
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="col-span-full">
               <label style={labelStyle}>DIRECTORY PATH</label>
               <input
                 style={inputStyle}
@@ -184,25 +179,16 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
             <div>
               <label style={labelStyle}>USE SSL</label>
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '8px 0',
-                }}
+                className="flex items-center gap-2 py-2 px-0"
               >
                 <input
                   type="checkbox"
                   checked={useSsl}
                   onChange={(e) => setUseSsl(e.target.checked)}
-                  style={{ accentColor: 'var(--color-accent)' }}
+                  className="accent-[var(--color-accent)]"
                 />
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--color-text)',
-                  }}
+                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
                 >
                   {useSsl ? 'Enabled' : 'Disabled'}
                 </span>
@@ -218,7 +204,7 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
                 required
               />
             </div>
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="col-span-full">
               <label style={labelStyle}>CHANNELS (COMMA SEPARATED)</label>
               <input
                 style={inputStyle}
@@ -228,12 +214,7 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
                 required
               />
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  marginTop: 4,
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-1"
               >
                 Enter channel names separated by commas. Include # prefix.
               </div>
@@ -254,7 +235,7 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
         {/* Excel Directory fields */}
         {sourceType === 'excel_directory' && (
           <>
-            <div style={{ gridColumn: '1 / -1' }}>
+            <div className="col-span-full">
               <label style={labelStyle}>DIRECTORY PATH</label>
               <input
                 style={inputStyle}
@@ -293,12 +274,7 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
                 placeholder="Schema mapping template"
               />
               <div
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                  marginTop: 4,
-                }}
+                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-1"
               >
                 Link to a schema mapping template for structured extraction.
               </div>
@@ -308,41 +284,17 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
       </div>
 
       {/* Buttons */}
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+      <div className="flex gap-2 justify-end">
         <button
           type="button"
           onClick={onCancel}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'transparent',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-text-muted)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-          }}
+          className="py-2 px-4 bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px] uppercase cursor-pointer"
         >
           CANCEL
         </button>
         <button
           type="submit"
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'var(--color-accent)',
-            border: 'none',
-            borderRadius: 'var(--radius)',
-            color: 'var(--color-bg)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-          }}
+          className="py-2 px-4 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px] uppercase cursor-pointer"
         >
           {initial ? 'UPDATE' : 'CREATE'} SOURCE
         </button>

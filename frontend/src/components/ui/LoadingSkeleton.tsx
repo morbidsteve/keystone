@@ -3,6 +3,7 @@ interface LoadingSkeletonProps {
   height?: string | number;
   count?: number;
   style?: React.CSSProperties;
+  className?: string;
 }
 
 export default function LoadingSkeleton({
@@ -10,13 +11,14 @@ export default function LoadingSkeleton({
   height = 16,
   count = 1,
   style,
+  className,
 }: LoadingSkeletonProps) {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="skeleton"
+          className={`skeleton ${className || ''}`}
           style={{
             width,
             height,
@@ -32,15 +34,10 @@ export default function LoadingSkeleton({
 export function CardSkeleton() {
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        padding: 16,
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4"
     >
-      <LoadingSkeleton width={120} height={10} style={{ marginBottom: 12 }} />
-      <LoadingSkeleton width={80} height={28} style={{ marginBottom: 8 }} />
+      <LoadingSkeleton width={120} height={10} className="mb-3" />
+      <LoadingSkeleton width={80} height={28} className="mb-2" />
       <LoadingSkeleton width="100%" height={6} />
     </div>
   );
@@ -49,21 +46,11 @@ export function CardSkeleton() {
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
     >
       {/* Header */}
       <div
-        style={{
-          padding: '12px 16px',
-          borderBottom: '1px solid var(--color-border)',
-          display: 'flex',
-          gap: 16,
-        }}
+        className="py-3 px-4 border-b border-b-[var(--color-border)] flex gap-4"
       >
         {[80, 100, 60, 60, 60, 80].map((w, i) => (
           <LoadingSkeleton key={i} width={w} height={10} />
@@ -73,12 +60,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          style={{
-            padding: '12px 16px',
-            borderBottom: '1px solid var(--color-border)',
-            display: 'flex',
-            gap: 16,
-          }}
+          className="py-3 px-4 border-b border-b-[var(--color-border)] flex gap-4"
         >
           {[80, 100, 60, 60, 60, 80].map((w, j) => (
             <LoadingSkeleton key={j} width={w} height={12} />
@@ -99,9 +81,9 @@ interface SkeletonProps {
 function TextSkeleton() {
   return (
     <div>
-      <div className="skeleton" style={{ width: '100%', height: 14, marginBottom: 8 }} />
-      <div className="skeleton" style={{ width: '80%', height: 14, marginBottom: 8 }} />
-      <div className="skeleton" style={{ width: '60%', height: 14 }} />
+      <div className="skeleton w-full h-[14px] mb-2"  />
+      <div className="skeleton w-[80%] h-[14px] mb-2"  />
+      <div className="skeleton w-[60%] h-[14px]"  />
     </div>
   );
 }
@@ -109,19 +91,15 @@ function TextSkeleton() {
 function ChartSkeleton() {
   return (
     <div
-      className="skeleton"
-      style={{
-        width: '100%',
-        height: 200,
-        borderRadius: 'var(--radius)',
-      }}
+      className="skeleton w-full h-[200px] rounded-[var(--radius)]"
+      
     />
   );
 }
 
 function KpiRowSkeleton() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+    <div className="grid grid-cols-4 gap-4">
       {Array.from({ length: 4 }).map((_, i) => (
         <CardSkeleton key={i} />
       ))}
@@ -132,12 +110,8 @@ function KpiRowSkeleton() {
 function CardVariantSkeleton() {
   return (
     <div
-      className="skeleton"
-      style={{
-        width: '100%',
-        height: 120,
-        borderRadius: 'var(--radius)',
-      }}
+      className="skeleton w-full h-[120px] rounded-[var(--radius)]"
+      
     />
   );
 }

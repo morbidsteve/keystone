@@ -10,19 +10,9 @@ export default function StatusBadge({ status, label }: StatusBadgeProps) {
 
   return (
     <span
-      style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: 10,
-        padding: '2px 8px',
-        borderRadius: 2,
-        border: `1px solid ${color}`,
-        color: color,
-        backgroundColor: `${color}15`,
-        textTransform: 'uppercase',
-        letterSpacing: '1px',
-        fontWeight: 500,
-        whiteSpace: 'nowrap',
-      }}
+      role="status"
+      aria-label={`Status: ${label || status}`}
+      className="font-[var(--font-mono)] text-[10px] py-0.5 px-2 rounded-[2px] uppercase tracking-[1px] font-medium whitespace-nowrap" style={{ border: `1px solid ${color}`, color: color, backgroundColor: `${color}15` }}
     >
       {label || status}
     </span>

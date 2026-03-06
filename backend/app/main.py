@@ -2,22 +2,75 @@
 
 import logging
 import os
+import sys
 from contextlib import asynccontextmanager
 
+import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 
 from app.api import api_router
 from app.config import settings
-from app.database import Base, engine
+from app.database import Base, engine, async_session
+from app.middleware.request_logging import RequestLoggingMiddleware
+from app.middleware.rate_limit import setup_rate_limiting
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# ---------------------------------------------------------------------------
+# Structured logging configuration
+# ---------------------------------------------------------------------------
+shared_processors = [
+    structlog.contextvars.merge_contextvars,
+    structlog.stdlib.add_log_level,
+    structlog.stdlib.add_logger_name,
+    structlog.processors.TimeStamper(fmt="iso"),
+    structlog.processors.StackInfoRenderer(),
+    structlog.processors.format_exc_info,
+    structlog.processors.UnicodeDecoder(),
+]
+
+if settings.ENV_MODE == "development":
+    renderer = structlog.dev.ConsoleRenderer()
+else:
+    renderer = structlog.processors.JSONRenderer()
+
+structlog.configure(
+    processors=[
+        *shared_processors,
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)
+
+formatter = structlog.stdlib.ProcessorFormatter(
+    processors=[
+        structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+        renderer,
+    ],
+)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(formatter)
+
+root_logger = logging.getLogger()
+root_logger.handlers.clear()
+root_logger.addHandler(handler)
+root_logger.setLevel(logging.INFO)
+
+logger = structlog.get_logger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan: create tables and seed data on startup."""
+    # Skip all startup work in test mode
+    if os.getenv("SKIP_SEEDS"):
+        yield
+        return
+
     from app.database import async_session
 
     logger.info("KEYSTONE starting up — creating database tables...")
@@ -64,7 +117,7 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Classification setting seed skipped: {e}")
 
     # Auto-seed units, users, and sample data in development mode
-    if settings.ENV_MODE == "development":
+    if settings.ENV_MODE == "development" and not os.getenv("SKIP_SEEDS"):
         await _run_dev_seeds()
 
     # Start Living Simulation Engine if enabled
@@ -475,11 +528,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Request logging middleware (registered after CORS)
+app.add_middleware(RequestLoggingMiddleware)
+
+# Rate limiting
+setup_rate_limiting(app)
+
 # Include all API routers under /api/v1
 app.include_router(api_router, prefix="/api/v1")
 
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint."""
-    return {"status": "healthy", "service": "KEYSTONE", "version": "0.1.0"}
+    """Health check endpoint with database and Redis connectivity checks."""
+    checks = {"service": "KEYSTONE", "status": "healthy"}
+
+    # Check database
+    try:
+        async with async_session() as session:
+            await session.execute(text("SELECT 1"))
+        checks["database"] = "connected"
+    except Exception as e:
+        checks["database"] = f"error: {str(e)}"
+        checks["status"] = "degraded"
+
+    # Check Redis
+    try:
+        import redis
+        r = redis.from_url(settings.REDIS_URL)
+        r.ping()
+        checks["redis"] = "connected"
+    except Exception as e:
+        checks["redis"] = f"error: {str(e)}"
+        checks["status"] = "degraded"
+
+    status_code = 200 if checks["status"] == "healthy" else 503
+    return JSONResponse(content=checks, status_code=status_code)

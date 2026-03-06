@@ -46,22 +46,11 @@ export default function Header({ onMenuToggle }: HeaderProps) {
 
   return (
     <header
-      style={{
-        height: 48,
-        minHeight: 48,
-        backgroundColor: 'var(--color-bg-elevated)',
-        borderBottom: '1px solid var(--color-border)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 20px',
-        position: 'sticky',
-        top: 0,
-        zIndex: 1050,
-      }}
+      role="banner"
+      className="h-12 min-h-[48px] bg-bg-elevated border-b border-border flex items-center justify-between px-5 sticky top-0 z-[1050]"
     >
       {/* Page Title */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="flex items-center gap-3">
         {/* Hamburger button (mobile only) */}
         <button
           className="hamburger-btn"
@@ -72,32 +61,14 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         </button>
 
         <h1
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 13,
-            fontWeight: 600,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            color: 'var(--color-text-bright)',
-            margin: 0,
-          }}
+          className="font-mono text-[13px] font-semibold tracking-[2px] uppercase text-text-bright m-0"
         >
           {pageTitle}
         </h1>
         {isDemoMode && (
           <span
-            className="hide-mobile"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              color: 'var(--color-warning)',
-              backgroundColor: 'rgba(250, 176, 5, 0.1)',
-              border: '1px solid rgba(250, 176, 5, 0.3)',
-              borderRadius: 'var(--radius)',
-              padding: '2px 8px',
-            }}
+            className="hide-mobile font-mono text-3xs font-semibold tracking-[1.5px] text-warning rounded bg-[rgba(250,176,5,0.1)] py-0.5 px-2"
+            style={{ border: '1px solid rgba(250, 176, 5, 0.3)' }}
           >
             DEMO DATA
           </span>
@@ -105,39 +76,26 @@ export default function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       {/* Right Controls */}
-      <div className="header-right-controls" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="header-right-controls flex items-center gap-4" role="toolbar" aria-label="Header controls">
         {/* Quick Actions */}
         <QuickActionsButton />
 
         {/* Time Range Selector (hidden on mobile) */}
-        <div className="header-time-range" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Clock size={12} style={{ color: 'var(--color-text-muted)', marginRight: 6 }} />
+        <div className="header-time-range flex items-center gap-0.5" role="group" aria-label="Time range selector">
+          <Clock size={12} className="text-text-muted mr-1.5" aria-hidden="true" />
           {TIME_RANGES.map((range) => (
             <button
               key={range.value}
               onClick={() => setTimeRange(range.value)}
-              style={{
-                padding: '4px 8px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                letterSpacing: '1px',
-                border: '1px solid',
-                borderColor:
-                  timeRange === range.value
+              aria-pressed={timeRange === range.value}
+              className="font-mono text-2xs tracking-[1px] rounded cursor-pointer py-1 px-2"
+              style={{ border: '1px solid', borderColor: timeRange === range.value
                     ? 'var(--color-accent)'
-                    : 'var(--color-border)',
-                borderRadius: 'var(--radius)',
-                backgroundColor:
-                  timeRange === range.value
+                    : 'var(--color-border)', backgroundColor: timeRange === range.value
                     ? 'rgba(77, 171, 247, 0.15)'
-                    : 'transparent',
-                color:
-                  timeRange === range.value
+                    : 'transparent', color: timeRange === range.value
                     ? 'var(--color-accent)'
-                    : 'var(--color-text-muted)',
-                cursor: 'pointer',
-                transition: 'all var(--transition)',
-              }}
+                    : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
             >
               {range.label}
             </button>
@@ -149,29 +107,14 @@ export default function Header({ onMenuToggle }: HeaderProps) {
           id="header-help-button"
           onClick={toggleHelpMode}
           title="Toggle Help Mode"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            background: isHelpMode ? 'rgba(77, 171, 247, 0.15)' : 'none',
-            border: isHelpMode ? '1px solid var(--color-accent)' : '1px solid transparent',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-            padding: '4px 8px',
-            color: isHelpMode ? 'var(--color-accent)' : 'var(--color-text-muted)',
-            transition: 'all var(--transition)',
-          }}
+          aria-label={isHelpMode ? 'Disable help mode' : 'Enable help mode'}
+          aria-pressed={isHelpMode}
+          className="flex items-center gap-1 rounded cursor-pointer py-1 px-2"
+          style={{ background: isHelpMode ? 'rgba(77, 171, 247, 0.15)' : 'none', border: isHelpMode ? '1px solid var(--color-accent)' : '1px solid transparent', color: isHelpMode ? 'var(--color-accent)' : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
         >
-          <HelpCircle size={16} />
+          <HelpCircle size={16} aria-hidden="true" />
           {isHelpMode && (
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 700,
-                letterSpacing: '1px',
-              }}
-            >
+            <span className="font-mono text-3xs font-bold tracking-[1px]">
               HELP ON
             </span>
           )}
@@ -180,34 +123,18 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         {/* Alert Bell */}
         <button
           onClick={() => navigate('/alerts')}
+          aria-label={`Alerts${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+          className="relative bg-transparent border-none cursor-pointer p-1"
           style={{
-            position: 'relative',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 4,
             color: unreadCount > 0 ? 'var(--color-warning)' : 'var(--color-text-muted)',
           }}
         >
-          <Bell size={18} />
+          <Bell size={18} aria-hidden="true" />
           {unreadCount > 0 && (
             <span
-              style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: 16,
-                height: 16,
-                borderRadius: '50%',
-                backgroundColor: 'var(--color-danger)',
-                color: '#fff',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+              className="absolute top-0 right-0 w-4 h-4 rounded-full bg-danger font-mono text-3xs font-bold flex items-center justify-center text-[#fff]"
+              
+              aria-hidden="true"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
@@ -215,136 +142,59 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         </button>
 
         {/* User Dropdown */}
-        <div style={{ position: 'relative' }}>
+        <div className="relative">
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-            }}
+            aria-expanded={userMenuOpen}
+            aria-haspopup="true"
+            aria-label="User menu"
+            className="flex items-center gap-1.5 bg-transparent border-none cursor-pointer text-text font-mono text-[11px]"
           >
-            <User size={14} style={{ color: 'var(--color-text-muted)' }} />
+            <User size={14} className="text-text-muted" aria-hidden="true" />
             <span className="hide-mobile">{user?.username || 'USER'}</span>
-            <ChevronDown size={12} style={{ color: 'var(--color-text-muted)' }} />
+            <ChevronDown size={12} className="text-text-muted" aria-hidden="true" />
           </button>
           {userMenuOpen && (
             <>
               <div
-                style={{
-                  position: 'fixed',
-                  inset: 0,
-                  zIndex: 1100,
-                }}
+                className="fixed inset-0 z-[1100]"
                 onClick={() => setUserMenuOpen(false)}
+                aria-hidden="true"
               />
               <div
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: 8,
-                  width: 180,
-                  backgroundColor: 'var(--color-bg-surface)',
-                  border: '1px solid var(--color-border-strong)',
-                  borderRadius: 'var(--radius)',
-                  zIndex: 1101,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                  overflow: 'hidden',
-                }}
+                role="menu"
+                className="absolute top-full right-0 mt-2 w-[180px] bg-bg-surface border border-border-strong rounded z-[1101] overflow-hidden"
+                style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
               >
-                <div
-                  style={{
-                    padding: '10px 14px',
-                    borderBottom: '1px solid var(--color-border)',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      color: 'var(--color-text-bright)',
-                      fontWeight: 600,
-                    }}
-                  >
+                <div className="px-3.5 py-2.5 border-b border-border">
+                  <div className="font-mono text-[11px] text-text-bright font-semibold">
                     {user?.full_name}
                   </div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 9,
-                      color: 'var(--color-text-muted)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '1px',
-                      marginTop: 2,
-                    }}
-                  >
+                  <div className="font-mono text-3xs text-text-muted uppercase tracking-[1px] mt-0.5">
                     {user?.role}
                   </div>
                 </div>
                 <button
+                  role="menuitem"
                   onClick={() => {
                     resetGuidedTour();
                     setUserMenuOpen(false);
                     window.location.reload();
                   }}
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    background: 'none',
-                    border: 'none',
-                    borderBottom: '1px solid var(--color-border)',
-                    cursor: 'pointer',
-                    color: 'var(--color-text)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    letterSpacing: '1px',
-                    transition: 'background-color var(--transition)',
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'transparent')
-                  }
+                  className="w-full px-3.5 py-2.5 flex items-center gap-2 bg-transparent border-none border-b border-border cursor-pointer text-text font-mono text-[11px] tracking-[1px] hover:bg-bg-hover border-b border-b-[var(--color-border)] transition-colors duration-[var(--transition)]"
                 >
-                  <RotateCcw size={14} />
+                  <RotateCcw size={14} aria-hidden="true" />
                   RESTART TOUR
                 </button>
                 <button
+                  role="menuitem"
                   onClick={handleLogout}
+                  className="w-full px-3.5 py-2.5 flex items-center gap-2 bg-transparent border-none cursor-pointer text-danger font-mono text-[11px] tracking-[1px] hover:bg-bg-hover"
                   style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'var(--color-danger)',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    letterSpacing: '1px',
                     transition: 'background-color var(--transition)',
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = 'transparent')
-                  }
                 >
-                  <LogOut size={14} />
+                  <LogOut size={14} aria-hidden="true" />
                   LOGOUT
                 </button>
               </div>

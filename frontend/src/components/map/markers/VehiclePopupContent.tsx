@@ -44,44 +44,22 @@ export default function VehiclePopupContent({
 
   return (
     <div
-      style={{
-        padding: '10px 14px',
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 11,
-        lineHeight: 1.5,
-        color: '#e2e8f0',
-        minWidth: 260,
-      }}
+      className="py-2.5 px-3.5 text-[11px] leading-normal text-[#e2e8f0] min-w-[260px] font-mono"
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 8,
-          paddingBottom: 6,
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-        }}
+        className="flex items-center justify-between mb-2 pb-1.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}
       >
         <div>
-          <div style={{ fontWeight: 700, fontSize: 13, color: '#f1f5f9', letterSpacing: '0.5px' }}>
+          <div className="font-bold text-[13px] text-[#f1f5f9] tracking-[0.5px]">
             {vehicle.call_sign}
           </div>
-          <div style={{ fontSize: 9, color: '#94a3b8', letterSpacing: '1px', marginTop: 1 }}>
+          <div className="text-[9px] text-[#94a3b8] tracking-[1px] mt-px">
             {convoyName}
           </div>
         </div>
         <div
-          style={{
-            padding: '2px 8px',
-            borderRadius: 3,
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#000',
-            backgroundColor: statusColor(vehicle.status),
-          }}
+          className="py-0.5 px-2 rounded-[3px] text-[9px] font-bold tracking-[1px] text-[#000]" style={{ backgroundColor: statusColor(vehicle.status) }}
         >
           {vehicle.status}
         </div>
@@ -89,83 +67,52 @@ export default function VehiclePopupContent({
 
       {/* Vehicle Info Grid */}
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '3px 12px',
-          marginBottom: 8,
-          fontSize: 10,
-        }}
+        className="grid mb-2 text-[10px]" style={{ gridTemplateColumns: '1fr 1fr', gap: '3px 12px' }}
       >
         <div>
-          <span style={{ color: '#64748b' }}>TYPE </span>
-          <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{vehicle.vehicle_type}</span>
+          <span className="text-[#64748b]">TYPE </span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.vehicle_type}</span>
         </div>
         <div>
-          <span style={{ color: '#64748b' }}>TAMCN </span>
-          <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{vehicle.tamcn}</span>
+          <span className="text-[#64748b]">TAMCN </span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.tamcn}</span>
         </div>
         <div>
-          <span style={{ color: '#64748b' }}>BUMPER </span>
-          <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{vehicle.bumper_number}</span>
+          <span className="text-[#64748b]">BUMPER </span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.bumper_number}</span>
         </div>
         <div>
-          <span style={{ color: '#64748b' }}>SPD </span>
-          <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{vehicle.speed_kph} KPH</span>
+          <span className="text-[#64748b]">SPD </span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.speed_kph} KPH</span>
         </div>
         <div>
-          <span style={{ color: '#64748b' }}>HDG </span>
-          <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{vehicle.heading}&deg;</span>
+          <span className="text-[#64748b]">HDG </span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.heading}&deg;</span>
         </div>
       </div>
 
       {/* Crew Section */}
-      <div style={{ marginBottom: 8 }}>
+      <div className="mb-2">
         <div
-          style={{
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '1.5px',
-            color: '#94a3b8',
-            marginBottom: 4,
-            textTransform: 'uppercase' as const,
-          }}
+          className="text-[9px] font-bold tracking-[1.5px] text-[#94a3b8] mb-1 uppercase"
         >
           CREW ({vehicle.crew.length})
         </div>
         {vehicle.crew.length > 0 ? (
           <div
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              borderRadius: 4,
-              padding: '4px 6px',
-            }}
+            className="bg-[rgba(255,255,255,0.03)] rounded-[4px] py-1 px-1.5"
           >
             {vehicle.crew.map((person) => (
               <div
                 key={person.personnel_id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: 10,
-                  padding: '2px 0',
-                }}
+                className="flex items-center justify-between text-[10px] py-0.5 px-0"
               >
                 <span>
-                  <span style={{ color: '#94a3b8' }}>{person.rank}</span>{' '}
-                  <span style={{ color: '#e2e8f0' }}>{person.name}</span>
+                  <span className="text-[#94a3b8]">{person.rank}</span>{' '}
+                  <span className="text-[#e2e8f0]">{person.name}</span>
                 </span>
                 <span
-                  style={{
-                    fontSize: 8,
-                    fontWeight: 700,
-                    letterSpacing: '0.5px',
-                    color: roleColor(person.role),
-                    padding: '1px 4px',
-                    borderRadius: 2,
-                    backgroundColor: `${roleColor(person.role)}15`,
-                  }}
+                  className="text-[8px] font-bold tracking-[0.5px] py-px px-1 rounded-[2px]" style={{ color: roleColor(person.role), backgroundColor: `${roleColor(person.role)}15` }}
                 >
                   {person.role}
                 </span>
@@ -173,67 +120,43 @@ export default function VehiclePopupContent({
             ))}
           </div>
         ) : (
-          <div style={{ fontSize: 10, color: '#64748b', fontStyle: 'italic' }}>No crew assigned</div>
+          <div className="text-[10px] text-[#64748b] italic">No crew assigned</div>
         )}
       </div>
 
       {/* Cargo Section */}
       <div>
         <div
-          style={{
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '1.5px',
-            color: '#94a3b8',
-            marginBottom: 4,
-            textTransform: 'uppercase' as const,
-          }}
+          className="text-[9px] font-bold tracking-[1.5px] text-[#94a3b8] mb-1 uppercase"
         >
           CARGO ({vehicle.cargo.length} items)
         </div>
         {vehicle.cargo.length > 0 ? (
           <div
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              borderRadius: 4,
-              padding: '4px 6px',
-            }}
+            className="bg-[rgba(255,255,255,0.03)] rounded-[4px] py-1 px-1.5"
           >
             {vehicle.cargo.map((item) => (
               <div
                 key={item.item_id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: 10,
-                  padding: '2px 0',
-                }}
+                className="flex justify-between text-[10px] py-0.5 px-0"
               >
                 <span>
                   {item.item_name}{' '}
-                  <span style={{ color: '#64748b', fontSize: 9 }}>CL {item.supply_class}</span>
+                  <span className="text-[#64748b] text-[9px]">CL {item.supply_class}</span>
                 </span>
-                <span style={{ color: '#4dabf7', fontWeight: 600 }}>
+                <span className="text-[#4dabf7] font-semibold">
                   {item.quantity} {item.uom}
                 </span>
               </div>
             ))}
             <div
-              style={{
-                marginTop: 4,
-                paddingTop: 4,
-                borderTop: '1px solid rgba(255,255,255,0.08)',
-                fontSize: 10,
-                fontWeight: 700,
-                textAlign: 'right' as const,
-                color: '#e2e8f0',
-              }}
+              className="mt-1 pt-1 text-[10px] font-bold text-[#e2e8f0]" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'right' as const }}
             >
               {totalCargoWeight.toLocaleString()} kg total
             </div>
           </div>
         ) : (
-          <div style={{ fontSize: 10, color: '#64748b', fontStyle: 'italic' }}>No cargo loaded</div>
+          <div className="text-[10px] text-[#64748b] italic">No cargo loaded</div>
         )}
       </div>
     </div>

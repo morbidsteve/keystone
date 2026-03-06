@@ -16,15 +16,7 @@ export default function SupplyStatusCard({ data, onClick }: SupplyStatusCardProp
   return (
     <div
       onClick={onClick}
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        border: '1px solid var(--color-border)',
-        borderLeft: `3px solid ${color}`,
-        borderRadius: 'var(--radius)',
-        padding: '12px 14px',
-        cursor: onClick ? 'pointer' : 'default',
-        transition: 'background-color var(--transition)',
-      }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] py-3 px-3.5" style={{ borderLeft: `3px solid ${color}`, cursor: onClick ? 'pointer' : 'default', transition: 'background-color var(--transition)' }}
       onMouseEnter={(e) => {
         if (onClick) e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
       }}
@@ -34,22 +26,10 @@ export default function SupplyStatusCard({ data, onClick }: SupplyStatusCardProp
     >
       {/* Header */}
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 8,
-        }}
+        className="flex justify-between items-center mb-2"
       >
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '1.5px',
-            color: 'var(--color-text-muted)',
-          }}
+          className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)]"
         >
           {SUPPLY_CLASS_SHORT[data.supplyClass] || data.supplyClass}
         </span>
@@ -68,49 +48,23 @@ export default function SupplyStatusCard({ data, onClick }: SupplyStatusCardProp
 
       {/* Percentage */}
       <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 24,
-          fontWeight: 700,
-          color: color,
-          lineHeight: 1,
-          marginBottom: 8,
-        }}
+        className="font-[var(--font-mono)] text-2xl font-bold leading-none mb-2" style={{ color: color }}
       >
         {Math.round(data.percentage)}%
       </div>
 
       {/* Progress Bar */}
       <div
-        style={{
-          width: '100%',
-          height: 4,
-          backgroundColor: 'var(--color-bg)',
-          borderRadius: 2,
-          overflow: 'hidden',
-          marginBottom: 8,
-        }}
+        className="w-full h-[4px] bg-[var(--color-bg)] rounded-[2px] overflow-hidden mb-2"
       >
         <div
-          style={{
-            width: `${Math.min(data.percentage, 100)}%`,
-            height: '100%',
-            backgroundColor: color,
-            borderRadius: 2,
-            transition: 'width 0.5s ease',
-          }}
+          className="h-full rounded-[2px]" style={{ width: `${Math.min(data.percentage, 100)}%`, backgroundColor: color, transition: 'width 0.5s ease' }}
         />
       </div>
 
       {/* Details */}
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          color: 'var(--color-text-muted)',
-        }}
+        className="flex justify-between font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
       >
         <span>
           {data.onHand}/{data.authorized}

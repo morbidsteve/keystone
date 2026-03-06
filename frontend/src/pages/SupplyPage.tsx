@@ -13,20 +13,12 @@ export default function SupplyPage() {
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="flex gap-3 items-center flex-wrap">
         <div>
           <label
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              display: 'block',
-              marginBottom: 4,
-            }}
+            className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
           >
             SUPPLY CLASS
           </label>
@@ -35,15 +27,7 @@ export default function SupplyPage() {
             onChange={(e) =>
               setClassFilter(e.target.value ? (e.target.value as SupplyClass) : undefined)
             }
-            style={{
-              padding: '6px 10px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-            }}
+            className="py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
           >
             <option value="">ALL CLASSES</option>
             {Object.values(SupplyClass).map((sc) => (
@@ -56,15 +40,7 @@ export default function SupplyPage() {
 
         <div>
           <label
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 9,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              color: 'var(--color-text-muted)',
-              display: 'block',
-              marginBottom: 4,
-            }}
+            className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
           >
             STATUS
           </label>
@@ -73,15 +49,7 @@ export default function SupplyPage() {
             onChange={(e) =>
               setStatusFilter(e.target.value ? (e.target.value as SupplyStatus) : undefined)
             }
-            style={{
-              padding: '6px 10px',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              color: 'var(--color-text)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-            }}
+            className="py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
           >
             <option value="">ALL</option>
             <option value={SupplyStatus.GREEN}>GREEN</option>

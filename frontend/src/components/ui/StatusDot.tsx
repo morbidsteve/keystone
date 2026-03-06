@@ -11,15 +11,9 @@ export default function StatusDot({ status, size = 8, pulse = false }: StatusDot
 
   return (
     <span
-      style={{
-        display: 'inline-block',
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        backgroundColor: color,
-        animation: pulse ? 'pulse 2s ease-in-out infinite' : undefined,
-        flexShrink: 0,
-      }}
+      role="img"
+      aria-label={`Status: ${status}`}
+      className="inline-block shrink-0" style={{ width: size, height: size, borderRadius: '50%', backgroundColor: color, animation: pulse ? 'pulse 2s ease-in-out infinite' : undefined }}
     />
   );
 }

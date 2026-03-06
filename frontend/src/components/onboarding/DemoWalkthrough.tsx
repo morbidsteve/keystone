@@ -134,23 +134,7 @@ export function DemoWalkthrough() {
     return (
       <button
         onClick={handleStart}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '8px 16px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          fontWeight: 600,
-          letterSpacing: '1px',
-          textTransform: 'uppercase',
-          border: 'none',
-          borderRadius: 'var(--radius)',
-          backgroundColor: 'var(--color-accent)',
-          color: '#fff',
-          cursor: 'pointer',
-          transition: 'opacity var(--transition)',
-        }}
+        className="inline-flex items-center gap-2 py-2 px-4 font-[var(--font-mono)] text-[11px] font-semibold tracking-[1px] uppercase border-0 rounded-[var(--radius)] bg-[var(--color-accent)] text-[#fff] cursor-pointer transition-opacity duration-[var(--transition)]"
         onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
       >
@@ -163,47 +147,22 @@ export function DemoWalkthrough() {
   // Full-screen overlay when running
   const overlay = createPortal(
     <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9990,
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
-      }}
+      className="fixed z-[9990] flex flex-col bg-[rgba(0,0,0,0.85)] inset-0"
     >
       {/* Header with gradient */}
       <div
-        style={{
-          padding: '20px 24px',
-          background: 'linear-gradient(135deg, var(--color-accent), #1a5fb4)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="py-5 px-6 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, var(--color-accent), #1a5fb4)' }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Monitor size={18} style={{ color: '#fff' }} />
+        <div className="flex items-center gap-2.5">
+          <Monitor size={18} className="text-[#fff]" />
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              color: '#fff',
-            }}
+            className="font-[var(--font-mono)] text-[13px] font-semibold tracking-[2px] uppercase text-[#fff]"
           >
             KEYSTONE Demo
           </span>
         </div>
         <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            letterSpacing: '1px',
-            color: 'rgba(255, 255, 255, 0.7)',
-          }}
+          className="font-[var(--font-mono)] text-[10px] tracking-[1px] text-[rgba(255,255,255,0.7)]"
         >
           Step {step + 1} of {DEMO_STEPS.length}
         </span>
@@ -211,75 +170,32 @@ export function DemoWalkthrough() {
 
       {/* Progress bar */}
       <div
-        style={{
-          height: 3,
-          backgroundColor: 'var(--color-border)',
-        }}
+        className="h-[3px] bg-[var(--color-border)]"
       >
         <div
-          style={{
-            height: '100%',
-            width: `${progress}%`,
-            backgroundColor: 'var(--color-accent)',
-            transition: 'width 0.3s ease',
-          }}
+          className="h-full bg-[var(--color-accent)]" style={{ width: `${progress}%`, transition: 'width 0.3s ease' }}
         />
       </div>
 
       {/* Content */}
       <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '40px 24px',
-        }}
+        className="flex-1 flex flex-col items-center justify-center py-10 px-6"
       >
         {/* Step card */}
         <div
-          style={{
-            maxWidth: 560,
-            width: '100%',
-            backgroundColor: 'var(--color-bg-surface)',
-            border: '1px solid var(--color-accent)',
-            borderRadius: 'var(--radius)',
-            overflow: 'hidden',
-          }}
+          className="max-w-[560px] w-full bg-[var(--color-bg-surface)] border border-[var(--color-accent)] rounded-[var(--radius)] overflow-hidden"
         >
           {/* Step title */}
           <div
-            style={{
-              padding: '16px 20px',
-              borderBottom: '1px solid var(--color-border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
+            className="py-4 px-5 border-b border-b-[var(--color-border)] flex items-center justify-between"
           >
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 14,
-                fontWeight: 600,
-                letterSpacing: '1.5px',
-                textTransform: 'uppercase',
-                color: 'var(--color-text-bright)',
-              }}
+              className="font-[var(--font-mono)] text-sm font-semibold tracking-[1.5px] uppercase text-[var(--color-text-bright)]"
             >
               {currentStep.title}
             </span>
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 9,
-                letterSpacing: '1px',
-                color: 'var(--color-text-muted)',
-                backgroundColor: 'var(--color-bg-hover)',
-                padding: '2px 8px',
-                borderRadius: 'var(--radius)',
-              }}
+              className="font-[var(--font-mono)] text-[9px] tracking-[1px] text-[var(--color-text-muted)] bg-[var(--color-bg-hover)] py-0.5 px-2 rounded-[var(--radius)]"
             >
               {currentStep.path}
             </span>
@@ -287,13 +203,7 @@ export function DemoWalkthrough() {
 
           {/* Narration */}
           <div
-            style={{
-              padding: '20px 20px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 12,
-              lineHeight: 1.7,
-              color: 'var(--color-text)',
-            }}
+            className="py-5 px-5 font-[var(--font-mono)] text-xs leading-relaxed text-[var(--color-text)]"
           >
             {currentStep.narration}
           </div>
@@ -301,17 +211,7 @@ export function DemoWalkthrough() {
           {/* Paused indicator */}
           {paused && (
             <div
-              style={{
-                padding: '8px 20px',
-                backgroundColor: 'rgba(250, 176, 5, 0.1)',
-                borderTop: '1px solid rgba(250, 176, 5, 0.3)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                color: 'var(--color-warning)',
-                textAlign: 'center',
-              }}
+              className="py-2 px-5 bg-[rgba(250,176,5,0.1)] font-[var(--font-mono)] text-[10px] tracking-[1px] uppercase text-[var(--color-warning)] text-center" style={{ borderTop: '1px solid rgba(250, 176, 5, 0.3)' }}
             >
               Paused
             </div>
@@ -320,27 +220,16 @@ export function DemoWalkthrough() {
 
         {/* Step dots */}
         <div
-          style={{
-            display: 'flex',
-            gap: 6,
-            marginTop: 24,
-          }}
+          className="flex gap-1.5 mt-6"
         >
           {DEMO_STEPS.map((_, i) => (
             <div
               key={i}
-              style={{
-                width: i === step ? 18 : 6,
-                height: 6,
-                borderRadius: 3,
-                backgroundColor:
-                  i === step
+              className="h-[6px] rounded-[3px]" style={{ width: i === step ? 18 : 6, backgroundColor: i === step
                     ? 'var(--color-accent)'
                     : i < step
                       ? 'rgba(77, 171, 247, 0.4)'
-                      : 'var(--color-border)',
-                transition: 'all 0.2s ease',
-              }}
+                      : 'var(--color-border)', transition: 'all 0.2s ease' }}
             />
           ))}
         </div>
@@ -348,35 +237,12 @@ export function DemoWalkthrough() {
 
       {/* Controls */}
       <div
-        style={{
-          padding: '16px 24px',
-          borderTop: '1px solid var(--color-border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 12,
-          backgroundColor: 'var(--color-bg-surface)',
-        }}
+        className="py-4 px-6 border-t border-t-[var(--color-border)] flex items-center justify-center gap-3 bg-[var(--color-bg-surface)]"
       >
         {/* Pause / Resume */}
         <button
           onClick={handleTogglePause}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '8px 14px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius)',
-            backgroundColor: 'transparent',
-            color: 'var(--color-text)',
-            cursor: 'pointer',
-          }}
+          className="flex items-center gap-1.5 py-2 px-3.5 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase border border-[var(--color-border)] rounded-[var(--radius)] bg-transparent text-[var(--color-text)] cursor-pointer"
         >
           {paused ? <Play size={12} /> : <Pause size={12} />}
           {paused ? 'Resume' : 'Pause'}
@@ -385,22 +251,7 @@ export function DemoWalkthrough() {
         {/* End Demo */}
         <button
           onClick={handleEnd}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '8px 14px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            border: '1px solid var(--color-danger)',
-            borderRadius: 'var(--radius)',
-            backgroundColor: 'transparent',
-            color: 'var(--color-danger)',
-            cursor: 'pointer',
-          }}
+          className="flex items-center gap-1.5 py-2 px-3.5 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase border border-[var(--color-danger)] rounded-[var(--radius)] bg-transparent text-[var(--color-danger)] cursor-pointer"
         >
           <Square size={12} />
           End Demo
@@ -409,22 +260,7 @@ export function DemoWalkthrough() {
         {/* Next / Finish */}
         <button
           onClick={handleNext}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '8px 16px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            border: 'none',
-            borderRadius: 'var(--radius)',
-            backgroundColor: 'var(--color-accent)',
-            color: '#fff',
-            cursor: 'pointer',
-          }}
+          className="flex items-center gap-1.5 py-2 px-4 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase border-0 rounded-[var(--radius)] bg-[var(--color-accent)] text-[#fff] cursor-pointer"
         >
           {isLastStep ? (
             'Finish'

@@ -219,24 +219,13 @@ export default function TransportationPage() {
   // -------------------------------------------------------------------------
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="animate-fade-in flex flex-col gap-4">
       {/* Page header */}
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        className="flex items-center justify-between"
       >
         <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 14,
-            fontWeight: 700,
-            letterSpacing: '3px',
-            color: 'var(--color-text-bright)',
-            textTransform: 'uppercase',
-          }}
+          className="font-[var(--font-mono)] text-sm font-bold tracking-[3px] text-[var(--color-text-bright)] uppercase"
         >
           TRANSPORTATION
         </div>
@@ -244,12 +233,7 @@ export default function TransportationPage() {
 
       {/* Tabs */}
       <div
-        style={{
-          display: 'flex',
-          gap: 2,
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: 0,
-        }}
+        className="flex gap-0.5 border-b border-b-[var(--color-border)] pb-0"
       >
         {TABS.map((tab) => (
           <button
@@ -263,27 +247,11 @@ export default function TransportationPage() {
                 setMarchTableData(null);
               }
             }}
-            style={{
-              padding: '8px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              fontWeight: activeTab === tab.key ? 600 : 400,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              border: 'none',
-              borderBottom:
-                activeTab === tab.key
+            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
                   ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              backgroundColor: 'transparent',
-              color:
-                activeTab === tab.key
+                  : '2px solid transparent', color: activeTab === tab.key
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              cursor: 'pointer',
-              transition: 'all var(--transition)',
-              marginBottom: -1,
-            }}
+                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
           >
             {tab.label}
           </button>

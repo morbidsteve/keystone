@@ -32,21 +32,13 @@ export default function PredictiveAlertsPanel({ unitId }: PredictiveAlertsPanelP
   });
 
   if (isLoading) {
-    return <div className="skeleton" style={{ width: '100%', height: 300 }} />;
+    return <div className="skeleton w-full h-[300px]"  />;
   }
 
   if (!data || data.length === 0) {
     return (
       <div
-        style={{
-          height: 200,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          color: 'var(--color-text-muted)',
-        }}
+        className="h-[200px] flex items-center justify-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
       >
         No predictive alerts at this time
       </div>
@@ -54,66 +46,32 @@ export default function PredictiveAlertsPanel({ unitId }: PredictiveAlertsPanelP
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="flex flex-col gap-3">
       {data.map((rec: PMRecommendation, idx: number) => {
         const badge = getPriorityBadge(rec.priority);
         return (
           <div
             key={idx}
-            style={{
-              padding: '12px 16px',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'var(--color-bg-surface)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
+            className="py-3 px-4 border border-[var(--color-border)] rounded-[var(--radius)] bg-[var(--color-bg-surface)] flex flex-col gap-2"
           >
             {/* Header row */}
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
+              className="flex items-center justify-between"
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="flex items-center gap-2.5">
                 <span
-                  style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    borderRadius: 'var(--radius)',
-                    backgroundColor: badge.bg,
-                    color: badge.color,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 9,
-                    fontWeight: 700,
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                  }}
+                  className="inline-block py-0.5 px-2 rounded-[var(--radius)] font-[var(--font-mono)] text-[9px] font-bold tracking-[1px] uppercase" style={{ backgroundColor: badge.bg, color: badge.color }}
                 >
                   {badge.label}
                 </span>
                 <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: 'var(--color-text-bright)',
-                    letterSpacing: '0.5px',
-                  }}
+                  className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)] tracking-[0.5px]"
                 >
                   {rec.equipment_type}
                 </span>
               </div>
               <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  color: rec.days_until_failure <= 10 ? 'var(--color-danger)' : 'var(--color-warning)',
-                  fontWeight: 600,
-                }}
+                className="font-[var(--font-mono)] text-[10px] font-semibold" style={{ color: rec.days_until_failure <= 10 ? 'var(--color-danger)' : 'var(--color-warning)' }}
               >
                 {rec.days_until_failure}D TO FAILURE
               </span>
@@ -121,22 +79,14 @@ export default function PredictiveAlertsPanel({ unitId }: PredictiveAlertsPanelP
 
             {/* Recommendation */}
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-text-bright)',
-              }}
+              className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)]"
             >
               {rec.recommendation}
             </div>
 
             {/* Reason */}
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
             >
               {rec.reason}
             </div>

@@ -158,14 +158,7 @@ export default function MIRCSourcesPanel() {
     return (
       <div
         key={source.id}
-        style={{
-          padding: '10px 12px',
-          backgroundColor: isSelected ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)',
-          border: isSelected ? '1px solid var(--color-accent)' : '1px solid var(--color-border)',
-          borderRadius: 'var(--radius)',
-          cursor: 'pointer',
-          transition: 'all var(--transition)',
-        }}
+        className="py-2.5 px-3 rounded-[var(--radius)] cursor-pointer" style={{ backgroundColor: isSelected ? 'var(--color-bg-hover)' : 'var(--color-bg-surface)', border: isSelected ? '1px solid var(--color-accent)' : '1px solid var(--color-border)', transition: 'all var(--transition)' }}
         onClick={() => setSelectedSource(isSelected ? null : source.id)}
         onMouseEnter={(e) => {
           if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
@@ -175,43 +168,26 @@ export default function MIRCSourcesPanel() {
         }}
       >
         {/* Header row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <TypeIcon size={14} style={{ color: 'var(--color-accent)', flexShrink: 0 }} />
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex items-center gap-2.5">
+          <TypeIcon size={14} className="text-[var(--color-accent)] shrink-0" />
+          <div className="flex-1 min-w-0">
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                fontWeight: 600,
-                color: 'var(--color-text-bright)',
-              }}
+              className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)]"
             >
               {source.name}
             </div>
             <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-text-muted)',
-                marginTop: 2,
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-0.5"
             >
               {source.source_type === 'irc_server'
                 ? `${(source.config as { host: string }).host}:${(source.config as { port: number }).port}`
                 : (source.config as { directory_path: string }).directory_path}
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="flex items-center gap-2.5">
             {source.last_run && (
               <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 9,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
                 <Clock size={10} />
                 {formatRelativeTime(source.last_run)}
@@ -224,32 +200,12 @@ export default function MIRCSourcesPanel() {
         {/* Actions */}
         {isSelected && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              marginTop: 10,
-              paddingTop: 10,
-              borderTop: '1px solid var(--color-border)',
-            }}
+            className="flex items-center gap-1.5 mt-2.5 pt-2.5 border-t border-t-[var(--color-border)]"
           >
             <button
               onClick={(e) => { e.stopPropagation(); handleTest(source.id); }}
               disabled={testingId === source.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '4px 8px',
-                backgroundColor: 'transparent',
-                border: '1px solid var(--color-border-strong)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                cursor: 'pointer',
-                opacity: testingId === source.id ? 0.5 : 1,
-              }}
+              className="flex items-center gap-1 py-1 px-2 bg-transparent border border-[var(--color-border-strong)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] cursor-pointer" style={{ opacity: testingId === source.id ? 0.5 : 1 }}
             >
               {testingId === source.id ? <Loader size={10} className="animate-spin" /> : <Zap size={10} />}
               TEST
@@ -257,20 +213,7 @@ export default function MIRCSourcesPanel() {
             <button
               onClick={(e) => { e.stopPropagation(); handleToggle(source); }}
               disabled={togglingId === source.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '4px 8px',
-                backgroundColor: 'transparent',
-                border: `1px solid ${isActive(source) ? 'var(--color-danger)' : 'var(--color-success)'}`,
-                borderRadius: 'var(--radius)',
-                color: isActive(source) ? 'var(--color-danger)' : 'var(--color-success)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                cursor: 'pointer',
-                opacity: togglingId === source.id ? 0.5 : 1,
-              }}
+              className="flex items-center gap-1 py-1 px-2 bg-transparent rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] cursor-pointer" style={{ border: `1px solid ${isActive(source) ? 'var(--color-danger)' : 'var(--color-success)'}`, color: isActive(source) ? 'var(--color-danger)' : 'var(--color-success)', opacity: togglingId === source.id ? 0.5 : 1 }}
             >
               {togglingId === source.id ? (
                 <Loader size={10} className="animate-spin" />
@@ -283,39 +226,15 @@ export default function MIRCSourcesPanel() {
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); setEditingSource(source); }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '4px 8px',
-                backgroundColor: 'transparent',
-                border: '1px solid var(--color-border-strong)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-text)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                cursor: 'pointer',
-              }}
+              className="flex items-center gap-1 py-1 px-2 bg-transparent border border-[var(--color-border-strong)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] cursor-pointer"
             >
               <Settings size={10} />
               EDIT
             </button>
-            <div style={{ flex: 1 }} />
+            <div className="flex-1" />
             <button
               onClick={(e) => { e.stopPropagation(); handleDelete(source.id); }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '4px 8px',
-                backgroundColor: 'transparent',
-                border: '1px solid var(--color-danger)',
-                borderRadius: 'var(--radius)',
-                color: 'var(--color-danger)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                cursor: 'pointer',
-              }}
+              className="flex items-center gap-1 py-1 px-2 bg-transparent border border-[var(--color-danger)] rounded-[var(--radius)] text-[var(--color-danger)] font-[var(--font-mono)] text-[10px] cursor-pointer"
             >
               <Trash2 size={10} />
               DELETE
@@ -326,24 +245,11 @@ export default function MIRCSourcesPanel() {
         {/* Error display */}
         {source.last_error && isSelected && (
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 6,
-              marginTop: 8,
-              padding: '6px 8px',
-              backgroundColor: 'rgba(255, 107, 107, 0.08)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="flex items-start gap-1.5 mt-2 py-1.5 px-2 bg-[rgba(255,107,107,0.08)] rounded-[var(--radius)]"
           >
-            <AlertTriangle size={11} style={{ color: 'var(--color-warning)', flexShrink: 0, marginTop: 1 }} />
+            <AlertTriangle size={11} className="text-[var(--color-warning)] shrink-0 mt-px" />
             <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 10,
-                color: 'var(--color-warning)',
-                wordBreak: 'break-word',
-              }}
+              className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)] break-words"
             >
               {source.last_error}
             </span>
@@ -352,11 +258,11 @@ export default function MIRCSourcesPanel() {
 
         {/* Stats */}
         {isSelected && (
-          <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+          <div className="flex gap-4 mt-2">
+            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
               {source.files_processed} files processed
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--color-text-muted)' }}>
+            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
               {source.records_ingested.toLocaleString()} records ingested
             </span>
           </div>
@@ -366,27 +272,19 @@ export default function MIRCSourcesPanel() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="flex flex-col gap-4">
       {/* Banners */}
       {error && (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 12px',
-            backgroundColor: 'rgba(255, 107, 107, 0.1)',
-            border: '1px solid var(--color-danger)',
-            borderRadius: 'var(--radius)',
-          }}
+          className="flex items-center gap-2 py-2 px-3 bg-[rgba(255,107,107,0.1)] border border-[var(--color-danger)] rounded-[var(--radius)]"
         >
-          <AlertTriangle size={14} style={{ color: 'var(--color-danger)' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-danger)', flex: 1 }}>
+          <AlertTriangle size={14} className="text-[var(--color-danger)]" />
+          <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger)] flex-1">
             {error}
           </span>
           <button
             onClick={() => setError(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)', padding: 2 }}
+            className="bg-transparent border-0 cursor-pointer text-[var(--color-danger)] p-0.5"
           >
             <X size={12} />
           </button>
@@ -395,34 +293,21 @@ export default function MIRCSourcesPanel() {
 
       {testResult && (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 12px',
-            backgroundColor: testResult.success ? 'rgba(64, 192, 87, 0.1)' : 'rgba(255, 107, 107, 0.1)',
-            border: `1px solid ${testResult.success ? 'var(--color-success)' : 'var(--color-danger)'}`,
-            borderRadius: 'var(--radius)',
-          }}
+          className="flex items-center gap-2 py-2 px-3 rounded-[var(--radius)]" style={{ backgroundColor: testResult.success ? 'rgba(64, 192, 87, 0.1)' : 'rgba(255, 107, 107, 0.1)', border: `1px solid ${testResult.success ? 'var(--color-success)' : 'var(--color-danger)'}` }}
         >
           {testResult.success ? (
-            <Check size={14} style={{ color: 'var(--color-success)' }} />
+            <Check size={14} className="text-[var(--color-success)]" />
           ) : (
-            <AlertTriangle size={14} style={{ color: 'var(--color-danger)' }} />
+            <AlertTriangle size={14} className="text-[var(--color-danger)]" />
           )}
           <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: testResult.success ? 'var(--color-success)' : 'var(--color-danger)',
-              flex: 1,
-            }}
+            className="font-[var(--font-mono)] text-[11px] flex-1" style={{ color: testResult.success ? 'var(--color-success)' : 'var(--color-danger)' }}
           >
             {testResult.message}
           </span>
           <button
             onClick={() => setTestResult(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', padding: 2 }}
+            className="bg-transparent border-0 cursor-pointer text-[var(--color-text-muted)] p-0.5"
           >
             <X size={12} />
           </button>
@@ -431,17 +316,10 @@ export default function MIRCSourcesPanel() {
 
       {loading && (
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            padding: 32,
-            color: 'var(--color-text-muted)',
-          }}
+          className="flex items-center justify-center gap-2 p-8 text-[var(--color-text-muted)]"
         >
           <Loader size={16} className="animate-spin" />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>LOADING...</span>
+          <span className="font-[var(--font-mono)] text-[11px]">LOADING...</span>
         </div>
       )}
 
@@ -453,22 +331,7 @@ export default function MIRCSourcesPanel() {
             headerRight={
               <button
                 onClick={() => setShowFormType('mirc_directory')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '4px 10px',
-                  backgroundColor: 'var(--color-accent)',
-                  border: 'none',
-                  borderRadius: 'var(--radius)',
-                  color: 'var(--color-bg)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                }}
+                className="flex items-center gap-1.5 py-1 px-2.5 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase cursor-pointer"
               >
                 <Plus size={12} />
                 ADD
@@ -477,19 +340,13 @@ export default function MIRCSourcesPanel() {
           >
             {directoryWatchers.length === 0 ? (
               <div
-                style={{
-                  textAlign: 'center',
-                  padding: 24,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="text-center p-6 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
               >
-                <FolderSearch size={24} style={{ color: 'var(--color-text-muted)', marginBottom: 8 }} />
+                <FolderSearch size={24} className="text-[var(--color-text-muted)] mb-2" />
                 <div>No directory watchers configured</div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="flex flex-col gap-1.5">
                 {directoryWatchers.map(renderSourceRow)}
               </div>
             )}
@@ -501,22 +358,7 @@ export default function MIRCSourcesPanel() {
             headerRight={
               <button
                 onClick={() => setShowFormType('irc_server')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '4px 10px',
-                  backgroundColor: 'var(--color-accent)',
-                  border: 'none',
-                  borderRadius: 'var(--radius)',
-                  color: 'var(--color-bg)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 10,
-                  fontWeight: 600,
-                  letterSpacing: '1px',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                }}
+                className="flex items-center gap-1.5 py-1 px-2.5 bg-[var(--color-accent)] border-0 rounded-[var(--radius)] text-[var(--color-bg)] font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] uppercase cursor-pointer"
               >
                 <Plus size={12} />
                 ADD
@@ -525,19 +367,13 @@ export default function MIRCSourcesPanel() {
           >
             {ircConnections.length === 0 ? (
               <div
-                style={{
-                  textAlign: 'center',
-                  padding: 24,
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
-                  color: 'var(--color-text-muted)',
-                }}
+                className="text-center p-6 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]"
               >
-                <Radio size={24} style={{ color: 'var(--color-text-muted)', marginBottom: 8 }} />
+                <Radio size={24} className="text-[var(--color-text-muted)] mb-2" />
                 <div>No IRC connections configured</div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="flex flex-col gap-1.5">
                 {ircConnections.map(renderSourceRow)}
               </div>
             )}

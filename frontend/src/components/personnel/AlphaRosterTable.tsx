@@ -187,54 +187,24 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div className="flex flex-col gap-3">
       {/* Search + Add */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ position: 'relative', maxWidth: 320, flex: 1 }}>
+      <div className="flex items-center gap-3">
+        <div className="relative max-w-[320px] flex-1">
           <Search
             size={14}
-            style={{
-              position: 'absolute',
-              left: 10,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'var(--color-text-muted)',
-            }}
+            className="absolute left-2.5 text-[var(--color-text-muted)]" style={{ top: '50%', transform: 'translateY(-50%)' }}
           />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search name, EDIPI, MOS, billet..."
-            style={{
-              width: '100%',
-              padding: '7px 10px 7px 30px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--color-text)',
-              backgroundColor: 'var(--color-bg)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius)',
-            }}
+            className="w-full font-[var(--font-mono)] text-[11px] text-[var(--color-text)] bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]" style={{ padding: '7px 10px 7px 30px' }}
           />
         </div>
         <button
           onClick={handleAdd}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-            padding: '6px 12px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: '1px',
-            color: 'var(--color-accent)',
-            backgroundColor: 'transparent',
-            border: '1px solid var(--color-accent)',
-            borderRadius: 'var(--radius)',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-          }}
+          className="flex items-center gap-1 py-1.5 px-3 font-[var(--font-mono)] text-[10px] font-semibold tracking-[1px] text-[var(--color-accent)] bg-transparent border border-[var(--color-accent)] rounded-[var(--radius)] cursor-pointer whitespace-nowrap"
         >
           <Plus size={12} />
           ADD MARINE
@@ -243,12 +213,7 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
 
       {/* Count */}
       <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 9,
-          color: 'var(--color-text-muted)',
-          letterSpacing: '1px',
-        }}
+        className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px]"
       >
         {filtered.length} PERSONNEL
       </div>
@@ -261,13 +226,9 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
           message="Personnel assigned to this unit will appear here"
         />
       ) : (
-      <div style={{ overflowX: 'auto' }}>
+      <div className="overflow-x-auto">
         <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            minWidth: 900,
-          }}
+          className="w-full border-collapse min-w-[900px]"
         >
           <thead>
             <tr>
@@ -282,14 +243,14 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                 >
                   {col.label}
                   {sortKey === col.key && (
-                    <span style={{ marginLeft: 4, opacity: 0.6 }}>
+                    <span className="ml-1 opacity-60">
                       {sortDir === 'asc' ? '\u25B2' : '\u25BC'}
                     </span>
                   )}
                 </th>
               ))}
-              <th style={{ ...headerStyle, width: 85, cursor: 'default' }}>LOCATION</th>
-              <th style={{ ...headerStyle, width: 90, textAlign: 'center' }}>ACTIONS</th>
+              <th className="cursor-default">LOCATION</th>
+              <th className="text-center">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -307,48 +268,34 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                 }}
               >
                 <td style={cellStyle}>
-                  <span style={{ color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                  <span className="text-[var(--color-text-bright)] font-semibold">
                     {p.last_name}
                   </span>
-                  <span style={{ color: 'var(--color-text-muted)' }}>, {p.first_name}</span>
+                  <span className="text-[var(--color-text-muted)]">, {p.first_name}</span>
                 </td>
                 <td style={cellStyle}>{p.edipi}</td>
-                <td style={{ ...cellStyle, color: 'var(--color-text-bright)', fontWeight: 600 }}>
+                <td className="font-semibold">
                   {p.rank ?? '—'}
                 </td>
                 <td style={cellStyle}>{p.pay_grade ?? '—'}</td>
                 <td style={{ ...cellStyle, color: 'var(--color-accent)' }}>{p.mos ?? '—'}</td>
                 <td style={{ ...cellStyle, maxWidth: 160 }}>{p.billet ?? '—'}</td>
                 <td style={cellStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div className="flex items-center gap-1.5">
                     <StatusDot status={p.status} />
                     <span style={{ color: getStatusColor(p.status) }}>{p.status}</span>
                   </div>
                 </td>
                 <td style={cellStyle}>
                   <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '1px 6px',
-                      borderRadius: 2,
-                      fontSize: 9,
-                      fontWeight: 600,
-                      fontFamily: 'var(--font-mono)',
-                      letterSpacing: '0.5px',
-                      color: dutyStatusColor(p.duty_status),
-                      backgroundColor: `${dutyStatusColor(p.duty_status)}15`,
-                      border: `1px solid ${dutyStatusColor(p.duty_status)}40`,
-                    }}
+                    className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-semibold font-[var(--font-mono)] tracking-[0.5px]" style={{ color: dutyStatusColor(p.duty_status), backgroundColor: `${dutyStatusColor(p.duty_status)}15`, border: `1px solid ${dutyStatusColor(p.duty_status)}40` }}
                   >
                     {p.duty_status}
                   </span>
                 </td>
                 <td style={cellStyle}>
                   <span
-                    style={{
-                      color: rifleQualColor(p.rifle_qual),
-                      fontWeight: 600,
-                    }}
+                    className="font-semibold" style={{ color: rifleQualColor(p.rifle_qual) }}
                   >
                     {p.rifle_qual ?? '—'}
                   </span>
@@ -362,68 +309,30 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                 <td style={cellStyle}>
                   {p.current_movement_id ? (
                     <span
-                      style={{
-                        display: 'inline-block',
-                        padding: '1px 6px',
-                        borderRadius: 2,
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        fontWeight: 600,
-                        letterSpacing: '0.5px',
-                        color: '#fb923c',
-                        backgroundColor: 'rgba(251, 146, 60, 0.15)',
-                        border: '1px solid rgba(251, 146, 60, 0.4)',
-                        cursor: 'pointer',
-                      }}
+                      className="inline-block py-px px-1.5 rounded-[2px] font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[#fb923c] bg-[rgba(251,146,60,0.15)] cursor-pointer" style={{ border: '1px solid rgba(251, 146, 60, 0.4)' }}
                       title={`Movement #${p.current_movement_id}`}
                     >
                       EN ROUTE
                     </span>
                   ) : (
                     <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        color: 'var(--color-text-muted)',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                     >
                       PRESENT
                     </span>
                   )}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
-                  <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                  <div className="flex gap-1.5 justify-center">
                     <button
                       onClick={() => handleEdit(p)}
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        fontWeight: 600,
-                        letterSpacing: '0.5px',
-                        color: 'var(--color-accent)',
-                        background: 'none',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: 2,
-                        padding: '2px 6px',
-                        cursor: 'pointer',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[var(--color-accent)] bg-transparent border border-[var(--color-border)] rounded-[2px] py-0.5 px-1.5 cursor-pointer"
                     >
                       EDIT
                     </button>
                     <button
                       onClick={() => handleDelete(p)}
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: 9,
-                        fontWeight: 600,
-                        letterSpacing: '0.5px',
-                        color: '#f87171',
-                        background: 'none',
-                        border: '1px solid rgba(248,113,113,0.3)',
-                        borderRadius: 2,
-                        padding: '2px 6px',
-                        cursor: 'pointer',
-                      }}
+                      className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[#f87171] bg-transparent rounded-[2px] py-0.5 px-1.5 cursor-pointer border border-[rgba(248,113,113,0.3)]"
                     >
                       DEL
                     </button>
