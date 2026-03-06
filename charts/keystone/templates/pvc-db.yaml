@@ -1,0 +1,17 @@
+{{- if not .Values.database.external }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "keystone.fullname" . }}-db
+  labels:
+    {{- include "keystone.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.database.storage.storageClass }}
+  storageClassName: {{ .Values.database.storage.storageClass }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.database.storage.size }}
+{{- end }}

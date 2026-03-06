@@ -1,0 +1,17 @@
+KEYSTONE has been deployed!
+
+1. Get the application URL:
+{{- if .Values.ingress.enabled }}
+  https://{{ .Values.ingress.host }}
+{{- else }}
+  kubectl port-forward svc/{{ include "keystone.fullname" . }}-frontend {{ .Values.frontend.port }}:{{ .Values.frontend.port }}
+  Then visit: http://localhost:{{ .Values.frontend.port }}
+{{- end }}
+
+2. Classification level: {{ .Values.classification.level }}
+
+3. Check pod status:
+  kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }}
+
+4. View backend logs:
+  kubectl logs -l app.kubernetes.io/name={{ include "keystone.name" . }}-backend -f

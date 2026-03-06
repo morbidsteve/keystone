@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 interface ConvoyPositionUpdate {
   movementId: string;
@@ -18,21 +19,23 @@ interface UseConvoyRealtimeOptions {
 }
 
 /**
- * Stub hook for future Socket.IO-based real-time convoy position updates.
- * Currently a no-op; will be wired to Socket.IO when backend support is ready.
+ * Real-time convoy position updates via the WebSocket event bus.
+ * Subscribes to "convoy:position_update" events and forwards them to the callback.
  */
 export function useConvoyRealtime(options: UseConvoyRealtimeOptions = {}) {
   const { enabled = false, onPositionUpdate } = options;
   const callbackRef = useRef(onPositionUpdate);
   callbackRef.current = onPositionUpdate;
 
+  const { isConnected, subscribe } = useWebSocket();
+
   useEffect(() => {
     if (!enabled) return;
-    // TODO: Initialize Socket.IO connection
-    // const socket = io(window.location.origin, { path: '/socket.io/' });
-    // socket.on('convoy:position_update', (data) => callbackRef.current?.(data));
-    // return () => { socket.disconnect(); };
-  }, [enabled]);
+    const unsub = subscribe('convoy:position_update', (event) => {
+      callbackRef.current?.(event as unknown as ConvoyPositionUpdate);
+    });
+    return unsub;
+  }, [enabled, subscribe]);
 
-  return { isConnected: false };
+  return { isConnected: enabled && isConnected };
 }

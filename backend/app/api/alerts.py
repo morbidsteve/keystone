@@ -12,6 +12,7 @@ from app.core.exceptions import BadRequestError, NotFoundError
 from app.core.permissions import get_accessible_units, require_role
 from app.database import get_db
 from app.models.alert import Alert, AlertRule, AlertSeverity, AlertType
+from app.middleware.audit import log_audit
 from app.models.user import Role, User
 from app.schemas.alert import (
     AlertListResponse,
@@ -153,6 +154,16 @@ async def acknowledge_alert(
     alert.acknowledged_at = datetime.now(timezone.utc)
     await db.flush()
 
+    await log_audit(
+        db=db,
+        user_id=current_user.id,
+        action="UPDATE",
+        entity_type="alert",
+        entity_id=str(alert_id),
+        unit_id=alert.unit_id,
+        details={"sub_action": "acknowledge", "alert_type": alert.alert_type.value},
+    )
+
     return AlertResponse.model_validate(alert)
 
 
@@ -179,6 +190,16 @@ async def resolve_alert(
     alert.resolved_by = current_user.id
     alert.resolved_at = datetime.now(timezone.utc)
     await db.flush()
+
+    await log_audit(
+        db=db,
+        user_id=current_user.id,
+        action="UPDATE",
+        entity_type="alert",
+        entity_id=str(alert_id),
+        unit_id=alert.unit_id,
+        details={"sub_action": "resolve", "alert_type": alert.alert_type.value},
+    )
 
     return AlertResponse.model_validate(alert)
 

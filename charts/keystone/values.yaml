@@ -1,0 +1,78 @@
+# =============================================================================
+# KEYSTONE Helm Chart — Default Values
+# =============================================================================
+
+# -- Backend (FastAPI / Uvicorn)
+backend:
+  image:
+    repository: keystone/backend
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 8000
+  resources:
+    limits:
+      cpu: "2.0"
+      memory: 1Gi
+    requests:
+      cpu: "500m"
+      memory: 256Mi
+  env:
+    envMode: development
+    simEnabled: "true"
+    corsOrigins: '["https://keystone.local"]'
+
+# -- Frontend (nginx serving built SPA)
+frontend:
+  image:
+    repository: keystone/frontend
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 8080
+  resources:
+    limits:
+      cpu: "1.0"
+      memory: 256Mi
+    requests:
+      cpu: "250m"
+      memory: 128Mi
+
+# -- PostgreSQL + PostGIS database
+database:
+  # Set external=true to use an existing database instead of deploying one
+  external: false
+  host: ""
+  port: 5432
+  name: keystone
+  user: keystone
+  password: keystone_dev
+  storage:
+    size: 10Gi
+    storageClass: ""
+
+# -- Redis
+redis:
+  # Set external=true to use an existing Redis instance
+  external: false
+  host: ""
+  port: 6379
+  password: keystone_redis_dev
+
+# -- Ingress
+ingress:
+  enabled: true
+  className: nginx
+  host: keystone.local
+  tls:
+    enabled: true
+    secretName: keystone-tls
+
+# -- Classification level (UNCLASSIFIED, CUI, SECRET, etc.)
+classification:
+  level: UNCLASSIFIED
+  bannerText: UNCLASSIFIED
+  color: green
+
+# -- Secret key for JWT signing (override in production!)
+secretKey: dev-secret-key-change-in-production

@@ -2,6 +2,7 @@
 
 import logging
 import os
+import subprocess
 import sys
 from contextlib import asynccontextmanager
 
@@ -12,6 +13,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
 from app.api import api_router
+from app.api.ws import router as ws_router
+from app.api.search import router as search_router
 from app.config import settings
 from app.database import Base, engine, async_session
 from app.middleware.request_logging import RequestLoggingMiddleware
@@ -73,10 +76,15 @@ async def lifespan(app: FastAPI):
 
     from app.database import async_session
 
-    logger.info("KEYSTONE starting up — creating database tables...")
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    logger.info("Database tables ready.")
+    if settings.ENV_MODE == "production":
+        logger.info("KEYSTONE starting up — running Alembic migrations...")
+        subprocess.run(["alembic", "upgrade", "head"], check=True, cwd="/app")
+        logger.info("Alembic migrations complete.")
+    else:
+        logger.info("KEYSTONE starting up — creating database tables...")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database tables ready.")
 
     # Seed canonical fields for schema mapping
     try:
@@ -534,8 +542,16 @@ app.add_middleware(RequestLoggingMiddleware)
 # Rate limiting
 setup_rate_limiting(app)
 
+# Prometheus metrics instrumentation
+from prometheus_fastapi_instrumentator import Instrumentator
+Instrumentator().instrument(app).expose(app)
+
 # Include all API routers under /api/v1
 app.include_router(api_router, prefix="/api/v1")
+
+# WebSocket and search routers (registered directly on app to keep /api/v1 prefix)
+app.include_router(ws_router, prefix="/api/v1")
+app.include_router(search_router, prefix="/api/v1", tags=["Search"])
 
 
 @app.get("/health")

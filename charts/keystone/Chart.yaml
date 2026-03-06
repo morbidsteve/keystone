@@ -1,0 +1,6 @@
+apiVersion: v2
+name: keystone
+description: USMC Logistics Common Operating Picture
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

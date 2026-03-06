@@ -3,10 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useAlertStore } from '@/stores/alertStore';
 import * as alertsApi from '@/api/alerts';
 import { useDashboardStore } from '@/stores/dashboardStore';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 export function useAlerts() {
   const { selectedUnitId } = useDashboardStore();
   const { alerts, unreadCount, acknowledgeAlert, setAlerts } = useAlertStore();
+  const { subscribe } = useWebSocket();
 
   const query = useQuery({
     queryKey: ['alerts', selectedUnitId],
@@ -22,6 +24,14 @@ export function useAlerts() {
       setAlerts(query.data);
     }
   }, [query.data, setAlerts]);
+
+  // Refetch alerts when a real-time "alert" event arrives via WebSocket
+  useEffect(() => {
+    const unsub = subscribe('alert', () => {
+      query.refetch();
+    });
+    return unsub;
+  }, [subscribe, query.refetch]);
 
   return {
     alerts,
