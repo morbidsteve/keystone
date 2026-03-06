@@ -23,6 +23,7 @@ import {
   getPMSchedule,
   getMaintenanceAnalytics,
 } from '@/api/maintenanceExpanded';
+import { useToast } from '@/hooks/useToast';
 
 // ---------------------------------------------------------------------------
 // Tab definitions
@@ -46,6 +47,7 @@ export default function MaintenanceDashboardPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('work-orders');
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   // Resolve numeric unit ID (for API calls)
   const numericUnitId = useMemo(() => {
@@ -90,6 +92,10 @@ export default function MaintenanceDashboardPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['maintenance-deadlines'] });
       queryClient.invalidateQueries({ queryKey: ['maintenance-analytics'] });
+      toast.success('Deadline lifted successfully');
+    },
+    onError: () => {
+      toast.danger('Failed to lift deadline');
     },
   });
 

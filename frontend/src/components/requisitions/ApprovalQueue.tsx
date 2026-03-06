@@ -8,6 +8,7 @@ import { Check, XCircle, Clock, AlertTriangle, ClipboardCheck } from 'lucide-rea
 import type { Requisition, RequisitionPriority } from '@/lib/types';
 import EmptyState from '@/components/ui/EmptyState';
 import { approveRequisition, denyRequisition } from '@/api/requisitions';
+import { useToast } from '@/hooks/useToast';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -39,6 +40,7 @@ function priorityBorder(p: RequisitionPriority): string {
 
 function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => void }) {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [denyReason, setDenyReason] = useState('');
   const [showDenyInput, setShowDenyInput] = useState(false);
   const [approveQty, setApproveQty] = useState<number>(req.quantity_requested);
@@ -51,11 +53,25 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
 
   const approveMut = useMutation({
     mutationFn: () => approveRequisition(req.id, { quantity_approved: approveQty }),
-    onSuccess: () => { setShowApproveConfirm(false); invalidateAll(); },
+    onSuccess: () => {
+      setShowApproveConfirm(false);
+      invalidateAll();
+      toast.success('Requisition approved');
+    },
+    onError: () => {
+      toast.danger('Failed to approve requisition');
+    },
   });
   const denyMut = useMutation({
     mutationFn: () => denyRequisition(req.id, { reason: denyReason }),
-    onSuccess: () => { setShowDenyInput(false); invalidateAll(); },
+    onSuccess: () => {
+      setShowDenyInput(false);
+      invalidateAll();
+      toast.warning('Requisition denied');
+    },
+    onError: () => {
+      toast.danger('Failed to deny requisition');
+    },
   });
 
   const labelStyle: React.CSSProperties = {

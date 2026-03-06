@@ -12,6 +12,7 @@ import { Role, Echelon, type User, type Unit } from '@/lib/types';
 import { ECHELON_ORDER, ECHELON_ALLOWED_CHILDREN } from '@/lib/constants';
 import { mockApi } from '@/api/mockClient';
 import { useClassificationStore } from '@/stores/classificationStore';
+import { useToast } from '@/hooks/useToast';
 
 const CLASSIFICATION_OPTIONS = [
   { level: 'UNCLASSIFIED', color: 'green', label: 'UNCLASSIFIED' },
@@ -184,6 +185,7 @@ const addButtonStyle: React.CSSProperties = {
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'users' | 'units' | 'classification' | 'tiles' | 'scenarios' | 'roles' | 'simulation'>('users');
   const { classification, updateClassification } = useClassificationStore();
+  const toast = useToast();
 
   // ── User management state ──
   const [users, setUsers] = useState(initialUsers);
@@ -283,6 +285,7 @@ export default function AdminPage() {
       setUsers((prev) => [...prev, newUser]);
     }
     setUserModalOpen(false);
+    toast.success(editingUser ? 'User updated successfully' : 'User created successfully');
   };
 
   // ── Unit modal handlers ──
@@ -313,8 +316,10 @@ export default function AdminPage() {
       }
       const updated = await mockApi.getUnits();
       setUnits(updated);
+      toast.success(editingUnit ? 'Unit updated successfully' : 'Unit created successfully');
     } catch (err) {
       console.error('Save unit failed:', err);
+      toast.danger('Failed to save unit');
     }
     setUnitModalOpen(false);
   };
@@ -329,8 +334,10 @@ export default function AdminPage() {
       const updated = await mockApi.getUnits();
       setUnits(updated);
       setDeleteConfirmUnit(null);
+      toast.success('Unit deleted successfully');
     } catch (err) {
       setDeleteError(err instanceof Error ? err.message : 'Delete failed');
+      toast.danger('Failed to delete unit');
     }
   };
 
@@ -355,9 +362,10 @@ export default function AdminPage() {
         color: selectedColor,
       });
       setSaveSuccess(true);
+      toast.success('Classification settings saved');
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch {
-      // Error handled by store
+      toast.danger('Failed to save classification settings');
     } finally {
       setIsSaving(false);
     }

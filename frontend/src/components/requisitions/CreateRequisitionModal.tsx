@@ -8,6 +8,7 @@ import { X } from 'lucide-react';
 import type { SupplyCatalogItem, RequisitionPriority } from '@/lib/types';
 import SupplySelector from '@/components/catalog/SupplySelector';
 import { createRequisition, submitRequisition } from '@/api/requisitions';
+import { useToast } from '@/hooks/useToast';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -47,6 +48,7 @@ const PRIORITY_OPTIONS: { value: RequisitionPriority; label: string }[] = [
 
 export default function CreateRequisitionModal({ isOpen, onClose, unitId }: CreateRequisitionModalProps) {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [selectedItem, setSelectedItem] = useState<SupplyCatalogItem | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [priority, setPriority] = useState<RequisitionPriority>('06');
@@ -97,6 +99,10 @@ export default function CreateRequisitionModal({ isOpen, onClose, unitId }: Crea
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['requisitions'] });
       onClose();
+      toast.success('Requisition created successfully');
+    },
+    onError: () => {
+      toast.danger('Failed to create requisition');
     },
   });
 

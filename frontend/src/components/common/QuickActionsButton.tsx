@@ -1,35 +1,43 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, ChevronDown } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
 
 interface QuickAction {
   label: string;
   onClick: () => void;
 }
 
-const PAGE_ACTIONS: Record<string, { label: string }[]> = {
+interface ActionDef {
+  label: string;
+  route: string;
+  tab?: string;
+  toastMsg: string;
+}
+
+const PAGE_ACTIONS: Record<string, ActionDef[]> = {
   '/supply': [
-    { label: 'New Requisition' },
-    { label: 'Record Receipt' },
+    { label: 'New Requisition', route: '/requisitions', toastMsg: 'Navigated to Requisitions — use the NEW REQUISITION button to create' },
+    { label: 'Record Receipt', route: '/supply', toastMsg: 'Use the Supply page to record a receipt' },
   ],
   '/equipment': [
-    { label: 'Create Work Order' },
-    { label: 'Report Fault' },
+    { label: 'Create Work Order', route: '/maintenance', toastMsg: 'Navigated to Maintenance — open Work Orders tab to create' },
+    { label: 'Report Fault', route: '/maintenance', toastMsg: 'Navigated to Maintenance — report a fault via Work Orders' },
   ],
   '/maintenance': [
-    { label: 'New Work Order' },
-    { label: 'Schedule PM' },
+    { label: 'New Work Order', route: '/maintenance', toastMsg: 'Use the Work Orders tab to create a new work order' },
+    { label: 'Schedule PM', route: '/maintenance', toastMsg: 'Use the PM Schedule tab to schedule preventive maintenance' },
   ],
   '/transportation': [
-    { label: 'Plan Convoy' },
-    { label: 'Create Lift Request' },
+    { label: 'Plan Convoy', route: '/transportation', toastMsg: 'Use the Convoy Planning tab to plan a new convoy' },
+    { label: 'Create Lift Request', route: '/transportation', toastMsg: 'Use the Lift Requests tab to create a new request' },
   ],
   '/personnel': [
-    { label: 'Add Marine' },
-    { label: 'Record Qualification' },
+    { label: 'Add Marine', route: '/personnel', toastMsg: 'Use the Alpha Roster tab to add a new Marine' },
+    { label: 'Record Qualification', route: '/personnel', toastMsg: 'Use the Qualifications tab to record a qualification' },
   ],
   '/requisitions': [
-    { label: 'New Requisition' },
+    { label: 'New Requisition', route: '/requisitions', toastMsg: 'Use the NEW REQUISITION button above to create' },
   ],
 };
 
@@ -52,6 +60,8 @@ const buttonStyle: React.CSSProperties = {
 
 export default function QuickActionsButton() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const toast = useToast();
   const [open, setOpen] = useState(false);
 
   const actionDefs = PAGE_ACTIONS[location.pathname];
@@ -60,8 +70,11 @@ export default function QuickActionsButton() {
   const actions: QuickAction[] = actionDefs.map((a) => ({
     label: a.label,
     onClick: () => {
-      console.log(`[QuickAction] ${a.label}`);
       setOpen(false);
+      if (a.route !== location.pathname) {
+        navigate(a.route);
+      }
+      toast.info(a.toastMsg);
     },
   }));
 

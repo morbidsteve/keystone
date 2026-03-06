@@ -28,6 +28,7 @@ import {
 } from '@/api/transportation';
 import type { Movement, ConvoyPlan, MarchTableData } from '@/lib/types';
 import { useDashboardStore } from '@/stores/dashboardStore';
+import { useToast } from '@/hooks/useToast';
 
 // ---------------------------------------------------------------------------
 // Tab definitions
@@ -64,6 +65,7 @@ export default function TransportationPage() {
 
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   // -------------------------------------------------------------------------
   // Legacy movements for Active tab (ConvoyMap + MovementTracker)
@@ -74,10 +76,15 @@ export default function TransportationPage() {
   }, [selectedUnitId]);
 
   const handleSaveRoute = async (data: Partial<Movement>) => {
-    await mockApi.createMovement(data);
-    const updated = await mockApi.getMovements({ unitId: selectedUnitId ?? undefined });
-    setMovements(updated);
-    setRoutePlannerOpen(false);
+    try {
+      await mockApi.createMovement(data);
+      const updated = await mockApi.getMovements({ unitId: selectedUnitId ?? undefined });
+      setMovements(updated);
+      setRoutePlannerOpen(false);
+      toast.success('Route saved successfully');
+    } catch {
+      toast.danger('Failed to save route');
+    }
   };
 
   // -------------------------------------------------------------------------
@@ -108,17 +115,35 @@ export default function TransportationPage() {
 
   const approveMutation = useMutation({
     mutationFn: (planId: number) => approveConvoyPlan(planId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['convoy-plans'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['convoy-plans'] });
+      toast.success('Convoy plan approved');
+    },
+    onError: () => {
+      toast.danger('Failed to approve convoy plan');
+    },
   });
 
   const executeMutation = useMutation({
     mutationFn: (planId: number) => executeConvoyPlan(planId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['convoy-plans'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['convoy-plans'] });
+      toast.success('Convoy plan executed');
+    },
+    onError: () => {
+      toast.danger('Failed to execute convoy plan');
+    },
   });
 
   const cancelMutation = useMutation({
     mutationFn: (planId: number) => cancelConvoyPlan(planId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['convoy-plans'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['convoy-plans'] });
+      toast.warning('Convoy plan canceled');
+    },
+    onError: () => {
+      toast.danger('Failed to cancel convoy plan');
+    },
   });
 
   const handleSelectPlan = (plan: ConvoyPlan) => {
