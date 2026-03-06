@@ -151,7 +151,8 @@
    -------------------------------------------------------------------------- */
 
 .map-full-viewport {
-  height: calc(100vh - 48px);
+  /* Fill the padded main area: negate padding (20px top/bottom, 24px sides) */
+  height: calc(100% + 40px);
   margin: -20px -24px;
   overflow: hidden;
 }
@@ -269,7 +270,7 @@
 
   /* Map page: account for reduced padding on mobile */
   .map-full-viewport {
-    height: calc(100vh - 48px);
+    height: calc(100% + 24px);
     margin: -12px;
   }
 
