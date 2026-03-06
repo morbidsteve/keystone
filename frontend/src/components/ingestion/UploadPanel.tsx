@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Upload, FileText, X, Check, Loader } from 'lucide-react';
 import Card from '@/components/ui/Card';
+import { useToast } from '@/hooks/useToast';
 
 interface UploadedFile {
   file: File;
@@ -13,6 +14,7 @@ export default function UploadPanel() {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
 
   const acceptedTypes = ['.txt', '.csv', '.xlsx', '.xls'];
 
@@ -58,18 +60,20 @@ export default function UploadPanel() {
       progress += Math.random() * 30;
       if (progress >= 100) {
         clearInterval(interval);
-        setFiles((prev) =>
-          prev.map((f, i) =>
+        setFiles((prev) => {
+          const fileName = prev[index]?.file.name ?? 'File';
+          toast.success(`Data ingested successfully: ${fileName}`);
+          return prev.map((f, i) =>
             i === index ? { ...f, status: 'success' as const, progress: 100 } : f,
-          ),
-        );
+          );
+        });
       } else {
         setFiles((prev) =>
           prev.map((f, i) => (i === index ? { ...f, progress: Math.min(progress, 95) } : f)),
         );
       }
     }, 300);
-  }, []);
+  }, [toast]);
 
   const uploadAll = useCallback(() => {
     files.forEach((f, i) => {

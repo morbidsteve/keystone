@@ -5,6 +5,8 @@
 import { useState, useMemo } from 'react';
 import { Search, Users, Plus } from 'lucide-react';
 import type { PersonnelRecord, RifleQual, DutyStatusType } from '@/lib/types';
+import { getStatusColor } from '@/lib/utils';
+import StatusDot from '@/components/ui/StatusDot';
 import EmptyState from '@/components/ui/EmptyState';
 import AddEditPersonnelModal from './AddEditPersonnelModal';
 import { deletePersonnel } from '@/api/personnel';
@@ -317,7 +319,12 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                 <td style={cellStyle}>{p.pay_grade ?? '—'}</td>
                 <td style={{ ...cellStyle, color: 'var(--color-accent)' }}>{p.mos ?? '—'}</td>
                 <td style={{ ...cellStyle, maxWidth: 160 }}>{p.billet ?? '—'}</td>
-                <td style={cellStyle}>{p.status}</td>
+                <td style={cellStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <StatusDot status={p.status} />
+                    <span style={{ color: getStatusColor(p.status) }}>{p.status}</span>
+                  </div>
+                </td>
                 <td style={cellStyle}>
                   <span
                     style={{

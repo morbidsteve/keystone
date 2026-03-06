@@ -194,6 +194,11 @@
     display: flex;
   }
 
+  /* Hide collapse toggle on mobile */
+  .sidebar-collapse-toggle {
+    display: none !important;
+  }
+
   /* Grids collapse to 1 column */
   .grid-responsive-6col {
     grid-template-columns: repeat(2, 1fr);
@@ -290,6 +295,33 @@
   .fault-metadata {
     flex-wrap: wrap;
     gap: 4px !important;
+  }
+
+  /* Tables: horizontal scroll on mobile */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  th, td {
+    min-width: 80px;
+    white-space: nowrap;
+  }
+
+  /* Buttons: minimum touch-friendly height */
+  button {
+    min-height: 36px;
+  }
+
+  /* Modals: full-screen on mobile */
+  .modal-overlay > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
   }
 }
 

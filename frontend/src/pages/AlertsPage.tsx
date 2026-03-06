@@ -10,6 +10,7 @@ import { getAlerts, acknowledgeAlert, resolveAlert, getAlertSummary, getAlertRul
 import { getRecommendations, approveRecommendation, denyRecommendation } from '@/api/predictions';
 import { getNotifications, markNotificationRead, markAllNotificationsRead } from '@/api/notifications';
 import { useDashboardStore } from '@/stores/dashboardStore';
+import { useToast } from '@/hooks/useToast';
 
 type TabKey = 'alerts' | 'rules' | 'notifications' | 'preferences' | 'predictions';
 
@@ -55,6 +56,7 @@ function AlertsTab() {
   const [showResolved, setShowResolved] = useState(false);
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const { data: apiAlerts } = useQuery({
     queryKey: ['alerts', 'page', selectedUnitId],
@@ -71,6 +73,10 @@ function AlertsTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
       queryClient.invalidateQueries({ queryKey: ['alert-summary'] });
+      toast.success('Alert acknowledged');
+    },
+    onError: () => {
+      toast.danger('Failed to acknowledge alert');
     },
   });
 
@@ -79,6 +85,10 @@ function AlertsTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
       queryClient.invalidateQueries({ queryKey: ['alert-summary'] });
+      toast.success('Alert resolved');
+    },
+    onError: () => {
+      toast.danger('Failed to resolve alert');
     },
   });
 
@@ -379,6 +389,7 @@ const OPERATOR_LABELS: Record<string, string> = {
 function RulesTab() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const { data: rules = [] } = useQuery<AlertRule[]>({
     queryKey: ['alert-rules'],
@@ -390,13 +401,21 @@ function RulesTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alert-rules'] });
       setShowCreateForm(false);
+      toast.success('Alert rule created');
+    },
+    onError: () => {
+      toast.danger('Failed to create alert rule');
     },
   });
 
   const toggleMutation = useMutation({
     mutationFn: (rule: AlertRule) => updateAlertRule(rule.id, { is_active: !rule.is_active }),
-    onSuccess: () => {
+    onSuccess: (_data, rule) => {
       queryClient.invalidateQueries({ queryKey: ['alert-rules'] });
+      toast.success(`Rule ${rule.is_active ? 'disabled' : 'enabled'}`);
+    },
+    onError: () => {
+      toast.danger('Failed to update alert rule');
     },
   });
 
@@ -404,6 +423,10 @@ function RulesTab() {
     mutationFn: (id: number) => deleteAlertRule(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alert-rules'] });
+      toast.success('Alert rule deleted');
+    },
+    onError: () => {
+      toast.danger('Failed to delete alert rule');
     },
   });
 
@@ -832,6 +855,7 @@ function RulesTab() {
 function NotificationsTab() {
   const [unreadOnly, setUnreadOnly] = useState(false);
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const { data: notifications = [] } = useQuery<Notification[]>({
     queryKey: ['notifications-page', unreadOnly],
@@ -844,6 +868,7 @@ function NotificationsTab() {
       queryClient.invalidateQueries({ queryKey: ['notifications-page'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] });
+      toast.success('Notification marked as read');
     },
   });
 
@@ -853,6 +878,7 @@ function NotificationsTab() {
       queryClient.invalidateQueries({ queryKey: ['notifications-page'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] });
+      toast.success('All notifications marked as read');
     },
   });
 
@@ -1033,6 +1059,7 @@ function PredictionsTab() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [denyNotes, setDenyNotes] = useState<Record<number, string>>({});
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const { data: recommendations = [] } = useQuery<LogisticsRecommendation[]>({
     queryKey: ['predictions', statusFilter === 'ALL' ? undefined : statusFilter],
@@ -1041,12 +1068,24 @@ function PredictionsTab() {
 
   const approveMutation = useMutation({
     mutationFn: ({ id, notes }: { id: number; notes?: string }) => approveRecommendation(id, notes),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['predictions'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['predictions'] });
+      toast.success('Recommendation approved');
+    },
+    onError: () => {
+      toast.danger('Failed to approve recommendation');
+    },
   });
 
   const denyMutation = useMutation({
     mutationFn: ({ id, notes }: { id: number; notes?: string }) => denyRecommendation(id, notes),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['predictions'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['predictions'] });
+      toast.success('Recommendation denied');
+    },
+    onError: () => {
+      toast.danger('Failed to deny recommendation');
+    },
   });
 
   const pendingCount = recommendations.filter(r => r.status === 'PENDING').length;
