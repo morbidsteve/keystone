@@ -200,7 +200,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
   return (
     <aside
-      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''} bg-bg-elevated border-r border-border flex flex-col relative z-20 overflow-hidden h-[100vh]`}
+      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''} bg-bg-elevated border-r border-border flex flex-col relative z-20 overflow-hidden h-full`}
       role="complementary"
       aria-label="Sidebar"
       style={{ width: sidebarWidth, minWidth: sidebarWidth, transition: 'width 0.2s ease, min-width 0.2s ease' }}
