@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
@@ -115,14 +115,23 @@ const navGroups: NavGroup[] = [
   },
 ];
 
-function loadCollapsedState(): Record<string, boolean> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // ignore
+/** Find which nav group contains the given pathname */
+function findGroupForPath(pathname: string): string | null {
+  for (const group of navGroups) {
+    if (group.items.some((item) => pathname.startsWith(item.to))) {
+      return group.key;
+    }
   }
-  return {};
+  return null;
+}
+
+/** Build initial collapsed state: all groups collapsed except the one matching the current route */
+function buildInitialCollapsedState(activeGroupKey: string | null): Record<string, boolean> {
+  const state: Record<string, boolean> = {};
+  for (const group of navGroups) {
+    state[group.key] = group.key !== activeGroupKey;
+  }
+  return state;
 }
 
 interface SidebarProps {
@@ -131,9 +140,13 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
+  const location = useLocation();
   const user = useAuthStore((s) => s.user);
   const { selectedUnitId, setSelectedUnitId } = useDashboardStore();
   const { hasPermission } = usePermission();
+
+  // Track which groups the user has manually toggled (won't be auto-collapsed)
+  const manuallyToggledRef = useRef<Set<string>>(new Set());
 
   // Dynamic badge counts
   const alertUnreadCount = useAlertStore((s) => s.unreadCount);
@@ -170,22 +183,45 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
     badgeMap['/maintenance'] = { count: maintenanceCount, color: 'var(--color-warning)', textColor: '#000' };
   }
 
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(loadCollapsedState);
+  // Initialize collapsed state: only the active group is expanded
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>(() => {
+    const activeGroup = findGroupForPath(location.pathname);
+    return buildInitialCollapsedState(activeGroup);
+  });
 
   // Icon-only collapse mode (desktop only)
   const [isCollapsedMode, setIsCollapsedMode] = useState(() =>
     localStorage.getItem(COLLAPSED_MODE_KEY) === 'true',
   );
 
+  // When the route changes, auto-expand the active group and collapse others
+  // (but respect manually toggled groups)
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(collapsed));
-  }, [collapsed]);
+    const activeGroup = findGroupForPath(location.pathname);
+    setCollapsed((prev) => {
+      const next: Record<string, boolean> = {};
+      for (const group of navGroups) {
+        if (group.key === activeGroup) {
+          // Always expand the active group
+          next[group.key] = false;
+        } else if (manuallyToggledRef.current.has(group.key)) {
+          // Keep manually toggled groups as-is
+          next[group.key] = prev[group.key] ?? true;
+        } else {
+          // Auto-collapse inactive, non-manually-toggled groups
+          next[group.key] = true;
+        }
+      }
+      return next;
+    });
+  }, [location.pathname]);
 
   useEffect(() => {
     localStorage.setItem(COLLAPSED_MODE_KEY, String(isCollapsedMode));
   }, [isCollapsedMode]);
 
   const toggleGroup = useCallback((key: string) => {
+    manuallyToggledRef.current.add(key);
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 

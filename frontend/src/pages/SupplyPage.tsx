@@ -1,16 +1,30 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { SupplyClass, SupplyStatus } from '@/lib/types';
 import { SUPPLY_CLASS_SHORT } from '@/lib/constants';
 import SupplyTable from '@/components/supply/SupplyTable';
 import SupplyClassBreakdown from '@/components/supply/SupplyClassBreakdown';
 import DOSCalculator from '@/components/supply/DOSCalculator';
 import ConsumptionChart from '@/components/dashboard/ConsumptionChart';
+import DataFreshness from '@/components/ui/DataFreshness';
 import { useDashboardStore } from '@/stores/dashboardStore';
+import { getSupplyRecords } from '@/api/supply';
 
 export default function SupplyPage() {
   const [classFilter, setClassFilter] = useState<SupplyClass | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<SupplyStatus | undefined>(undefined);
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
+
+  const { dataUpdatedAt, isRefetching, refetch } = useQuery({
+    queryKey: ['supply', selectedUnitId, classFilter, statusFilter],
+    queryFn: () =>
+      getSupplyRecords({
+        unitId: selectedUnitId ?? undefined,
+        supplyClass: classFilter,
+        status: statusFilter,
+      }),
+    retry: false,
+  });
 
   return (
     <div className="animate-fade-in flex flex-col gap-4">
@@ -56,6 +70,14 @@ export default function SupplyPage() {
             <option value={SupplyStatus.AMBER}>AMBER</option>
             <option value={SupplyStatus.RED}>RED</option>
           </select>
+        </div>
+
+        <div className="ml-auto self-end">
+          <DataFreshness
+            lastUpdated={dataUpdatedAt ? new Date(dataUpdatedAt) : null}
+            isRefreshing={isRefetching}
+            onRefresh={() => refetch()}
+          />
         </div>
       </div>
 

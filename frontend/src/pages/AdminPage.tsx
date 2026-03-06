@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Users, Settings, Shield, Layers, Plus, Edit3, Save, Check, X, Trash2, Crosshair, KeyRound, Play } from 'lucide-react';
 import Card from '@/components/ui/Card';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import StatusBadge from '@/components/ui/StatusBadge';
 import StatusDot from '@/components/ui/StatusDot';
 import UnitTreeView from '@/components/admin/UnitTreeView';
@@ -200,6 +201,8 @@ export default function AdminPage() {
     is_active: true,
   });
 
+  const [deactivateTarget, setDeactivateTarget] = useState<User | null>(null);
+
   // ── Unit configuration state ──
   const [units, setUnits] = useState<Unit[]>([]);
   const [unitModalOpen, setUnitModalOpen] = useState(false);
@@ -286,6 +289,18 @@ export default function AdminPage() {
     }
     setUserModalOpen(false);
     toast.success(editingUser ? 'User updated successfully' : 'User created successfully');
+  };
+
+  const handleToggleActive = () => {
+    if (!deactivateTarget) return;
+    const newActive = !deactivateTarget.is_active;
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === deactivateTarget.id ? { ...u, is_active: newActive } : u,
+      ),
+    );
+    toast.success(newActive ? 'User reactivated' : 'User deactivated');
+    setDeactivateTarget(null);
   };
 
   // ── Unit modal handlers ──
@@ -421,7 +436,15 @@ export default function AdminPage() {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th style={tableHeaderStyle}>STATUS</th>
+                  <th style={tableHeaderStyle} title="GREEN = Active, RED = Disabled/Locked">
+                    <span className="flex items-center gap-1">
+                      STATUS
+                      <span className="inline-flex items-center gap-0.5 text-[8px] font-normal tracking-normal text-[var(--color-text-muted)]">
+                        (<span className="inline-block w-[6px] h-[6px] rounded-full bg-[#40c057]" />Active
+                        <span className="inline-block w-[6px] h-[6px] rounded-full bg-[#ff6b6b] ml-0.5" />Locked)
+                      </span>
+                    </span>
+                  </th>
                   <th style={tableHeaderStyle}>USERNAME</th>
                   <th style={tableHeaderStyle}>NAME</th>
                   <th style={tableHeaderStyle}>ROLE</th>
@@ -442,7 +465,7 @@ export default function AdminPage() {
                       (e.currentTarget.style.backgroundColor = 'transparent')
                     }
                   >
-                    <td style={tableCellStyle}>
+                    <td style={tableCellStyle} title={user.is_active ? 'Active' : 'Disabled / Locked'}>
                       <StatusDot status={user.is_active ? 'GREEN' : 'RED'} />
                     </td>
                     <td style={{ ...tableCellStyle, color: 'var(--color-text-bright)' }}>
@@ -458,16 +481,37 @@ export default function AdminPage() {
                         {user.role}
                       </span>
                     </td>
-                    <td style={tableCellStyle}>{user.unit_id ?? '—'}</td>
+                    <td style={tableCellStyle}>
+                      {user.unit_id != null
+                        ? (() => {
+                            const unit = units.find((u) => u.id === String(user.unit_id));
+                            return unit
+                              ? <span title={unit.name}>{unit.abbreviation || unit.name}</span>
+                              : String(user.unit_id);
+                          })()
+                        : '—'}
+                    </td>
                     <td style={{ ...tableCellStyle, color: 'var(--color-text-muted)' }}>
                       {user.created_at
                         ? new Date(user.created_at).toLocaleDateString()
                         : '—'}
                     </td>
                     <td style={tableCellStyle}>
-                      <button onClick={() => openEditUser(user)} style={actionBtnStyle}>
-                        <Edit3 size={9} /> EDIT
-                      </button>
+                      <div className="flex gap-1.5">
+                        <button onClick={() => openEditUser(user)} style={actionBtnStyle}>
+                          <Edit3 size={9} /> EDIT
+                        </button>
+                        <button
+                          onClick={() => setDeactivateTarget(user)}
+                          style={{
+                            ...actionBtnStyle,
+                            color: user.is_active ? 'var(--color-danger)' : 'var(--color-success)',
+                            borderColor: user.is_active ? 'rgba(255,107,107,0.3)' : 'rgba(34,197,94,0.3)',
+                          }}
+                        >
+                          {user.is_active ? 'DEACTIVATE' : 'ACTIVATE'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -994,6 +1038,23 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {/* ── User Deactivate/Activate Confirmation ── */}
+      <ConfirmDialog
+        isOpen={deactivateTarget !== null}
+        title={deactivateTarget?.is_active ? 'DEACTIVATE USER' : 'ACTIVATE USER'}
+        message={
+          deactivateTarget
+            ? deactivateTarget.is_active
+              ? `Deactivate ${deactivateTarget.full_name}? They will lose access to the system.`
+              : `Reactivate ${deactivateTarget.full_name}? They will regain access to the system.`
+            : ''
+        }
+        confirmLabel={deactivateTarget?.is_active ? 'DEACTIVATE' : 'ACTIVATE'}
+        variant={deactivateTarget?.is_active ? 'danger' : 'default'}
+        onConfirm={handleToggleActive}
+        onCancel={() => setDeactivateTarget(null)}
+      />
     </div>
   );
 }

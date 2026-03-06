@@ -4,24 +4,31 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   flexRender,
   createColumnHelper,
   type SortingState,
 } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowUpDown, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
-import { type EquipmentRecord } from '@/lib/types';
+import { ArrowUpDown, ArrowUp, ArrowDown, ChevronRight, Filter } from 'lucide-react';
+import { type EquipmentRecord, SupplyStatus } from '@/lib/types';
 import { getStatusColor } from '@/lib/utils';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { getEquipmentRecords } from '@/api/equipment';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import ExportMenu from '@/components/common/ExportMenu';
-import { useVirtualRows } from '@/hooks/useVirtualRows';
+import TablePagination from '@/components/ui/TablePagination';
 
 const columnHelper = createColumnHelper<EquipmentRecord>();
 
+type EquipmentStatusFilter = 'ALL' | 'MC' | 'NMC' | 'DEADLINE';
+
 export default function ReadinessTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState<EquipmentStatusFilter>('ALL');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const navigate = useNavigate();
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
@@ -30,7 +37,27 @@ export default function ReadinessTable() {
     queryFn: () => getEquipmentRecords({ unitId: selectedUnitId ?? undefined }),
   });
 
-  const tableData = useMemo(() => apiData?.data || [], [apiData]);
+  const tableData = useMemo(() => {
+    let data = apiData?.data || [];
+
+    // Status filter
+    if (statusFilter !== 'ALL') {
+      data = data.filter((row) => {
+        switch (statusFilter) {
+          case 'MC':
+            return row.notMissionCapable === 0;
+          case 'NMC':
+            return row.notMissionCapable > 0;
+          case 'DEADLINE':
+            return row.status === SupplyStatus.RED;
+          default:
+            return true;
+        }
+      });
+    }
+
+    return data;
+  }, [apiData, statusFilter]);
 
   const columns = useMemo(
     () => [
@@ -79,14 +106,27 @@ export default function ReadinessTable() {
   const table = useReactTable({
     data: tableData,
     columns,
-    state: { sorting },
+    state: { sorting, globalFilter },
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const rows = table.getRowModel().rows;
-  const { parentRef, virtualizer } = useVirtualRows({ count: rows.length, estimateSize: 36 });
+  const allRows = table.getRowModel().rows;
+  const totalFiltered = allRows.length;
+
+  // Pagination slice
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return allRows.slice(start, start + pageSize);
+  }, [allRows, currentPage, pageSize]);
+
+  // Reset page when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [globalFilter, statusFilter]);
 
   const exportData = useMemo(
     () =>
@@ -116,22 +156,53 @@ export default function ReadinessTable() {
     { key: 'status', header: 'Status' },
   ];
 
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
   return (
     <div>
-      {/* Export control */}
-      <div className="mb-3 flex items-center justify-end">
-        <ExportMenu
-          data={exportData}
-          filename="equipment-readiness"
-          title="Equipment Readiness Report"
-          columns={exportColumns}
+      {/* Search + Status Filter + Export */}
+      <div className="mb-3 flex items-center gap-3 flex-wrap">
+        <Filter size={14} className="text-[var(--color-text-muted)]" />
+        <input
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          placeholder="Search type, TAMCN, unit..."
+          className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] py-1.5 px-2.5 font-[var(--font-mono)] text-xs text-[var(--color-text)] w-[260px]"
         />
+        <div>
+          <label
+            className="font-[var(--font-mono)] text-[9px] uppercase tracking-[1.5px] text-[var(--color-text-muted)] block mb-1"
+          >
+            STATUS
+          </label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as EquipmentStatusFilter)}
+            className="py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[11px]"
+          >
+            <option value="ALL">ALL</option>
+            <option value="MC">MC</option>
+            <option value="NMC">NMC</option>
+            <option value="DEADLINE">DEADLINE</option>
+          </select>
+        </div>
+        <div className="ml-auto">
+          <ExportMenu
+            data={exportData}
+            filename="equipment-readiness"
+            title="Equipment Readiness Report"
+            columns={exportColumns}
+          />
+        </div>
       </div>
 
       <div
         className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
       >
-        <div ref={parentRef} style={{ maxHeight: 600, overflow: 'auto' }}>
+        <div style={{ overflow: 'auto' }}>
           <table className="w-full border-collapse">
             <thead className="sticky top-0 z-10 bg-[var(--color-bg-elevated)]">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -159,44 +230,44 @@ export default function ReadinessTable() {
                 </tr>
               ))}
             </thead>
-            <tbody style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
-              {virtualizer.getVirtualItems().map((virtualRow) => {
-                const row = rows[virtualRow.index];
-                return (
-                  <tr
-                    key={row.id}
-                    className="cursor-pointer transition-colors duration-[var(--transition)]"
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: virtualRow.size,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                    onClick={() => navigate(`/equipment/${row.original.id}`)}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.backgroundColor = 'transparent')
-                    }
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)]" style={{ color: cell.column.id === 'type' ? 'var(--color-text-bright)' : 'var(--color-text)', textAlign: ['authorized', 'onHand', 'missionCapable', 'notMissionCapable', 'readinessPercent'].includes(cell.column.id)
+            <tbody>
+              {paginatedRows.map((row) => (
+                <tr
+                  key={row.id}
+                  className="cursor-pointer transition-colors duration-[var(--transition)]"
+                  onClick={() => navigate(`/equipment/${row.original.id}`)}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)]" style={{ color: cell.column.id === 'type' ? 'var(--color-text-bright)' : 'var(--color-text)', textAlign: ['authorized', 'onHand', 'missionCapable', 'notMissionCapable', 'readinessPercent'].includes(cell.column.id)
                               ? 'right'
                               : 'left' }}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="border-t border-t-[var(--color-border)]">
+          <TablePagination
+            totalItems={totalFiltered}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </div>
       </div>
     </div>

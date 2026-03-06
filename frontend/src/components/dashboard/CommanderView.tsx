@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '@/hooks/useDashboard';
 import { useAlerts } from '@/hooks/useAlerts';
 import SupplyStatusCard from './SupplyStatusCard';
@@ -7,7 +8,7 @@ import SustainabilityTimeline from './SustainabilityTimeline';
 import ConsumptionChart from './ConsumptionChart';
 import AlertBanner from './AlertBanner';
 import Card from '@/components/ui/Card';
-import { CardSkeleton } from '@/components/ui/LoadingSkeleton';
+import { CardSkeleton, TableSkeleton, Skeleton } from '@/components/ui/LoadingSkeleton';
 import StatusDot from '@/components/ui/StatusDot';
 import {
   SupplyClass,
@@ -18,6 +19,16 @@ import {
 } from '@/lib/types';
 import { SUPPLY_CLASS_SHORT } from '@/lib/constants';
 import { getStatusColor, formatNumber } from '@/lib/utils';
+
+// Route mapping for BFC status tiles
+const TILE_ROUTES: Record<string, string> = {
+  SUPPLY: '/supply',
+  MAINTENANCE: '/maintenance',
+  TRANSPORTATION: '/transportation',
+  ENGINEERING: '/equipment',
+  'HEALTH SVCS': '/medical',
+  SERVICES: '/readiness',
+};
 
 // Demo data for standalone mode
 const demoSupplyData: SupplyClassSummary[] = [
@@ -36,6 +47,8 @@ const demoAlerts: Alert[] = [
 ];
 
 export default function CommanderView() {
+  const navigate = useNavigate();
+  const [hoveredTile, setHoveredTile] = useState<string | null>(null);
   const { summary, supplyOverview, readiness, sustainability, isLoading } = useDashboard();
   const { alerts, acknowledgeAlert } = useAlerts();
 
@@ -81,11 +94,24 @@ export default function CommanderView() {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
+        {/* BFC status cards row */}
         <div className="grid-responsive-6col">
           {Array.from({ length: 6 }).map((_, i) => (
             <CardSkeleton key={i} />
           ))}
         </div>
+        {/* Supply class status + Equipment readiness */}
+        <div className="grid-responsive-2fr1fr">
+          <TableSkeleton rows={4} />
+          <Skeleton variant="chart" />
+        </div>
+        {/* Sustainability + Consumption charts */}
+        <div className="grid-responsive-2col">
+          <Skeleton variant="chart" />
+          <Skeleton variant="chart" />
+        </div>
+        {/* Active alerts */}
+        <Skeleton variant="table" />
       </div>
     );
   }
@@ -96,16 +122,31 @@ export default function CommanderView() {
       <div className="grid-responsive-6col">
         {statusTiles.map((tile) => {
           const color = getStatusColor(tile.status);
+          const route = TILE_ROUTES[tile.label];
+          const isHovered = hoveredTile === tile.label;
           return (
             <div
               key={tile.label}
-              className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] py-3 px-3.5 cursor-pointer" style={{ borderTop: `2px solid ${color}`, transition: 'background-color var(--transition)' }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = 'var(--color-bg-elevated)')
-              }
+              role="button"
+              tabIndex={0}
+              className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] py-3 px-3.5 cursor-pointer relative"
+              style={{
+                borderTop: `2px solid ${color}`,
+                borderColor: isHovered ? 'var(--color-border-strong)' : undefined,
+                transition: 'background-color var(--transition), border-color var(--transition)',
+              }}
+              onClick={() => route && navigate(route)}
+              onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && route) navigate(route);
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+                setHoveredTile(tile.label);
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--color-bg-elevated)';
+                setHoveredTile(null);
+              }}
             >
               <div
                 className="flex items-center justify-between mb-1.5"
@@ -118,10 +159,21 @@ export default function CommanderView() {
               >
                 {tile.value}%
               </div>
-              <div
-                className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
-              >
-                {tile.detail}
+              <div className="flex items-center justify-between">
+                <div
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
+                >
+                  {tile.detail}
+                </div>
+                <span
+                  className="font-[var(--font-mono)] text-[9px] text-[var(--color-accent)] tracking-[0.5px]"
+                  style={{
+                    opacity: isHovered ? 1 : 0,
+                    transition: 'opacity var(--transition)',
+                  }}
+                >
+                  View →
+                </span>
               </div>
             </div>
           );

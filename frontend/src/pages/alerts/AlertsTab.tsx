@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, AlertCircle, Info, Check, Filter, Shield } from 'lucide-react';
+import { AlertTriangle, AlertCircle, Info, Check, Filter, Shield, ShieldCheck } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Card from '@/components/ui/Card';
 import StatusDot from '@/components/ui/StatusDot';
@@ -8,6 +8,7 @@ import { formatDate, formatRelativeTime } from '@/lib/utils';
 import { getAlerts, acknowledgeAlert, resolveAlert, getAlertSummary } from '@/api/alerts';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { useToast } from '@/hooks/useToast';
+import EmptyState from '@/components/ui/EmptyState';
 
 function getSeverityIcon(severity: AlertSeverity) {
   switch (severity) {
@@ -157,6 +158,13 @@ export default function AlertsTab() {
 
       {/* Alert List */}
       <Card title={`ALERTS (${filtered.length})`}>
+        {filtered.length === 0 ? (
+          <EmptyState
+            icon={<ShieldCheck size={32} />}
+            title="No active alerts"
+            message="All systems operational"
+          />
+        ) : (
         <div className="flex flex-col gap-1.5">
           {filtered.map((alert) => {
             const color = getSeverityColor(alert.severity);
@@ -257,6 +265,7 @@ export default function AlertsTab() {
             );
           })}
         </div>
+        )}
       </Card>
     </>
   );

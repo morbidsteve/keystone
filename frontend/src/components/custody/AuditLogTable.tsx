@@ -2,7 +2,7 @@
 // AuditLogTable — Audit log table with action/entity badges and filters
 // =============================================================================
 
-import { FileText } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import type { AuditLogEntry } from '@/lib/types';
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -65,9 +65,9 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
   if (logs.length === 0) {
     return (
       <EmptyState
-        icon={<FileText size={32} />}
-        title="NO AUDIT LOGS"
-        message="Audit log entries will appear here"
+        icon={<ClipboardList size={32} />}
+        title="NO AUDIT ENTRIES"
+        message="No audit entries for selected filters"
       />
     );
   }

@@ -17,7 +17,7 @@ import { getStatusColor } from '@/lib/utils';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton';
 import ExportMenu from '@/components/common/ExportMenu';
-import { useVirtualRows } from '@/hooks/useVirtualRows';
+import TablePagination from '@/components/ui/TablePagination';
 
 // Demo data for when API is not connected
 const demoData: SupplyRecord[] = [
@@ -44,6 +44,8 @@ interface SupplyTableProps {
 export default function SupplyTable({ unitFilter, classFilter, statusFilter }: SupplyTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const { data: apiData, isLoading } = useQuery({
     queryKey: ['supply', unitFilter, classFilter, statusFilter],
@@ -145,8 +147,19 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const rows = table.getRowModel().rows;
-  const { parentRef, virtualizer } = useVirtualRows({ count: rows.length, estimateSize: 36 });
+  const allRows = table.getRowModel().rows;
+  const totalFiltered = allRows.length;
+
+  // Pagination slice
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return allRows.slice(start, start + pageSize);
+  }, [allRows, currentPage, pageSize]);
+
+  // Reset page when filters change
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [globalFilter, classFilter, statusFilter]);
 
   const exportData = useMemo(
     () =>
@@ -201,7 +214,7 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
       <div
         className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden"
       >
-        <div ref={parentRef} style={{ maxHeight: 600, overflow: 'auto' }}>
+        <div style={{ overflow: 'auto' }}>
           <table className="w-full border-collapse">
             <thead className="sticky top-0 z-10 bg-[var(--color-bg-elevated)]">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -231,45 +244,45 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
                 </tr>
               ))}
             </thead>
-            <tbody style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
-              {virtualizer.getVirtualItems().map((virtualRow) => {
-                const row = rows[virtualRow.index];
-                return (
-                  <tr
-                    key={row.id}
-                    className="transition-colors duration-[var(--transition)]"
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: virtualRow.size,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.backgroundColor = 'transparent')
-                    }
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text)]" style={{ textAlign: ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
-                              cell.column.id,
-                            )
-                              ? 'right'
-                              : 'left' }}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
+            <tbody>
+              {paginatedRows.map((row) => (
+                <tr
+                  key={row.id}
+                  className="transition-colors duration-[var(--transition)]"
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="font-[var(--font-mono)] text-xs py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text)]" style={{ textAlign: ['onHand', 'authorized', 'percent', 'dos', 'consumptionRate'].includes(
+                            cell.column.id,
+                          )
+                            ? 'right'
+                            : 'left' }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="border-t border-t-[var(--color-border)]">
+          <TablePagination
+            totalItems={totalFiltered}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+          />
         </div>
       </div>
     </div>

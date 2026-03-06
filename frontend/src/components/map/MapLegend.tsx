@@ -89,7 +89,7 @@ function LegendLine({
 }
 
 export default function MapLegend({ layers }: MapLegendProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const hasActiveLayer =
     layers.units ||

@@ -3,7 +3,8 @@
 // Real-time activity feed showing system events
 // =============================================================================
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Activity,
@@ -54,11 +55,70 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
+/** Map activity type to a detail page for row-level click navigation */
+const ACTIVITY_TYPE_ROUTES: Record<ActivityEvent['activity_type'], string> = {
+  REQUISITION: '/requisitions',
+  WORK_ORDER: '/maintenance',
+  CONVOY: '/transportation',
+  SUPPLY: '/supply',
+  ALERT: '/alerts',
+  PERSONNEL: '/personnel',
+  REPORT: '/reports',
+};
+
+/** Patterns to detect linkable references inside activity text */
+const REFERENCE_PATTERNS: { pattern: RegExp; route: string }[] = [
+  { pattern: /REQ-\d{4}-\d{3,}/g, route: '/requisitions' },
+  { pattern: /WO-\d{3,}/g, route: '/maintenance' },
+  { pattern: /Convoy [A-Z]+-\d+/g, route: '/transportation' },
+];
+
+/** Parse activity description and wrap matched references in styled spans */
+function parseActivityText(text: string): ReactNode {
+  // Collect all matches with their positions
+  const matches: { start: number; end: number; text: string; route: string }[] = [];
+  for (const { pattern, route } of REFERENCE_PATTERNS) {
+    const regex = new RegExp(pattern.source, pattern.flags);
+    let m: RegExpExecArray | null;
+    while ((m = regex.exec(text)) !== null) {
+      matches.push({ start: m.index, end: m.index + m[0].length, text: m[0], route });
+    }
+  }
+
+  if (matches.length === 0) return text;
+
+  // Sort by position
+  matches.sort((a, b) => a.start - b.start);
+
+  const parts: ReactNode[] = [];
+  let cursor = 0;
+  for (const match of matches) {
+    if (match.start > cursor) {
+      parts.push(text.slice(cursor, match.start));
+    }
+    parts.push(
+      <span
+        key={match.start}
+        className="text-[var(--color-accent)] underline decoration-dotted underline-offset-2"
+      >
+        {match.text}
+      </span>,
+    );
+    cursor = match.end;
+  }
+  if (cursor < text.length) {
+    parts.push(text.slice(cursor));
+  }
+
+  return <>{parts}</>;
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export default function ActivityFeed() {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [typeFilter, setTypeFilter] = useState<ActivityTypeFilter>('ALL');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -153,13 +213,20 @@ export default function ActivityFeed() {
               activities.map((event) => {
                 const cfg = TYPE_CONFIG[event.activity_type];
                 const IconComponent = cfg.icon;
+                const route = ACTIVITY_TYPE_ROUTES[event.activity_type];
                 return (
                   <div
                     key={event.id}
-                    className="flex gap-2.5 py-2 px-3.5 border-b border-b-[var(--color-border)] transition-colors duration-[var(--transition)]"
+                    role="button"
+                    tabIndex={0}
+                    className="flex gap-2.5 py-2 px-3.5 border-b border-b-[var(--color-border)] transition-colors duration-[var(--transition)] cursor-pointer"
+                    onClick={() => navigate(route)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') navigate(route);
+                    }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLDivElement).style.backgroundColor =
-                        'rgba(255,255,255,0.02)';
+                        'var(--color-bg-hover)';
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLDivElement).style.backgroundColor = 'transparent';
@@ -200,7 +267,7 @@ export default function ActivityFeed() {
                       <div
                         className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap"
                       >
-                        {event.description}
+                        {parseActivityText(event.description)}
                       </div>
                     </div>
 

@@ -4,6 +4,7 @@ import type { MaintenanceWorkOrder, WorkOrderCategory, EquipmentCatalogItem } fr
 import { WorkOrderPriority, WorkOrderCategory as WOCat } from '@/lib/types';
 import { createWorkOrder } from '@/api/maintenance';
 import EquipmentSelector from '@/components/catalog/EquipmentSelector';
+import { useToast } from '@/hooks/useToast';
 
 interface CreateWorkOrderModalProps {
   isOpen: boolean;
@@ -67,6 +68,7 @@ export default function CreateWorkOrderModal({
   const [estimatedCompletion, setEstimatedCompletion] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -98,6 +100,7 @@ export default function CreateWorkOrderModal({
         estimatedCompletion: estimatedCompletion || undefined,
       });
       onCreate(result);
+      toast.success('Work order created successfully');
       // Reset form
       setWoNumber(generateWONumber());
       setDescription('');
@@ -112,6 +115,7 @@ export default function CreateWorkOrderModal({
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create work order.');
+      toast.danger('Failed to create work order');
     } finally {
       setIsSubmitting(false);
     }

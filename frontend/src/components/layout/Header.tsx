@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Bell, ChevronDown, Clock, HelpCircle, LogOut, Menu, Moon, RotateCcw, Sun, User } from 'lucide-react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/stores/authStore';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import { useAlertStore } from '@/stores/alertStore';
@@ -38,9 +39,45 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   const unreadCount = useAlertStore((s) => s.unreadCount);
   const { isHelpMode, toggleHelpMode } = useHelpMode();
   const { theme, toggleTheme } = useThemeStore();
+  const queryClient = useQueryClient();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const handleDrawerClose = useCallback(() => setDrawerOpen(false), []);
+
+  // "Last updated" tracking — only shown on dashboard
+  const isDashboard = location.pathname === '/dashboard';
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [, setTick] = useState(0);
+  const lastUpdatedRef = useRef(lastUpdated);
+  lastUpdatedRef.current = lastUpdated;
+
+  // Tick every 30s to refresh the "X ago" display
+  useEffect(() => {
+    if (!isDashboard) return;
+    const interval = setInterval(() => setTick((t) => t + 1), 30_000);
+    return () => clearInterval(interval);
+  }, [isDashboard]);
+
+  // Update lastUpdated timestamp when queries settle
+  useEffect(() => {
+    if (!isDashboard) return;
+    const unsubscribe = queryClient.getQueryCache().subscribe(() => {
+      setLastUpdated(new Date());
+    });
+    return () => unsubscribe();
+  }, [isDashboard, queryClient]);
+
+  const handleRefresh = useCallback(() => {
+    queryClient.invalidateQueries();
+    setLastUpdated(new Date());
+  }, [queryClient]);
+
+  const formatLastUpdated = useCallback((): string => {
+    const diff = Math.floor((Date.now() - lastUpdatedRef.current.getTime()) / 1000);
+    if (diff < 60) return 'just now';
+    const mins = Math.floor(diff / 60);
+    return `${mins}m ago`;
+  }, []);
 
   const pageTitle = pageTitles[location.pathname] || 'KEYSTONE';
 
@@ -106,6 +143,29 @@ export default function Header({ onMenuToggle }: HeaderProps) {
             </button>
           ))}
         </div>
+
+        {/* Last Updated (dashboard only) */}
+        {isDashboard && (
+          <div className="header-time-range flex items-center gap-1.5">
+            <span className="font-mono text-3xs text-text-muted tracking-[0.5px] whitespace-nowrap">
+              Updated: {formatLastUpdated()}
+            </span>
+            <button
+              onClick={handleRefresh}
+              title="Refresh dashboard data"
+              aria-label="Refresh dashboard data"
+              className="flex items-center justify-center rounded cursor-pointer p-1 hover:bg-[var(--color-bg-hover)]"
+              style={{
+                background: 'none',
+                border: '1px solid var(--color-border)',
+                color: 'var(--color-text-muted)',
+                transition: 'all var(--transition)',
+              }}
+            >
+              <RotateCcw size={12} aria-hidden="true" />
+            </button>
+          </div>
+        )}
 
         {/* Theme Toggle */}
         <button
