@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Plus, ChevronDown } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
+import { useModalStore, type ModalType } from '@/stores/modalStore';
 
 interface QuickAction {
   label: string;
@@ -10,6 +11,8 @@ interface QuickAction {
 
 interface ActionDef {
   label: string;
+  /** If set, opens this modal instead of navigating */
+  modal?: ModalType;
   route: string;
   tab?: string;
   toastMsg: string;
@@ -17,19 +20,19 @@ interface ActionDef {
 
 const PAGE_ACTIONS: Record<string, ActionDef[]> = {
   '/supply': [
-    { label: 'New Requisition', route: '/requisitions', toastMsg: 'Navigated to Requisitions — use the NEW REQUISITION button to create' },
+    { label: 'New Requisition', modal: 'create-requisition', route: '/requisitions', toastMsg: 'Navigated to Requisitions — use the NEW REQUISITION button to create' },
     { label: 'Record Receipt', route: '/supply', toastMsg: 'Use the Supply page to record a receipt' },
   ],
   '/equipment': [
-    { label: 'Create Work Order', route: '/maintenance', toastMsg: 'Navigated to Maintenance — open Work Orders tab to create' },
-    { label: 'Report Fault', route: '/maintenance', toastMsg: 'Navigated to Maintenance — report a fault via Work Orders' },
+    { label: 'Create Work Order', modal: 'create-work-order', route: '/maintenance', toastMsg: 'Navigated to Maintenance — open Work Orders tab to create' },
+    { label: 'Report Fault', modal: 'create-work-order', route: '/maintenance', toastMsg: 'Navigated to Maintenance — report a fault via Work Orders' },
   ],
   '/maintenance': [
-    { label: 'New Work Order', route: '/maintenance', toastMsg: 'Use the Work Orders tab to create a new work order' },
+    { label: 'New Work Order', modal: 'create-work-order', route: '/maintenance', toastMsg: 'Use the Work Orders tab to create a new work order' },
     { label: 'Schedule PM', route: '/maintenance', toastMsg: 'Use the PM Schedule tab to schedule preventive maintenance' },
   ],
   '/transportation': [
-    { label: 'Plan Convoy', route: '/transportation', toastMsg: 'Use the Convoy Planning tab to plan a new convoy' },
+    { label: 'Plan Convoy', modal: 'plan-convoy', route: '/transportation', toastMsg: 'Use the Convoy Planning tab to plan a new convoy' },
     { label: 'Create Lift Request', route: '/transportation', toastMsg: 'Use the Lift Requests tab to create a new request' },
   ],
   '/personnel': [
@@ -37,7 +40,7 @@ const PAGE_ACTIONS: Record<string, ActionDef[]> = {
     { label: 'Record Qualification', route: '/personnel', toastMsg: 'Use the Qualifications tab to record a qualification' },
   ],
   '/requisitions': [
-    { label: 'New Requisition', route: '/requisitions', toastMsg: 'Use the NEW REQUISITION button above to create' },
+    { label: 'New Requisition', modal: 'create-requisition', route: '/requisitions', toastMsg: 'Use the NEW REQUISITION button above to create' },
   ],
 };
 
@@ -62,6 +65,7 @@ export default function QuickActionsButton() {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+  const openModal = useModalStore((s) => s.openModal);
   const [open, setOpen] = useState(false);
 
   const actionDefs = PAGE_ACTIONS[location.pathname];
@@ -71,10 +75,14 @@ export default function QuickActionsButton() {
     label: a.label,
     onClick: () => {
       setOpen(false);
-      if (a.route !== location.pathname) {
-        navigate(a.route);
+      if (a.modal) {
+        openModal(a.modal);
+      } else {
+        if (a.route !== location.pathname) {
+          navigate(a.route);
+        }
+        toast.info(a.toastMsg);
       }
-      toast.info(a.toastMsg);
     },
   }));
 

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -58,6 +58,7 @@ async def list_work_orders(
     equipment_id: Optional[int] = Query(None),
     status: Optional[WorkOrderStatus] = Query(None),
     priority: Optional[int] = Query(None, ge=1, le=5),
+    search: Optional[str] = Query(None),
     limit: int = Query(100, le=500),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -71,6 +72,14 @@ async def list_work_orders(
 
     if unit_id and unit_id in accessible:
         query = query.where(MaintenanceWorkOrder.unit_id == unit_id)
+    if search:
+        term = f"%{search}%"
+        query = query.where(
+            or_(
+                MaintenanceWorkOrder.work_order_number.ilike(term),
+                MaintenanceWorkOrder.description.ilike(term),
+            )
+        )
     if equipment_id is not None:
         query = query.where(
             MaintenanceWorkOrder.individual_equipment_id == equipment_id

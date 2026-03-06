@@ -22,38 +22,44 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 
 ## Screenshots
 
-### Login
-![Login page with classification banner and demo mode indicator](docs/images/login-page.png)
+### Login & Role Picker
+![Demo mode login page with role picker showing 24 named users organized by Command Element, Battalion Staff, Battery Commanders, Operators, and Higher HQ -- each card displays rank, name, billet, unit, MOS, and role description](docs/images/login-page.png)
 
 ### Commander Dashboard
-![Dashboard showing readiness KPIs, supply class status, equipment readiness, sustainability projections, consumption charts, and active alerts](docs/images/dashboard.png)
+![Commander dashboard with role-based tabs (Commander/S-4/S-3), grouped sidebar with collapsible sections and badge counts, breadcrumb navigation, 6 readiness KPI cards (Supply/Maintenance/Transportation/Engineering/Health Svcs/Services), supply class status grid, equipment readiness donut charts, sustainability projection and consumption rate charts, active alerts panel, and live activity feed with real-time simulation events](docs/images/dashboard.png)
 
 ### Interactive Map
-![Leaflet map with military symbology, unit positions, supply points, convoy routes, MSR/ASR overlays, and layer controls](docs/images/map-view.png)
+![Leaflet map centered on Camp Pendleton with military symbology (APP-6D SIDCs), unit positions, supply point markers (LOG BASE/AMMO SP/FARP/LZ/WATER PT), convoy routes, MSR/ASR overlays, collapsible layer control panel, base map switcher (OSM/Satellite/Topo), comprehensive legend, and search control](docs/images/map-view.png)
+
+### Readiness
+![Unit readiness overview with DRRS-style C-ratings, 5 donut gauges (Overall C-2 78%, Equipment R-2 87%, Supply S-2 80%, Personnel P-3 75%, Training T-2 85%), limiting factor banner, DRRS ratings cards, all-units overview grid showing each unit's C-rating, percentage, and LIMFAC, with tabs for Overview/Trend/Strength/Subordinates](docs/images/readiness.png)
 
 ### Supply Status
-![Supply tracking table with NATO supply classes, on-hand vs required quantities, days-of-supply, consumption rates, and traffic-light status](docs/images/supply-status.png)
+![Supply tracking table with filterable supply class and status dropdowns, sortable columns for Unit, Class, Item, On Hand, Required, percentage, DOS, Rate, and traffic-light Status (GREEN/AMBER/RED), supply class by unit bar chart, consumption trend line chart, and DOS calculator tool](docs/images/supply-status.png)
 
 ### Equipment Readiness
-![Equipment readiness table showing fleet types, TAMCNs, authorized vs on-hand, MC/NMC counts, and readiness percentages](docs/images/equipment-readiness.png)
+![Equipment readiness table with sortable columns for Type, TAMCN, Unit, Authorized, On-Hand, MC, NMC, readiness percentage, and Status badges (GREEN/AMBER), expandable rows, maintenance work orders panel with priority-coded cards (URGENT/PRIORITY/ROUTINE), and readiness trend chart showing 7-day fleet trends](docs/images/equipment-readiness.png)
 
 ### Maintenance Management
-![Maintenance dashboard with deadline rate, MTTR, parts fill rate, cannibalization rate, and work order queue](docs/images/maintenance.png)
+![Maintenance management page with KPI cards (Deadline Rate, MTTR, Parts Fill Rate, Cannibalization Rate), tabbed views (Work Orders/PM Schedule/Deadlines/Analytics/Predictive), work order cards color-coded by priority (URGENT red/PRIORITY yellow/ROUTINE green) showing status, parts count, labor hours, and assigned technician](docs/images/maintenance.png)
 
 ### Transportation & Convoy Tracking
-![Transportation view with active convoy map, convoy cards with origin/destination/ETA, and movement list](docs/images/transportation.png)
+![Transportation page with Leaflet map showing active convoy routes, convoy status cards (EN ROUTE/PLANNED/DELAYED/ARRIVED) with origin-destination, cargo manifest, vehicle and PAX counts, departure/ETA times, tabs for Active Convoys/Convoy Planning/Lift Requests/Movement History, and throughput chart with 7-day tonnage statistics](docs/images/transportation.png)
 
 ### Personnel & Manning
-![Personnel page with strength summary, fill rate, P-rating, and alpha roster with EDIPI, MOS, billet, duty status, and qualifications](docs/images/personnel.png)
+![Personnel page with strength summary cards (Authorized 180, Assigned 162, Present 150, Fill Rate 90.0%), P-Rating badge, tabbed views (Alpha Roster/Strength/Billets/Qualifications/EAS Timeline), searchable roster with Name, EDIPI, Rank, Pay Grade, MOS, Billet, Status, Duty, Rifle qualification, PFT/CFT scores, and Location columns](docs/images/personnel.png)
+
+### Fuel / POL Management
+![Fuel management dashboard with critical fuel warning banner (2.8 DOS), capacity KPI cards (Total Capacity, On Hand, Days of Supply, Daily Consumption), storage point cards showing FARP-Alpha, FSP-Main, TFDS-1, and Bladder-South with fuel type, operational status, fill percentage bars, and MGRS coordinates, 14-day fuel projection chart with gallons and DOS dual axis, and op-tempo forecast metrics](docs/images/fuel.png)
 
 ### SITREP Reports
-![Reports page showing generated LOGSTATs, equipment readiness reports, and supply status reports with draft/finalized workflow](docs/images/reports.png)
+![Reports page with tabbed views (Reports/Generate/Templates/Schedules/Export), generated report list with status badges (FINALIZED/READY/DRAFT/GENERATING), selected Daily LOGSTAT preview showing supply class status, equipment readiness percentage, active convoys, and critical alerts with export options (PDF/API/TXT)](docs/images/reports.png)
 
 ### Alerts
-![Alerts dashboard with severity breakdown (critical/warning/info), filterable alert list with acknowledge and resolve actions](docs/images/alerts.png)
+![Alerts dashboard with severity summary cards (Total Active 5, Critical 2, Warning 2, Info 1), tabbed views (Alerts/Rules/Notifications/Preferences/Predictions), severity filter dropdown, toggle for acknowledged/resolved, expandable alert cards with description, severity badge, unit, timestamp, and ACK/RESOLVE action buttons](docs/images/alerts.png)
 
 ### Administration
-![Admin panel with user management table, role assignment, unit configuration, classification settings, and map tile configuration](docs/images/admin-panel.png)
+![Admin panel with tabbed views (User Management/Unit Configuration/Classification/Map Tiles/Scenarios/Roles & Permissions/Simulation), user management table with status indicator, username, name, role badges (COMMANDER/S4/S3/OPERATOR/VIEWER), unit, last login, and edit actions, Add User button](docs/images/admin-panel.png)
 
 ---
 
@@ -63,6 +69,7 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
                           ┌─────────────────────────────┐
                           │      React SPA (Vite)       │
                           │  Tailwind / Zustand / Leaflet│
+                          │  Command Palette · Role Auth │
                           └──────────┬──────────────────┘
                                      │ HTTPS
                           ┌──────────▼──────────────────┐
@@ -81,10 +88,12 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
            │ + PostGIS │  │  cache   │  │   worker   │
            └──────────┘  └──────────┘  └────────────┘
                                              │
-                                    ┌────────▼────────┐
-                                    │    Simulator     │
-                                    │  (demo profile)  │
-                                    └─────────────────┘
+                              ┌──────────────▼──────────────┐
+                              │  Living Simulation Engine    │
+                              │  7 async generators · 4+     │
+                              │  scenarios · speed control   │
+                              │  up to 7200x                 │
+                              └─────────────────────────────┘
 ```
 
 ### Tech Stack
@@ -266,6 +275,45 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 - Auto-deployed to GitHub Pages via CI
 - All pages functional with realistic USMC logistics data
 - Toggle via `VITE_DEMO_MODE=true` build flag
+- **Role picker login** with 24 named users across battalion structure (Command Element, Battalion Staff, Battery Commanders, Operators, Higher HQ)
+- Each user card shows rank, name, billet, unit, MOS, and role description
+- Activity feed with live simulation data showing requisitions, work orders, convoys, supply updates, alerts, personnel actions, and reports
+
+### Living Simulation Engine
+- **7 asynchronous generators** produce realistic logistics event streams:
+  - Requisitions (supply requests with priority and line items)
+  - Maintenance (work orders, faults, parts requests)
+  - Convoys (movement planning, dispatch, arrival, delays)
+  - Supply updates (consumption, receipts, transfers)
+  - Alerts (threshold breaches, deadline equipment, convoy delays)
+  - Personnel (strength reports, duty status changes, TAD/leave)
+  - Reports (LOGSTATs, readiness reports, movement summaries)
+- **4 exercise scenarios**: Garrison (steady-state), Pre-Deployment (ramp-up), ITX (Integrated Training Exercise), Steel Guardian (battalion FEX)
+- Speed control from real-time up to **7200x** (1 sim-hour per real-second)
+- Events feed into the activity feed, dashboards, and all data pages in real time
+
+### Role-Based Dashboards
+- Auto-routes authenticated users to their role-specific dashboard view
+- **Commander**: Full COP with 6 readiness KPI cards, supply class status, equipment readiness, sustainability projections, consumption charts, and active alerts
+- **S-4 (Logistics)**: Supply-focused view with class status, requisition queue, and sustainment metrics
+- **S-3 (Operations)**: Operations-focused view with movement tracker, readiness overview, and operational tempo
+- Role tabs on dashboard allow switching between perspectives without re-authentication
+
+### Command Palette (Ctrl+K)
+- Global search interface accessible from any page via `Ctrl+K` keyboard shortcut
+- Searches across pages, personnel, equipment, units, requisitions, and work orders
+- Results grouped by category with keyboard navigation (arrow keys, Enter to select)
+- Fuzzy matching supports partial names, serial numbers, MOS codes, and unit designations
+- Recent searches and quick navigation shortcuts
+
+### UX and Navigation
+- **Breadcrumb navigation** on every page showing current location in the app hierarchy
+- **Keyboard shortcuts**: `G+D` (dashboard), `G+M` (map), `G+S` (supply), `G+E` (equipment), `G+T` (transportation), `G+P` (personnel), `G+R` (reports), `G+A` (alerts)
+- **Toast notifications** for async operations (save confirmations, error alerts, status updates)
+- **Contextual quick actions** on data rows (e.g., create work order from equipment, generate report from supply data)
+- **Grouped sidebar** with collapsible sections (Operations, Logistics, Personnel, Data, Monitoring, Admin) and badge counts for active items
+- **Icon-only collapse mode** for the sidebar to maximize workspace on smaller displays
+- **Time range selector** (24H/7D/30D/90D) in the header for filtering dashboard and page data
 
 ### Future Capabilities (Planned)
 - **GCSS-MC Integration**: Direct data feed from Global Combat Support System -- Marine Corps for automated supply and equipment synchronization

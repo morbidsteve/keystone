@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -71,6 +71,7 @@ async def list_requisitions(
     unit_id: Optional[int] = Query(None),
     status: Optional[RequisitionStatus] = Query(None),
     priority: Optional[RequisitionPriority] = Query(None),
+    search: Optional[str] = Query(None),
     date_from: Optional[datetime] = Query(None),
     date_to: Optional[datetime] = Query(None),
     limit: int = Query(100, le=500),
@@ -88,6 +89,14 @@ async def list_requisitions(
 
     if unit_id and unit_id in accessible:
         query = query.where(Requisition.unit_id == unit_id)
+    if search:
+        term = f"%{search}%"
+        query = query.where(
+            or_(
+                Requisition.requisition_number.ilike(term),
+                Requisition.justification.ilike(term),
+            )
+        )
     if status:
         query = query.where(Requisition.status == status)
     if priority:
