@@ -8,6 +8,8 @@
 ![TypeScript](https://img.shields.io/badge/typescript-5.3-blue)
 ![License](https://img.shields.io/badge/license-Distribution%20A-green)
 
+> **New to KEYSTONE?** See the [User Guide](docs/USER_GUIDE.md) for a complete walkthrough with screenshots of every page, or the [User Stories](docs/USER_STORIES.md) for role-based perspectives.
+
 ---
 
 ## What is KEYSTONE?
@@ -298,30 +300,35 @@ Viewers have full read access to the operational picture without the ability to 
 
 ## Quick Start
 
-### Docker Compose (recommended)
+### One-Command Install (recommended)
 
 ```bash
-# Clone the repository
+# Clone and install
 git clone https://github.com/morbidsteve/keystone.git
 cd keystone
-
-# Start all services (backend, frontend, database, Redis)
-docker compose up --build -d
-
-# Wait for health checks to pass (~30 seconds)
-docker compose ps
-
-# Access the application
-#   Frontend:  https://localhost  (self-signed cert)
-#   API:       http://localhost:8000
-#   API Docs:  http://localhost:8000/docs
+./install.sh
 ```
 
-To include the **simulator** (generates live mock data):
+The install script checks prerequisites, builds all containers, waits for health checks, verifies login, and prints access URLs. Options:
 
 ```bash
-docker compose --profile demo up --build -d
+./install.sh              # Install and start everything
+./install.sh --demo       # Start with simulator (live demo data)
+./install.sh --stop       # Stop all services (preserves data)
+./install.sh --reset      # Full reset (destroys data, rebuilds from scratch)
+./install.sh --status     # Show service health and access URLs
 ```
+
+### Manual Docker Compose
+
+```bash
+docker compose up --build -d          # Start all services
+docker compose --profile demo up --build -d  # With simulator
+```
+
+After startup, access:
+- **Frontend**: https://localhost (accept self-signed cert)
+- **API Docs**: http://localhost:8000/docs
 
 ### Default Credentials (Development Only)
 

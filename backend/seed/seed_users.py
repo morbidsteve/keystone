@@ -102,7 +102,7 @@ async def seed_users_from_session(db: AsyncSession):
 
     Called from app startup. Idempotent — skips existing users.
     """
-    if os.getenv("ENV_MODE", "production") != "development":
+    if os.getenv("ENV_MODE", "development") != "development":
         logger.warning("Refusing to seed users outside development mode")
         return
 

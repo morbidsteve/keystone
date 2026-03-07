@@ -105,6 +105,7 @@ services:
       REDIS_URL: redis://:keystone_redis_dev@redis:6379/0
       SECRET_KEY: dev-secret-key-change-in-production
       CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://localhost:8080","http://localhost","https://localhost","https://localhost:443"]'
+      ENV_MODE: development
       SIM_ENABLED: "true"
     depends_on:
       db: { condition: service_healthy }

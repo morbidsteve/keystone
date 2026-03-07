@@ -372,6 +372,20 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Maintenance seeding failed: {e}")
 
+    # 11. Seed sensitive item catalog
+    try:
+        from seed.seed_sensitive_item_catalog import seed_sensitive_item_catalog
+
+        async with async_session() as db:
+            count = await seed_sensitive_item_catalog(db)
+            await db.commit()
+            if count:
+                logger.info(f"Sensitive item catalog: {count} items seeded.")
+            else:
+                logger.info("Sensitive item catalog already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Sensitive item catalog seeding failed: {e}")
+
 
 app = FastAPI(
     title="KEYSTONE",
