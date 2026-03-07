@@ -104,9 +104,7 @@ async def get_sensitive_item_catalog_entry(
 ):
     """Get a single sensitive item catalog entry by ID."""
     result = await db.execute(
-        select(SensitiveItemCatalogEntry).where(
-            SensitiveItemCatalogEntry.id == item_id
-        )
+        select(SensitiveItemCatalogEntry).where(SensitiveItemCatalogEntry.id == item_id)
     )
     entry = result.scalar_one_or_none()
     if not entry:
@@ -156,9 +154,7 @@ async def update_sensitive_item_catalog_entry(
 ):
     """Update a sensitive item catalog entry. ADMIN only."""
     result = await db.execute(
-        select(SensitiveItemCatalogEntry).where(
-            SensitiveItemCatalogEntry.id == item_id
-        )
+        select(SensitiveItemCatalogEntry).where(SensitiveItemCatalogEntry.id == item_id)
     )
     entry = result.scalar_one_or_none()
     if not entry:
@@ -190,9 +186,7 @@ async def delete_sensitive_item_catalog_entry(
 ):
     """Soft-delete a sensitive item catalog entry (set is_active=False). ADMIN only."""
     result = await db.execute(
-        select(SensitiveItemCatalogEntry).where(
-            SensitiveItemCatalogEntry.id == item_id
-        )
+        select(SensitiveItemCatalogEntry).where(SensitiveItemCatalogEntry.id == item_id)
     )
     entry = result.scalar_one_or_none()
     if not entry:

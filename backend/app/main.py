@@ -40,8 +40,8 @@ else:
     renderer = structlog.processors.JSONRenderer()
 
 structlog.configure(
-    processors=[
-        *shared_processors,
+    processors=shared_processors
+    + [
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
@@ -585,6 +585,7 @@ async def health_check():
     # Check Redis
     try:
         import redis
+
         r = redis.from_url(settings.REDIS_URL)
         r.ping()
         checks["redis"] = "connected"

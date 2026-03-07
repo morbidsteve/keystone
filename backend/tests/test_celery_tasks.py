@@ -90,9 +90,7 @@ class TestProcessMIRCUploadTask:
     @patch("app.tasks.ingest_mirc.sync_engine")
     @patch("app.tasks.ingest_mirc.normalize_record")
     @patch("app.tasks.ingest_mirc.parse_mirc_log")
-    def test_process_mirc_no_records(
-        self, mock_parse, mock_normalize, mock_engine
-    ):
+    def test_process_mirc_no_records(self, mock_parse, mock_normalize, mock_engine):
         """process_mirc_upload handles empty parse results."""
         from app.models.raw_data import ParseStatus, RawData
 
@@ -120,9 +118,7 @@ class TestProcessMIRCUploadTask:
     @patch("app.tasks.ingest_mirc.sync_engine")
     @patch("app.tasks.ingest_mirc.normalize_record")
     @patch("app.tasks.ingest_mirc.parse_mirc_log")
-    def test_process_mirc_success(
-        self, mock_parse, mock_normalize, mock_engine
-    ):
+    def test_process_mirc_success(self, mock_parse, mock_normalize, mock_engine):
         """process_mirc_upload processes records successfully."""
         from app.models.raw_data import ParseStatus, RawData
 

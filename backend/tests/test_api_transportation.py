@@ -40,7 +40,11 @@ class TestMovementEndpoints:
         test_unit: Unit,
     ):
         """GET /api/v1/transportation/active returns only active movements."""
-        for status in [MovementStatus.EN_ROUTE, MovementStatus.PLANNED, MovementStatus.COMPLETE]:
+        for status in [
+            MovementStatus.EN_ROUTE,
+            MovementStatus.PLANNED,
+            MovementStatus.COMPLETE,
+        ]:
             mv = Movement(
                 unit_id=test_unit.id,
                 origin="Origin",
