@@ -117,7 +117,7 @@ export default function SensitiveItemsTable({
                   (e.currentTarget as HTMLElement).style.backgroundColor = '';
                 }}
               >
-                <td className="text-[var(--color-text-bright)]">
+                <td style={{ ...tdStyle, color: 'var(--color-text-bright)' }}>
                   {item.serial_number}
                 </td>
                 <td style={tdStyle}>{item.nomenclature}</td>
