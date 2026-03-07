@@ -365,12 +365,14 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                             <span
                               className="absolute top-1.5 right-3 w-1.5 h-1.5 rounded-full"
                               style={{ backgroundColor: badge.color }}
+                              aria-live="polite"
                               aria-label={`${badge.count} notifications`}
                             />
                           ) : (
                             <span
                               className="text-3xs font-bold rounded-full leading-[14px] py-px px-1.5"
                               style={{ backgroundColor: badge.color, color: badge.textColor }}
+                              aria-live="polite"
                               aria-label={`${badge.count} notifications`}
                             >
                               {badge.count}

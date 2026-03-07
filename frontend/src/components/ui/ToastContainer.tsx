@@ -16,8 +16,8 @@ export default function ToastContainer() {
 
   return (
     <div
-      role="status"
-      aria-live="polite"
+      role="alert"
+      aria-live="assertive"
       aria-label="Notifications"
       className="fixed top-8 right-6 z-[9999] flex flex-col gap-2 pointer-events-none"
     >

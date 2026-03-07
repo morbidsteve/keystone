@@ -7,6 +7,7 @@ import { AlertSeverity, type Alert } from '@/lib/types';
 import { formatDate, formatRelativeTime } from '@/lib/utils';
 import { getAlerts, acknowledgeAlert, resolveAlert, getAlertSummary } from '@/api/alerts';
 import { useDashboardStore } from '@/stores/dashboardStore';
+import { useAlertStore } from '@/stores/alertStore';
 import { useToast } from '@/hooks/useToast';
 import EmptyState from '@/components/ui/EmptyState';
 
@@ -39,6 +40,7 @@ export default function AlertsTab() {
   const [showAcknowledged, setShowAcknowledged] = useState(false);
   const [showResolved, setShowResolved] = useState(false);
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
+  const markAcknowledged = useAlertStore((s) => s.markAcknowledged);
   const queryClient = useQueryClient();
   const toast = useToast();
 
@@ -54,7 +56,8 @@ export default function AlertsTab() {
 
   const acknowledgeMutation = useMutation({
     mutationFn: (id: string) => acknowledgeAlert(id),
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
+      markAcknowledged(id);
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
       queryClient.invalidateQueries({ queryKey: ['alert-summary'] });
       toast.success('Alert acknowledged');

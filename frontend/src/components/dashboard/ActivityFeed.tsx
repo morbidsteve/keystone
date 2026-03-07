@@ -202,6 +202,8 @@ export default function ActivityFeed() {
           <div
             ref={scrollRef}
             className="max-h-[320px] overflow-y-auto"
+            aria-live="polite"
+            aria-label="Activity feed"
           >
             {activities.length === 0 ? (
               <div

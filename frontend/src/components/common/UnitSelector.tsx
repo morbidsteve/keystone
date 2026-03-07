@@ -373,7 +373,7 @@ export default function UnitSelector({
         <span className="flex items-center gap-1.5 min-w-[0px]">
           <Building2 size={12} className="text-[var(--color-text-muted)] shrink-0" />
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-            {loading ? 'Loading...' : selectedLabel}
+            {loading && !selectedUnitId ? 'Loading...' : selectedLabel}
           </span>
         </span>
         <ChevronDown

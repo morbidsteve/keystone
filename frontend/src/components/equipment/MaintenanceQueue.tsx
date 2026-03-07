@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Wrench, Clock, Package, Plus } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { Wrench, Clock, Package, Plus, Search, Filter } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import StatusDot from '@/components/ui/StatusDot';
@@ -38,10 +39,20 @@ function getWOStatusColor(status: WorkOrderStatus): string {
   }
 }
 
+const WO_STATUS_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: 'ALL', label: 'ALL STATUSES' },
+  { value: 'OPEN', label: 'OPEN' },
+  { value: 'IN_PROGRESS', label: 'IN PROGRESS' },
+  { value: 'AWAITING_PARTS', label: 'AWAITING PARTS' },
+  { value: 'COMPLETE', label: 'COMPLETE' },
+];
+
 export default function MaintenanceQueue() {
   const [workOrders, setWorkOrders] = useState<MaintenanceWorkOrder[]>([]);
   const [selectedWO, setSelectedWO] = useState<MaintenanceWorkOrder | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
 
   const loadWorkOrders = useCallback(async () => {
@@ -71,6 +82,23 @@ export default function MaintenanceQueue() {
     loadWorkOrders();
   };
 
+  const filteredWorkOrders = useMemo(() => {
+    let result = workOrders;
+    if (statusFilter !== 'ALL') {
+      result = result.filter((wo) => wo.status === statusFilter);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((wo) =>
+        wo.workOrderNumber.toLowerCase().includes(q) ||
+        (wo.description && wo.description.toLowerCase().includes(q)) ||
+        (wo.equipmentId && wo.equipmentId.toLowerCase().includes(q)) ||
+        (wo.assignedTo && wo.assignedTo.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [workOrders, searchQuery, statusFilter]);
+
   return (
     <Card
       title="MAINTENANCE WORK ORDERS"
@@ -91,8 +119,35 @@ export default function MaintenanceQueue() {
         </div>
       }
     >
+      {/* Search + status filter */}
+      <div className="flex items-center gap-2 px-1 py-2 mb-2 border-b border-b-[var(--color-border)]">
+        <Search size={12} className="text-[var(--color-text-muted)] shrink-0" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search WO #, description, equipment..."
+          className="flex-1 bg-transparent border-0 outline-none font-[var(--font-mono)] text-[11px] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]"
+        />
+        <Filter size={12} className="text-[var(--color-text-muted)] shrink-0" />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="py-1 px-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] tracking-[1px]"
+        >
+          {WO_STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        {(searchQuery || statusFilter !== 'ALL') && (
+          <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap">
+            {filteredWorkOrders.length} result{filteredWorkOrders.length !== 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+
       <div className="flex flex-col gap-1.5">
-        {workOrders.length === 0 && (
+        {filteredWorkOrders.length === 0 && (
           <EmptyState
             icon={<Wrench size={32} />}
             title="NO WORK ORDERS"
@@ -101,7 +156,7 @@ export default function MaintenanceQueue() {
             onAction={() => setShowCreate(true)}
           />
         )}
-        {workOrders.map((wo) => {
+        {filteredWorkOrders.map((wo) => {
           const totalLabor = wo.laborEntries.reduce((sum, l) => sum + l.hours, 0);
           return (
             <div
@@ -144,6 +199,15 @@ export default function MaintenanceQueue() {
                   className="flex gap-3 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mb-1"
                 >
                   <span>{wo.workOrderNumber}</span>
+                  {wo.equipmentId && (
+                    <Link
+                      to={`/equipment/${wo.equipmentId}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[var(--color-accent)] hover:underline no-underline"
+                    >
+                      EQUIP: {wo.equipmentId}
+                    </Link>
+                  )}
                   <span>{wo.unitId}</span>
                   <span className="flex items-center gap-[3px]">
                     <Clock size={9} />

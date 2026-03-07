@@ -9,6 +9,10 @@ interface AlertState {
   error: string | null;
   fetchAlerts: (unitId?: string) => Promise<void>;
   acknowledgeAlert: (id: string) => Promise<void>;
+  /** Update store state only (no API call) — use when the API call is handled externally (e.g. via useMutation). */
+  markAcknowledged: (id: string) => void;
+  /** Decrement the unread badge count by one (floor 0). */
+  decrementUnread: () => void;
   setAlerts: (alerts: Alert[]) => void;
 }
 
@@ -46,6 +50,22 @@ export const useAlertStore = create<AlertState>((set, get) => ({
     } catch (err) {
       set({ error: 'Failed to acknowledge alert' });
     }
+  },
+
+  markAcknowledged: (id: string) => {
+    const alerts = get().alerts.map((a) =>
+      a.id === id ? { ...a, acknowledged: true } : a,
+    );
+    set({
+      alerts,
+      unreadCount: alerts.filter((a) => !a.acknowledged).length,
+    });
+  },
+
+  decrementUnread: () => {
+    set((state) => ({
+      unreadCount: Math.max(0, state.unreadCount - 1),
+    }));
   },
 
   setAlerts: (alerts) =>

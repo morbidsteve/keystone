@@ -3,8 +3,22 @@
 // =============================================================================
 
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp, ChevronRight, ClipboardList, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ChevronDown, ChevronUp, ChevronRight, ClipboardList, Search, Filter } from 'lucide-react';
 import type { Requisition, RequisitionStatus, RequisitionPriority } from '@/lib/types';
+
+const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: 'ALL', label: 'ALL STATUSES' },
+  { value: 'DRAFT', label: 'DRAFT' },
+  { value: 'SUBMITTED', label: 'SUBMITTED' },
+  { value: 'APPROVED', label: 'APPROVED' },
+  { value: 'SHIPPED', label: 'SHIPPED' },
+  { value: 'BACKORDERED', label: 'BACKORDERED' },
+  { value: 'SOURCING', label: 'SOURCING' },
+  { value: 'RECEIVED', label: 'RECEIVED' },
+  { value: 'DENIED', label: 'DENIED' },
+  { value: 'CANCELED', label: 'CANCELED' },
+];
 import EmptyState from '@/components/ui/EmptyState';
 import RequisitionDetail from './RequisitionDetail';
 
@@ -62,6 +76,7 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -73,14 +88,20 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
   };
 
   const filtered = useMemo(() => {
-    if (!searchQuery.trim()) return requisitions;
-    const q = searchQuery.toLowerCase();
-    return requisitions.filter((r) =>
-      r.requisition_number.toLowerCase().includes(q) ||
-      (r.requested_by_name && r.requested_by_name.toLowerCase().includes(q)) ||
-      r.nomenclature.toLowerCase().includes(q)
-    );
-  }, [requisitions, searchQuery]);
+    let result = requisitions;
+    if (statusFilter !== 'ALL') {
+      result = result.filter((r) => r.status === statusFilter);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((r) =>
+        r.requisition_number.toLowerCase().includes(q) ||
+        (r.requested_by_name && r.requested_by_name.toLowerCase().includes(q)) ||
+        r.nomenclature.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [requisitions, searchQuery, statusFilter]);
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -141,7 +162,7 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
 
   return (
     <div className="overflow-x-auto">
-      {/* Search bar */}
+      {/* Search bar + status filter */}
       <div className="flex items-center gap-2 px-2 py-2 border-b border-b-[var(--color-border)]">
         <Search size={12} className="text-[var(--color-text-muted)] shrink-0" />
         <input
@@ -151,8 +172,18 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
           placeholder="Search by REQ #, requester, or item..."
           className="flex-1 bg-transparent border-0 outline-none font-[var(--font-mono)] text-[11px] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)]"
         />
-        {searchQuery && (
-          <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
+        <Filter size={12} className="text-[var(--color-text-muted)] shrink-0" />
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="py-1 px-2 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text)] font-[var(--font-mono)] text-[10px] tracking-[1px]"
+        >
+          {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+        {(searchQuery || statusFilter !== 'ALL') && (
+          <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap">
             {sorted.length} result{sorted.length !== 1 ? 's' : ''}
           </span>
         )}
@@ -204,7 +235,13 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
                       {req.requisition_number}
                     </div>
                     <div style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {req.nomenclature}
+                      <Link
+                        to={`/supply${req.nsn ? `?nsn=${encodeURIComponent(req.nsn)}` : ''}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-[var(--color-accent)] hover:underline no-underline"
+                      >
+                        {req.nomenclature}
+                      </Link>
                     </div>
                     <div style={{ ...cellStyle, textAlign: 'right' }}>
                       {req.quantity_requested.toLocaleString()}

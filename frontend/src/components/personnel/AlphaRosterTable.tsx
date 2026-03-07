@@ -344,6 +344,7 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                     style={{
                       ...headerStyle,
                       width: col.width,
+                      textAlign: ['pft_score', 'cft_score'].includes(col.key) ? 'right' : 'left',
                     }}
                   >
                     {col.label}
@@ -405,10 +406,10 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                       {p.rifle_qual ?? '—'}
                     </span>
                   </td>
-                  <td style={{ ...cellStyle, fontWeight: 600, color: (p.pft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
+                  <td style={{ ...cellStyle, fontWeight: 600, textAlign: 'right', color: (p.pft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
                     {p.pft_score ?? '—'}
                   </td>
-                  <td style={{ ...cellStyle, fontWeight: 600, color: (p.cft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
+                  <td style={{ ...cellStyle, fontWeight: 600, textAlign: 'right', color: (p.cft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
                     {p.cft_score ?? '—'}
                   </td>
                   <td style={cellStyle}>

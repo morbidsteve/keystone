@@ -7,6 +7,7 @@ import ReadinessGauge from './ReadinessGauge';
 import SustainabilityTimeline from './SustainabilityTimeline';
 import ConsumptionChart from './ConsumptionChart';
 import AlertBanner from './AlertBanner';
+import MiniMapWidget from './MiniMapWidget';
 import Card from '@/components/ui/Card';
 import { CardSkeleton, TableSkeleton, Skeleton } from '@/components/ui/LoadingSkeleton';
 import StatusDot from '@/components/ui/StatusDot';
@@ -212,13 +213,19 @@ export default function CommanderView() {
         <ConsumptionChart />
       </div>
 
-      {/* Active Alerts */}
-      <Card title="ACTIVE ALERTS" accentColor="var(--color-warning)">
+      {/* Operational Map + Active Alerts */}
+      <div className="grid-responsive-2fr1fr">
+        {/* Active Alerts */}
+        <Card title="ACTIVE ALERTS" accentColor="var(--color-warning)">
         <AlertBanner
           alerts={displayAlerts}
           onAcknowledge={acknowledgeAlert}
         />
       </Card>
+
+        {/* Mini Map */}
+        <MiniMapWidget />
+      </div>
     </div>
   );
 }

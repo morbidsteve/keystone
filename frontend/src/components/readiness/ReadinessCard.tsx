@@ -28,21 +28,22 @@ export default function ReadinessCard({
   onClick,
 }: ReadinessCardProps) {
   const barColor = getBarColor(overallReadinessPct);
+  const isCritical = cRating === 'C-3' || cRating === 'C-4';
 
   return (
     <div
       onClick={onClick}
-      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4" style={{ cursor: onClick ? 'pointer' : 'default', transition: 'all var(--transition)' }}
+      className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] p-4" style={{ cursor: onClick ? 'pointer' : 'default', transition: 'all var(--transition)', borderLeft: isCritical ? '3px solid var(--color-danger)' : undefined, backgroundColor: isCritical ? 'rgba(239, 68, 68, 0.04)' : undefined }}
       onMouseEnter={(e) => {
         if (onClick) {
           e.currentTarget.style.borderColor = 'var(--color-border-strong)';
-          e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)';
+          e.currentTarget.style.backgroundColor = isCritical ? 'rgba(239, 68, 68, 0.08)' : 'var(--color-bg-hover)';
         }
       }}
       onMouseLeave={(e) => {
         if (onClick) {
           e.currentTarget.style.borderColor = 'var(--color-border)';
-          e.currentTarget.style.backgroundColor = 'var(--color-bg-elevated)';
+          e.currentTarget.style.backgroundColor = isCritical ? 'rgba(239, 68, 68, 0.04)' : 'var(--color-bg-elevated)';
         }
       }}
     >

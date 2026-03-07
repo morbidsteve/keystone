@@ -9,6 +9,7 @@ import KeyboardShortcuts from '@/components/common/KeyboardShortcuts';
 import { useClassificationStore } from '@/stores/classificationStore';
 import { useSidebarToggle } from '@/hooks/useMediaQuery';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import CommandPalette from '@/components/common/CommandPalette';
 import ToastContainer from '@/components/ui/ToastContainer';
 import GlobalModals from '@/components/common/GlobalModals';
@@ -16,9 +17,17 @@ import GuidedTour from '@/components/onboarding/GuidedTour';
 
 export default function MainLayout() {
   const fetchClassification = useClassificationStore((s) => s.fetchClassification);
-  const { isMobile, isMobileOpen, toggle, close } = useSidebarToggle();
+  const { isMobile, isMobileOpen, toggle, close, open } = useSidebarToggle();
   const location = useLocation();
   const { showHelp, setShowHelp } = useKeyboardShortcuts();
+
+  // Mobile swipe gestures for sidebar
+  useSwipeGesture({
+    onSwipeRight: open,
+    onSwipeLeft: close,
+    threshold: 50,
+    edgeThreshold: 30,
+  });
 
   useEffect(() => {
     fetchClassification();

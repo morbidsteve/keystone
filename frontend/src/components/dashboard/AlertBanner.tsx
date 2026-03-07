@@ -1,5 +1,10 @@
 import { AlertTriangle, AlertCircle, Info, Check } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { formatRelativeTime } from '@/lib/utils';
+import { acknowledgeAlert } from '@/api/alerts';
+import { useAlertStore } from '@/stores/alertStore';
+import { useToast } from '@/hooks/useToast';
+import { usePermission } from '@/hooks/usePermission';
 import type { Alert, AlertSeverity } from '@/lib/types';
 
 interface AlertBannerProps {
@@ -31,6 +36,32 @@ function getSeverityColor(severity: AlertSeverity | string) {
 }
 
 export default function AlertBanner({ alerts, onAcknowledge, maxItems = 5 }: AlertBannerProps) {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const markAcknowledged = useAlertStore((s) => s.markAcknowledged);
+  const { hasPermission } = usePermission();
+  const canAcknowledge = hasPermission('alerts:acknowledge');
+
+  const ackMutation = useMutation({
+    mutationFn: (id: string) => acknowledgeAlert(id),
+    onSuccess: (_data, id) => {
+      markAcknowledged(id);
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['alert-summary'] });
+      toast.success('Alert acknowledged');
+    },
+    onError: () => {
+      toast.danger('Failed to acknowledge alert');
+    },
+  });
+
+  const handleAcknowledge = (id: string) => {
+    if (onAcknowledge) {
+      onAcknowledge(id);
+    }
+    ackMutation.mutate(id);
+  };
+
   const displayAlerts = alerts.slice(0, maxItems);
 
   if (displayAlerts.length === 0) {
@@ -67,9 +98,9 @@ export default function AlertBanner({ alerts, onAcknowledge, maxItems = 5 }: Ale
               >
                 {alert.unitName} / {formatRelativeTime(alert.createdAt)}
               </span>
-              {onAcknowledge && !alert.acknowledged && (
+              {!alert.acknowledged && canAcknowledge && (
                 <button
-                  onClick={() => onAcknowledge(alert.id)}
+                  onClick={(e) => { e.stopPropagation(); handleAcknowledge(alert.id); }}
                   className="flex items-center gap-1 py-[3px] px-2 bg-transparent border border-[var(--color-border-strong)] rounded-[var(--radius)] text-[var(--color-text-muted)] font-[var(--font-mono)] text-[9px] cursor-pointer transition-all duration-[var(--transition)]"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = 'var(--color-accent)';

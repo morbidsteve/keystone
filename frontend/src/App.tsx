@@ -31,6 +31,7 @@ const MedicalPage = lazy(() => import('@/pages/MedicalPage'));
 const FuelPage = lazy(() => import('@/pages/FuelPage'));
 const CustodyPage = lazy(() => import('@/pages/CustodyPage'));
 const AuditPage = lazy(() => import('@/pages/AuditPage'));
+const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 
 // ---------------------------------------------------------------------------
 // Suspense wrapper for lazy routes
@@ -145,6 +146,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="profile" element={<Lazy><ProfilePage /></Lazy>} />
         <Route path="docs" element={<Lazy><DocsPage /></Lazy>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
