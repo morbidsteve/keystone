@@ -74,11 +74,11 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
+      <table className="w-full border-collapse" aria-label="Audit log entries table">
         <thead>
           <tr>
             {['Date/Time', 'User', 'Action', 'Entity Type', 'Description'].map((h) => (
-              <th key={h} style={thStyle}>
+              <th key={h} scope="col" style={thStyle}>
                 {h}
               </th>
             ))}

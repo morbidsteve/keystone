@@ -236,18 +236,16 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
   return (
     <aside
-      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''} bg-bg-elevated border-r border-border flex flex-col relative z-20 overflow-hidden h-full`}
+      className={`sidebar${isMobileOpen ? ' sidebar-open' : ''} bg-bg-elevated border-r border-border flex flex-col relative z-20 overflow-hidden h-full transition-[width,min-width] duration-200 ease-in-out`}
       role="complementary"
       aria-label="Sidebar"
-      style={{ width: sidebarWidth, minWidth: sidebarWidth, transition: 'width 0.2s ease, min-width 0.2s ease' }}
+      style={{ width: sidebarWidth, minWidth: sidebarWidth }}
     >
       {/* Brand */}
       <div
-        className="border-b border-border flex items-center gap-2.5"
-        style={{
-          padding: effectiveCollapsed ? '16px 0' : '16px 16px',
-          justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-        }}
+        className={`border-b border-border flex items-center gap-2.5 ${
+          effectiveCollapsed ? 'py-4 px-0 justify-center' : 'py-4 px-4 justify-start'
+        }`}
       >
         <Shield size={20} className="text-accent shrink-0" aria-hidden="true" />
         {!effectiveCollapsed && (
@@ -267,12 +265,11 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
         {/* Close button (mobile only) */}
         <button
-          className="sidebar-close-btn"
+          className={`sidebar-close-btn ${isDemoMode && !effectiveCollapsed ? 'ml-1' : 'ml-auto'}`}
           onClick={onClose}
           aria-label="Close sidebar"
-          style={{ marginLeft: isDemoMode && !effectiveCollapsed ? 4 : 'auto' }}
         >
-          <X size={16} aria-hidden="true" />
+          <X size={14} aria-hidden="true" />
         </button>
       </div>
 
@@ -311,10 +308,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                   <ChevronDown
                     size={12}
                     aria-hidden="true"
-                    style={{
-                      transition: 'transform 0.2s ease',
-                      transform: isGroupCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-                    }}
+                    className={`transition-transform duration-200 ease-in-out ${isGroupCollapsed ? '-rotate-90' : 'rotate-0'}`}
                   />
                   {group.label}
                 </button>
@@ -330,30 +324,19 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                         onClick={onClose}
                         title={effectiveCollapsed ? item.label : undefined}
                         aria-label={effectiveCollapsed ? item.label : undefined}
-                        className="no-underline"
-                        style={({ isActive }) => ({
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-                          gap: effectiveCollapsed ? 0 : 10,
-                          padding: effectiveCollapsed ? '10px 0' : '10px 16px',
-                          margin: '1px 0',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: 11,
-                          fontWeight: 500,
-                          letterSpacing: '1.5px',
-                          textTransform: 'uppercase',
-                          textDecoration: 'none',
-                          color: isActive ? 'var(--color-text-bright)' : 'var(--color-text-muted)',
-                          backgroundColor: isActive ? 'var(--color-bg-hover)' : 'transparent',
-                          borderLeft: isActive
-                            ? '3px solid var(--color-accent)'
-                            : '3px solid transparent',
-                          transition: 'all var(--transition)',
-                          position: 'relative',
-                        })}
+                        className={({ isActive }) =>
+                          `flex items-center no-underline my-px font-[var(--font-mono)] text-[11px] font-medium tracking-[1.5px] uppercase relative transition-all duration-[var(--transition)] border-l-[3px] ${
+                            effectiveCollapsed
+                              ? 'justify-center gap-0 py-2.5 px-0'
+                              : 'justify-start gap-2.5 py-2.5 px-4'
+                          } ${
+                            isActive
+                              ? 'text-[var(--color-text-bright)] bg-[var(--color-bg-hover)] border-l-[var(--color-accent)]'
+                              : 'text-[var(--color-text-muted)] bg-transparent border-l-transparent'
+                          }`
+                        }
                       >
-                        <item.icon size={16} className="shrink-0" aria-hidden="true" />
+                        <item.icon size={18} className="shrink-0" aria-hidden="true" />
                         {!effectiveCollapsed && (
                           <span className="flex-1">{item.label}</span>
                         )}
@@ -391,8 +374,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
       {/* Collapse toggle (desktop only) */}
       <div
-        className="sidebar-collapse-toggle flex justify-center"
-        style={{ padding: effectiveCollapsed ? '8px 8px' : '8px 12px' }}
+        className={`sidebar-collapse-toggle flex justify-center ${effectiveCollapsed ? 'p-2' : 'py-2 px-3'}`}
       >
         <button
           onClick={toggleCollapsedMode}
@@ -404,7 +386,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               : 'bg-transparent py-1 px-2 text-3xs'
           }`}
         >
-          {effectiveCollapsed ? <ChevronsRight size={18} aria-hidden="true" /> : <ChevronsLeft size={14} aria-hidden="true" />}
+          {effectiveCollapsed ? <ChevronsRight size={14} aria-hidden="true" /> : <ChevronsLeft size={14} aria-hidden="true" />}
           {!effectiveCollapsed && <span>COLLAPSE</span>}
         </button>
       </div>
@@ -412,11 +394,9 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
       {/* User Info */}
       {user && (
         <div
-          className="border-t border-border flex flex-col"
-          style={{
-            padding: effectiveCollapsed ? '12px 0' : '12px 16px',
-            alignItems: effectiveCollapsed ? 'center' : 'flex-start',
-          }}
+          className={`border-t border-border flex flex-col ${
+            effectiveCollapsed ? 'py-3 px-0 items-center' : 'py-3 px-4 items-start'
+          }`}
           title={effectiveCollapsed ? `${user.full_name} — ${user.role}` : undefined}
         >
           {effectiveCollapsed ? (

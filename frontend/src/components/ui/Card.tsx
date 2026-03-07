@@ -6,15 +6,17 @@ interface CardProps {
   accentColor?: string;
   style?: React.CSSProperties;
   headerRight?: ReactNode;
+  'aria-label'?: string;
 }
 
-export default function Card({ children, title, accentColor, style, headerRight }: CardProps) {
+export default function Card({ children, title, accentColor, style, headerRight, 'aria-label': ariaLabel }: CardProps) {
   return (
-    <div
+    <section
+      aria-label={ariaLabel || title}
       className="bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden" style={{ borderTop: accentColor ? `2px solid ${accentColor}` : undefined }}
     >
       {title && (
-        <div
+        <header
           className="py-3 px-4 border-b border-b-[var(--color-border)] flex items-center justify-between"
         >
           <span
@@ -23,9 +25,9 @@ export default function Card({ children, title, accentColor, style, headerRight 
             {title}
           </span>
           {headerRight}
-        </div>
+        </header>
       )}
       <div className="p-4">{children}</div>
-    </div>
+    </section>
   );
 }

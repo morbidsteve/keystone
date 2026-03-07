@@ -142,16 +142,12 @@ export default function RequisitionsPage() {
           >
             <span>{stats.total} TOTAL</span>
             <span
-              style={{
-                color: stats.pending > 0 ? 'var(--color-warning)' : 'var(--color-text-muted)',
-              }}
+              className={stats.pending > 0 ? 'text-[var(--color-warning)]' : 'text-[var(--color-text-muted)]'}
             >
               {stats.pending} PENDING
             </span>
             <span
-              style={{
-                color: stats.inTransit > 0 ? '#a78bfa' : 'var(--color-text-muted)',
-              }}
+              className={stats.inTransit > 0 ? 'text-[#a78bfa]' : 'text-[var(--color-text-muted)]'}
             >
               {stats.inTransit} IN TRANSIT
             </span>
@@ -172,7 +168,11 @@ export default function RequisitionsPage() {
           <button
             key={mode}
             onClick={() => setViewMode(mode)}
-            className="py-1.5 px-3 font-[var(--font-mono)] text-[9px] tracking-[1px] border-0 bg-transparent cursor-pointer" style={{ fontWeight: viewMode === mode ? 600 : 400, borderBottom: viewMode === mode ? '2px solid var(--color-accent)' : '2px solid transparent', color: viewMode === mode ? 'var(--color-accent)' : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
+            className={`py-1.5 px-3 font-[var(--font-mono)] text-[9px] tracking-[1px] border-0 bg-transparent cursor-pointer transition-all duration-[var(--transition)] ${
+              viewMode === mode
+                ? 'font-semibold border-b-2 border-b-[var(--color-accent)] text-[var(--color-accent)]'
+                : 'font-normal border-b-2 border-b-transparent text-[var(--color-text-muted)]'
+            }`}
           >
             {mode}
             {mode === 'ACTIVE' && (
@@ -197,11 +197,11 @@ export default function RequisitionsPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
-                  ? '2px solid var(--color-accent)'
-                  : '2px solid transparent', color: activeTab === tab.key
-                  ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
+            className={`py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px] transition-all duration-[var(--transition)] ${
+              activeTab === tab.key
+                ? 'font-semibold border-b-2 border-b-[var(--color-accent)] text-[var(--color-accent)]'
+                : 'font-normal border-b-2 border-b-transparent text-[var(--color-text-muted)]'
+            }`}
           >
             {tab.label}
             {tab.key === 'pending' && stats.pending > 0 && (
@@ -272,7 +272,7 @@ export default function RequisitionsPage() {
                       <div key={status} className="flex items-center gap-2.5">
                         <span className="font-[var(--font-mono)] text-[10px] font-semibold w-[100px] text-right text-[var(--color-text-muted)]">{status.replace(/_/g, ' ')}</span>
                         <div className="flex-1 h-[16px] bg-[var(--color-bg)] rounded-[2px] overflow-hidden">
-                          <div className="h-full bg-[var(--color-accent)] rounded-[2px]" style={{ width: `${pct}%`, transition: 'width 0.3s ease' }} />
+                          <div className="h-full bg-[var(--color-accent)] rounded-[2px] transition-[width] duration-300 ease-in-out" style={{ width: `${pct}%` }} />
                         </div>
                         <span className="font-[var(--font-mono)] text-[11px] font-bold w-[30px] text-[var(--color-text-bright)]">{count as number}</span>
                       </div>

@@ -334,12 +334,14 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
         <div style={{ overflow: 'auto' }}>
           <table
             className="w-full border-collapse min-w-[900px]"
+            aria-label="Alpha roster personnel table"
           >
             <thead className="sticky top-0 z-10 bg-[var(--color-bg-elevated)]">
               <tr>
                 {columns.map((col) => (
                   <th
                     key={col.key}
+                    scope="col"
                     onClick={() => handleSort(col.key)}
                     style={{
                       ...headerStyle,
@@ -355,8 +357,8 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                     )}
                   </th>
                 ))}
-                <th className="cursor-default">LOCATION</th>
-                <th className="text-center">ACTIONS</th>
+                <th scope="col" className="cursor-default">LOCATION</th>
+                <th scope="col" className="text-center">ACTIONS</th>
               </tr>
             </thead>
             <tbody>
