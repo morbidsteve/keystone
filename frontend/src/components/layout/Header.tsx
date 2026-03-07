@@ -133,7 +133,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         {/* Quick Actions */}
         <QuickActionsButton />
 
-        {/* Time Range Selector (hidden on mobile) */}
+        {/* Time Range Selector — button row on desktop, dropdown on mobile */}
         <div className="header-time-range flex items-center gap-0.5" role="group" aria-label="Time range selector">
           <Clock size={12} className="text-text-muted mr-1.5" aria-hidden="true" />
           {TIME_RANGES.map((range) => (
@@ -150,6 +150,22 @@ export default function Header({ onMenuToggle }: HeaderProps) {
               {range.label}
             </button>
           ))}
+        </div>
+        {/* Time Range Selector — mobile dropdown (visible only < 768px) */}
+        <div className="header-time-range-mobile hide-desktop items-center gap-1" aria-label="Time range selector">
+          <Clock size={12} className="text-text-muted" aria-hidden="true" />
+          <select
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+            aria-label="Select time range"
+            className="font-mono text-2xs tracking-[1px] rounded py-1 px-1.5 border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] cursor-pointer"
+          >
+            {TIME_RANGES.map((range) => (
+              <option key={range.value} value={range.value}>
+                {range.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Last Updated (dashboard only) */}

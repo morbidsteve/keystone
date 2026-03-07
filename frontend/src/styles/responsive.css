@@ -243,6 +243,10 @@
     display: none !important;
   }
 
+  .header-time-range-mobile {
+    display: flex !important;
+  }
+
   .header-right-controls {
     gap: 8px !important;
   }
