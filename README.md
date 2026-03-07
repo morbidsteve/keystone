@@ -52,8 +52,14 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 ### Transportation & Convoy Tracking
 ![Transportation page with Leaflet map showing active convoy routes on Camp Pendleton, convoy summary KPI cards (active convoys, vehicles, PAX, tonnage), tabbed views (Active Convoys/Convoy Planning/Lift Requests/Movement History), convoy status cards with origin-destination, cargo manifest, vehicle and PAX counts, departure/ETA times](docs/images/transportation.png)
 
-### Custody & Sensitive Items
-![Custody tracking page for sensitive items with chain of custody audit trail, inventory management showing item serial numbers, custodian assignments, and accountability status](docs/images/custody.png)
+### Custody & Sensitive Items — Item Registry
+![Custody page showing sensitive items registry with KPI summary cards (Total Items 8, On Hand 5, Missing 1, Last Inventory date), missing item alert banner, tabbed views (Item Registry/Custody Transfers/Inventory/Missing Items), search and type filter, table with Serial #, Nomenclature, Type badges (WEAPON/CRYPTO/NVG/OPTIC/RADIO), Status badges (ON HAND/MISSING/IN MAINTENANCE/ISSUED), Condition code, Holder, and Last Inventory columns](docs/images/custody-registry.png)
+
+### Custody — Register New Sensitive Item
+![Register Sensitive Item form with fields for Serial Number, Nomenclature, Item Type dropdown (WEAPON/OPTIC/NVG/CRYPTO/RADIO/COMSEC/CLASSIFIED_DOCUMENT/EXPLOSIVE/MISSILE/OTHER), NSN, Security Classification (UNCLASSIFIED/CUI/SECRET/TOP SECRET), Condition Code, Hand Receipt Number, Current Holder Name, and Notes](docs/images/custody-register-item.png)
+
+### Custody — Transfer History
+![Custody transfers tab showing Recent Transfers table with Date, Item serial number, From personnel, To personnel with chevron arrow, transfer Type badges (LATERAL TRANSFER/MAINTENANCE RETURN/ISSUE/TEMPORARY LOAN), Document number, and Reason columns, plus NEW TRANSFER action button](docs/images/custody-transfers.png)
 
 ### Personnel & Manning
 ![Personnel page with strength summary cards (Authorized, Assigned, Present, Fill Rate), P-Rating badge, tabbed views (Alpha Roster/Strength/Billets/Qualifications/EAS Timeline), searchable roster with Name, EDIPI, Rank, Pay Grade, MOS, Billet, Status, Duty, Rifle qualification, PFT/CFT scores, and Location columns](docs/images/personnel.png)
@@ -74,7 +80,7 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 ![Alerts dashboard with severity summary cards (Total Active, Critical, Warning, Info), tabbed views (Alerts/Rules/Notifications/Preferences/Predictions), severity filter, toggle for acknowledged/resolved, expandable alert cards with description, severity badge, unit, timestamp, and ACK/RESOLVE action buttons](docs/images/alerts.png)
 
 ### Audit Log
-![System-wide audit log with comprehensive trail of user actions, filterable by action type, user, and date range, showing timestamps, user, action, target entity, and details](docs/images/audit.png)
+![Audit trail page with KPI summary (Actions 24H: 6, Security Actions: 3, Unique Users: 4, Most Active: CUSTODY TRANSFER), Entity Type and Period filters, tabbed views (Audit Trail/Security Actions), table with Date/Time, User, color-coded Action badges (UPDATE/TRANSFER/EXPORT/LOGIN/STATUS CHANGE/INVENTORY START/DELETE), Entity Type, and Description columns](docs/images/audit-trail.png)
 
 ### Administration
 ![Admin panel with tabbed views (User Management/Unit Configuration/Classification/Map Tiles/Scenarios/Roles & Permissions/Simulation), user management table with status indicator, username, name, role badges (ADMIN/COMMANDER/S4/S3/OPERATOR/VIEWER), unit, last login, and edit actions](docs/images/admin.png)
@@ -191,8 +197,13 @@ KEYSTONE tracks the complete logistics picture: supply levels across all 10 NATO
 - Consumption forecasting
 
 ### Sensitive Item Custody and Chain of Custody
-- Sensitive item tracking with chain of custody audit trail
-- Inventory management and audit logging
+- **Item Registry**: Register and track sensitive items (weapons, optics, NVGs, crypto, radios, COMSEC, explosives, missiles)
+- **Register New Items**: Full registration form with serial number, nomenclature, type, NSN, security classification, condition code, hand receipt, holder assignment
+- **Chain of Custody**: Visual timeline of custody transfers per item with from/to personnel, document numbers, and authorization
+- **Custody Transfers**: Issue, turn-in, lateral transfer, temporary loan, maintenance turn-in/return, inventory adjustment
+- **Inventory Events**: Track cyclic, sensitive item, and monthly inventories with discrepancy counts and witness documentation
+- **Missing Item Alerts**: Immediate action alerts with FLIPL initiation tracking
+- **Audit Trail**: Full audit logging of all custody actions with user, timestamp, action type, and entity tracking
 
 ### SITREP Reporting Engine
 - Report templates with scheduled generation

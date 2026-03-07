@@ -507,7 +507,11 @@ export default function FuelPage() {
           </div>
           <div className="mt-3 flex justify-end">
             <button
-              className="text-[#fff]"
+              style={{
+                ...buttonStyle,
+                backgroundColor: 'var(--color-accent)',
+                color: '#000',
+              }}
               onClick={() => setShowNewTxnForm(false)}
             >
               SUBMIT TRANSACTION
@@ -634,7 +638,11 @@ export default function FuelPage() {
           </div>
           <div className="mt-3 flex justify-end">
             <button
-              className="text-[#fff]"
+              style={{
+                ...buttonStyle,
+                backgroundColor: 'var(--color-accent)',
+                color: '#000',
+              }}
               onClick={() => setShowNewSPForm(false)}
             >
               CREATE STORAGE POINT

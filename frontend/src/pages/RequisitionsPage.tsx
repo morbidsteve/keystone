@@ -270,7 +270,7 @@ export default function RequisitionsPage() {
                     const pct = maxCount > 0 ? ((count as number) / maxCount) * 100 : 0;
                     return (
                       <div key={status} className="flex items-center gap-2.5">
-                        <span className="font-[var(--font-mono)] text-[10px] font-semibold w-[100px] text-right text-[var(--color-text-muted)]">{status}</span>
+                        <span className="font-[var(--font-mono)] text-[10px] font-semibold w-[100px] text-right text-[var(--color-text-muted)]">{status.replace(/_/g, ' ')}</span>
                         <div className="flex-1 h-[16px] bg-[var(--color-bg)] rounded-[2px] overflow-hidden">
                           <div className="h-full bg-[var(--color-accent)] rounded-[2px]" style={{ width: `${pct}%`, transition: 'width 0.3s ease' }} />
                         </div>

@@ -27,8 +27,9 @@ import {
   getCustodyChain,
   getTransfers,
   getInventoryEvents,
+  createSensitiveItem,
 } from '@/api/custody';
-import type { SensitiveItemType, TransferType } from '@/lib/types';
+import type { SensitiveItemType, SecurityClassification, ItemConditionCode, TransferType } from '@/lib/types';
 
 // ---------------------------------------------------------------------------
 // Tab definitions
@@ -78,6 +79,20 @@ export default function CustodyPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
   const toast = useToast();
+
+  // New item registration form
+  const [showNewItemForm, setShowNewItemForm] = useState(false);
+  const [newItem, setNewItem] = useState({
+    serial_number: '',
+    nomenclature: '',
+    item_type: 'WEAPON' as SensitiveItemType,
+    nsn: '',
+    security_classification: 'UNCLASSIFIED' as SecurityClassification,
+    condition_code: 'A' as ItemConditionCode,
+    hand_receipt_number: '',
+    current_holder_name: '',
+    notes: '',
+  });
 
   // New transfer form
   const [showNewTransferForm, setShowNewTransferForm] = useState(false);
@@ -227,7 +242,7 @@ export default function CustodyPage() {
 
   const renderRegistry = () => (
     <div className="flex flex-col gap-4">
-      {/* Filters */}
+      {/* Filters + Register button */}
       <div className="flex gap-3 items-end">
         <div>
           <label style={labelStyle}>SEARCH</label>
@@ -242,6 +257,7 @@ export default function CustodyPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-[240px]"
+              style={{ ...inputStyle, width: 240, paddingLeft: 28 }}
             />
           </div>
         </div>
@@ -262,7 +278,186 @@ export default function CustodyPage() {
             )}
           </select>
         </div>
+        <div className="ml-auto">
+          <button
+            onClick={() => setShowNewItemForm(!showNewItemForm)}
+            style={{
+              ...buttonStyle,
+              backgroundColor: showNewItemForm ? 'var(--color-border)' : 'var(--color-accent)',
+              color: showNewItemForm ? 'var(--color-text)' : '#000',
+            }}
+          >
+            <Plus size={12} />
+            {showNewItemForm ? 'CANCEL' : 'REGISTER ITEM'}
+          </button>
+        </div>
       </div>
+
+      {/* New item registration form */}
+      {showNewItemForm && (
+        <Card title="REGISTER SENSITIVE ITEM" accentColor="var(--color-accent)">
+          <div
+            className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]"
+          >
+            <div>
+              <label style={labelStyle}>SERIAL NUMBER</label>
+              <input
+                type="text"
+                placeholder="e.g., W123456"
+                value={newItem.serial_number}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, serial_number: e.target.value })
+                }
+                style={{ ...inputStyle, width: '100%' }}
+                required
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>NOMENCLATURE</label>
+              <input
+                type="text"
+                placeholder="e.g., Rifle, 5.56mm, M4A1"
+                value={newItem.nomenclature}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, nomenclature: e.target.value })
+                }
+                style={{ ...inputStyle, width: '100%' }}
+                required
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>ITEM TYPE</label>
+              <select
+                value={newItem.item_type}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, item_type: e.target.value as SensitiveItemType })
+                }
+                style={{ ...selectStyle, width: '100%' }}
+              >
+                {(['WEAPON', 'OPTIC', 'NVG', 'CRYPTO', 'RADIO', 'COMSEC', 'CLASSIFIED_DOCUMENT', 'EXPLOSIVE', 'MISSILE', 'OTHER'] as SensitiveItemType[]).map(
+                  (t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>NSN</label>
+              <input
+                type="text"
+                placeholder="e.g., 1005-01-231-0973"
+                value={newItem.nsn}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, nsn: e.target.value })
+                }
+                style={{ ...inputStyle, width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>SECURITY CLASSIFICATION</label>
+              <select
+                value={newItem.security_classification}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, security_classification: e.target.value as SecurityClassification })
+                }
+                style={{ ...selectStyle, width: '100%' }}
+              >
+                {(['UNCLASSIFIED', 'CUI', 'SECRET', 'TOP_SECRET'] as SecurityClassification[]).map(
+                  (c) => (
+                    <option key={c} value={c}>
+                      {c.replace(/_/g, ' ')}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>CONDITION CODE</label>
+              <select
+                value={newItem.condition_code}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, condition_code: e.target.value as ItemConditionCode })
+                }
+                style={{ ...selectStyle, width: '100%' }}
+              >
+                {(['A', 'B', 'C', 'D', 'F', 'H'] as ItemConditionCode[]).map(
+                  (c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>HAND RECEIPT NUMBER</label>
+              <input
+                type="text"
+                placeholder="e.g., HR-2026-0041"
+                value={newItem.hand_receipt_number}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, hand_receipt_number: e.target.value })
+                }
+                style={{ ...inputStyle, width: '100%' }}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>CURRENT HOLDER NAME</label>
+              <input
+                type="text"
+                placeholder="e.g., Sgt Johnson, M.R."
+                value={newItem.current_holder_name}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, current_holder_name: e.target.value })
+                }
+                style={{ ...inputStyle, width: '100%' }}
+              />
+            </div>
+            <div className="col-span-full">
+              <label style={labelStyle}>NOTES</label>
+              <input
+                type="text"
+                placeholder="Additional notes"
+                value={newItem.notes}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, notes: e.target.value })
+                }
+                style={{ ...inputStyle, width: '100%' }}
+              />
+            </div>
+            <div>
+              <button
+                style={{
+                  ...buttonStyle,
+                  backgroundColor: 'var(--color-accent)',
+                  color: '#000',
+                  marginTop: 8,
+                }}
+                onClick={() => {
+                  toast.success('Sensitive item registered successfully');
+                  setShowNewItemForm(false);
+                  setNewItem({
+                    serial_number: '',
+                    nomenclature: '',
+                    item_type: 'WEAPON' as SensitiveItemType,
+                    nsn: '',
+                    security_classification: 'UNCLASSIFIED' as SecurityClassification,
+                    condition_code: 'A' as ItemConditionCode,
+                    hand_receipt_number: '',
+                    current_holder_name: '',
+                    notes: '',
+                  });
+                }}
+              >
+                <Plus size={12} />
+                REGISTER ITEM
+              </button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Table + Detail split */}
       <div
@@ -334,7 +529,11 @@ export default function CustodyPage() {
       <div className="flex justify-end">
         <button
           onClick={() => setShowNewTransferForm(!showNewTransferForm)}
-          className="text-[#000]"
+          style={{
+            ...buttonStyle,
+            backgroundColor: showNewTransferForm ? 'var(--color-border)' : 'var(--color-accent)',
+            color: showNewTransferForm ? 'var(--color-text)' : '#000',
+          }}
         >
           <Plus size={12} />
           {showNewTransferForm ? 'CANCEL' : 'NEW TRANSFER'}
@@ -421,7 +620,12 @@ export default function CustodyPage() {
             </div>
             <div>
               <button
-                className="text-[#000] mt-2"
+                style={{
+                  ...buttonStyle,
+                  backgroundColor: 'var(--color-accent)',
+                  color: '#000',
+                  marginTop: 8,
+                }}
                 onClick={() => {
                   toast.success('Custody transfer submitted successfully');
                   setShowNewTransferForm(false);

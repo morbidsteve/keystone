@@ -105,7 +105,7 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
                 <span
                   className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
                 >
-                  {event.inventory_type} INVENTORY
+                  {event.inventory_type.replace(/_/g, ' ')} INVENTORY
                 </span>
                 <span
                   className="py-0.5 px-1.5 rounded-[3px] font-[var(--font-mono)] text-[8px] font-bold tracking-[0.5px]" style={{ backgroundColor: `${statusColor}20`, color: statusColor }}

@@ -90,7 +90,7 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
 
             return (
               <tr key={log.id}>
-                <td className="whitespace-nowrap">
+                <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
                   {new Date(log.created_at).toLocaleString()}
                 </td>
                 <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
@@ -100,10 +100,10 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
                   <span
                     className="py-0.5 px-2 rounded-[3px] font-semibold text-[9px] tracking-[0.5px]" style={{ backgroundColor: `${actionColor}20`, color: actionColor }}
                   >
-                    {log.action}
+                    {log.action.replace(/_/g, ' ')}
                   </span>
                 </td>
-                <td className="whitespace-nowrap">
+                <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
                   {log.entity_type.replace(/_/g, ' ')}
                 </td>
                 <td style={{ ...tdStyle, maxWidth: 400 }}>{log.description}</td>
