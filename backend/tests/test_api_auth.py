@@ -3,7 +3,7 @@
 import pytest
 from httpx import AsyncClient
 
-from app.models.user import Role, User
+from app.models.user import User
 
 
 @pytest.mark.asyncio

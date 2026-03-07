@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 
 class TestGenerateReportTask:
     """Tests for the generate_report_task Celery task."""
@@ -96,7 +94,7 @@ class TestProcessMIRCUploadTask:
         self, mock_parse, mock_normalize, mock_engine
     ):
         """process_mirc_upload handles empty parse results."""
-        from app.models.raw_data import ParseStatus, RawData, SourceType
+        from app.models.raw_data import ParseStatus, RawData
 
         mock_raw = MagicMock(spec=RawData)
         mock_raw.id = 1
@@ -126,7 +124,7 @@ class TestProcessMIRCUploadTask:
         self, mock_parse, mock_normalize, mock_engine
     ):
         """process_mirc_upload processes records successfully."""
-        from app.models.raw_data import ParseStatus, RawData, SourceType
+        from app.models.raw_data import ParseStatus, RawData
 
         mock_raw = MagicMock(spec=RawData)
         mock_raw.id = 1

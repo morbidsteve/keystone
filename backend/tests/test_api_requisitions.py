@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.requisition import (
     Requisition,
-    RequisitionLineItem,
     RequisitionPriority,
     RequisitionStatus,
 )

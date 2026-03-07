@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.report import (
     Report,
     ReportStatus,
-    ReportTemplate,
     ReportType,
 )
 from app.models.unit import Unit

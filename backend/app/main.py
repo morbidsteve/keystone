@@ -19,6 +19,7 @@ from app.config import settings
 from app.database import Base, engine, async_session
 from app.middleware.request_logging import RequestLoggingMiddleware
 from app.middleware.rate_limit import setup_rate_limiting
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # ---------------------------------------------------------------------------
 # Structured logging configuration
@@ -557,7 +558,6 @@ app.add_middleware(RequestLoggingMiddleware)
 setup_rate_limiting(app)
 
 # Prometheus metrics instrumentation
-from prometheus_fastapi_instrumentator import Instrumentator
 Instrumentator().instrument(app).expose(app)
 
 # Include all API routers under /api/v1

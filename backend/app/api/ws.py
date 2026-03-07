@@ -1,6 +1,5 @@
 """WebSocket endpoint for real-time event broadcasting."""
 
-import json
 from typing import Set
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
