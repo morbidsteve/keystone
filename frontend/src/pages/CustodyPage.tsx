@@ -2,7 +2,7 @@
 // CustodyPage — Sensitive Item Chain of Custody Management
 // =============================================================================
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Shield,
@@ -30,6 +30,7 @@ import {
   createSensitiveItem,
 } from '@/api/custody';
 import type { SensitiveItemType, SecurityClassification, ItemConditionCode, TransferType } from '@/lib/types';
+import { searchCatalog, type CatalogEntry } from '@/data/sensitiveItemCatalog';
 
 // ---------------------------------------------------------------------------
 // Tab definitions
@@ -103,6 +104,47 @@ export default function CustodyPage() {
     document_number: '',
     reason: '',
   });
+
+  // Catalog auto-suggest state
+  const [showCatalogDropdown, setShowCatalogDropdown] = useState(false);
+  const nomenclatureInputRef = useRef<HTMLInputElement>(null);
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const catalogMatches = useMemo(
+    () => searchCatalog(newItem.nomenclature),
+    [newItem.nomenclature],
+  );
+
+  const handleNomenclatureChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setNewItem((prev) => ({ ...prev, nomenclature: value }));
+      setShowCatalogDropdown(value.length >= 2);
+    },
+    [],
+  );
+
+  const handleNomenclatureFocus = useCallback(() => {
+    if (newItem.nomenclature.length >= 2) {
+      setShowCatalogDropdown(true);
+    }
+  }, [newItem.nomenclature]);
+
+  const handleNomenclatureBlur = useCallback(() => {
+    // Small delay so click events on dropdown items can register
+    blurTimeoutRef.current = setTimeout(() => setShowCatalogDropdown(false), 200);
+  }, []);
+
+  const handleCatalogSelect = useCallback((entry: CatalogEntry) => {
+    setNewItem((prev) => ({
+      ...prev,
+      nomenclature: entry.nomenclature,
+      nsn: entry.nsn,
+      item_type: entry.itemType,
+    }));
+    setShowCatalogDropdown(false);
+    if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
+  }, []);
 
   const numericUnitId = useMemo(() => {
     if (!selectedUnitId) return 4;
@@ -312,18 +354,103 @@ export default function CustodyPage() {
                 required
               />
             </div>
-            <div>
+            <div style={{ position: 'relative' }}>
               <label style={labelStyle}>NOMENCLATURE</label>
               <input
+                ref={nomenclatureInputRef}
                 type="text"
-                placeholder="e.g., Rifle, 5.56mm, M4A1"
+                placeholder="Type to search catalog (e.g., M4, PVS-14, Javelin)..."
                 value={newItem.nomenclature}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, nomenclature: e.target.value })
-                }
+                onChange={handleNomenclatureChange}
+                onFocus={handleNomenclatureFocus}
+                onBlur={handleNomenclatureBlur}
+                autoComplete="off"
                 style={{ ...inputStyle, width: '100%' }}
                 required
               />
+              {showCatalogDropdown && catalogMatches.length > 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    marginTop: 2,
+                    backgroundColor: 'var(--color-bg-elevated)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius)',
+                    maxHeight: 240,
+                    overflowY: 'auto',
+                    zIndex: 50,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                  }}
+                >
+                  {catalogMatches.map((entry) => (
+                    <div
+                      key={entry.nsn}
+                      onMouseDown={(e) => {
+                        e.preventDefault(); // Prevent blur from firing before click
+                        handleCatalogSelect(entry);
+                      }}
+                      style={{
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 11,
+                        borderBottom: '1px solid var(--color-border)',
+                        transition: 'background var(--transition)',
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)')
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = 'transparent')
+                      }
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            color: 'var(--color-text-bright)',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {entry.nomenclature}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 9,
+                            color: 'var(--color-text-muted)',
+                            marginTop: 1,
+                          }}
+                        >
+                          NSN: {entry.nsn}
+                        </div>
+                      </div>
+                      <span
+                        style={{
+                          fontSize: 8,
+                          fontWeight: 600,
+                          letterSpacing: '1px',
+                          padding: '2px 6px',
+                          borderRadius: 3,
+                          backgroundColor: 'rgba(59,130,246,0.15)',
+                          color: '#3b82f6',
+                          whiteSpace: 'nowrap',
+                          flexShrink: 0,
+                        }}
+                      >
+                        {entry.itemType}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div>
               <label style={labelStyle}>ITEM TYPE</label>
