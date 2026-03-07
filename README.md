@@ -242,6 +242,60 @@ KEYSTONE ships with a full demo mode that runs entirely in the browser -- no bac
 
 ---
 
+## Role-Based Perspectives
+
+KEYSTONE serves 7 distinct roles across the Marine Corps logistics chain. Each role sees the data most relevant to their responsibilities. For detailed user stories, see [docs/USER_STORIES.md](docs/USER_STORIES.md).
+
+### Battalion Commander
+
+The Commander opens KEYSTONE and immediately sees the force's combat readiness -- six KPI cards for Supply, Maintenance, Transportation, Engineering, Health Services, and Services, each color-coded GREEN/AMBER/RED. Below that: supply class percentages with days-of-supply, equipment readiness donut charts for key platforms (HMMWV 88%, MTVR 86%, LAV-25 79%, M777 89%), sustainability projections, consumption trends, and active alerts requiring acknowledgement. The Commander makes decisions -- not slides.
+
+![Commander dashboard showing 6 readiness KPI cards, supply class status grid, equipment readiness donuts, sustainability projection, consumption rate chart, and active alerts panel](docs/images/role-commander-dashboard.png)
+
+### S-4 Logistics Officer
+
+The S-4 lives in the supply and requisition data. Their dashboard shows every supply class across every subordinate unit -- on-hand quantities, authorized levels, fill percentages, days-of-supply, and consumption rates with traffic-light status badges. From here, the S-4 identifies which units are RED on CL III fuel (1/1 at 57%, 2.7 DOS) or critically low on MREs (3/1 at 40%, 2.4 DOS) and initiates resupply actions.
+
+![S-4 logistics dashboard showing supply status table with 25+ rows across all supply classes, color-coded percentages, days-of-supply, and consumption rates](docs/images/role-s4-dashboard.png)
+
+The S-4 tracks every requisition from draft through fulfillment. The requisition page shows all active and archived requests with priority levels (EMERGENCY, URGENT, PRIORITY, ROUTINE), approval status, and quantity tracking.
+
+![Requisitions page showing active requisitions with status badges, priority levels, nomenclature, quantities, and date tracking](docs/images/role-s4-requisitions.png)
+
+### S-3 Operations Officer
+
+The S-3 focuses on operational sustainability. Their dashboard shows a unit sustainability overlay -- each battalion displayed as a card with readiness percentage, sustainability in days, supply DOS bars by class, and operational constraints. At a glance: 1/1 BN is AMBER (82% readiness, 5D sustainability, CL V delayed), 2/1 BN is GREEN (91%, 8D), and 3/1 BN is RED (68%, 3D with multiple critical shortfalls). Below that, the movement route status shows MSR ALPHA open, MSR BRAVO weight-limited, and ASR CHARLIE closed due to IED threat.
+
+![S-3 operations dashboard showing unit sustainability overlay with three battalion cards, supply DOS bars, constraints, and movement route status panel](docs/images/role-s3-dashboard.png)
+
+### Logistics Operator
+
+Operators work the day-to-day: creating work orders, running PMCS, tracking maintenance jobs. The Maintenance page shows KPI cards (12.4% Deadline Rate, 22.3 hrs MTTR, 87.2% Parts Fill Rate, 4.8% Cannibalization Rate) and a list of active work orders with priority coding, equipment links, parts status, and assigned mechanics. The Readiness page gives operators DRRS-style C-ratings for their unit and all subordinates.
+
+![Maintenance management page showing KPI cards for deadline rate, MTTR, parts fill rate, and cannibalization rate, with work order cards showing priority, equipment, and status](docs/images/role-operator-maintenance.png)
+
+![Readiness overview with DRRS C-ratings, 5 donut gauges for Overall/Equipment/Supply/Personnel/Training, limiting factor banner, and all-units overview grid](docs/images/role-operator-readiness.png)
+
+### Unit Armorer
+
+The Armorer manages sensitive item custody -- every weapon, optic, NVG, crypto device, radio, and COMSEC item tracked by serial number. The custody page shows 8 registered items with type badges (WEAPON, CRYPTO, NVG, OPTIC, RADIO), status (ON HAND, MISSING, IN MAINTENANCE, ISSUED), condition codes, current holders, and last inventory dates. A missing item alert banner ensures immediate action when NVG-2024-002 cannot be accounted for.
+
+![Chain of custody page with KPI summary cards, missing item alert, sensitive items registry showing serial numbers, type badges, status indicators, condition codes, and holder assignments](docs/images/role-armorer-custody.png)
+
+### System Administrator
+
+The Admin manages the entire system: user accounts, unit configuration, classification settings, map tile sources, scenarios, roles and permissions, and the simulation engine. The user management table shows all accounts with status indicators (active/locked), usernames, names, role badges (COMMANDER, S4, S3, OPERATOR, VIEWER), unit assignments, last login dates, and action buttons for editing or deactivating accounts.
+
+![Admin panel showing user management table with status indicators, role badges, unit assignments, and action buttons across 7 tabbed admin functions](docs/images/role-admin-users.png)
+
+### Read-Only Viewer
+
+Viewers have full read access to the operational picture without the ability to modify data. They see the same map, dashboards, and status pages as other roles -- unit positions with APP-6D military symbology, supply points, convoy routes, and MSR/ASR overlays. This role is ideal for higher headquarters staff, liaison officers, or personnel who need situational awareness without creating or editing records.
+
+![Interactive map showing Camp Pendleton with APP-6D military symbology markers for unit positions, supply points, convoy routes, and log bases](docs/images/role-viewer-map.png)
+
+---
+
 ## Quick Start
 
 ### Docker Compose (recommended)
@@ -480,7 +534,7 @@ These accounts are **automatically seeded** when `ENV_MODE=development` (the def
 - **Map Tile Settings**: Configure tile layer sources for OSM, satellite, and topographic layers (supports online and offline tile servers)
 
 #### Access Control
-- 6 roles: ADMIN, COMMANDER, S4, S3, OPERATOR, VIEWER
+- 7 roles: ADMIN, COMMANDER, S4, S3, OPERATOR, ARMORER, VIEWER
 - Unit hierarchy scoping (users see their unit and subordinates)
 - JWT authentication with configurable token expiry (default 8 hours)
 - Seed users for development only (blocked in non-development environments)
@@ -842,7 +896,7 @@ KEYSTONE is designed for deployment across classification domains with defense-i
 | Feature | Implementation |
 |---------|---------------|
 | **Authentication** | JWT bearer tokens with configurable expiry (default 8 hours, HS256) |
-| **Authorization** | Role-based access control (6 roles) with unit hierarchy scoping |
+| **Authorization** | Role-based access control (7 roles) with unit hierarchy scoping |
 | **Container Hardening** | Non-root users, read-only filesystems, `no-new-privileges`, minimal capabilities per DoD Container Hardening Guide |
 | **TLS** | nginx terminates TLS with HSTS, CSP, X-Frame-Options, X-Content-Type-Options headers |
 | **Image Signing** | Cosign keyless signing with SBOM attestation in CI pipeline |
