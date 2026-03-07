@@ -24,6 +24,7 @@ class Role(str, enum.Enum):
     S4 = "s4"
     S3 = "s3"
     OPERATOR = "operator"
+    ARMORER = "armorer"
     VIEWER = "viewer"
 
 

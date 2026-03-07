@@ -22,6 +22,7 @@ function roleToDefaultView(role: string | undefined): DashboardView {
     case Role.S3:
       return 's3';
     case Role.OPERATOR:
+    case Role.ARMORER:
       return 'operator';
     case Role.VIEWER:
       return 'viewer';

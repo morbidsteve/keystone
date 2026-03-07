@@ -7,6 +7,7 @@ export enum Role {
   S3 = 'S3',
   S1 = 'S1',
   OPERATOR = 'OPERATOR',
+  ARMORER = 'ARMORER',
   VIEWER = 'VIEWER',
 }
 
