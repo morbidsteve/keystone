@@ -5,7 +5,6 @@ create / update / delete action.  This is intentionally decoupled from the
 Custody-specific ``AuditService`` so it can be used across all domains.
 """
 
-from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
