@@ -180,7 +180,7 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
               {['RANK', 'NAME', 'MOS', 'TOTAL HRS', 'WO COUNT', 'AVG/WO'].map((h) => (
                 <th
                   key={h}
-                  className="text-left py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] text-[9px] font-semibold tracking-[1px] uppercase"
+                  className={`py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] text-[9px] font-semibold tracking-[1px] uppercase${['TOTAL HRS', 'WO COUNT', 'AVG/WO'].includes(h) ? ' text-right' : ' text-left'}`}
                 >
                   {h}
                 </th>
@@ -206,17 +206,17 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
                   {p.mos}
                 </td>
                 <td
-                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-accent)] font-semibold"
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-accent)] font-semibold text-right"
                 >
                   {p.total_hours.toFixed(1)}
                 </td>
                 <td
-                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] text-right"
                 >
                   {p.work_order_count}
                 </td>
                 <td
-                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
+                  className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] text-right"
                 >
                   {p.avg_hours_per_wo.toFixed(1)}
                 </td>

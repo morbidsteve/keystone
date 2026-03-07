@@ -9,6 +9,7 @@ import { useHelpMode } from '@/hooks/useHelpMode';
 import { useThemeStore } from '@/stores/themeStore';
 import { resetGuidedTour } from '@/components/onboarding/GuidedTour';
 import { isDemoMode } from '@/api/mockClient';
+import { usePreferencesStore } from '@/stores/preferencesStore';
 import { TIME_RANGES } from '@/lib/constants';
 import QuickActionsButton from '@/components/common/QuickActionsButton';
 import NotificationDrawer from '@/components/notifications/NotificationDrawer';
@@ -24,6 +25,16 @@ const pageTitles: Record<string, string> = {
   '/reports': 'REPORTS',
   '/alerts': 'ALERTS',
   '/admin': 'ADMINISTRATION',
+  '/maintenance': 'MAINTENANCE MANAGEMENT',
+  '/requisitions': 'REQUISITIONS',
+  '/personnel': 'PERSONNEL',
+  '/medical': 'MEDICAL READINESS',
+  '/fuel': 'FUEL / POL MANAGEMENT',
+  '/readiness': 'READINESS',
+  '/custody': 'CHAIN OF CUSTODY',
+  '/audit': 'AUDIT LOG',
+  '/docs': 'DOCUMENTATION',
+  '/profile': 'PROFILE',
 };
 
 interface HeaderProps {
@@ -39,6 +50,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   const unreadCount = useAlertStore((s) => s.unreadCount);
   const { isHelpMode, toggleHelpMode } = useHelpMode();
   const { theme, toggleTheme } = useThemeStore();
+  const { timeFormat, toggleTimeFormat } = usePreferencesStore();
   const queryClient = useQueryClient();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -269,6 +281,27 @@ export default function Header({ onMenuToggle }: HeaderProps) {
                 >
                   <RotateCcw size={14} aria-hidden="true" />
                   RESTART TOUR
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    navigate('/profile');
+                    setUserMenuOpen(false);
+                  }}
+                  className="w-full px-3.5 py-2.5 flex items-center gap-2 bg-transparent border-none border-b border-border cursor-pointer text-text font-mono text-[11px] tracking-[1px] hover:bg-bg-hover border-b border-b-[var(--color-border)] transition-colors duration-[var(--transition)]"
+                >
+                  <User size={14} aria-hidden="true" />
+                  PROFILE
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    toggleTimeFormat();
+                  }}
+                  className="w-full px-3.5 py-2.5 flex items-center gap-2 bg-transparent border-none border-b border-border cursor-pointer text-text font-mono text-[11px] tracking-[1px] hover:bg-bg-hover border-b border-b-[var(--color-border)] transition-colors duration-[var(--transition)]"
+                >
+                  <Clock size={14} aria-hidden="true" />
+                  TIME: {timeFormat === 'relative' ? 'RELATIVE' : 'ABSOLUTE'}
                 </button>
                 <button
                   role="menuitem"

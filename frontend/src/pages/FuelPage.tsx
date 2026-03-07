@@ -291,19 +291,6 @@ export default function FuelPage() {
         </div>
       )}
 
-      {/* Storage point cards */}
-      <Card title="STORAGE POINTS">
-        {storageLoading ? (
-          renderLoadingSkeleton()
-        ) : (
-          <FuelStorageCards
-            storagePoints={storagePoints ?? []}
-            selectedId={selectedStorageId}
-            onSelect={setSelectedStorageId}
-          />
-        )}
-      </Card>
-
       {/* Forecast chart */}
       <Card title="FUEL FORECAST PROJECTION">
         {forecastLoading ? (
@@ -316,6 +303,19 @@ export default function FuelPage() {
           >
             No forecast data available.
           </div>
+        )}
+      </Card>
+
+      {/* Storage point cards */}
+      <Card title="STORAGE POINTS">
+        {storageLoading ? (
+          renderLoadingSkeleton()
+        ) : (
+          <FuelStorageCards
+            storagePoints={storagePoints ?? []}
+            selectedId={selectedStorageId}
+            onSelect={setSelectedStorageId}
+          />
         )}
       </Card>
     </div>
@@ -656,7 +656,7 @@ export default function FuelPage() {
                     (h) => (
                       <th
                         key={h}
-                        className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] py-2 px-2.5 text-left border-b border-b-[var(--color-border)] whitespace-nowrap"
+                        className={`font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)] whitespace-nowrap${['Capacity', 'On Hand', 'Fill %'].includes(h) ? ' text-right' : ' text-left'}`}
                       >
                         {h}
                       </th>
@@ -771,7 +771,7 @@ export default function FuelPage() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] py-2 px-2.5 text-left border-b border-b-[var(--color-border)] whitespace-nowrap"
+                    className={`font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] uppercase text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)] whitespace-nowrap${['Idle (GPH)', 'Tactical (GPH)', 'Per Mile (GPM)', 'Per Flight Hr'].includes(h) ? ' text-right' : ' text-left'}`}
                   >
                     {h}
                   </th>

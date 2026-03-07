@@ -32,8 +32,12 @@ export default function EquipmentPage() {
 
       {/* Bottom Row: Maintenance + Trend */}
       <div className="grid-responsive-2col">
-        <MaintenanceQueue />
-        <ReadinessTrend />
+        <div className="max-h-[500px] overflow-y-auto">
+          <MaintenanceQueue />
+        </div>
+        <div className="max-h-[500px] overflow-y-auto">
+          <ReadinessTrend />
+        </div>
       </div>
     </div>
   );

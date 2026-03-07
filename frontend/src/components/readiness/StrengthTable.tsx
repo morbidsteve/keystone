@@ -149,7 +149,7 @@ export default function StrengthTable({ strength }: StrengthTableProps) {
               {['MOS', 'TITLE', 'AUTH', 'ASGN', 'SHORT'].map((h) => (
                 <span
                   key={h}
-                  className="font-[var(--font-mono)] text-[8px] font-semibold uppercase tracking-[1px] text-[var(--color-text-muted)]"
+                  className={`font-[var(--font-mono)] text-[8px] font-semibold uppercase tracking-[1px] text-[var(--color-text-muted)]${['AUTH', 'ASGN', 'SHORT'].includes(h) ? ' text-right' : ''}`}
                 >
                   {h}
                 </span>
@@ -172,17 +172,17 @@ export default function StrengthTable({ strength }: StrengthTableProps) {
                   {row.mosTitle}
                 </span>
                 <span
-                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
+                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] text-right"
                 >
                   {row.authorized}
                 </span>
                 <span
-                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
+                  className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] text-right"
                 >
                   {row.assigned}
                 </span>
                 <span
-                  className="font-[var(--font-mono)] text-[11px] font-bold text-[#f87171]"
+                  className="font-[var(--font-mono)] text-[11px] font-bold text-[#f87171] text-right"
                 >
                   -{row.shortfall}
                 </span>

@@ -77,6 +77,17 @@
   background-color: var(--color-bg-sidebar) !important;
 }
 
+/* Focus visible indicators for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Remove default outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 * {
   margin: 0;
   padding: 0;
