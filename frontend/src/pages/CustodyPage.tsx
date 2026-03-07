@@ -31,6 +31,8 @@ import {
 } from '@/api/custody';
 import type { SensitiveItemType, SecurityClassification, ItemConditionCode, TransferType } from '@/lib/types';
 import { searchCatalog, type CatalogEntry } from '@/data/sensitiveItemCatalog';
+import { searchCatalogApi } from '@/api/sensitiveItemCatalog';
+import { isDemoMode } from '@/api/mockClient';
 
 // ---------------------------------------------------------------------------
 // Tab definitions
@@ -110,10 +112,20 @@ export default function CustodyPage() {
   const nomenclatureInputRef = useRef<HTMLInputElement>(null);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const catalogMatches = useMemo(
-    () => searchCatalog(newItem.nomenclature),
+  // In demo mode, use synchronous static catalog; in live mode, use API
+  const staticMatches = useMemo(
+    () => (isDemoMode ? searchCatalog(newItem.nomenclature) : []),
     [newItem.nomenclature],
   );
+
+  const { data: apiMatches } = useQuery({
+    queryKey: ['catalog-search', newItem.nomenclature],
+    queryFn: () => searchCatalogApi(newItem.nomenclature),
+    enabled: !isDemoMode && newItem.nomenclature.length >= 2,
+    staleTime: 10_000,
+  });
+
+  const catalogMatches = isDemoMode ? staticMatches : (apiMatches ?? []);
 
   const handleNomenclatureChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -120,6 +120,7 @@ from app.models.manning import (
 from app.models.catalog_equipment import EquipmentCatalogItem
 from app.models.catalog_supply import SupplyCatalogItem
 from app.models.catalog_ammunition import AmmunitionCatalogItem
+from app.models.catalog_sensitive_item import SensitiveItemCatalogEntry
 from app.models.readiness_snapshot import UnitReadinessSnapshot, ReadinessThreshold
 from app.models.unit_strength import UnitStrength
 from app.models.requisition import (
@@ -266,6 +267,7 @@ __all__ = [
     "EquipmentCatalogItem",
     "SupplyCatalogItem",
     "AmmunitionCatalogItem",
+    "SensitiveItemCatalogEntry",
     "UnitReadinessSnapshot",
     "ReadinessThreshold",
     "UnitStrength",

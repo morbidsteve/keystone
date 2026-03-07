@@ -110,7 +110,7 @@ docker compose --profile demo up --build -d       # With simulator
 
 ## Access Control
 
-6 roles: ADMIN, COMMANDER, S4, S3, OPERATOR, VIEWER. Users are scoped to their unit and subordinates in the hierarchy. Default dev credentials are in `README.md`.
+7 roles: ADMIN, COMMANDER, S4, S3, OPERATOR, ARMORER, VIEWER. Users are scoped to their unit and subordinates in the hierarchy. Default dev credentials are in `README.md`.
 
 ## Environment
 

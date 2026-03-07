@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, Settings, Shield, Layers, Plus, Edit3, Save, Check, X, Trash2, Crosshair, KeyRound, Play } from 'lucide-react';
+import { Users, Settings, Shield, Layers, Plus, Edit3, Save, Check, X, Trash2, Crosshair, KeyRound, Play, Package } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -9,6 +9,7 @@ import TileLayerSettings from '@/components/admin/TileLayerSettings';
 import ScenarioManager from '@/components/admin/ScenarioManager';
 import RoleManager from '@/components/admin/RoleManager';
 import SimulationControls from '@/components/admin/SimulationControls';
+import CatalogManager from '@/components/admin/CatalogManager';
 import { Role, Echelon, type User, type Unit } from '@/lib/types';
 import { ECHELON_ORDER, ECHELON_ALLOWED_CHILDREN } from '@/lib/constants';
 import { mockApi } from '@/api/mockClient';
@@ -184,7 +185,7 @@ const addButtonStyle: React.CSSProperties = {
 // ---------------------------------------------------------------------------
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<'users' | 'units' | 'classification' | 'tiles' | 'scenarios' | 'roles' | 'simulation'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'units' | 'classification' | 'tiles' | 'scenarios' | 'roles' | 'simulation' | 'catalog'>('users');
   const { classification, updateClassification } = useClassificationStore();
   const toast = useToast();
 
@@ -408,6 +409,7 @@ export default function AdminPage() {
           { key: 'scenarios' as const, label: 'SCENARIOS', icon: Crosshair },
           { key: 'roles' as const, label: 'ROLES & PERMISSIONS', icon: KeyRound },
           { key: 'simulation' as const, label: 'SIMULATION', icon: Play },
+          { key: 'catalog' as const, label: 'ITEM CATALOG', icon: Package },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -723,6 +725,9 @@ export default function AdminPage() {
           </div>
         </Card>
       )}
+
+      {/* ── Item Catalog Tab ── */}
+      {activeTab === 'catalog' && <CatalogManager />}
 
       {/* ── User Add/Edit Modal ── */}
       {userModalOpen && (

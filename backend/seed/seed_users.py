@@ -6,6 +6,7 @@ Creates:
   s4officer/s4pass123   - S4 at 1st Marines
   s3officer/s3pass123   - S3 at 1st Marines
   operator/op123        - OPERATOR at 1/1
+  armorer/arm123        - ARMORER at Alpha Co 1/1
   viewer/view123        - VIEWER at Alpha Co 1/1
 """
 
@@ -75,6 +76,14 @@ SEED_USERS = [
         "email": "viewer@keystone.usmc.mil",
         "full_name": "SGT Emily Wilson",
         "role": Role.VIEWER,
+        "unit_abbr": "A Co 1/1",
+    },
+    {
+        "username": "armorer",
+        "password": "arm123",
+        "email": "armorer@keystone.usmc.mil",
+        "full_name": "CPL Daniel Torres",
+        "role": Role.ARMORER,
         "unit_abbr": "A Co 1/1",
     },
     {

@@ -278,6 +278,7 @@ docker compose --profile demo up --build -d
 | `s4officer` | `s4pass123` | S-4 | 1st Marines |
 | `s3officer` | `s3pass123` | S-3 | 1st Marines |
 | `operator` | `op123` | Operator | 1/1 |
+| `armorer` | `arm123` | Armorer | A Co 1/1 |
 | `viewer` | `view123` | Viewer | A Co 1/1 |
 
 These accounts are **automatically seeded** when `ENV_MODE=development` (the default). They are blocked from creation in production.
