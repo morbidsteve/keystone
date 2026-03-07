@@ -14,7 +14,9 @@ from app.models.user import User
 class TestMIRCIngestion:
     """Tests for /api/v1/ingestion/mirc upload endpoint."""
 
-    async def test_upload_mirc_log(self, client: AsyncClient, admin_token: str, admin_user: User):
+    async def test_upload_mirc_log(
+        self, client: AsyncClient, admin_token: str, admin_user: User
+    ):
         """POST /api/v1/ingestion/mirc uploads a text file."""
         content = b"[12:00] <ALPHA> Supply status: Class I GREEN, DOS 7\n"
         resp = await client.post(
@@ -62,7 +64,13 @@ class TestExcelIngestion:
         content = b"PK\x03\x04"  # ZIP magic bytes (xlsx is a ZIP)
         resp = await client.post(
             "/api/v1/ingestion/excel",
-            files={"file": ("data.xlsx", io.BytesIO(content), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")},
+            files={
+                "file": (
+                    "data.xlsx",
+                    io.BytesIO(content),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert resp.status_code == 200
@@ -210,7 +218,9 @@ class TestRouteIngestion:
         content = b"not a route file"
         resp = await client.post(
             "/api/v1/ingestion/routes",
-            files={"file": ("route.docx", io.BytesIO(content), "application/octet-stream")},
+            files={
+                "file": ("route.docx", io.BytesIO(content), "application/octet-stream")
+            },
             headers={"Authorization": f"Bearer {admin_token}"},
         )
         assert resp.status_code == 400

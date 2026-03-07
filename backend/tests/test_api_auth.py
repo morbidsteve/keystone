@@ -46,6 +46,7 @@ async def test_login_rate_limiting(client: AsyncClient, admin_user: User):
     """5 failed login attempts should trigger rate limiting (429)."""
     # Clear any previous state in the module-level dict
     from app.api.auth import _login_failures
+
     _login_failures.clear()
 
     for _ in range(5):
@@ -67,9 +68,12 @@ async def test_login_rate_limiting(client: AsyncClient, admin_user: User):
 
 
 @pytest.mark.asyncio
-async def test_login_rate_limit_cleared_on_success(client: AsyncClient, admin_user: User):
+async def test_login_rate_limit_cleared_on_success(
+    client: AsyncClient, admin_user: User
+):
     """Successful login clears the rate-limit counter."""
     from app.api.auth import _login_failures
+
     _login_failures.clear()
 
     # Record 3 failures
@@ -91,7 +95,9 @@ async def test_login_rate_limit_cleared_on_success(client: AsyncClient, admin_us
 
 
 @pytest.mark.asyncio
-async def test_get_me_with_valid_token(client: AsyncClient, admin_user: User, admin_token: str):
+async def test_get_me_with_valid_token(
+    client: AsyncClient, admin_user: User, admin_token: str
+):
     """GET /api/v1/auth/me with valid token returns user data."""
     resp = await client.get(
         "/api/v1/auth/me",
@@ -258,6 +264,7 @@ async def test_list_users_as_non_admin(
 async def test_login_returns_permissions(client: AsyncClient, admin_user: User):
     """Login response includes a permissions list."""
     from app.api.auth import _login_failures
+
     _login_failures.clear()
 
     resp = await client.post(

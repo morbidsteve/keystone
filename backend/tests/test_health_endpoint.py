@@ -31,7 +31,9 @@ class TestHealthEndpoint:
         assert "redis" in data
         assert isinstance(data["redis"], str)
         # Redis won't be running in test env, so expect either connected or error
-        assert data["redis"].startswith("connected") or data["redis"].startswith("error")
+        assert data["redis"].startswith("connected") or data["redis"].startswith(
+            "error"
+        )
 
     async def test_health_status_values(self, client: AsyncClient):
         """GET /health status is either 'healthy' or 'degraded'."""

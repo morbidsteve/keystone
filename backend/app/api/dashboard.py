@@ -72,7 +72,9 @@ async def get_dashboard_summary(
         )
 
     # Check Redis cache first
-    cache_key = f"dashboard:overview:{unit_id}:{','.join(str(u) for u in sorted(unit_ids))}"
+    cache_key = (
+        f"dashboard:overview:{unit_id}:{','.join(str(u) for u in sorted(unit_ids))}"
+    )
     try:
         cached = await cache_get(cache_key)
         if cached:

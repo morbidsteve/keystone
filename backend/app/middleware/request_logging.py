@@ -9,7 +9,9 @@ logger = structlog.get_logger("request")
 
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
         request_id = str(uuid.uuid4())[:8]
         start = time.perf_counter()
 
@@ -20,7 +22,10 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             try:
                 from jose import jwt
                 from app.config import settings
-                payload = jwt.decode(auth[7:], settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+
+                payload = jwt.decode(
+                    auth[7:], settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+                )
                 user = payload.get("sub", "anonymous")
             except Exception:
                 pass
