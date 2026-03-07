@@ -40,7 +40,7 @@ const BLOOD_TYPES = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 const overlayStyle: React.CSSProperties = {
   position: 'fixed',
   inset: 0,
-  zIndex: 50,
+  zIndex: 3000,
   backgroundColor: 'rgba(0,0,0,0.6)',
   display: 'flex',
   alignItems: 'center',

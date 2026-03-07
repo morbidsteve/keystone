@@ -32,7 +32,7 @@
   --color-border: #1e2a3a;
   --color-border-strong: #2a3a4e;
   --color-text: #c5cdd8;
-  --color-text-muted: #5c6b7f;
+  --color-text-muted: #8a95a7;
   --color-text-bright: #e8ecf1;
   --color-accent: #4dabf7;
   --color-success: #40c057;
@@ -461,6 +461,19 @@ body,
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-accent) !important;
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Selection */

@@ -6,6 +6,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDashboardStore } from '@/stores/dashboardStore';
 import Card from '@/components/ui/Card';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import MaintenanceAnalyticsPanel from '@/components/maintenance/MaintenanceAnalyticsPanel';
 import DeadlineBoard from '@/components/maintenance/DeadlineBoard';
 import PMScheduleTable from '@/components/maintenance/PMScheduleTable';
@@ -120,13 +121,8 @@ export default function MaintenanceDashboardPage() {
 
   const renderLoadingSkeleton = () => (
     <div className="p-10 text-center">
-      <div
-        className="skeleton w-[200px] h-[16px] mx-auto mb-3"
-      />
-      <div
-        className="skeleton w-[300px] h-[12px] mx-auto"
-        
-      />
+      <LoadingSkeleton width={200} height={16} className="mx-auto mb-3" />
+      <LoadingSkeleton width={300} height={12} className="mx-auto" />
     </div>
   );
 
@@ -184,11 +180,11 @@ export default function MaintenanceDashboardPage() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeTab === tab.key ? 600 : 400, borderBottom: activeTab === tab.key
-                  ? '2px solid var(--color-accent)'
-                  : '2px solid transparent', color: activeTab === tab.key
-                  ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
+            className={`py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px] transition-all duration-[var(--transition)] ${
+              activeTab === tab.key
+                ? 'font-semibold border-b-2 border-b-[var(--color-accent)] text-[var(--color-accent)]'
+                : 'font-normal border-b-2 border-b-transparent text-[var(--color-text-muted)]'
+            }`}
           >
             {tab.label}
           </button>
@@ -222,7 +218,7 @@ export default function MaintenanceDashboardPage() {
       {activeTab === 'analytics' && (
         <div className="flex flex-col gap-4">
           <div
-            className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))' }}
+            className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(400px,1fr))]"
           >
             <Card title="WEEKLY MAINTENANCE TREND">
               {analytics ? (

@@ -121,8 +121,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         </h1>
         {isDemoMode && (
           <span
-            className="hide-mobile font-mono text-3xs font-semibold tracking-[1.5px] text-warning rounded bg-[rgba(250,176,5,0.1)] py-0.5 px-2"
-            style={{ border: '1px solid rgba(250, 176, 5, 0.3)' }}
+            className="hide-mobile font-mono text-3xs font-semibold tracking-[1.5px] text-warning rounded bg-[rgba(250,176,5,0.1)] py-0.5 px-2 border border-[rgba(250,176,5,0.3)]"
           >
             DEMO DATA
           </span>
@@ -142,14 +141,11 @@ export default function Header({ onMenuToggle }: HeaderProps) {
               key={range.value}
               onClick={() => setTimeRange(range.value)}
               aria-pressed={timeRange === range.value}
-              className="font-mono text-2xs tracking-[1px] rounded cursor-pointer py-1 px-2"
-              style={{ border: '1px solid', borderColor: timeRange === range.value
-                    ? 'var(--color-accent)'
-                    : 'var(--color-border)', backgroundColor: timeRange === range.value
-                    ? 'rgba(77, 171, 247, 0.15)'
-                    : 'transparent', color: timeRange === range.value
-                    ? 'var(--color-accent)'
-                    : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
+              className={`font-mono text-2xs tracking-[1px] rounded cursor-pointer py-1 px-2 border transition-all duration-[var(--transition)] ${
+                timeRange === range.value
+                  ? 'border-[var(--color-accent)] bg-[rgba(77,171,247,0.15)] text-[var(--color-accent)]'
+                  : 'border-[var(--color-border)] bg-transparent text-[var(--color-text-muted)]'
+              }`}
             >
               {range.label}
             </button>
@@ -166,13 +162,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
               onClick={handleRefresh}
               title="Refresh dashboard data"
               aria-label="Refresh dashboard data"
-              className="flex items-center justify-center rounded cursor-pointer p-1 hover:bg-[var(--color-bg-hover)]"
-              style={{
-                background: 'none',
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-text-muted)',
-                transition: 'all var(--transition)',
-              }}
+              className="flex items-center justify-center rounded cursor-pointer p-1 bg-transparent border border-[var(--color-border)] text-[var(--color-text-muted)] transition-all duration-[var(--transition)] hover:bg-[var(--color-bg-hover)]"
             >
               <RotateCcw size={12} aria-hidden="true" />
             </button>
@@ -184,15 +174,9 @@ export default function Header({ onMenuToggle }: HeaderProps) {
           onClick={toggleTheme}
           title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="flex items-center justify-center rounded cursor-pointer p-1"
-          style={{
-            background: 'none',
-            border: '1px solid transparent',
-            color: 'var(--color-text-muted)',
-            transition: 'all var(--transition)',
-          }}
+          className="flex items-center justify-center rounded cursor-pointer p-1 bg-transparent border border-transparent text-[var(--color-text-muted)] transition-all duration-[var(--transition)]"
         >
-          {theme === 'dark' ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
+          {theme === 'dark' ? <Sun size={14} aria-hidden="true" /> : <Moon size={14} aria-hidden="true" />}
         </button>
 
         {/* Help Mode Toggle */}
@@ -202,10 +186,13 @@ export default function Header({ onMenuToggle }: HeaderProps) {
           title="Toggle Help Mode"
           aria-label={isHelpMode ? 'Disable help mode' : 'Enable help mode'}
           aria-pressed={isHelpMode}
-          className="flex items-center gap-1 rounded cursor-pointer py-1 px-2"
-          style={{ background: isHelpMode ? 'rgba(77, 171, 247, 0.15)' : 'none', border: isHelpMode ? '1px solid var(--color-accent)' : '1px solid transparent', color: isHelpMode ? 'var(--color-accent)' : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
+          className={`flex items-center gap-1 rounded cursor-pointer py-1 px-2 border transition-all duration-[var(--transition)] ${
+            isHelpMode
+              ? 'bg-[rgba(77,171,247,0.15)] border-[var(--color-accent)] text-[var(--color-accent)]'
+              : 'bg-transparent border-transparent text-[var(--color-text-muted)]'
+          }`}
         >
-          <HelpCircle size={16} aria-hidden="true" />
+          <HelpCircle size={14} aria-hidden="true" />
           {isHelpMode && (
             <span className="font-mono text-3xs font-bold tracking-[1px]">
               HELP ON
@@ -217,12 +204,11 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         <button
           onClick={() => setDrawerOpen((v) => !v)}
           aria-label={`Alerts${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
-          className="relative bg-transparent border-none cursor-pointer p-1"
-          style={{
-            color: unreadCount > 0 ? 'var(--color-warning)' : 'var(--color-text-muted)',
-          }}
+          className={`relative bg-transparent border-none cursor-pointer p-1 ${
+            unreadCount > 0 ? 'text-[var(--color-warning)]' : 'text-[var(--color-text-muted)]'
+          }`}
         >
-          <Bell size={18} aria-hidden="true" />
+          <Bell size={14} aria-hidden="true" />
           {unreadCount > 0 && (
             <span
               className="absolute top-0 right-0 w-4 h-4 rounded-full bg-danger font-mono text-3xs font-bold flex items-center justify-center text-[#fff]"
@@ -259,8 +245,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
               />
               <div
                 role="menu"
-                className="absolute top-full right-0 mt-2 w-[180px] bg-bg-surface border border-border-strong rounded z-[1101] overflow-hidden"
-                style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}
+                className="absolute top-full right-0 mt-2 w-[180px] bg-bg-surface border border-border-strong rounded z-[1101] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
               >
                 <div className="px-3.5 py-2.5 border-b border-border">
                   <div className="font-mono text-[11px] text-text-bright font-semibold">
@@ -306,10 +291,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
                 <button
                   role="menuitem"
                   onClick={handleLogout}
-                  className="w-full px-3.5 py-2.5 flex items-center gap-2 bg-transparent border-none cursor-pointer text-danger font-mono text-[11px] tracking-[1px] hover:bg-bg-hover"
-                  style={{
-                    transition: 'background-color var(--transition)',
-                  }}
+                  className="w-full px-3.5 py-2.5 flex items-center gap-2 bg-transparent border-none cursor-pointer text-danger font-mono text-[11px] tracking-[1px] hover:bg-bg-hover transition-colors duration-[var(--transition)]"
                 >
                   <LogOut size={14} aria-hidden="true" />
                   LOGOUT

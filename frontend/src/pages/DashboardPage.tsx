@@ -70,11 +70,11 @@ export default function DashboardPage() {
             <button
               key={view.key}
               onClick={() => setActiveView(view.key)}
-              className="py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px]" style={{ fontWeight: activeView === view.key ? 600 : 400, borderBottom: activeView === view.key
-                    ? '2px solid var(--color-accent)'
-                    : '2px solid transparent', color: activeView === view.key
-                    ? 'var(--color-accent)'
-                    : 'var(--color-text-muted)', transition: 'all var(--transition)' }}
+              className={`py-2 px-4 font-[var(--font-mono)] text-[10px] tracking-[1.5px] uppercase border-0 bg-transparent cursor-pointer mb-[-1px] transition-all duration-[var(--transition)] ${
+                activeView === view.key
+                  ? 'font-semibold border-b-2 border-b-[var(--color-accent)] text-[var(--color-accent)]'
+                  : 'font-normal border-b-2 border-b-transparent text-[var(--color-text-muted)]'
+              }`}
             >
               {view.label}
             </button>
