@@ -136,10 +136,10 @@ describe('Header', () => {
 
   it('renders time range selector buttons', () => {
     renderHeader();
-    expect(screen.getByText('24H')).toBeInTheDocument();
-    expect(screen.getByText('7D')).toBeInTheDocument();
-    expect(screen.getByText('30D')).toBeInTheDocument();
-    expect(screen.getByText('90D')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '24H' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '7D' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '30D' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '90D' })).toBeInTheDocument();
   });
 
   it('"Restart Tour" button appears in user dropdown', () => {
