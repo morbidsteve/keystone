@@ -226,7 +226,7 @@ export function GuidedTour() {
 
       {/* Tooltip */}
       <div
-        className="bg-[var(--color-bg-surface)] border border-[var(--color-accent)] rounded-[var(--radius)] z-[9999] overflow-hidden" style={{ boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)' }}
+        className="bg-[var(--color-bg-surface)] border border-[var(--color-accent)] rounded-[var(--radius)] z-[9999] overflow-hidden" style={{ ...getTooltipStyle(), boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)', width: 340 }}
       >
         {/* Header */}
         <div
