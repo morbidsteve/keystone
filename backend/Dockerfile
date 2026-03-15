@@ -68,4 +68,5 @@ ENV DATABASE_URL="postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone" \
     DATABASE_URL_SYNC="postgresql://keystone:keystone_dev@db:5432/keystone?sslmode=disable" \
     REDIS_URL="redis://redis:6379/0" \
     ENV_MODE="development" \
+    AUTH_MODE="sso" \
     PGSSLMODE="disable"

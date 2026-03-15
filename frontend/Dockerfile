@@ -16,7 +16,9 @@ COPY . .
 # In Docker Compose, nginx proxies /api/ → backend:8000, so /api/v1 is correct.
 # Without this, the app falls back to demo mode with mock data.
 ARG VITE_API_BASE_URL=/api/v1
+ARG VITE_AUTH_MODE=local
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_AUTH_MODE=${VITE_AUTH_MODE}
 
 RUN npm run build
 
@@ -51,6 +53,11 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
 
 EXPOSE 8080 8443
 
+# STAGE 2b: SRE builder (SSO auth mode baked into JS bundle)
+FROM builder AS builder-sre
+ENV VITE_AUTH_MODE=sso
+RUN npm run build
+
 # STAGE 3: SRE / Kubernetes deployment (no SSL — Istio handles TLS)
 FROM nginxinc/nginx-unprivileged:1.27-alpine AS sre
 
@@ -63,8 +70,8 @@ USER root
 RUN apk add --no-cache ca-certificates
 USER 101
 
-# Copy built assets from builder stage
-COPY --from=builder /build/dist /usr/share/nginx/html
+# Copy built assets from SRE builder stage (with VITE_AUTH_MODE=sso)
+COPY --from=builder-sre /build/dist /usr/share/nginx/html
 
 # Copy SRE-compatible nginx configuration (no SSL)
 COPY nginx-sre.conf /etc/nginx/conf.d/default.conf

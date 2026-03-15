@@ -5,6 +5,9 @@ import { usePermission } from '@/hooks/usePermission';
 import MainLayout from '@/components/layout/MainLayout';
 import LoadingFallback from '@/components/ui/LoadingFallback';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import SSOGate from '@/components/auth/SSOGate';
+
+const isSSO = import.meta.env.VITE_AUTH_MODE === 'sso';
 
 // ---------------------------------------------------------------------------
 // Lazy-loaded page components (route-based code splitting)
@@ -93,7 +96,7 @@ function ProtectedRoute({
 }
 
 export default function App() {
-  return (
+  const routes = (
     <ErrorBoundary>
     <Routes>
       <Route path="/login" element={<Lazy><LoginPage /></Lazy>} />
@@ -153,4 +156,6 @@ export default function App() {
     </Routes>
     </ErrorBoundary>
   );
+
+  return isSSO ? <SSOGate>{routes}</SSOGate> : routes;
 }
