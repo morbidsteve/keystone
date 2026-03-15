@@ -184,7 +184,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: production
+      target: production    # For SRE/K8s deployment, use target: sre (no SSL, Istio handles TLS)
     ports:
       - "80:8080"
       - "443:8443"

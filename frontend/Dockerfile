@@ -43,3 +43,26 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -fk https://localhost:8443/ || exit 1
 
 EXPOSE 8080 8443
+
+# STAGE 3: SRE / Kubernetes deployment (no SSL — Istio handles TLS)
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS sre
+
+LABEL org.opencontainers.image.source="https://github.com/KEYSTONE"
+LABEL org.opencontainers.image.description="KEYSTONE Frontend (SRE)"
+LABEL org.opencontainers.image.vendor="USMC Project Dynamis"
+
+# Install ca-certificates for upstream SSL proxy (tile proxies)
+USER root
+RUN apk add --no-cache ca-certificates
+USER 101
+
+# Copy built assets from builder stage
+COPY --from=builder /build/dist /usr/share/nginx/html
+
+# Copy SRE-compatible nginx configuration (no SSL)
+COPY nginx-sre.conf /etc/nginx/conf.d/default.conf
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget -qO- http://localhost:8080/ || exit 1
+
+EXPOSE 8080
