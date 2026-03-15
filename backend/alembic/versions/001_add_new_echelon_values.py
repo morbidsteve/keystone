@@ -7,6 +7,7 @@ Create Date: 2026-03-04
 
 from typing import Sequence, Union
 
+import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers
@@ -17,12 +18,18 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # PostgreSQL requires ALTER TYPE to add enum values
-    # IF NOT EXISTS prevents errors if values already exist (PostgreSQL 9.3+)
-    op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'HQMC'")
-    op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'WING'")
-    op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'GRP'")
-    op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'SQDN'")
+    # Only alter the echelon type if it exists (for databases created by create_all())
+    # On fresh databases where alembic runs from scratch, the echelon column is
+    # a VARCHAR, not a native PostgreSQL enum, so this is a no-op.
+    conn = op.get_bind()
+    result = conn.execute(
+        sa.text("SELECT 1 FROM pg_type WHERE typname = 'echelon'")
+    )
+    if result.fetchone():
+        op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'HQMC'")
+        op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'WING'")
+        op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'GRP'")
+        op.execute("ALTER TYPE echelon ADD VALUE IF NOT EXISTS 'SQDN'")
 
 
 def downgrade() -> None:

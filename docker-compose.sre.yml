@@ -1,0 +1,12 @@
+# docker-compose.sre.yml — Override for SRE/Kubernetes deployment
+# Usage: docker compose -f docker-compose.yml -f docker-compose.sre.yml up
+services:
+  backend:
+    build:
+      target: sre
+  frontend:
+    build:
+      target: sre
+  celery_worker:
+    build:
+      target: sre

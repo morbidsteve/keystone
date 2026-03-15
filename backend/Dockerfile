@@ -59,3 +59,12 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 EXPOSE 8000
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# STAGE: SRE / Kubernetes deployment
+FROM production AS sre
+
+# SRE defaults — Istio handles mTLS, no SSL needed for DB connections
+ENV DATABASE_URL="postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone?ssl=disable" \
+    DATABASE_URL_SYNC="postgresql://keystone:keystone_dev@db:5432/keystone?sslmode=disable" \
+    REDIS_URL="redis://redis:6379/0" \
+    ENV_MODE="production"
