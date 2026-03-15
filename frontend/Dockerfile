@@ -11,6 +11,13 @@ COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 
 COPY . .
+
+# Set the API base URL so the build uses the real backend API (not demo/mock mode).
+# In Docker Compose, nginx proxies /api/ → backend:8000, so /api/v1 is correct.
+# Without this, the app falls back to demo mode with mock data.
+ARG VITE_API_BASE_URL=/api/v1
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
 RUN npm run build
 
 # STAGE 2: Production (nginx-unprivileged, non-root)
