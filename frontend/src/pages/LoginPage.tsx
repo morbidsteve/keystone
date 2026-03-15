@@ -56,10 +56,7 @@ export default function LoginPage() {
     fetchClassification();
   }, [fetchClassification]);
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+  // NOTE: All hooks must be called before any conditional return (React rules of hooks).
   // Filter users based on search
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) return DEMO_USERS_LIST;
@@ -84,6 +81,11 @@ export default function LoginPage() {
     }
     return groups;
   }, [filteredUsers]);
+
+  // Redirect after all hooks have been called
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
