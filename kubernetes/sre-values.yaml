@@ -1,0 +1,77 @@
+# Recommended SRE Platform deployment values for KEYSTONE
+# These values are auto-applied when deploying via the SRE Dashboard's
+# "Deploy from Git" feature. For manual Helm deployments, use:
+#   helm install keystone-backend sre-web-app/ -f kubernetes/sre-values-backend.yaml
+
+# --- Backend ---
+# backend:
+#   app:
+#     name: keystone-backend
+#     image:
+#       repository: harbor.apps.sre.example.com/<team>/keystone-backend
+#     port: 8000
+#     replicas: 1
+#     resources:
+#       requests:
+#         cpu: 250m
+#         memory: 512Mi
+#       limits:
+#         cpu: 1000m
+#         memory: 1Gi
+#     probes:
+#       liveness:
+#         path: /health
+#         initialDelaySeconds: 120
+#         periodSeconds: 15
+#       readiness:
+#         path: /health
+#         initialDelaySeconds: 60
+#         periodSeconds: 10
+
+# --- Celery Worker (runs same image as backend) ---
+# celery-worker:
+#   app:
+#     name: keystone-celery-worker
+#     image:
+#       repository: harbor.apps.sre.example.com/<team>/keystone-backend  # same image
+#     port: 8000
+#     replicas: 1
+#     resources:
+#       requests:
+#         cpu: 100m
+#         memory: 256Mi
+#       limits:
+#         cpu: 1000m
+#         memory: 1Gi
+#     probes:
+#       liveness:
+#         path: /health
+#         initialDelaySeconds: 60
+#         periodSeconds: 30
+#       readiness:
+#         path: /health
+#         initialDelaySeconds: 30
+#         periodSeconds: 15
+
+# --- Frontend ---
+# frontend:
+#   app:
+#     name: keystone-frontend
+#     image:
+#       repository: harbor.apps.sre.example.com/<team>/keystone-frontend
+#     port: 8080
+#     replicas: 1
+#     probes:
+#       liveness:
+#         path: /
+#       readiness:
+#         path: /
+
+# --- Database (auto-provisioned by SRE platform) ---
+# PostgreSQL with PostGIS extension
+# Connection: postgresql+asyncpg://keystone:keystone_dev@db:5432/keystone
+# Image: postgis/postgis:15-3.4
+
+# --- Redis (auto-provisioned by SRE platform) ---
+# Connection: redis://redis:6379/0
+# Image: redis:7-alpine

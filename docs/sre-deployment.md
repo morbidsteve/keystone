@@ -59,3 +59,25 @@ For production deployments, override credentials via OpenBao/External Secrets.
 
 Nothing changes for local development. `docker compose up` still works exactly as before
 with SSL on port 8443.
+
+## Resource Requirements
+
+KEYSTONE services need more memory than the SRE platform defaults:
+
+| Service | CPU Request | CPU Limit | Memory Request | Memory Limit |
+|---------|------------|-----------|----------------|--------------|
+| backend | 250m | 1000m | 512Mi | 1Gi |
+| celery-worker | 100m | 1000m | 256Mi | 1Gi |
+| frontend | 100m | 200m | 128Mi | 256Mi |
+| database | 100m | 1000m | 256Mi | 512Mi |
+| redis | 100m | 500m | 128Mi | 256Mi |
+
+## Health Check Endpoints
+
+All app services expose `/health` which returns:
+```json
+{"service": "KEYSTONE", "status": "healthy", "database": "connected", "redis": "connected"}
+```
+
+The SRE platform should configure probes to use `/health` (not `/`) with extended
+startup delays to allow database migrations to complete on first boot (up to 120s).
