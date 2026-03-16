@@ -1,9 +1,9 @@
-"""Authentication endpoints: login, register, user management."""
+"""Authentication endpoints: login, register, user management, SSO."""
 
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 
 from app.config import settings
 from app.core.auth import (
+    authenticate_sso,
     create_access_token,
     get_current_user,
     hash_password,
@@ -114,6 +115,31 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
 
     return {
         "token": access_token,
+        "user": user_data,
+    }
+
+
+@router.get("/sso")
+async def sso_login(request: Request, db: AsyncSession = Depends(get_db)):
+    """Authenticate via OAuth2 Proxy SSO headers (x-auth-request-*).
+
+    Called by the frontend SSOGate component after OAuth2 Proxy has verified
+    the user's Keycloak session.  Returns the same payload shape as /login.
+    """
+    result = await authenticate_sso(request, db)
+    if result is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="SSO headers not present. Ensure OAuth2 Proxy is configured.",
+        )
+
+    user = result["user"]
+    perms = await get_user_permissions(db, user)
+    user_data = UserResponse.model_validate(user).model_dump()
+    user_data["permissions"] = sorted(perms)
+
+    return {
+        "token": result["token"],
         "user": user_data,
     }
 

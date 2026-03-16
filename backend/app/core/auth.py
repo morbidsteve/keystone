@@ -1,9 +1,10 @@
-"""JWT token management and password hashing utilities."""
+"""JWT token management, password hashing, and SSO authentication utilities."""
 
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -12,7 +13,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import get_db
-from app.models.user import User
+from app.models.user import Role, User
+
+logger = logging.getLogger(__name__)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
@@ -82,3 +85,109 @@ async def get_current_user(
         )
 
     return user
+
+
+# ---------------------------------------------------------------------------
+# SSO authentication via OAuth2 Proxy headers
+# ---------------------------------------------------------------------------
+
+# Map Keycloak group names to Keystone roles
+SSO_GROUP_ROLE_MAP: dict[str, Role] = {
+    "sre-admins": Role.ADMIN,
+    "logistics": Role.S4,
+    "operations": Role.S3,
+    "command": Role.COMMANDER,
+    "armorer": Role.ARMORER,
+    "viewer": Role.VIEWER,
+}
+
+
+def _map_groups_to_role(groups_header: str) -> Role:
+    """Map a comma-separated Keycloak groups string to the best Keystone role.
+
+    Priority order: ADMIN > COMMANDER > S4 > S3 > ARMORER > OPERATOR (default).
+    """
+    groups = [g.strip().lower() for g in groups_header.split(",") if g.strip()]
+
+    # Check in priority order
+    priority = [
+        ("sre-admins", Role.ADMIN),
+        ("command", Role.COMMANDER),
+        ("logistics", Role.S4),
+        ("operations", Role.S3),
+        ("armorer", Role.ARMORER),
+        ("viewer", Role.VIEWER),
+    ]
+    for group_name, role in priority:
+        if group_name in groups:
+            return role
+
+    return Role.OPERATOR
+
+
+async def authenticate_sso(
+    request: Request,
+    db: AsyncSession,
+) -> Optional[dict]:
+    """Authenticate a user via OAuth2 Proxy SSO headers.
+
+    Reads x-auth-request-* headers set by OAuth2 Proxy after Keycloak login.
+    Finds or creates the user in the local database.
+
+    Returns a dict with 'token' and 'user' keys (same shape as /login), or
+    None if SSO headers are not present.
+    """
+    username = request.headers.get("x-auth-request-user")
+    if not username:
+        return None
+
+    email = request.headers.get("x-auth-request-email", f"{username}@sso.local")
+    groups = request.headers.get("x-auth-request-groups", "")
+    display_name = request.headers.get(
+        "x-auth-request-preferred-username", username
+    )
+
+    role = _map_groups_to_role(groups)
+
+    # Find existing user
+    result = await db.execute(select(User).where(User.username == username))
+    user = result.scalar_one_or_none()
+
+    if user is None:
+        # Auto-provision SSO user
+        logger.info("SSO: creating new user %s (role=%s)", username, role.value)
+        user = User(
+            username=username,
+            email=email,
+            hashed_password="!sso-managed",  # Cannot be used for local login
+            full_name=display_name,
+            role=role,
+            is_active=True,
+        )
+        db.add(user)
+        await db.flush()
+        await db.refresh(user)
+    else:
+        # Update role and email from SSO on each login
+        changed = False
+        if user.role != role:
+            user.role = role
+            changed = True
+        if user.email != email:
+            user.email = email
+            changed = True
+        if user.full_name != display_name:
+            user.full_name = display_name
+            changed = True
+        if changed:
+            await db.flush()
+            await db.refresh(user)
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is disabled",
+        )
+
+    token = create_access_token(data={"sub": user.username})
+    return {"token": token, "user": user}

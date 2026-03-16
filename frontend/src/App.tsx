@@ -5,6 +5,9 @@ import { usePermission } from '@/hooks/usePermission';
 import MainLayout from '@/components/layout/MainLayout';
 import LoadingFallback from '@/components/ui/LoadingFallback';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import SSOGate from '@/components/SSOGate';
+
+const AUTH_MODE = import.meta.env.VITE_AUTH_MODE || 'local';
 
 // ---------------------------------------------------------------------------
 // Lazy-loaded page components (route-based code splitting)
@@ -92,11 +95,15 @@ function ProtectedRoute({
   return <>{children}</>;
 }
 
-export default function App() {
+function AppRoutes() {
   return (
-    <ErrorBoundary>
     <Routes>
-      <Route path="/login" element={<Lazy><LoginPage /></Lazy>} />
+      {/* In SSO mode, /login redirects to home since auth is handled by OAuth2 Proxy */}
+      {AUTH_MODE === 'sso' ? (
+        <Route path="/login" element={<Navigate to="/" replace />} />
+      ) : (
+        <Route path="/login" element={<Lazy><LoginPage /></Lazy>} />
+      )}
       <Route
         path="/"
         element={
@@ -151,6 +158,19 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      {AUTH_MODE === 'sso' ? (
+        <SSOGate>
+          <AppRoutes />
+        </SSOGate>
+      ) : (
+        <AppRoutes />
+      )}
     </ErrorBoundary>
   );
 }
