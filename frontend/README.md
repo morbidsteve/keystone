@@ -122,6 +122,7 @@ The frontend Dockerfile is a multi-stage build:
 
 1. **Build stage**: Node 20, installs deps, runs `npm run build`
 2. **Production stage**: `nginx-unprivileged` with TLS, API proxy, and tile proxy
+3. **SRE stage**: `nginx-unprivileged` with plain HTTP (Istio handles TLS termination)
 
 The nginx config (`nginx.conf`) handles:
 - TLS termination (self-signed cert via `generate-cert.sh`)
@@ -129,6 +130,22 @@ The nginx config (`nginx.conf`) handles:
 - `/tiles/*` proxy for map tile sources
 - SPA fallback routing
 - Security headers (HSTS, CSP, X-Frame-Options, etc.)
+
+### SRE / Kubernetes Deployment
+
+For Kubernetes environments where Istio or another service mesh handles TLS termination,
+build with the `sre` target:
+
+```bash
+docker build --target sre -t keystone-frontend:sre ./frontend
+```
+
+This uses `nginx-sre.conf` which:
+- Listens on plain HTTP port 8080 (no SSL directives)
+- Omits the HTTP-to-HTTPS redirect
+- Skips self-signed cert generation (no `openssl` dependency)
+- Keeps all security headers, API proxy, and tile proxies
+- Works with read-only root filesystems and restricted security contexts
 
 ## Notes
 

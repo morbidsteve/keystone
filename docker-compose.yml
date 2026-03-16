@@ -96,7 +96,7 @@ services:
   backend:
     build:
       context: ./backend
-      target: production
+      target: production    # For SRE/K8s deployment, use target: sre (see docker-compose.sre.yml)
     user: "1001:1001"
     ports: ["8000:8000"]
     environment:
@@ -184,7 +184,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: production
+      target: production    # For SRE/K8s deployment, use target: sre (no SSL, Istio handles TLS)
     ports:
       - "80:8080"
       - "443:8443"

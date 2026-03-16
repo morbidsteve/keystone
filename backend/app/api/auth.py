@@ -119,27 +119,55 @@ async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
     }
 
 
-@router.get("/sso")
-async def sso_login(request: Request, db: AsyncSession = Depends(get_db)):
-    """Authenticate via OAuth2 Proxy SSO headers (x-auth-request-*).
+@router.get("/sso-user")
+async def get_sso_user(request: Request, db: AsyncSession = Depends(get_db)):
+    """Get or create user from SSO headers (OAuth2 Proxy / Keycloak).
 
-    Called by the frontend SSOGate component after OAuth2 Proxy has verified
-    the user's Keycloak session.  Returns the same payload shape as /login.
+    When AUTH_MODE=sso, the app sits behind an OAuth2 Proxy that sets
+    X-Auth-Request-User, X-Auth-Request-Email, and X-Auth-Request-Groups
+    headers after authenticating the user via Keycloak.
     """
-    result = await authenticate_sso(request, db)
-    if result is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="SSO headers not present. Ensure OAuth2 Proxy is configured.",
-        )
+    if settings.AUTH_MODE != "sso":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="SSO not enabled")
 
-    user = result["user"]
+    username = request.headers.get("x-auth-request-user", "")
+    email = request.headers.get("x-auth-request-email", "")
+    groups = request.headers.get("x-auth-request-groups", "")
+
+    if not username and not email:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No SSO headers found")
+
+    # Use email prefix or username as the identifier
+    identifier = username or email.split("@")[0]
+
+    # Find existing user
+    result = await db.execute(select(User).where(User.username == identifier))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        # Auto-create user from SSO with a placeholder password hash
+        user = User(
+            username=identifier,
+            full_name=username or email,
+            email=email or f"{identifier}@sso.local",
+            hashed_password=hash_password("!SSO-managed-account!"),
+            role=Role.COMMANDER,
+            is_active=True,
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+
+    # Generate JWT token
+    access_token = create_access_token(data={"sub": user.username})
+
+    # Build response matching the login endpoint format
     perms = await get_user_permissions(db, user)
     user_data = UserResponse.model_validate(user).model_dump()
     user_data["permissions"] = sorted(perms)
 
     return {
-        "token": result["token"],
+        "token": access_token,
         "user": user_data,
     }
 

@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     ENV_MODE: str = "development"
+    AUTH_MODE: str = "local"  # "local" for built-in auth, "sso" for Keycloak/OAuth2 Proxy
 
     DATABASE_URL: str = _default_database_url()
     DATABASE_URL_SYNC: str = _default_sync_database_url()

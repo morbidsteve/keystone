@@ -5,9 +5,9 @@ import { usePermission } from '@/hooks/usePermission';
 import MainLayout from '@/components/layout/MainLayout';
 import LoadingFallback from '@/components/ui/LoadingFallback';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
-import SSOGate from '@/components/SSOGate';
+import SSOGate from '@/components/auth/SSOGate';
 
-const AUTH_MODE = import.meta.env.VITE_AUTH_MODE || 'local';
+const isSSO = import.meta.env.VITE_AUTH_MODE === 'sso';
 
 // ---------------------------------------------------------------------------
 // Lazy-loaded page components (route-based code splitting)
@@ -95,8 +95,9 @@ function ProtectedRoute({
   return <>{children}</>;
 }
 
-function AppRoutes() {
-  return (
+export default function App() {
+  const routes = (
+    <ErrorBoundary>
     <Routes>
       {/* In SSO mode, /login redirects to home since auth is handled by OAuth2 Proxy */}
       {AUTH_MODE === 'sso' ? (
@@ -173,4 +174,6 @@ export default function App() {
       )}
     </ErrorBoundary>
   );
+
+  return isSSO ? <SSOGate>{routes}</SSOGate> : routes;
 }

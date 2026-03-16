@@ -1,0 +1,42 @@
+# Istio ServiceEntry — allows the frontend nginx tile proxy to reach
+# external map tile servers. Required when Istio outboundTrafficPolicy
+# is set to REGISTRY_ONLY (strict mode).
+apiVersion: networking.istio.io/v1
+kind: ServiceEntry
+metadata:
+  name: tile-servers
+spec:
+  hosts:
+    - tile.openstreetmap.org
+    - a.tile.opentopomap.org
+    - b.tile.opentopomap.org
+    - c.tile.opentopomap.org
+    - server.arcgisonline.com
+    - nominatim.openstreetmap.org
+  ports:
+    - number: 443
+      name: https
+      protocol: TLS
+    - number: 80
+      name: http
+      protocol: HTTP
+  resolution: DNS
+  location: MESH_EXTERNAL
+---
+# NetworkPolicy — allows frontend pods to reach external HTTPS for tiles
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-external
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: keystone-frontend
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - port: 443
+          protocol: TCP
+        - port: 80
+          protocol: TCP
