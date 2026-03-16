@@ -137,21 +137,26 @@ async def authenticate_sso(
     Returns a dict with 'token' and 'user' keys (same shape as /login), or
     None if SSO headers are not present.
     """
-    username = request.headers.get("x-auth-request-user")
-    if not username:
+    raw_user = request.headers.get("x-auth-request-user")
+    if not raw_user:
         return None
 
-    email = request.headers.get("x-auth-request-email", f"{username}@sso.local")
+    email = request.headers.get("x-auth-request-email", f"{raw_user}@sso.local")
     groups = request.headers.get("x-auth-request-groups", "")
-    display_name = request.headers.get(
-        "x-auth-request-preferred-username", username
-    )
+    # Prefer the human-readable username over the Keycloak UUID
+    username = request.headers.get(
+        "x-auth-request-preferred-username", ""
+    ) or email.split("@")[0] or raw_user
+    display_name = username
 
     role = _map_groups_to_role(groups)
 
-    # Find existing user
+    # Find existing user by username OR email (handles pre-existing accounts)
     result = await db.execute(select(User).where(User.username == username))
     user = result.scalar_one_or_none()
+    if user is None:
+        result = await db.execute(select(User).where(User.email == email))
+        user = result.scalar_one_or_none()
 
     if user is None:
         # Auto-provision SSO user
