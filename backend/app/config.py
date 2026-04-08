@@ -46,9 +46,6 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
 
-    # Authentication mode: "local" for username/password, "sso" for OAuth2 Proxy headers
-    AUTH_MODE: str = "local"
-
     CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
 
     ALLOW_PRIVATE_TAK_HOSTS: bool = True

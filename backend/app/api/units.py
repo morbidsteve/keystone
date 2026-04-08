@@ -149,6 +149,36 @@ async def delete_unit(
     await db.delete(unit)
 
 
+# ---------------------------------------------------------------------------
+# Alias: frontend calls /units/{unit_id}/fuel/dashboard and /forecast
+# Backend has /fuel/dashboard/{unit_id} and /fuel/forecast/{unit_id}
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{unit_id}/fuel/dashboard")
+async def unit_fuel_dashboard_alias(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for /fuel/dashboard/{unit_id} — frontend compatibility."""
+    from app.api.fuel import get_fuel_dashboard
+
+    return await get_fuel_dashboard(unit_id=unit_id, db=db, current_user=current_user)
+
+
+@router.get("/{unit_id}/fuel/forecast")
+async def unit_fuel_forecast_alias(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for /fuel/forecast/{unit_id} — frontend compatibility."""
+    from app.api.fuel import get_current_forecast
+
+    return await get_current_forecast(unit_id=unit_id, db=db, current_user=current_user)
+
+
 @router.get("/{unit_id}/hierarchy")
 async def get_unit_hierarchy(
     unit_id: int,

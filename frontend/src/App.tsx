@@ -100,7 +100,7 @@ export default function App() {
     <ErrorBoundary>
     <Routes>
       {/* In SSO mode, /login redirects to home since auth is handled by OAuth2 Proxy */}
-      {AUTH_MODE === 'sso' ? (
+      {isSSO ? (
         <Route path="/login" element={<Navigate to="/" replace />} />
       ) : (
         <Route path="/login" element={<Lazy><LoginPage /></Lazy>} />
@@ -159,19 +159,6 @@ export default function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  );
-}
-
-export default function App() {
-  return (
-    <ErrorBoundary>
-      {AUTH_MODE === 'sso' ? (
-        <SSOGate>
-          <AppRoutes />
-        </SSOGate>
-      ) : (
-        <AppRoutes />
-      )}
     </ErrorBoundary>
   );
 

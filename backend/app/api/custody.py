@@ -275,6 +275,87 @@ async def update_item_status(
     return item
 
 
+# ---------------------------------------------------------------------------
+# Alias routes: frontend calls /sensitive-items, backend has /items
+# ---------------------------------------------------------------------------
+
+
+@router.get("/sensitive-items", response_model=List[SensitiveItemResponse])
+async def list_sensitive_items_alias(
+    unit_id: Optional[int] = Query(None),
+    item_type: Optional[SensitiveItemType] = Query(None),
+    status: Optional[SensitiveItemStatus] = Query(None),
+    limit: int = Query(100, le=500),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for /items — frontend compatibility."""
+    return await list_sensitive_items(
+        unit_id=unit_id, item_type=item_type, status=status,
+        limit=limit, offset=offset, db=db, current_user=current_user,
+    )
+
+
+@router.post(
+    "/sensitive-items",
+    response_model=SensitiveItemResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def create_sensitive_item_alias(
+    data: SensitiveItemCreate,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for POST /items — frontend compatibility."""
+    return await create_sensitive_item(data=data, request=request, db=db, current_user=current_user)
+
+
+@router.get("/sensitive-items/{item_id}", response_model=SensitiveItemResponse)
+async def get_sensitive_item_alias(
+    item_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for /items/{item_id} — frontend compatibility."""
+    return await get_sensitive_item(item_id=item_id, db=db, current_user=current_user)
+
+
+@router.patch(
+    "/sensitive-items/{item_id}",
+    response_model=SensitiveItemResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def patch_sensitive_item_alias(
+    item_id: int,
+    data: SensitiveItemUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias (PATCH) for PUT /items/{item_id} — frontend compatibility."""
+    return await update_sensitive_item(item_id=item_id, data=data, db=db, current_user=current_user)
+
+
+@router.patch(
+    "/sensitive-items/{item_id}/status",
+    response_model=SensitiveItemResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def patch_item_status_alias(
+    item_id: int,
+    new_status: SensitiveItemStatus = Query(...),
+    request: Request = None,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias (PATCH) for PUT /items/{item_id}/status — frontend compatibility."""
+    return await update_item_status(
+        item_id=item_id, new_status=new_status, request=request, db=db, current_user=current_user,
+    )
+
+
 @router.get("/items/{item_id}/chain", response_model=CustodyChainResponse)
 async def get_custody_chain(
     item_id: int,
@@ -681,6 +762,58 @@ async def get_inventory_results(
         raise NotFoundError("InventoryEvent", inventory_id)
 
     return {"event": event, "line_items": list(event.line_items)}
+
+
+# ---------------------------------------------------------------------------
+# Alias routes: frontend calls /inventory-events, backend has /inventory
+# ---------------------------------------------------------------------------
+
+
+@router.get("/inventory-events", response_model=List[InventoryEventResponse])
+async def list_inventory_events_alias(
+    unit_id: Optional[int] = Query(None),
+    status: Optional[InventoryStatus] = Query(None),
+    limit: int = Query(100, le=500),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for /inventory — frontend compatibility."""
+    return await list_inventory_events(
+        unit_id=unit_id, status=status, limit=limit, offset=offset,
+        db=db, current_user=current_user,
+    )
+
+
+@router.post(
+    "/inventory-events",
+    response_model=InventoryEventResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+async def start_inventory_alias(
+    data: InventoryEventCreate,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for POST /inventory — frontend compatibility."""
+    return await start_inventory(data=data, request=request, db=db, current_user=current_user)
+
+
+# ---------------------------------------------------------------------------
+# Alias: frontend calls /personnel/{id}/items, backend has /holder/{id}
+# ---------------------------------------------------------------------------
+
+
+@router.get("/personnel/{personnel_id}/items", response_model=List[SensitiveItemResponse])
+async def get_personnel_items_alias(
+    personnel_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for /holder/{personnel_id} — frontend compatibility."""
+    return await get_items_by_holder(personnel_id=personnel_id, db=db, current_user=current_user)
 
 
 # ---------------------------------------------------------------------------

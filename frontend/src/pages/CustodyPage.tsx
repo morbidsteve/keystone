@@ -3,7 +3,7 @@
 // =============================================================================
 
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Shield,
   ShieldAlert,
@@ -82,6 +82,7 @@ export default function CustodyPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const selectedUnitId = useDashboardStore((s) => s.selectedUnitId);
   const toast = useToast();
+  const queryClient = useQueryClient();
 
   // New item registration form
   const [showNewItemForm, setShowNewItemForm] = useState(false);
@@ -157,6 +158,31 @@ export default function CustodyPage() {
     setShowCatalogDropdown(false);
     if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
   }, []);
+
+  // Mutation: register sensitive item
+  const createItemMutation = useMutation({
+    mutationFn: (data: Parameters<typeof createSensitiveItem>[0]) =>
+      createSensitiveItem(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['custody-items'] });
+      toast.success('Sensitive item registered successfully');
+      setShowNewItemForm(false);
+      setNewItem({
+        serial_number: '',
+        nomenclature: '',
+        item_type: 'WEAPON' as SensitiveItemType,
+        nsn: '',
+        security_classification: 'UNCLASSIFIED' as SecurityClassification,
+        condition_code: 'A' as ItemConditionCode,
+        hand_receipt_number: '',
+        current_holder_name: '',
+        notes: '',
+      });
+    },
+    onError: () => {
+      toast.danger('Failed to register sensitive item');
+    },
+  });
 
   const numericUnitId = useMemo(() => {
     if (!selectedUnitId) return 4;
@@ -574,19 +600,19 @@ export default function CustodyPage() {
                   color: '#000',
                   marginTop: 8,
                 }}
+                disabled={createItemMutation.isPending}
                 onClick={() => {
-                  toast.success('Sensitive item registered successfully');
-                  setShowNewItemForm(false);
-                  setNewItem({
-                    serial_number: '',
-                    nomenclature: '',
-                    item_type: 'WEAPON' as SensitiveItemType,
-                    nsn: '',
-                    security_classification: 'UNCLASSIFIED' as SecurityClassification,
-                    condition_code: 'A' as ItemConditionCode,
-                    hand_receipt_number: '',
-                    current_holder_name: '',
-                    notes: '',
+                  createItemMutation.mutate({
+                    serial_number: newItem.serial_number,
+                    nomenclature: newItem.nomenclature,
+                    item_type: newItem.item_type,
+                    nsn: newItem.nsn || undefined,
+                    security_classification: newItem.security_classification,
+                    condition_code: newItem.condition_code,
+                    hand_receipt_number: newItem.hand_receipt_number || undefined,
+                    current_holder_name: newItem.current_holder_name || undefined,
+                    owning_unit_id: numericUnitId,
+                    notes: newItem.notes || undefined,
                   });
                 }}
               >

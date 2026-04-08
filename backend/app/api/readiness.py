@@ -485,6 +485,16 @@ async def get_readiness_rollup(
     return rollup
 
 
+@router.get("/{unit_id}/snapshot", response_model=ReadinessSnapshotResponse)
+async def get_readiness_snapshot_alias(
+    unit_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for GET /{unit_id} — frontend calls /snapshot for current readiness."""
+    return await get_current_readiness(unit_id=unit_id, db=db, current_user=current_user)
+
+
 @router.post(
     "/{unit_id}/snapshot",
     response_model=ReadinessSnapshotResponse,

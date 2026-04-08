@@ -650,7 +650,7 @@ function generateMockConvoyMovements(): ConvoyMovementDetail[] {
 
 export async function getMapData(): Promise<MapData> {
   if (isDemoMode) return JSON.parse(JSON.stringify(mockMapData)) as MapData;
-  const response = await apiClient.get<ApiResponse<MapData>>('/map/data');
+  const response = await apiClient.get<ApiResponse<MapData>>('/map/all');
   return response.data.data;
 }
 

@@ -120,8 +120,8 @@ export default function PMScheduleTable({ schedule }: PMScheduleTableProps) {
                   className="py-2.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text)]"
                 >
                   {item.pmType === 'MILEAGE'
-                    ? `${item.intervalValue.toLocaleString()} mi`
-                    : `${item.intervalValue}d`}
+                    ? `${(item.intervalValue ?? 0).toLocaleString()} mi`
+                    : `${item.intervalValue ?? 0}d`}
                 </td>
 
                 {/* Last Performed */}

@@ -387,6 +387,22 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Sensitive item catalog seeding failed: {e}")
 
+    # 12. Seed operational data (equipment, fuel, readiness, map, medical, etc.)
+    try:
+        from app.models.equipment import Equipment
+
+        async with async_session() as db:
+            existing = await db.execute(select(func.count(Equipment.id)))
+            if existing.scalar() == 0:
+                from seed.seed_operational_data import main as seed_operational_data
+
+                await seed_operational_data()
+                logger.info("Operational data seeded.")
+            else:
+                logger.info("Operational data already exists, skipping.")
+    except Exception as e:
+        logger.warning(f"Operational data seeding failed: {e}")
+
 
 app = FastAPI(
     title="KEYSTONE",

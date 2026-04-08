@@ -36,6 +36,7 @@ from app.api.catalog_sensitive_item import router as catalog_sensitive_item_rout
 from app.api.rbac import router as rbac_router
 from app.api.predictions import router as predictions_router
 from app.api.activities import router as activities_router
+from app.api.audit import router as audit_router
 from app.api.simulation import router as simulation_router_living
 
 api_router = APIRouter()
@@ -109,3 +110,4 @@ api_router.include_router(activities_router, prefix="/activities", tags=["Activi
 api_router.include_router(
     simulation_router_living, prefix="/simulation", tags=["Living Simulation"]
 )
+api_router.include_router(audit_router, prefix="/audit", tags=["Audit"])

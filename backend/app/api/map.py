@@ -380,6 +380,17 @@ async def get_map_all(
     return response
 
 
+# Alias: frontend calls /data, backend has /all
+@router.get("/data", response_model=MapAllResponse)
+async def get_map_data(
+    layers: Optional[str] = Query(None, description="Comma-separated layer names"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Alias for /all — frontend compatibility."""
+    return await get_map_all(layers=layers, db=db, current_user=current_user)
+
+
 # ---------------------------------------------------------------------------
 # WRITE endpoints (new)
 # ---------------------------------------------------------------------------

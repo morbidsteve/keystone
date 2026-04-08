@@ -146,13 +146,13 @@ export default function MaintenanceDashboardPage() {
             className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex items-center gap-3"
           >
             <span>
-              {analytics.manHoursLast30d.toLocaleString()} MAN-HRS (30D)
+              {(analytics.manHoursLast30d ?? 0).toLocaleString()} MAN-HRS (30D)
             </span>
             <span>
-              {analytics.deadlineEquipment.filter((d) => d.liftedDate == null).length} DEADLINED
+              {(analytics.deadlineEquipment ?? []).filter((d) => d.liftedDate == null).length} DEADLINED
             </span>
             <span>
-              {analytics.overduePms.length} OVERDUE PMs
+              {(analytics.overduePms ?? []).length} OVERDUE PMs
             </span>
           </div>
         )}
