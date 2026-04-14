@@ -62,6 +62,66 @@ async def list_active_movements(
     return result.scalars().all()
 
 
+@router.get("/active-convoys/map")
+async def get_active_convoys_for_map(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Compact convoy list for map overlay: id, name, current_position, status.
+
+    Returns only the fields needed by the map overlay widget. Uses live
+    current_lat/current_lon from the Movement model when available; otherwise
+    returns None for current_position so the frontend can fall back to
+    interpolating between origin/destination or hiding the marker.
+    """
+    accessible = await get_accessible_units(db, current_user)
+    result = await db.execute(
+        select(Movement).where(
+            Movement.unit_id.in_(accessible),
+            Movement.status.in_(
+                [MovementStatus.EN_ROUTE, MovementStatus.DELAYED]
+            ),
+        )
+    )
+    movements = result.scalars().all()
+
+    payload = []
+    for m in movements:
+        current_position = None
+        if m.current_lat is not None and m.current_lon is not None:
+            current_position = {"lat": m.current_lat, "lon": m.current_lon}
+
+        origin_position = None
+        if m.origin_lat is not None and m.origin_lon is not None:
+            origin_position = {"lat": m.origin_lat, "lon": m.origin_lon}
+
+        dest_position = None
+        if m.dest_lat is not None and m.dest_lon is not None:
+            dest_position = {"lat": m.dest_lat, "lon": m.dest_lon}
+
+        payload.append(
+            {
+                "id": m.id,
+                "convoy_id": m.convoy_id or f"CVY-{m.id}",
+                "name": m.convoy_id or f"CVY-{m.id}",
+                "status": m.status.value if m.status else "PLANNED",
+                "origin": m.origin,
+                "destination": m.destination,
+                "origin_position": origin_position,
+                "destination_position": dest_position,
+                "current_position": current_position,
+                "heading": m.heading,
+                "speed_kph": m.speed_kph,
+                "vehicle_count": m.vehicle_count or 0,
+                "eta": m.eta.isoformat() if m.eta else None,
+                "departure_time": (
+                    m.departure_time.isoformat() if m.departure_time else None
+                ),
+            }
+        )
+    return payload
+
+
 @router.get("/history", response_model=List[MovementResponse])
 async def list_movement_history(
     unit_id: Optional[int] = Query(None),
@@ -89,7 +149,7 @@ async def list_movement_history(
     return result.scalars().all()
 
 
-@router.get("/", response_model=List[MovementResponse])
+@router.get("", response_model=List[MovementResponse])
 async def list_movements(
     unit_id: Optional[int] = Query(None),
     status: Optional[MovementStatus] = Query(None),
@@ -129,7 +189,7 @@ async def get_movement(
 
 
 @router.post(
-    "/",
+    "",
     response_model=MovementResponse,
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],

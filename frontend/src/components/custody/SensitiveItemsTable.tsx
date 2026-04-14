@@ -102,7 +102,7 @@ export default function SensitiveItemsTable({
         <tbody>
           {items.map((item) => {
             const statusColor = STATUS_COLORS[item.status] ?? '#6b7280';
-            const typeColor = TYPE_COLORS[item.item_type] ?? '#6b7280';
+            const typeColor = TYPE_COLORS[item.itemType] ?? '#6b7280';
 
             return (
               <tr
@@ -118,14 +118,14 @@ export default function SensitiveItemsTable({
                 }}
               >
                 <td style={{ ...tdStyle, color: 'var(--color-text-bright)' }}>
-                  {item.serial_number}
+                  {item.serialNumber}
                 </td>
                 <td style={tdStyle}>{item.nomenclature}</td>
                 <td style={tdStyle}>
                   <span
                     className="py-0.5 px-2 rounded-[3px] font-semibold text-[9px] tracking-[0.5px]" style={{ backgroundColor: `${typeColor}20`, color: typeColor }}
                   >
-                    {item.item_type}
+                    {item.itemType}
                   </span>
                 </td>
                 <td style={tdStyle}>
@@ -136,14 +136,14 @@ export default function SensitiveItemsTable({
                   </span>
                 </td>
                 <td style={{ ...tdStyle, color: 'var(--color-text-muted)' }}>
-                  {item.condition_code}
+                  {item.conditionCode}
                 </td>
                 <td style={{ ...tdStyle, color: 'var(--color-text-muted)' }}>
-                  {item.current_holder_name ?? '—'}
+                  {item.currentHolderName ?? '—'}
                 </td>
                 <td style={{ ...tdStyle, color: 'var(--color-text-muted)' }}>
-                  {item.last_inventory_date
-                    ? new Date(item.last_inventory_date).toLocaleDateString()
+                  {item.lastInventoryDate
+                    ? new Date(item.lastInventoryDate).toLocaleDateString()
                     : '—'}
                 </td>
               </tr>

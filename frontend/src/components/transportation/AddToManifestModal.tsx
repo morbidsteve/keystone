@@ -61,7 +61,7 @@ export default function AddToManifestModal({
     if (existingEntry) {
       setQuantity(existingEntry.quantity);
       setPriority(existingEntry.priority);
-      setSpecialHandling(existingEntry.special_handling ?? '');
+      setSpecialHandling(existingEntry.specialHandling ?? '');
     } else {
       setQuantity(1);
       setPriority('ROUTINE');
@@ -81,18 +81,18 @@ export default function AddToManifestModal({
 
   if (!isOpen || !item) return null;
 
-  const maxQty = item.available_qty;
+  const maxQty = item.availableQty;
 
   const handleSubmit = () => {
     const entry: ManifestEntry = {
-      item_id: item.item_id,
+      itemId: item.itemId,
       nomenclature: item.nomenclature,
       category: item.category,
       quantity,
       priority,
-      special_handling: specialHandling.trim() || undefined,
-      weight_lbs: item.weight_lbs ? item.weight_lbs * quantity : undefined,
-      added_at: existingEntry?.added_at ?? new Date().toISOString(),
+      specialHandling: specialHandling.trim() || undefined,
+      weightLbs: item.weightLbs ? item.weightLbs * quantity : undefined,
+      addedAt: existingEntry?.addedAt ?? new Date().toISOString(),
     };
     onAdd(entry);
   };
@@ -168,16 +168,16 @@ export default function AddToManifestModal({
               <div
                 className="font-[var(--font-mono)] text-xs text-[var(--color-text)] font-semibold"
               >
-                {item.available_qty}
+                {item.availableQty}
               </div>
             </div>
-            {item.weight_lbs != null && (
+            {item.weightLbs != null && (
               <div>
                 <label style={labelStyle}>WT/UNIT (LBS)</label>
                 <div
                   className="font-[var(--font-mono)] text-xs text-[var(--color-text)]"
                 >
-                  {item.weight_lbs.toLocaleString()}
+                  {item.weightLbs.toLocaleString()}
                 </div>
               </div>
             )}

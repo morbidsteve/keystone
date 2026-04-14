@@ -188,7 +188,7 @@ const closeBtnStyle: React.CSSProperties = {
 const EMPTY_FORM = {
   nomenclature: '',
   nsn: '',
-  item_type: 'WEAPON',
+  itemType: 'WEAPON',
   tamcn: '',
   aliases: '',
 };
@@ -220,7 +220,7 @@ export default function CatalogManager() {
     queryFn: () =>
       getCatalogItems({
         q: searchTerm || undefined,
-        item_type: filterType !== 'ALL' ? filterType : undefined,
+        itemType: filterType !== 'ALL' ? filterType : undefined,
       }),
   });
 
@@ -270,7 +270,7 @@ export default function CatalogManager() {
     setForm({
       nomenclature: item.nomenclature,
       nsn: item.nsn ?? '',
-      item_type: item.item_type,
+      itemType: item.itemType,
       tamcn: item.tamcn ?? '',
       aliases: item.aliases.join(', '),
     });
@@ -282,7 +282,7 @@ export default function CatalogManager() {
 
     const payload: SensitiveItemCatalogItemCreate = {
       nomenclature: form.nomenclature.trim(),
-      item_type: form.item_type,
+      itemType: form.itemType,
       nsn: form.nsn.trim() || undefined,
       tamcn: form.tamcn.trim() || undefined,
       aliases: form.aliases
@@ -424,7 +424,7 @@ export default function CatalogManager() {
               </thead>
               <tbody>
                 {items.map((item) => {
-                  const typeColor = ITEM_TYPE_COLORS[item.item_type] ?? '#6b7280';
+                  const typeColor = ITEM_TYPE_COLORS[item.itemType] ?? '#6b7280';
                   return (
                     <tr
                       key={item.id}
@@ -473,7 +473,7 @@ export default function CatalogManager() {
                             whiteSpace: 'nowrap',
                           }}
                         >
-                          {item.item_type}
+                          {item.itemType}
                         </span>
                       </td>
                       <td
@@ -499,7 +499,7 @@ export default function CatalogManager() {
                         {item.aliases.length > 0 ? item.aliases.join(', ') : '--'}
                       </td>
                       <td style={tableCellStyle}>
-                        {item.is_active ? (
+                        {item.isActive ? (
                           <span
                             style={{
                               display: 'inline-block',
@@ -593,9 +593,9 @@ export default function CatalogManager() {
                 <div style={{ flex: 1 }}>
                   <label style={labelStyle}>ITEM TYPE *</label>
                   <select
-                    value={form.item_type}
+                    value={form.itemType}
                     onChange={(e) =>
-                      setForm((f) => ({ ...f, item_type: e.target.value }))
+                      setForm((f) => ({ ...f, itemType: e.target.value }))
                     }
                     style={selectStyle}
                   >

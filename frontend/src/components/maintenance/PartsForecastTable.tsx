@@ -19,7 +19,7 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
 
   const sorted = useMemo(() => {
     if (!data) return [];
-    return [...data].sort((a, b) => b.total_forecast_cost - a.total_forecast_cost);
+    return [...data].sort((a, b) => b.totalForecastCost - a.totalForecastCost);
   }, [data]);
 
   if (isLoading) {
@@ -37,7 +37,7 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
   }
 
   const headers = ['PART NUMBER', 'NOMENCLATURE', 'FORECAST QTY', 'EQUIPMENT TYPES', 'AVG COST', 'TOTAL COST'];
-  const totalCost = sorted.reduce((s, p) => s + p.total_forecast_cost, 0);
+  const totalCost = sorted.reduce((s, p) => s + p.totalForecastCost, 0);
 
   return (
     <div className="overflow-x-auto">
@@ -58,11 +58,11 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
         </thead>
         <tbody>
           {sorted.map((row) => (
-            <tr key={row.part_number}>
+            <tr key={row.partNumber}>
               <td
                 className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-accent)] font-semibold"
               >
-                {row.part_number}
+                {row.partNumber}
               </td>
               <td
                 className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
@@ -72,22 +72,22 @@ export default function PartsForecastTable({ unitId, days = 90 }: PartsForecastT
               <td
                 className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
               >
-                {row.forecast_quantity}
+                {row.forecastQuantity}
               </td>
               <td
                 className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
               >
-                {row.equipment_types.join(', ')}
+                {row.equipmentTypes.join(', ')}
               </td>
               <td
                 className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
               >
-                ${row.avg_cost_per_part.toFixed(2)}
+                ${(row.avgCostPerPart ?? 0).toFixed(2)}
               </td>
               <td
                 className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-warning)] font-semibold"
               >
-                ${row.total_forecast_cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${row.totalForecastCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </td>
             </tr>
           ))}

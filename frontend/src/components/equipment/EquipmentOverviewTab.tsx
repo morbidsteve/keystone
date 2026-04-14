@@ -97,7 +97,7 @@ export default function EquipmentOverviewTab({ equipment, currentDriver }: Equip
         <DetailRow icon={<Hash size={14} />} label="Serial #" value={equipment.serialNumber} />
         <DetailRow icon={<Shield size={14} />} label="USMC ID" value={equipment.usmcId} />
         <DetailRow icon={<MapPin size={14} />} label="Unit" value={`${equipment.unitName} (${equipment.unitId})`} />
-        {equipment.odometerMiles !== undefined && (
+        {equipment.odometerMiles != null && (
           <DetailRow
             icon={<Gauge size={14} />}
             label="Odometer"

@@ -69,7 +69,7 @@ async def get_alert_summary(
     )
 
 
-@router.get("/", response_model=AlertListResponse)
+@router.get("", response_model=AlertListResponse)
 async def list_alerts(
     unit_id: Optional[int] = Query(None),
     severity: Optional[AlertSeverity] = Query(None),

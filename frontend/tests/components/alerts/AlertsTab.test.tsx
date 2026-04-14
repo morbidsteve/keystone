@@ -129,9 +129,9 @@ const MOCK_ALERTS = [
 ];
 
 const MOCK_SUMMARY = {
-  total_active: 1,
-  by_severity: { CRITICAL: 1, WARNING: 0, INFO: 0 },
-  by_type: {},
+  totalActive: 1,
+  bySeverity: { CRITICAL: 1, WARNING: 0, INFO: 0 },
+  byType: {},
 };
 
 function renderAlertsTab() {

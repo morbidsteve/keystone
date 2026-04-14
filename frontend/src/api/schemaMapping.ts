@@ -7,70 +7,70 @@ import { isDemoMode } from './mockClient';
 
 export interface CanonicalField {
   id: number;
-  entity_name: string;
-  field_name: string;
-  display_name: string;
-  data_type: string;
-  is_required: boolean;
-  enum_values: string[] | null;
+  entityName: string;
+  fieldName: string;
+  displayName: string;
+  dataType: string;
+  isRequired: boolean;
+  enumValues: string[] | null;
   description: string | null;
-  entity_group: string | null;
+  entityGroup: string | null;
 }
 
 export interface CanonicalFieldGroup {
-  entity_name: string;
-  entity_group: string | null;
+  entityName: string;
+  entityGroup: string | null;
   fields: CanonicalField[];
 }
 
 export interface FieldMappingConfig {
-  target_entity: string;
-  target_field: string;
+  targetEntity: string;
+  targetField: string;
   transform?: string;
-  transform_params?: Record<string, unknown>;
+  transformParams?: Record<string, unknown>;
 }
 
 export interface DataTemplate {
   id: number;
   name: string;
   description: string | null;
-  source_type: string;
-  field_mappings: Record<string, FieldMappingConfig>;
-  header_patterns: string[] | null;
+  sourceType: string;
+  fieldMappings: Record<string, FieldMappingConfig>;
+  headerPatterns: string[] | null;
   version: number;
-  is_active: boolean;
-  created_by: number | null;
-  created_at: string;
-  updated_at: string | null;
+  isActive: boolean;
+  createdBy: number | null;
+  createdAt: string;
+  updatedAt: string | null;
 }
 
 export interface DataTemplateListItem {
   id: number;
   name: string;
   description: string | null;
-  source_type: string;
-  field_count: number;
+  sourceType: string;
+  fieldCount: number;
   version: number;
-  is_active: boolean;
-  created_by: number | null;
-  created_at: string;
+  isActive: boolean;
+  createdBy: number | null;
+  createdAt: string;
 }
 
 export interface DataTemplateCreate {
   name: string;
   description?: string;
-  source_type: string;
-  field_mappings: Record<string, FieldMappingConfig>;
-  header_patterns?: string[];
+  sourceType: string;
+  fieldMappings: Record<string, FieldMappingConfig>;
+  headerPatterns?: string[];
 }
 
 export interface DataTemplateUpdate {
   name?: string;
   description?: string;
-  source_type?: string;
-  field_mappings?: Record<string, FieldMappingConfig>;
-  header_patterns?: string[];
-  is_active?: boolean;
+  sourceType?: string;
+  fieldMappings?: Record<string, FieldMappingConfig>;
+  headerPatterns?: string[];
+  isActive?: boolean;
 }
 
 export interface MappingPreviewRow {
@@ -81,16 +81,16 @@ export interface MappingPreviewRow {
 
 export interface MappingPreviewResponse {
   rows: MappingPreviewRow[];
-  total_rows: number;
-  successful_rows: number;
-  error_count: number;
+  totalRows: number;
+  successfulRows: number;
+  errorCount: number;
 }
 
 export interface UploadPreviewResponse {
-  file_name: string;
+  fileName: string;
   headers: string[];
-  sample_rows: Record<string, unknown>[];
-  row_count: number;
+  sampleRows: Record<string, unknown>[];
+  rowCount: number;
 }
 
 export interface AutoDetectResponse {
@@ -109,49 +109,49 @@ const mockDelay = (ms = 200 + Math.random() * 200): Promise<void> =>
 
 const DEMO_CANONICAL_FIELDS: CanonicalFieldGroup[] = [
   {
-    entity_name: 'supply_record',
-    entity_group: 'Supply',
+    entityName: 'supply_record',
+    entityGroup: 'Supply',
     fields: [
-      { id: 1, entity_name: 'supply_record', field_name: 'item_name', display_name: 'Item Name', data_type: 'string', is_required: true, enum_values: null, description: 'Name of supply item', entity_group: 'Supply' },
-      { id: 2, entity_name: 'supply_record', field_name: 'supply_class', display_name: 'Supply Class', data_type: 'enum', is_required: true, enum_values: ['I','II','III','IIIA','IV','V','VI','VII','VIII','IX','X'], description: 'NATO supply classification', entity_group: 'Supply' },
-      { id: 3, entity_name: 'supply_record', field_name: 'on_hand', display_name: 'On Hand Qty', data_type: 'integer', is_required: true, enum_values: null, description: 'Current quantity on hand', entity_group: 'Supply' },
-      { id: 4, entity_name: 'supply_record', field_name: 'authorized', display_name: 'Authorized Qty', data_type: 'integer', is_required: true, enum_values: null, description: 'Authorized quantity', entity_group: 'Supply' },
+      { id: 1, entityName: 'supply_record', fieldName: 'itemName', displayName: 'Item Name', dataType: 'string', isRequired: true, enumValues: null, description: 'Name of supply item', entityGroup: 'Supply' },
+      { id: 2, entityName: 'supply_record', fieldName: 'supplyClass', displayName: 'Supply Class', dataType: 'enum', isRequired: true, enumValues: ['I','II','III','IIIA','IV','V','VI','VII','VIII','IX','X'], description: 'NATO supply classification', entityGroup: 'Supply' },
+      { id: 3, entityName: 'supply_record', fieldName: 'on_hand', displayName: 'On Hand Qty', dataType: 'integer', isRequired: true, enumValues: null, description: 'Current quantity on hand', entityGroup: 'Supply' },
+      { id: 4, entityName: 'supply_record', fieldName: 'authorized', displayName: 'Authorized Qty', dataType: 'integer', isRequired: true, enumValues: null, description: 'Authorized quantity', entityGroup: 'Supply' },
     ],
   },
   {
-    entity_name: 'equipment_record',
-    entity_group: 'Equipment',
+    entityName: 'equipment_record',
+    entityGroup: 'Equipment',
     fields: [
-      { id: 5, entity_name: 'equipment_record', field_name: 'type', display_name: 'Equipment Type', data_type: 'string', is_required: true, enum_values: null, description: 'Type/nomenclature of equipment', entity_group: 'Equipment' },
-      { id: 6, entity_name: 'equipment_record', field_name: 'tamcn', display_name: 'TAMCN', data_type: 'string', is_required: true, enum_values: null, description: 'Table of Authorized Material Control Number', entity_group: 'Equipment' },
-      { id: 7, entity_name: 'equipment_record', field_name: 'authorized', display_name: 'Authorized', data_type: 'integer', is_required: true, enum_values: null, description: 'Authorized quantity', entity_group: 'Equipment' },
+      { id: 5, entityName: 'equipment_record', fieldName: 'type', displayName: 'Equipment Type', dataType: 'string', isRequired: true, enumValues: null, description: 'Type/nomenclature of equipment', entityGroup: 'Equipment' },
+      { id: 6, entityName: 'equipment_record', fieldName: 'tamcn', displayName: 'TAMCN', dataType: 'string', isRequired: true, enumValues: null, description: 'Table of Authorized Material Control Number', entityGroup: 'Equipment' },
+      { id: 7, entityName: 'equipment_record', fieldName: 'authorized', displayName: 'Authorized', dataType: 'integer', isRequired: true, enumValues: null, description: 'Authorized quantity', entityGroup: 'Equipment' },
     ],
   },
 ];
 
 const DEMO_TEMPLATES: DataTemplateListItem[] = [
-  { id: 1, name: 'LOGSTAT Standard', description: 'Standard Marine Corps LOGSTAT format', source_type: 'Excel', field_count: 12, version: 2, is_active: true, created_by: 1, created_at: '2026-02-01T00:00:00Z' },
-  { id: 2, name: 'Equipment Status Report', description: 'Standard equipment readiness format', source_type: 'Excel', field_count: 8, version: 1, is_active: true, created_by: 1, created_at: '2026-02-10T00:00:00Z' },
-  { id: 3, name: 'mIRC Logistics Chat', description: 'Parse mIRC chat log for logistics data', source_type: 'mIRC', field_count: 6, version: 3, is_active: true, created_by: 1, created_at: '2026-01-20T00:00:00Z' },
+  { id: 1, name: 'LOGSTAT Standard', description: 'Standard Marine Corps LOGSTAT format', sourceType: 'Excel', fieldCount: 12, version: 2, isActive: true, createdBy: 1, createdAt: '2026-02-01T00:00:00Z' },
+  { id: 2, name: 'Equipment Status Report', description: 'Standard equipment readiness format', sourceType: 'Excel', fieldCount: 8, version: 1, isActive: true, createdBy: 1, createdAt: '2026-02-10T00:00:00Z' },
+  { id: 3, name: 'mIRC Logistics Chat', description: 'Parse mIRC chat log for logistics data', sourceType: 'mIRC', fieldCount: 6, version: 3, isActive: true, createdBy: 1, createdAt: '2026-01-20T00:00:00Z' },
 ];
 
 const DEMO_TEMPLATE_FULL: DataTemplate = {
   id: 1,
   name: 'LOGSTAT Standard',
   description: 'Standard Marine Corps LOGSTAT format',
-  source_type: 'Excel',
-  field_mappings: {
-    'Column A': { target_entity: 'supply_record', target_field: 'item_name' },
-    'Column B': { target_entity: 'supply_record', target_field: 'supply_class' },
-    'Column C': { target_entity: 'supply_record', target_field: 'on_hand', transform: 'to_integer' },
-    'Column D': { target_entity: 'supply_record', target_field: 'authorized', transform: 'to_integer' },
+  sourceType: 'Excel',
+  fieldMappings: {
+    'Column A': { targetEntity: 'supply_record', targetField: 'itemName' },
+    'Column B': { targetEntity: 'supply_record', targetField: 'supplyClass' },
+    'Column C': { targetEntity: 'supply_record', targetField: 'on_hand', transform: 'to_integer' },
+    'Column D': { targetEntity: 'supply_record', targetField: 'authorized', transform: 'to_integer' },
   },
-  header_patterns: ['ITEM', 'CLASS', 'ON HAND', 'AUTH'],
+  headerPatterns: ['ITEM', 'CLASS', 'ON HAND', 'AUTH'],
   version: 2,
-  is_active: true,
-  created_by: 1,
-  created_at: '2026-02-01T00:00:00Z',
-  updated_at: '2026-02-15T00:00:00Z',
+  isActive: true,
+  createdBy: 1,
+  createdAt: '2026-02-01T00:00:00Z',
+  updatedAt: '2026-02-15T00:00:00Z',
 };
 
 // ---------------------------------------------------------------------------
@@ -173,12 +173,12 @@ export async function getTemplates(
   if (isDemoMode) {
     await mockDelay();
     let templates = [...DEMO_TEMPLATES];
-    if (sourceType) templates = templates.filter(t => t.source_type === sourceType);
-    if (activeOnly) templates = templates.filter(t => t.is_active);
+    if (sourceType) templates = templates.filter(t => t.sourceType === sourceType);
+    if (activeOnly) templates = templates.filter(t => t.isActive);
     return templates;
   }
   const params: Record<string, string | boolean> = { active_only: activeOnly };
-  if (sourceType) params.source_type = sourceType;
+  if (sourceType) params.sourceType = sourceType;
   const response = await apiClient.get<DataTemplateListItem[]>(
     '/schema-mapping/templates',
     { params },
@@ -197,7 +197,7 @@ export async function getTemplate(id: number): Promise<DataTemplate> {
 export async function createTemplate(
   data: DataTemplateCreate,
 ): Promise<DataTemplate> {
-  if (isDemoMode) { await mockDelay(); return { ...DEMO_TEMPLATE_FULL, ...data, id: Date.now(), version: 1, is_active: true, created_by: 1, created_at: new Date().toISOString(), updated_at: null, header_patterns: data.header_patterns || null }; }
+  if (isDemoMode) { await mockDelay(); return { ...DEMO_TEMPLATE_FULL, ...data, id: Date.now(), version: 1, isActive: true, createdBy: 1, createdAt: new Date().toISOString(), updatedAt: null, headerPatterns: data.headerPatterns || null }; }
   const response = await apiClient.post<DataTemplate>(
     '/schema-mapping/templates',
     data,
@@ -209,7 +209,7 @@ export async function updateTemplate(
   id: number,
   data: DataTemplateUpdate,
 ): Promise<DataTemplate> {
-  if (isDemoMode) { await mockDelay(); return { ...DEMO_TEMPLATE_FULL, ...data, id, updated_at: new Date().toISOString() }; }
+  if (isDemoMode) { await mockDelay(); return { ...DEMO_TEMPLATE_FULL, ...data, id, updatedAt: new Date().toISOString() }; }
   const response = await apiClient.put<DataTemplate>(
     `/schema-mapping/templates/${id}`,
     data,
@@ -229,15 +229,15 @@ export async function previewMapping(
   if (isDemoMode) {
     await mockDelay();
     return {
-      rows: sampleData.map(row => ({ source: row, mapped: Object.fromEntries(Object.entries(fieldMappings).map(([src, cfg]) => [cfg.target_field, row[src] ?? null])), errors: [] })),
-      total_rows: sampleData.length,
-      successful_rows: sampleData.length,
-      error_count: 0,
+      rows: sampleData.map(row => ({ source: row, mapped: Object.fromEntries(Object.entries(fieldMappings).map(([src, cfg]) => [cfg.targetField, row[src] ?? null])), errors: [] })),
+      totalRows: sampleData.length,
+      successfulRows: sampleData.length,
+      errorCount: 0,
     };
   }
   const response = await apiClient.post<MappingPreviewResponse>(
     '/schema-mapping/preview',
-    { field_mappings: fieldMappings, sample_data: sampleData },
+    { fieldMappings: fieldMappings, sample_data: sampleData },
   );
   return response.data;
 }
@@ -248,13 +248,13 @@ export async function uploadFileForPreview(
   if (isDemoMode) {
     await mockDelay();
     return {
-      file_name: file.name,
+      fileName: file.name,
       headers: ['ITEM', 'CLASS', 'ON HAND', 'AUTH', 'REQUIRED', 'DUE IN'],
-      sample_rows: [
+      sampleRows: [
         { ITEM: 'MRE Case (12ct)', CLASS: 'I', 'ON HAND': 2400, AUTH: 3000, REQUIRED: 3000, 'DUE IN': 600 },
         { ITEM: 'JP-8 Fuel (gal)', CLASS: 'III', 'ON HAND': 8500, AUTH: 15000, REQUIRED: 15000, 'DUE IN': 4000 },
       ],
-      row_count: 2,
+      rowCount: 2,
     };
   }
   const formData = new FormData();
@@ -281,7 +281,7 @@ export async function autoDetectTemplate(
   }
   const response = await apiClient.post<AutoDetectResponse>(
     '/schema-mapping/auto-detect',
-    { headers, sample_rows: sampleRows },
+    { headers, sampleRows: sampleRows },
   );
   return response.data;
 }
@@ -295,9 +295,9 @@ export async function testTemplate(
     void templateId;
     return {
       rows: sampleData.map(row => ({ source: row, mapped: row, errors: [] })),
-      total_rows: sampleData.length,
-      successful_rows: sampleData.length,
-      error_count: 0,
+      totalRows: sampleData.length,
+      successfulRows: sampleData.length,
+      errorCount: 0,
     };
   }
   const response = await apiClient.post<MappingPreviewResponse>(

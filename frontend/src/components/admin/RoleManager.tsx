@@ -169,7 +169,7 @@ function PermissionCategory({
               <span
                 className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
               >
-                {perm.display_name}
+                {perm.displayName}
               </span>
               <span
                 className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] ml-auto"
@@ -254,7 +254,7 @@ export default function RoleManager() {
   // Open view/edit form
   const openRole = (role: CustomRole) => {
     setSelectedRole(role);
-    setFormMode(role.is_system ? 'view' : 'edit');
+    setFormMode(role.isSystem ? 'view' : 'edit');
     setFormName(role.name);
     setFormDescription(role.description || '');
     setFormPermissionIds(new Set(role.permissions.map((p) => p.id)));
@@ -358,13 +358,13 @@ export default function RoleManager() {
                 </td>
                 <td style={tableCellStyle}>
                   <span
-                    className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-0.5 px-2 rounded-[var(--radius)]" style={{ backgroundColor: role.is_system
+                    className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1px] py-0.5 px-2 rounded-[var(--radius)]" style={{ backgroundColor: role.isSystem
                         ? 'rgba(77, 171, 247, 0.12)'
-                        : 'rgba(64, 192, 87, 0.12)', color: role.is_system ? 'var(--color-accent)' : 'var(--color-success)', border: role.is_system
+                        : 'rgba(64, 192, 87, 0.12)', color: role.isSystem ? 'var(--color-accent)' : 'var(--color-success)', border: role.isSystem
                         ? '1px solid rgba(77, 171, 247, 0.3)'
                         : '1px solid rgba(64, 192, 87, 0.3)' }}
                   >
-                    {role.is_system ? 'SYSTEM' : 'CUSTOM'}
+                    {role.isSystem ? 'SYSTEM' : 'CUSTOM'}
                   </span>
                 </td>
                 <td style={tableCellStyle}>
@@ -380,11 +380,11 @@ export default function RoleManager() {
                     <button
                       style={btnSecondaryStyle}
                       onClick={() => openRole(role)}
-                      title={role.is_system ? 'View' : 'Edit'}
+                      title={role.isSystem ? 'View' : 'Edit'}
                     >
                       <Edit3 size={12} />
                     </button>
-                    {!role.is_system && (
+                    {!role.isSystem && (
                       <>
                         {deleteConfirm === role.id ? (
                           <div className="flex gap-1">

@@ -68,14 +68,14 @@ function ConvoyMarker({ convoy }: { convoy: MapConvoy }) {
     [convoy.status],
   );
 
-  if (!convoy.current_position) return null;
+  if (!convoy.currentPosition) return null;
 
   return (
     <Marker
-      position={[convoy.current_position.lat, convoy.current_position.lon]}
+      position={[convoy.currentPosition.lat, convoy.currentPosition.lon]}
       icon={truckIcon}
       eventHandlers={{
-        click: () => selectEntity('convoy', convoy.convoy_id, convoy),
+        click: () => selectEntity('convoy', convoy.convoyId, convoy),
       }}
     >
       <Tooltip direction="top" offset={[0, -14]} opacity={0.95}>
@@ -91,7 +91,7 @@ function ConvoyMarker({ convoy }: { convoy: MapConvoy }) {
 
 function ConvoyRoute({ convoy, progressPercent }: { convoy: MapConvoy; progressPercent?: number }) {
   const routeStyle = getConvoyRouteStyle(convoy.status);
-  const positions = convoy.route_geometry.map(
+  const positions = convoy.routeGeometry.map(
     (point) => [point[0], point[1]] as [number, number],
   );
 
@@ -184,7 +184,7 @@ export default function ConvoyLayer({ convoys, convoyMovements, showRoutes, show
   const movementMap = useMemo(() => {
     const map = new Map<string, ConvoyMovementDetail>();
     for (const m of convoyMovements) {
-      map.set(m.convoy_id, m);
+      map.set(m.convoyId, m);
     }
     return map;
   }, [convoyMovements]);
@@ -192,18 +192,18 @@ export default function ConvoyLayer({ convoys, convoyMovements, showRoutes, show
   return (
     <>
       {convoys.map((convoy) => {
-        const movement = movementMap.get(convoy.convoy_id);
+        const movement = movementMap.get(convoy.convoyId);
         const hasVehicles = showVehicles && movement && movement.vehicles.length > 0;
 
         return (
-          <span key={convoy.convoy_id}>
+          <span key={convoy.convoyId}>
             {/* Show individual vehicle markers if we have detail data */}
             {hasVehicles
               ? movement.vehicles.map((vehicle, idx) => (
                   <ConvoyVehicleMarker
-                    key={vehicle.vehicle_id}
+                    key={vehicle.vehicleId}
                     vehicle={vehicle}
-                    convoyId={convoy.convoy_id}
+                    convoyId={convoy.convoyId}
                     convoyName={convoy.name}
                     isLeadVehicle={idx === 0}
                   />
@@ -216,12 +216,12 @@ export default function ConvoyLayer({ convoys, convoyMovements, showRoutes, show
 
       {showRoutes &&
         convoys.map((convoy) => {
-          const movement = movementMap.get(convoy.convoy_id);
+          const movement = movementMap.get(convoy.convoyId);
           return (
             <ConvoyRoute
-              key={`route-${convoy.convoy_id}`}
+              key={`route-${convoy.convoyId}`}
               convoy={convoy}
-              progressPercent={movement?.progress_percent}
+              progressPercent={movement?.progressPercent}
             />
           );
         })}

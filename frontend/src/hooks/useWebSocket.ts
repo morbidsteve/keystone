@@ -145,11 +145,11 @@ function randomDemoEvent(): WSEvent {
       movementId: `MOV-${Math.floor(Math.random() * 1000)}`,
       vehicles: [
         {
-          vehicle_id: `V-${Math.floor(Math.random() * 100)}`,
+          vehicleId: `V-${Math.floor(Math.random() * 100)}`,
           lat: 33.5 + Math.random() * 0.5,
           lon: -117.5 + Math.random() * 0.5,
           heading: Math.floor(Math.random() * 360),
-          speed_kph: Math.floor(Math.random() * 80),
+          speedKph: Math.floor(Math.random() * 80),
           status: 'MOVING',
         },
       ],

@@ -76,13 +76,13 @@ function ConnectionForm({
   const [host, setHost] = useState(initial?.host || '');
   const [port, setPort] = useState(initial?.port || 8089);
   const [protocol, setProtocol] = useState<'tcp' | 'ssl' | 'http'>(initial?.protocol || 'tcp');
-  const [apiPort, setApiPort] = useState(initial?.api_port || 8443);
-  const [useTls, setUseTls] = useState(initial?.use_tls ?? true);
-  const [apiToken, setApiToken] = useState(initial?.api_token || '');
-  const [certFile, setCertFile] = useState(initial?.cert_file || '');
-  const [channelFilter, setChannelFilter] = useState(initial?.channel_filter || '');
+  const [apiPort, setApiPort] = useState(initial?.apiPort || 8443);
+  const [useTls, setUseTls] = useState(initial?.useTls ?? true);
+  const [apiToken, setApiToken] = useState(initial?.apiToken || '');
+  const [certFile, setCertFile] = useState(initial?.certFile || '');
+  const [channelFilter, setChannelFilter] = useState(initial?.channelFilter || '');
   const [cotTypesFilter, setCotTypesFilter] = useState(
-    initial?.cot_types_filter?.join(', ') || '',
+    initial?.cotTypesFilter?.join(', ') || '',
   );
 
   const inputStyle: React.CSSProperties = {
@@ -119,12 +119,12 @@ function ConnectionForm({
       host,
       port,
       protocol,
-      api_port: apiPort,
-      use_tls: useTls,
-      api_token: apiToken || undefined,
-      cert_file: certFile || undefined,
-      channel_filter: channelFilter || undefined,
-      cot_types_filter: filters.length > 0 ? filters : undefined,
+      apiPort: apiPort,
+      useTls: useTls,
+      apiToken: apiToken || undefined,
+      certFile: certFile || undefined,
+      channelFilter: channelFilter || undefined,
+      cotTypesFilter: filters.length > 0 ? filters : undefined,
     });
   };
 
@@ -315,11 +315,11 @@ function MessageFeed({ messages }: { messages: TAKMessage[] }) {
             >
               {msg.callsign || msg.uid || 'Unknown'}
             </div>
-            {msg.content_preview && (
+            {msg.contentPreview && (
               <div
                 className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-px whitespace-nowrap overflow-hidden text-ellipsis"
               >
-                {msg.content_preview}
+                {msg.contentPreview}
               </div>
             )}
           </div>
@@ -333,7 +333,7 @@ function MessageFeed({ messages }: { messages: TAKMessage[] }) {
           <span
             className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
           >
-            {msg.received_at ? formatRelativeTime(msg.received_at) : '--'}
+            {msg.receivedAt ? formatRelativeTime(msg.receivedAt) : '--'}
           </span>
         </div>
       ))}
@@ -437,9 +437,9 @@ export default function TAKManager() {
     } catch (err) {
       setTestResult({
         success: false,
-        status_code: null,
-        latency_ms: null,
-        server_info: null,
+        statusCode: null,
+        latencyMs: null,
+        serverInfo: null,
         message: 'Test request failed',
       });
     } finally {
@@ -450,7 +450,7 @@ export default function TAKManager() {
   const handleTogglePolling = async (conn: TAKConnection) => {
     setTogglingId(conn.id);
     try {
-      if (conn.connection_status === 'connected' || conn.connection_status === 'polling') {
+      if (conn.connectionStatus === 'connected' || conn.connectionStatus === 'polling') {
         await stopPolling(conn.id);
       } else {
         await startPolling(conn.id);
@@ -531,12 +531,12 @@ export default function TAKManager() {
               >
                 {testResult.message}
               </div>
-              {testResult.latency_ms !== null && (
+              {testResult.latencyMs !== null && (
                 <div
                   className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-0.5"
                 >
-                  Latency: {testResult.latency_ms}ms
-                  {testResult.status_code && ` | HTTP ${testResult.status_code}`}
+                  Latency: {testResult.latencyMs}ms
+                  {testResult.statusCode && ` | HTTP ${testResult.statusCode}`}
                 </div>
               )}
             </div>
@@ -623,10 +623,10 @@ export default function TAKManager() {
                     <div
                       className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-0.5"
                     >
-                      {conn.host}:{conn.api_port} ({conn.protocol.toUpperCase()})
+                      {conn.host}:{conn.apiPort} ({conn.protocol.toUpperCase()})
                     </div>
                   </div>
-                  <ConnectionStatusPill status={conn.connection_status} />
+                  <ConnectionStatusPill status={conn.connectionStatus} />
                 </div>
 
                 {/* Actions row (visible when selected) */}
@@ -659,23 +659,23 @@ export default function TAKManager() {
                       }}
                       disabled={togglingId === conn.id}
                       className="flex items-center gap-1 py-1 px-2 bg-transparent rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] cursor-pointer" style={{ border: `1px solid ${
-                          conn.connection_status === 'connected'
+                          conn.connectionStatus === 'connected'
                             ? 'var(--color-danger)'
                             : 'var(--color-success)'
-                        }`, color: conn.connection_status === 'connected'
+                        }`, color: conn.connectionStatus === 'connected'
                             ? 'var(--color-danger)'
                             : 'var(--color-success)', opacity: togglingId === conn.id ? 0.5 : 1 }}
                     >
                       {togglingId === conn.id ? (
                         <Loader size={10} className="animate-spin" />
-                      ) : conn.connection_status === 'connected' ||
-                        conn.connection_status === 'polling' ? (
+                      ) : conn.connectionStatus === 'connected' ||
+                        conn.connectionStatus === 'polling' ? (
                         <Square size={10} />
                       ) : (
                         <Play size={10} />
                       )}
-                      {conn.connection_status === 'connected' ||
-                      conn.connection_status === 'polling'
+                      {conn.connectionStatus === 'connected' ||
+                      conn.connectionStatus === 'polling'
                         ? 'STOP'
                         : 'START'}
                     </button>
@@ -709,7 +709,7 @@ export default function TAKManager() {
                 )}
 
                 {/* Error display */}
-                {conn.last_error && selectedConnection === conn.id && (
+                {conn.lastError && selectedConnection === conn.id && (
                   <div
                     className="flex items-start gap-1.5 mt-2 py-1.5 px-2 bg-[rgba(255,107,107,0.08)] rounded-[var(--radius)]"
                   >
@@ -720,7 +720,7 @@ export default function TAKManager() {
                     <span
                       className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)] break-words"
                     >
-                      {conn.last_error}
+                      {conn.lastError}
                     </span>
                   </div>
                 )}
@@ -730,28 +730,28 @@ export default function TAKManager() {
                   <div
                     className="flex gap-4 mt-2"
                   >
-                    {conn.last_connected && (
+                    {conn.lastConnected && (
                       <div className="flex items-center gap-1">
                         <Clock size={10} className="text-[var(--color-text-muted)]" />
                         <span
                           className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                         >
-                          Last: {formatRelativeTime(conn.last_connected)}
+                          Last: {formatRelativeTime(conn.lastConnected)}
                         </span>
                       </div>
                     )}
-                    {conn.channel_filter && (
+                    {conn.channelFilter && (
                       <span
                         className="font-[var(--font-mono)] text-[9px] text-[var(--color-info)]"
                       >
-                        CH: {conn.channel_filter}
+                        CH: {conn.channelFilter}
                       </span>
                     )}
-                    {conn.cot_types_filter && conn.cot_types_filter.length > 0 && (
+                    {conn.cotTypesFilter && conn.cotTypesFilter.length > 0 && (
                       <span
                         className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                       >
-                        {conn.cot_types_filter.length} filter(s)
+                        {conn.cotTypesFilter.length} filter(s)
                       </span>
                     )}
                   </div>

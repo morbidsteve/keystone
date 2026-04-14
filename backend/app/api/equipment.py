@@ -22,7 +22,7 @@ from app.schemas.equipment import EquipmentCreate, EquipmentResponse, EquipmentU
 router = APIRouter()
 
 
-@router.get("/", response_model=List[EquipmentResponse])
+@router.get("", response_model=List[EquipmentResponse])
 async def list_equipment(
     unit_id: Optional[int] = Query(None),
     search: Optional[str] = Query(None),
@@ -71,7 +71,7 @@ async def get_equipment(
     return record
 
 
-@router.post("/", response_model=EquipmentResponse, status_code=201)
+@router.post("", response_model=EquipmentResponse, status_code=201)
 async def create_equipment(
     data: EquipmentCreate,
     db: AsyncSession = Depends(get_db),

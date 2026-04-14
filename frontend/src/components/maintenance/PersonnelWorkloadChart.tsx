@@ -42,12 +42,12 @@ interface ChartRow {
 
 function buildChartData(data: PersonnelWorkload[]): ChartRow[] {
   return data.map((p) => ({
-    name: `${p.rank} ${p.last_name}`,
-    INSPECT: p.labor_breakdown.INSPECT ?? 0,
-    DIAGNOSE: p.labor_breakdown.DIAGNOSE ?? 0,
-    REPAIR: p.labor_breakdown.REPAIR ?? 0,
-    REPLACE: p.labor_breakdown.REPLACE ?? 0,
-    TEST: p.labor_breakdown.TEST ?? 0,
+    name: `${p.rank} ${p.lastName}`,
+    INSPECT: p.laborBreakdown.INSPECT ?? 0,
+    DIAGNOSE: p.laborBreakdown.DIAGNOSE ?? 0,
+    REPAIR: p.laborBreakdown.REPAIR ?? 0,
+    REPLACE: p.laborBreakdown.REPLACE ?? 0,
+    TEST: p.laborBreakdown.TEST ?? 0,
   }));
 }
 
@@ -72,14 +72,14 @@ const CustomTooltip = ({
       {payload.map((p, i) => (
         <div key={i} className="flex justify-between gap-4" style={{ color: p.color }}>
           <span>{p.dataKey}</span>
-          <span>{p.value.toFixed(1)}h</span>
+          <span>{(p.value ?? 0).toFixed(1)}h</span>
         </div>
       ))}
       <div
         className="border-t border-t-[var(--color-border)] mt-1 pt-1 text-[var(--color-text-bright)] flex justify-between gap-4 font-semibold"
       >
         <span>TOTAL</span>
-        <span>{total.toFixed(1)}h</span>
+        <span>{(total ?? 0).toFixed(1)}h</span>
       </div>
     </div>
   );
@@ -189,7 +189,7 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
           </thead>
           <tbody>
             {data.map((p) => (
-              <tr key={p.personnel_id}>
+              <tr key={p.personnelId}>
                 <td
                   className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
                 >
@@ -198,7 +198,7 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
                 <td
                   className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
-                  {p.last_name}, {p.first_name}
+                  {p.lastName}, {p.firstName}
                 </td>
                 <td
                   className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
@@ -208,17 +208,17 @@ export default function PersonnelWorkloadChart({ unitId, days = 30 }: PersonnelW
                 <td
                   className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-accent)] font-semibold text-right"
                 >
-                  {p.total_hours.toFixed(1)}
+                  {(p.totalHours ?? 0).toFixed(1)}
                 </td>
                 <td
                   className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] text-right"
                 >
-                  {p.work_order_count}
+                  {p.workOrderCount}
                 </td>
                 <td
                   className="py-1.5 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] text-right"
                 >
-                  {p.avg_hours_per_wo.toFixed(1)}
+                  {(p.avgHoursPerWo ?? 0).toFixed(1)}
                 </td>
               </tr>
             ))}

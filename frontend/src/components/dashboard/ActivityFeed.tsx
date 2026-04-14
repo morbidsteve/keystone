@@ -28,7 +28,7 @@ const ACTIVITY_TYPES = ['ALL', 'REQUISITION', 'WORK_ORDER', 'CONVOY', 'SUPPLY', 
 type ActivityTypeFilter = (typeof ACTIVITY_TYPES)[number];
 
 const TYPE_CONFIG: Record<
-  ActivityEvent['activity_type'],
+  ActivityEvent['activityType'],
   { icon: typeof Activity; color: string; label: string }
 > = {
   REQUISITION: { icon: Package, color: '#4dabf7', label: 'REQ' },
@@ -56,7 +56,7 @@ function timeAgo(dateStr: string): string {
 }
 
 /** Map activity type to a detail page for row-level click navigation */
-const ACTIVITY_TYPE_ROUTES: Record<ActivityEvent['activity_type'], string> = {
+const ACTIVITY_TYPE_ROUTES: Record<ActivityEvent['activityType'], string> = {
   REQUISITION: '/requisitions',
   WORK_ORDER: '/maintenance',
   CONVOY: '/transportation',
@@ -213,9 +213,9 @@ export default function ActivityFeed() {
               </div>
             ) : (
               activities.map((event) => {
-                const cfg = TYPE_CONFIG[event.activity_type];
+                const cfg = TYPE_CONFIG[event.activityType];
                 const IconComponent = cfg.icon;
-                const route = ACTIVITY_TYPE_ROUTES[event.activity_type];
+                const route = ACTIVITY_TYPE_ROUTES[event.activityType];
                 return (
                   <div
                     key={event.id}
@@ -251,18 +251,18 @@ export default function ActivityFeed() {
                         >
                           {cfg.label}
                         </span>
-                        {event.user_rank && event.user_name && (
+                        {event.userRank && event.userName && (
                           <span
                             className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-bright)]"
                           >
-                            {event.user_rank} {event.user_name}
+                            {event.userRank} {event.userName}
                           </span>
                         )}
-                        {event.unit_name && (
+                        {event.unitName && (
                           <span
                             className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                           >
-                            [{event.unit_name}]
+                            [{event.unitName}]
                           </span>
                         )}
                       </div>
@@ -277,7 +277,7 @@ export default function ActivityFeed() {
                     <div
                       className="shrink-0 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap pt-0.5"
                     >
-                      {timeAgo(event.created_at)}
+                      {timeAgo(event.createdAt)}
                     </div>
                   </div>
                 );

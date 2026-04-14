@@ -57,7 +57,7 @@ export default function CustodyChainTimeline({
         />
       ) : (
         transfers.map((transfer, idx) => {
-          const color = TRANSFER_TYPE_COLORS[transfer.transfer_type] ?? '#6b7280';
+          const color = TRANSFER_TYPE_COLORS[transfer.transferType] ?? '#6b7280';
           const isLast = idx === transfers.length - 1;
 
           return (
@@ -89,28 +89,28 @@ export default function CustodyChainTimeline({
                   <span
                     className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)]"
                   >
-                    {new Date(transfer.transfer_date).toLocaleString()}
+                    {new Date(transfer.transferDate).toLocaleString()}
                   </span>
                   <span
                     className="py-px px-1.5 rounded-[3px] font-[var(--font-mono)] text-[8px] font-bold tracking-[0.5px]" style={{ backgroundColor: `${color}20`, color: color }}
                   >
-                    {transfer.transfer_type.replace(/_/g, ' ')}
+                    {transfer.transferType.replace(/_/g, ' ')}
                   </span>
                 </div>
 
                 <div
                   className="flex items-center gap-1.5 font-[var(--font-mono)] text-[11px] text-[var(--color-text)] mb-1"
                 >
-                  <span>{transfer.from_personnel_name ?? 'N/A'}</span>
+                  <span>{transfer.fromPersonnelName ?? 'N/A'}</span>
                   <ArrowRight size={12} className="text-[var(--color-text-muted)] shrink-0" />
-                  <span className="font-semibold">{transfer.to_personnel_name ?? 'N/A'}</span>
+                  <span className="font-semibold">{transfer.toPersonnelName ?? 'N/A'}</span>
                 </div>
 
-                {transfer.document_number && (
+                {transfer.documentNumber && (
                   <div
                     className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mb-0.5"
                   >
-                    DOC: {transfer.document_number}
+                    DOC: {transfer.documentNumber}
                   </div>
                 )}
 

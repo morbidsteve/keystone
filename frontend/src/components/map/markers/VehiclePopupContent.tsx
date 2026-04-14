@@ -40,7 +40,7 @@ export default function VehiclePopupContent({
   vehicle,
   convoyName,
 }: VehiclePopupContentProps) {
-  const totalCargoWeight = vehicle.cargo.reduce((sum, c) => sum + c.total_weight_kg, 0);
+  const totalCargoWeight = vehicle.cargo.reduce((sum, c) => sum + c.totalWeightKg, 0);
 
   return (
     <div
@@ -52,7 +52,7 @@ export default function VehiclePopupContent({
       >
         <div>
           <div className="font-bold text-[13px] text-[#f1f5f9] tracking-[0.5px]">
-            {vehicle.call_sign}
+            {vehicle.callSign}
           </div>
           <div className="text-[9px] text-[#94a3b8] tracking-[1px] mt-px">
             {convoyName}
@@ -71,7 +71,7 @@ export default function VehiclePopupContent({
       >
         <div>
           <span className="text-[#64748b]">TYPE </span>
-          <span className="text-[#e2e8f0] font-semibold">{vehicle.vehicle_type}</span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.vehicleType}</span>
         </div>
         <div>
           <span className="text-[#64748b]">TAMCN </span>
@@ -79,11 +79,11 @@ export default function VehiclePopupContent({
         </div>
         <div>
           <span className="text-[#64748b]">BUMPER </span>
-          <span className="text-[#e2e8f0] font-semibold">{vehicle.bumper_number}</span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.bumperNumber}</span>
         </div>
         <div>
           <span className="text-[#64748b]">SPD </span>
-          <span className="text-[#e2e8f0] font-semibold">{vehicle.speed_kph} KPH</span>
+          <span className="text-[#e2e8f0] font-semibold">{vehicle.speedKph} KPH</span>
         </div>
         <div>
           <span className="text-[#64748b]">HDG </span>
@@ -104,7 +104,7 @@ export default function VehiclePopupContent({
           >
             {vehicle.crew.map((person) => (
               <div
-                key={person.personnel_id}
+                key={person.personnelId}
                 className="flex items-center justify-between text-[10px] py-0.5 px-0"
               >
                 <span>
@@ -137,12 +137,12 @@ export default function VehiclePopupContent({
           >
             {vehicle.cargo.map((item) => (
               <div
-                key={item.item_id}
+                key={item.itemId}
                 className="flex justify-between text-[10px] py-0.5 px-0"
               >
                 <span>
-                  {item.item_name}{' '}
-                  <span className="text-[#64748b] text-[9px]">CL {item.supply_class}</span>
+                  {item.itemName}{' '}
+                  <span className="text-[#64748b] text-[9px]">CL {item.supplyClass}</span>
                 </span>
                 <span className="text-[#4dabf7] font-semibold">
                   {item.quantity} {item.uom}

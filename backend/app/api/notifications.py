@@ -21,7 +21,7 @@ from app.schemas.alert import (
 router = APIRouter()
 
 
-@router.get("/", response_model=List[NotificationResponse])
+@router.get("", response_model=List[NotificationResponse])
 async def list_notifications(
     is_read: bool | None = Query(None),
     limit: int = Query(50, le=200),

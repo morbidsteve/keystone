@@ -46,7 +46,7 @@ export default function SupplyClassBreakdown({ className, data }: SupplyClassBre
             {d.unit}
           </div>
           <div className="text-[var(--color-text-muted)]">
-            {d.onHand.toLocaleString()} / {d.authorized.toLocaleString()} ({d.percentage}%)
+            {(d.onHand ?? 0).toLocaleString()} / {(d.authorized ?? 0).toLocaleString()} ({d.percentage}%)
           </div>
         </div>
       );

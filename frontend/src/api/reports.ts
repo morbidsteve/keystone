@@ -5,6 +5,7 @@ import type {
   ReportFilters,
   GenerateReportParams,
   PaginatedResponse,
+  ApiResponse,
   ExportDestination,
   ExportDestinationCreate,
   ExportDestinationUpdate,
@@ -15,21 +16,22 @@ import type {
 
 export async function getReports(filters?: ReportFilters): Promise<PaginatedResponse<Report>> {
   if (isDemoMode) return mockApi.getReports(filters);
-  const response = await apiClient.get<PaginatedResponse<Report>>('/reports', {
+  const response = await apiClient.get<ApiResponse<Report[]>>('/reports', {
     params: filters,
   });
-  return response.data;
+  const arr = Array.isArray(response.data?.data) ? response.data.data : [];
+  return { data: arr, total: arr.length, page: 1, pageSize: arr.length };
 }
 
 export async function generateReport(params: GenerateReportParams): Promise<Report> {
   if (isDemoMode) return mockApi.generateReport(params);
   const response = await apiClient.post<Report>('/reports/generate', null, {
     params: {
-      report_type: params.type,
-      unit_id: params.unitId,
+      reportType: params.type,
+      unitId: params.unitId,
       title: params.title,
-      date_from: params.dateRange.start,
-      date_to: params.dateRange.end,
+      dateFrom: params.dateRange.start,
+      dateTo: params.dateRange.end,
     },
   });
   return response.data;
@@ -87,7 +89,7 @@ export async function deleteExportDestination(id: number): Promise<void> {
 export async function exportReportToApi(reportId: string, destinationIds: number[]): Promise<ApiExportResponse> {
   if (isDemoMode) return mockApi.exportReportToApi(reportId, destinationIds);
   const response = await apiClient.post<ApiExportResponse>(`/reports/${reportId}/export/api`, {
-    destination_ids: destinationIds,
+    destinationIds: destinationIds,
   });
   return response.data;
 }
@@ -117,7 +119,7 @@ export async function generateSpotrep(unitId: number, data: { title: string; sit
 export async function generateRollup(unitId: number, reportType?: string): Promise<Report> {
   if (isDemoMode) return mockApi.generateRollup(unitId, reportType);
   const response = await apiClient.post<Report>(`/reports/generate/rollup/${unitId}`, null, {
-    params: { report_type: reportType || 'SITREP' },
+    params: { reportType: reportType || 'SITREP' },
   });
   return response.data;
 }
@@ -130,7 +132,7 @@ export async function getTemplates(): Promise<ReportTemplate[]> {
   return response.data;
 }
 
-export async function createTemplate(data: Omit<ReportTemplate, 'id' | 'created_by' | 'created_at' | 'updated_at'>): Promise<ReportTemplate> {
+export async function createTemplate(data: Omit<ReportTemplate, 'id' | 'createdBy' | 'createdAt' | 'updatedAt'>): Promise<ReportTemplate> {
   if (isDemoMode) return mockApi.createTemplate(data);
   const response = await apiClient.post<ReportTemplate>('/reports/templates', data);
   return response.data;
@@ -152,12 +154,12 @@ export async function deleteTemplate(id: number): Promise<void> {
 export async function getSchedules(unitId?: number): Promise<ReportSchedule[]> {
   if (isDemoMode) return mockApi.getSchedules(unitId);
   const response = await apiClient.get<ReportSchedule[]>('/reports/schedules', {
-    params: unitId ? { unit_id: unitId } : undefined,
+    params: unitId ? { unitId: unitId } : undefined,
   });
   return response.data;
 }
 
-export async function createSchedule(data: Omit<ReportSchedule, 'id' | 'last_generated' | 'next_generation' | 'created_at' | 'updated_at'>): Promise<ReportSchedule> {
+export async function createSchedule(data: Omit<ReportSchedule, 'id' | 'lastGenerated' | 'nextGeneration' | 'createdAt' | 'updatedAt'>): Promise<ReportSchedule> {
   if (isDemoMode) return mockApi.createSchedule(data);
   const response = await apiClient.post<ReportSchedule>('/reports/schedules', data);
   return response.data;

@@ -387,6 +387,20 @@ async def _run_dev_seeds():
     except Exception as e:
         logger.warning(f"Sensitive item catalog seeding failed: {e}")
 
+    # 12a. Seed RBAC permissions
+    try:
+        from seed.seed_permissions import seed_permissions
+
+        async with async_session() as db:
+            count = await seed_permissions(db)
+            await db.commit()
+            if count:
+                logger.info(f"RBAC permissions: {count} permissions seeded.")
+            else:
+                logger.info("RBAC permissions already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"RBAC permission seeding failed: {e}")
+
     # 12. Seed operational data (equipment, fuel, readiness, map, medical, etc.)
     try:
         from app.models.equipment import Equipment
@@ -402,6 +416,52 @@ async def _run_dev_seeds():
                 logger.info("Operational data already exists, skipping.")
     except Exception as e:
         logger.warning(f"Operational data seeding failed: {e}")
+
+    # 13. Seed sample data sources (dev-only fixtures for the Admin page)
+    try:
+        from seed.seed_data_sources import seed_data_sources
+
+        async with async_session() as db:
+            count = await seed_data_sources(db)
+            await db.commit()
+            if count:
+                logger.info(f"Data sources: {count} sample sources seeded.")
+            else:
+                logger.info("Data sources already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Data source seeding failed: {e}")
+
+    # 14. Seed sample notifications for the admin user
+    try:
+        from seed.seed_notifications import seed_notifications
+
+        async with async_session() as db:
+            count = await seed_notifications(db)
+            await db.commit()
+            if count:
+                logger.info(f"Notifications: {count} sample notifications seeded.")
+            else:
+                logger.info("Notifications already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Notification seeding failed: {e}")
+
+    # 15. Backfill readiness snapshots + strength rows for top-tier units
+    #     (HQMC/MEF/DIV/WING/GRP/REGT/BN). The Readiness page defaults to
+    #     unit_id=1 (HQMC), which seed_operational_data does not cover.
+    try:
+        from seed.seed_top_unit_readiness import seed_top_unit_readiness
+
+        async with async_session() as db:
+            count = await seed_top_unit_readiness(db)
+            await db.commit()
+            if count:
+                logger.info(
+                    f"Top-unit readiness: {count} snapshot/strength rows seeded."
+                )
+            else:
+                logger.info("Top-unit readiness already populated, skipping.")
+    except Exception as e:
+        logger.warning(f"Top-unit readiness seeding failed: {e}")
 
 
 app = FastAPI(

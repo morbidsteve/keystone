@@ -43,7 +43,7 @@ export default function ExcelWatchPanel() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getDataSources({ source_type: 'excel_directory' });
+      const data = await getDataSources({ sourceType: 'excel_directory' });
       setSources(data);
     } catch {
       setError('Failed to load Excel watchers');
@@ -266,22 +266,22 @@ export default function ExcelWatchPanel() {
                       <div
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-0.5 flex gap-3"
                       >
-                        <span>{config.directory_path}</span>
-                        <span>{config.file_pattern}</span>
-                        {config.template_id != null && (
+                        <span>{config.directoryPath}</span>
+                        <span>{config.filePattern}</span>
+                        {config.templateId != null && (
                           <span className="text-[var(--color-accent)]">
-                            Template #{config.template_id}
+                            Template #{config.templateId}
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-2.5">
-                      {source.last_run && (
+                      {source.lastRun && (
                         <span
                           className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                         >
                           <Clock size={10} />
-                          {formatRelativeTime(source.last_run)}
+                          {formatRelativeTime(source.lastRun)}
                         </span>
                       )}
                       <DataSourceStatusPill status={source.status} />
@@ -289,7 +289,7 @@ export default function ExcelWatchPanel() {
                   </div>
 
                   {/* Template note */}
-                  {isSelected && config.template_id != null && (
+                  {isSelected && config.templateId != null && (
                     <div
                       className="flex items-center gap-1.5 mt-2 py-1.5 px-2 bg-[rgba(77,171,247,0.08)] rounded-[var(--radius)]"
                     >
@@ -297,7 +297,7 @@ export default function ExcelWatchPanel() {
                       <span
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-accent)]"
                       >
-                        Using schema mapping template #{config.template_id} for structured data extraction
+                        Using schema mapping template #{config.templateId} for structured data extraction
                       </span>
                     </div>
                   )}
@@ -348,7 +348,7 @@ export default function ExcelWatchPanel() {
                   )}
 
                   {/* Error */}
-                  {source.last_error && isSelected && (
+                  {source.lastError && isSelected && (
                     <div
                       className="flex items-start gap-1.5 mt-2 py-1.5 px-2 bg-[rgba(255,107,107,0.08)] rounded-[var(--radius)]"
                     >
@@ -356,7 +356,7 @@ export default function ExcelWatchPanel() {
                       <span
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)] break-words"
                       >
-                        {source.last_error}
+                        {source.lastError}
                       </span>
                     </div>
                   )}
@@ -365,13 +365,13 @@ export default function ExcelWatchPanel() {
                   {isSelected && (
                     <div className="flex gap-4 mt-2">
                       <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-                        {source.files_processed} files processed
+                        {source.filesProcessed} files processed
                       </span>
                       <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-                        {source.records_ingested.toLocaleString()} records ingested
+                        {source.recordsIngested.toLocaleString()} records ingested
                       </span>
                       <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-                        Poll every {config.poll_interval_seconds}s
+                        Poll every {config.pollIntervalSeconds}s
                       </span>
                     </div>
                   )}

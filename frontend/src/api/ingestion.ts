@@ -14,8 +14,9 @@ export async function uploadFile(file: File): Promise<RawData> {
 
 export async function getIngestionHistory(): Promise<PaginatedResponse<RawData>> {
   if (isDemoMode) return mockApi.getIngestionHistory();
-  const response = await apiClient.get<PaginatedResponse<RawData>>('/ingestion');
-  return response.data;
+  const response = await apiClient.get<ApiResponse<RawData[]>>('/ingestion');
+  const arr = Array.isArray(response.data?.data) ? response.data.data : [];
+  return { data: arr, total: arr.length, page: 1, pageSize: arr.length };
 }
 
 export async function getReviewQueue(): Promise<ParsedRecord[]> {

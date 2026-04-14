@@ -9,7 +9,7 @@ import {
 } from '@/utils/coordinates';
 
 interface SearchResult {
-  display_name: string;
+  displayName: string;
   lat: string;
   lon: string;
 }
@@ -199,7 +199,7 @@ export default function MapSearchBar() {
     (result: SearchResult) => {
       const lat = parseFloat(result.lat);
       const lon = parseFloat(result.lon);
-      setQuery(result.display_name.split(',')[0]);
+      setQuery(result.displayName.split(',')[0]);
       flyTo(lat, lon);
     },
     [flyTo],
@@ -296,7 +296,7 @@ export default function MapSearchBar() {
               <span
                 className="overflow-hidden text-ellipsis" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
               >
-                {result.display_name}
+                {result.displayName}
               </span>
             </button>
           ))}

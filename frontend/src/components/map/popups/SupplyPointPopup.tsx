@@ -60,7 +60,7 @@ export default function SupplyPointPopup({ supplyPoint }: SupplyPointPopupProps)
           <div
             className="text-[9px] text-[var(--color-text-muted)] mt-0.5 tracking-[1px]"
           >
-            {getPointTypeLabel(supplyPoint.point_type)}
+            {getPointTypeLabel(supplyPoint.pointType)}
           </div>
         </div>
         <span
@@ -77,7 +77,7 @@ export default function SupplyPointPopup({ supplyPoint }: SupplyPointPopupProps)
         <div className="mb-1">
           <span className="text-[var(--color-text-muted)]">OPERATING UNIT: </span>
           <span className="text-[var(--color-text-bright)] font-semibold">
-            {supplyPoint.parent_unit_name}
+            {supplyPoint.parentUnitName}
           </span>
         </div>
         <div className="mb-1">
@@ -86,11 +86,11 @@ export default function SupplyPointPopup({ supplyPoint }: SupplyPointPopupProps)
             {Math.abs(supplyPoint.latitude).toFixed(2)}{supplyPoint.latitude >= 0 ? 'N' : 'S'}, {Math.abs(supplyPoint.longitude).toFixed(2)}{supplyPoint.longitude >= 0 ? 'E' : 'W'}
           </span>
         </div>
-        {supplyPoint.capacity_notes && (
+        {supplyPoint.capacityNotes && (
           <div
             className="mt-1.5 py-1 px-1.5 bg-[rgba(255,255,255,0.03)] rounded-[var(--radius)] text-[var(--color-text-muted)] leading-[1.4]"
           >
-            {supplyPoint.capacity_notes}
+            {supplyPoint.capacityNotes}
           </div>
         )}
       </div>

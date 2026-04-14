@@ -83,7 +83,7 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
           >
             {alerts.map((alert) => (
               <div
-                key={alert.inventory_record_id}
+                key={alert.inventoryRecordId}
                 className="py-2.5 px-3 bg-[rgba(255,107,107,0.05)] rounded-[var(--radius)] flex flex-col gap-1.5 border border-[rgba(255,107,107,0.2)]"
               >
                 <div className="flex items-center gap-1.5">
@@ -98,13 +98,13 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
                   className="flex gap-3 font-[var(--font-mono)] text-[10px]"
                 >
                   <span className="text-[var(--color-text-muted)]">
-                    ON HAND: <span className="text-[var(--color-danger)] font-bold">{alert.quantity_on_hand}</span>
+                    ON HAND: <span className="text-[var(--color-danger)] font-bold">{alert.quantityOnHand}</span>
                   </span>
                   <span className="text-[var(--color-text-muted)]">
-                    REORDER PT: <span className="text-[var(--color-text)] font-semibold">{alert.reorder_point}</span>
+                    REORDER PT: <span className="text-[var(--color-text)] font-semibold">{alert.reorderPoint}</span>
                   </span>
                   <span className="text-[var(--color-danger)] font-bold">
-                    -{alert.quantity_below} BELOW
+                    -{alert.quantityBelow} BELOW
                   </span>
                 </div>
                 <div
@@ -139,7 +139,7 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
               </thead>
               <tbody>
                 {inventory.map((rec) => {
-                  const isLow = rec.reorder_point != null && rec.quantity_on_hand < rec.reorder_point;
+                  const isLow = rec.reorderPoint != null && rec.quantityOnHand < rec.reorderPoint;
                   return (
                     <tr key={rec.id}>
                       <td
@@ -154,25 +154,25 @@ export default function InventoryPanel({ unitId }: InventoryPanelProps) {
                       <td
                         className="font-bold" style={{ color: isLow ? 'var(--color-danger)' : 'var(--color-text-bright)' }}
                       >
-                        {rec.quantity_on_hand.toLocaleString()}
+                        {(rec.quantityOnHand ?? 0).toLocaleString()}
                       </td>
                       <td style={{ ...cellStyle, textAlign: 'right' }}>
-                        {rec.quantity_on_order.toLocaleString()}
+                        {(rec.quantityOnOrder ?? 0).toLocaleString()}
                       </td>
                       <td style={{ ...cellStyle, textAlign: 'right' }}>
-                        {rec.quantity_due_out.toLocaleString()}
+                        {(rec.quantityDueOut ?? 0).toLocaleString()}
                       </td>
                       <td style={cellStyle}>
                         <span
-                          className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-bold tracking-[0.5px]" style={{ color: rec.condition_code === 'A' ? 'var(--color-success)' : 'var(--color-warning)', border: `1px solid ${rec.condition_code === 'A' ? 'var(--color-success)' : 'var(--color-warning)'}`, backgroundColor: rec.condition_code === 'A'
+                          className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-bold tracking-[0.5px]" style={{ color: rec.conditionCode === 'A' ? 'var(--color-success)' : 'var(--color-warning)', border: `1px solid ${rec.conditionCode === 'A' ? 'var(--color-success)' : 'var(--color-warning)'}`, backgroundColor: rec.conditionCode === 'A'
                               ? 'rgba(64, 192, 87, 0.1)'
                               : 'rgba(250, 176, 5, 0.1)' }}
                         >
-                          {rec.condition_code}
+                          {rec.conditionCode}
                         </span>
                       </td>
                       <td className="text-[var(--color-text-muted)]">
-                        {new Date(rec.last_inventory_date).toLocaleDateString()}
+                        {new Date(rec.lastInventoryDate).toLocaleDateString()}
                       </td>
                     </tr>
                   );

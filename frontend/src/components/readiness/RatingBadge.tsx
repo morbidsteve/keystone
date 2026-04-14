@@ -11,7 +11,7 @@ function getBadgeColors(rating: string): {
   border: string;
   text: string;
 } {
-  const level = rating.split('-')[1];
+  const level = (rating || '').split('-')[1];
   switch (level) {
     case '1':
       return {
@@ -48,7 +48,7 @@ export default function RatingBadge({ rating }: RatingBadgeProps) {
     <span
       className="inline-flex items-center justify-center font-[var(--font-mono)] text-[10px] font-bold tracking-[0.5px] py-0.5 px-2 rounded-[var(--radius)] whitespace-nowrap" style={{ backgroundColor: colors.bg, border: `1px solid ${colors.border}`, color: colors.text }}
     >
-      {rating}
+      {rating ?? 'N/A'}
     </span>
   );
 }

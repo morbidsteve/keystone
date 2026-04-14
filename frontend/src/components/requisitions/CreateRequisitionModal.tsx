@@ -85,9 +85,9 @@ export default function CreateRequisitionModal({ isOpen, onClose, unitId }: Crea
         nomenclature: selectedItem?.nomenclature ?? 'UNKNOWN',
         nsn: selectedItem?.nsn ?? null,
         dodic: selectedItem?.dodic ?? null,
-        supply_catalog_item_id: selectedItem?.id ?? null,
-        unit_of_issue: selectedItem?.unitOfIssue ?? 'EA',
-        quantity_requested: quantity,
+        supplyCatalogItemId: selectedItem?.id ?? null,
+        unitOfIssue: selectedItem?.unitOfIssue ?? 'EA',
+        quantityRequested: quantity,
         priority,
         justification: justification || null,
       });

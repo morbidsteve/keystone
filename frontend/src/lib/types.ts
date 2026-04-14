@@ -138,7 +138,7 @@ export enum ScheduleFrequency {
 export interface Permission {
   id: number;
   code: string;
-  display_name: string;
+  displayName: string;
   category: string;
   description?: string;
 }
@@ -147,10 +147,10 @@ export interface CustomRole {
   id: number;
   name: string;
   description?: string;
-  is_system: boolean;
+  isSystem: boolean;
   permissions: Permission[];
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface User {
@@ -350,129 +350,129 @@ export interface Report {
 
 /** Structured content sections returned by the report generator */
 export interface ReportContent {
-  report_type: string;
+  reportType: string;
   unit?: { id: number; name: string; abbreviation: string; uic?: string };
-  generated_at?: string;
+  generatedAt?: string;
   dtg?: string;
-  as_of?: string;
-  period_start?: string | null;
-  period_end?: string | null;
+  asOf?: string;
+  periodStart?: string | null;
+  periodEnd?: string | null;
   // LOGSTAT fields
-  supply_status?: ReportSupplySection[];
-  equipment_readiness?: {
-    total_possessed: number;
-    total_mission_capable: number;
-    readiness_pct: number;
+  supplyStatus?: ReportSupplySection[];
+  equipmentReadiness?: {
+    totalPossessed: number;
+    totalMissionCapable: number;
+    readinessPct: number;
     status: string;
   };
-  open_work_orders?: number;
-  active_movements?: number;
-  personnel_strength?: number;
-  total_supply_items?: number;
+  openWorkOrders?: number;
+  activeMovements?: number;
+  personnelStrength?: number;
+  totalSupplyItems?: number;
   // READINESS fields
-  overall_readiness_pct?: number;
-  overall_status?: string;
-  total_possessed?: number;
-  total_mission_capable?: number;
-  total_nmc?: number;
-  equipment_types?: ReportEquipmentType[];
-  equipment_type_count?: number;
-  individual_status_breakdown?: Record<string, number>;
-  deadlined_items?: ReportDeadlinedItem[];
+  overallReadinessPct?: number;
+  overallStatus?: string;
+  totalPossessed?: number;
+  totalMissionCapable?: number;
+  totalNmc?: number;
+  equipmentTypes?: ReportEquipmentType[];
+  equipmentTypeCount?: number;
+  individualStatusBreakdown?: Record<string, number>;
+  deadlinedItems?: ReportDeadlinedItem[];
   // SUPPLY_STATUS fields
-  overall_health?: string;
-  total_classes_tracked?: number;
-  red_classes?: number;
-  amber_classes?: number;
-  class_summaries?: ReportClassSummary[];
+  overallHealth?: string;
+  totalClassesTracked?: number;
+  redClasses?: number;
+  amberClasses?: number;
+  classSummaries?: ReportClassSummary[];
   // EQUIPMENT_STATUS fields
-  fleet_readiness?: {
-    total_possessed: number;
-    total_mission_capable: number;
-    total_nmc_maintenance: number;
-    total_nmc_supply: number;
-    readiness_pct: number;
+  fleetReadiness?: {
+    totalPossessed: number;
+    totalMissionCapable: number;
+    totalNmcMaintenance: number;
+    totalNmcSupply: number;
+    readinessPct: number;
     status: string;
   };
-  fleet_by_type?: ReportEquipmentType[];
-  individual_total?: number;
-  top_deadlined_items?: ReportDeadlinedItem[];
+  fleetByType?: ReportEquipmentType[];
+  individualTotal?: number;
+  topDeadlinedItems?: ReportDeadlinedItem[];
   // MAINTENANCE_SUMMARY fields
-  work_order_counts?: Record<string, number>;
-  total_work_orders?: number;
-  avg_completion_time_hours?: number;
-  total_labor_hours?: number;
-  parts_on_order?: number;
-  top_issues?: { equipment_type: string; open_work_orders: number }[];
+  workOrderCounts?: Record<string, number>;
+  totalWorkOrders?: number;
+  avgCompletionTimeHours?: number;
+  totalLaborHours?: number;
+  partsOnOrder?: number;
+  topIssues?: { equipmentType: string; openWorkOrders: number }[];
   // MOVEMENT_SUMMARY fields
-  status_counts?: Record<string, number>;
-  total_movements?: number;
-  total_vehicles_in_transit?: number;
-  total_personnel_in_transit?: number;
-  recent_completions?: {
-    convoy_id: string | null;
+  statusCounts?: Record<string, number>;
+  totalMovements?: number;
+  totalVehiclesInTransit?: number;
+  totalPersonnelInTransit?: number;
+  recentCompletions?: {
+    convoyId: string | null;
     origin: string;
     destination: string;
-    vehicle_count: number;
+    vehicleCount: number;
     arrival: string | null;
   }[];
   // PERSONNEL_STRENGTH fields
-  total_assigned?: number;
-  total_active?: number;
-  status_breakdown?: Record<string, number>;
-  rank_breakdown?: Record<string, number>;
-  mos_breakdown?: Record<string, number>;
+  totalAssigned?: number;
+  totalActive?: number;
+  statusBreakdown?: Record<string, number>;
+  rankBreakdown?: Record<string, number>;
+  mosBreakdown?: Record<string, number>;
 }
 
 export interface ReportSupplySection {
   class: string;
-  class_name: string;
+  className: string;
   items: {
     item: string;
-    on_hand: number;
+    onHand: number;
     required: number;
     dos: number;
-    consumption_rate: number;
+    consumptionRate: number;
     status: string;
   }[];
-  overall_status?: string;
+  overallStatus?: string;
 }
 
 export interface ReportEquipmentType {
   tamcn: string;
   nomenclature: string;
-  total_possessed: number;
-  mission_capable: number;
-  nmc_maintenance?: number;
-  nmc_supply?: number;
-  readiness_pct: number;
+  totalPossessed: number;
+  missionCapable: number;
+  nmcMaintenance?: number;
+  nmcSupply?: number;
+  readinessPct: number;
   status: string;
 }
 
 export interface ReportDeadlinedItem {
-  bumper_number: string;
+  bumperNumber: string;
   nomenclature: string;
   tamcn: string;
-  equipment_type: string;
+  equipmentType: string;
   fault?: string;
-  fault_severity?: string;
+  faultSeverity?: string;
 }
 
 export interface ReportClassSummary {
-  supply_class: string;
-  class_name: string;
-  total_on_hand: number;
-  total_required: number;
-  fill_rate_pct: number;
-  avg_dos: number;
-  avg_consumption_rate: number;
-  item_count: number;
-  red_items: number;
-  amber_items: number;
+  supplyClass: string;
+  className: string;
+  totalOnHand: number;
+  totalRequired: number;
+  fillRatePct: number;
+  avgDos: number;
+  avgConsumptionRate: number;
+  itemCount: number;
+  redItems: number;
+  amberItems: number;
   status: string;
-  critical_items: {
+  criticalItems: {
     item: string;
-    on_hand: number;
+    onHand: number;
     required: number;
     dos: number;
   }[];
@@ -481,32 +481,32 @@ export interface ReportClassSummary {
 export interface ReportTemplate {
   id: number;
   name: string;
-  report_type: string;
+  reportType: string;
   description?: string;
-  template_body: string;
+  templateBody: string;
   sections: string[];
-  classification_default: string;
-  is_default: boolean;
-  created_by: number;
-  created_at?: string;
-  updated_at?: string;
+  classificationDefault: string;
+  isDefault: boolean;
+  createdBy: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ReportSchedule {
   id: number;
-  template_id: number;
-  unit_id: number;
+  templateId: number;
+  unitId: number;
   frequency: ScheduleFrequency;
-  time_of_day?: string;
-  day_of_week?: number;
-  day_of_month?: number;
-  is_active: boolean;
-  last_generated?: string;
-  next_generation?: string;
-  auto_distribute: boolean;
-  distribution_list?: Array<{ user_id: number; role: string }>;
-  created_at?: string;
-  updated_at?: string;
+  timeOfDay?: string;
+  dayOfWeek?: number;
+  dayOfMonth?: number;
+  isActive: boolean;
+  lastGenerated?: string;
+  nextGeneration?: string;
+  autoDistribute: boolean;
+  distributionList?: Array<{ userId: number; role: string }>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface RawData {
@@ -606,20 +606,21 @@ export interface ExportDestination {
   id: number;
   name: string;
   url: string;
-  auth_type: 'none' | 'bearer' | 'api_key' | 'basic';
-  auth_value?: string | null;
+  authType: 'none' | 'bearer' | 'api_key' | 'basic';
+  authValue?: string | null;
   headers?: Record<string, string> | null;
-  is_active: boolean;
-  created_at: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
+// NOTE: Create/Update types are request payloads — backend expects snake_case.
 export interface ExportDestinationCreate {
   name: string;
   url: string;
   auth_type: 'none' | 'bearer' | 'api_key' | 'basic';
   auth_value?: string;
   headers?: Record<string, string>;
-  is_active?: boolean;
+  isActive?: boolean;
 }
 
 export interface ExportDestinationUpdate {
@@ -628,19 +629,19 @@ export interface ExportDestinationUpdate {
   auth_type?: 'none' | 'bearer' | 'api_key' | 'basic';
   auth_value?: string;
   headers?: Record<string, string>;
-  is_active?: boolean;
+  isActive?: boolean;
 }
 
 export interface ApiExportResultItem {
-  destination_id: number;
-  destination_name: string;
+  destinationId: number;
+  destinationName: string;
   success: boolean;
-  status_code?: number | null;
+  statusCode?: number | null;
   error?: string | null;
 }
 
 export interface ApiExportResponse {
-  report_id: number;
+  reportId: number;
   results: ApiExportResultItem[];
 }
 
@@ -1173,96 +1174,96 @@ export type TransactionType = 'RECEIPT' | 'ISSUE' | 'TURN_IN' | 'ADJUSTMENT' | '
 
 export interface RequisitionApprovalRecord {
   id: number;
-  approver_id: number;
-  approver_name?: string;
+  approverId: number;
+  approverName?: string;
   action: ApprovalAction;
   comments: string | null;
-  action_date: string;
+  actionDate: string;
 }
 
 export interface RequisitionStatusHistoryRecord {
   id: number;
-  old_status: RequisitionStatus | null;
-  new_status: RequisitionStatus;
-  changed_by_id: number;
-  changed_by_name?: string;
-  changed_at: string;
+  oldStatus: RequisitionStatus | null;
+  newStatus: RequisitionStatus;
+  changedById: number;
+  changedByName?: string;
+  changedAt: string;
   notes: string | null;
 }
 
 export interface Requisition {
   id: number;
-  requisition_number: string;
-  unit_id: number;
-  requested_by_id: number;
-  requested_by_name?: string;
-  approved_by_id: number | null;
-  supply_catalog_item_id: number | null;
-  ammo_catalog_item_id: number | null;
-  equipment_catalog_item_id: number | null;
+  requisitionNumber: string;
+  unitId: number;
+  requestedById: number;
+  requestedByName?: string;
+  approvedById: number | null;
+  supplyCatalogItemId: number | null;
+  ammoCatalogItemId: number | null;
+  equipmentCatalogItemId: number | null;
   nsn: string | null;
   dodic: string | null;
   nomenclature: string;
-  quantity_requested: number;
-  quantity_approved: number | null;
-  quantity_issued: number | null;
-  unit_of_issue: string;
+  quantityRequested: number;
+  quantityApproved: number | null;
+  quantityIssued: number | null;
+  unitOfIssue: string;
   priority: RequisitionPriority;
   status: RequisitionStatus;
   justification: string | null;
-  denial_reason: string | null;
-  document_number: string | null;
-  created_at: string;
-  updated_at: string;
-  submitted_at: string | null;
-  approved_at: string | null;
-  shipped_at: string | null;
-  received_at: string | null;
-  estimated_delivery_date: string | null;
-  actual_delivery_date: string | null;
+  denialReason: string | null;
+  documentNumber: string | null;
+  createdAt: string;
+  updatedAt: string;
+  submittedAt: string | null;
+  approvedAt: string | null;
+  shippedAt: string | null;
+  receivedAt: string | null;
+  estimatedDeliveryDate: string | null;
+  actualDeliveryDate: string | null;
   approvals?: RequisitionApprovalRecord[];
-  status_history?: RequisitionStatusHistoryRecord[];
+  statusHistory?: RequisitionStatusHistoryRecord[];
 }
 
 export interface InventoryRecord {
   id: number;
-  unit_id: number;
+  unitId: number;
   location: string;
   nsn: string | null;
   nomenclature: string;
-  unit_of_issue: string;
-  quantity_on_hand: number;
-  quantity_on_order: number;
-  quantity_due_out: number;
-  reorder_point: number | null;
-  reorder_quantity: number | null;
-  lot_number: string | null;
-  expiration_date: string | null;
-  condition_code: string;
-  last_inventory_date: string;
+  unitOfIssue: string;
+  quantityOnHand: number;
+  quantityOnOrder: number;
+  quantityDueOut: number;
+  reorderPoint: number | null;
+  reorderQuantity: number | null;
+  lotNumber: string | null;
+  expirationDate: string | null;
+  conditionCode: string;
+  lastInventoryDate: string;
 }
 
 export interface InventoryTransaction {
   id: number;
-  inventory_record_id: number;
-  transaction_type: TransactionType;
+  inventoryRecordId: number;
+  transactionType: TransactionType;
   quantity: number;
-  requisition_id: number | null;
-  performed_by_id: number;
-  transaction_date: string;
-  document_number: string | null;
+  requisitionId: number | null;
+  performedById: number;
+  transactionDate: string;
+  documentNumber: string | null;
   notes: string | null;
 }
 
 export interface LowStockAlert {
-  inventory_record_id: number;
-  unit_id: number;
+  inventoryRecordId: number;
+  unitId: number;
   location: string;
   nomenclature: string;
-  quantity_on_hand: number;
-  reorder_point: number;
-  quantity_below: number;
-  last_inventory_date: string;
+  quantityOnHand: number;
+  reorderPoint: number;
+  quantityBelow: number;
+  lastInventoryDate: string;
 }
 
 // --- Personnel & Manning ---
@@ -1273,43 +1274,43 @@ export type SecurityClearanceLevel = 'NONE'|'CONFIDENTIAL'|'SECRET'|'TOP_SECRET'
 export type DutyStatusType = 'PRESENT'|'UA'|'DESERTER'|'AWOL'|'CONFINEMENT'|'LIMDU'|'PTAD';
 
 export interface PersonnelRecord {
-  id: number; edipi: string; first_name: string; last_name: string;
-  rank: string | null; unit_id: number | null; mos: string | null;
-  pay_grade: PayGrade | null; billet: string | null;
-  date_of_rank: string | null; eaos: string | null; pme_complete: boolean;
-  rifle_qual: RifleQual | null; rifle_qual_date: string | null;
-  pft_score: number | null; pft_date: string | null;
-  cft_score: number | null; cft_date: string | null;
-  swim_qual: SwimQual | null; security_clearance: SecurityClearanceLevel | null;
-  clearance_expiry: string | null; drivers_license_military: boolean;
-  duty_status: DutyStatusType; status: string;
-  current_movement_id?: number | null;
+  id: number; edipi: string; firstName: string; lastName: string;
+  rank: string | null; unitId: number | null; mos: string | null;
+  payGrade: PayGrade | null; billet: string | null;
+  dateOfRank: string | null; eaos: string | null; pmeComplete: boolean;
+  rifleQual: RifleQual | null; rifleQualDate: string | null;
+  pftScore: number | null; pftDate: string | null;
+  cftScore: number | null; cftDate: string | null;
+  swimQual: SwimQual | null; securityClearance: SecurityClearanceLevel | null;
+  clearanceExpiry: string | null; driversLicenseMilitary: boolean;
+  dutyStatus: DutyStatusType; status: string;
+  currentMovementId?: number | null;
 }
 
 export interface BilletRecord {
-  id: number; unit_id: number; billet_id_code: string; billet_title: string;
-  mos_required: string | null; rank_required: string | null;
-  is_key_billet: boolean; is_filled: boolean;
-  filled_by_id: number | null; filled_by_name?: string; filled_date: string | null;
+  id: number; unitId: number; billetIdCode: string; billetTitle: string;
+  mosRequired: string | null; rankRequired: string | null;
+  isKeyBillet: boolean; isFilled: boolean;
+  filledById: number | null; filledByName?: string; filledDate: string | null;
 }
 
 export interface ManningSnapshotRecord {
-  id: number; unit_id: number; snapshot_date: string;
-  authorized_total: number; assigned_total: number; present_for_duty: number;
-  fill_rate_pct: number; mos_shortfalls: Record<string, number> | null;
-  rank_distribution: Record<string, number> | null;
+  id: number; unitId: number; snapshotDate: string;
+  authorizedTotal: number; assignedTotal: number; presentForDuty: number;
+  fillRatePct: number; mosShortfalls: Record<string, number> | null;
+  rankDistribution: Record<string, number> | null;
 }
 
 export interface QualificationRecord {
-  id: number; personnel_id: number; qualification_type: string;
-  qualification_name: string; date_achieved: string;
-  expiration_date: string | null; is_current: boolean;
+  id: number; personnelId: number; qualificationType: string;
+  qualificationName: string; dateAchieved: string;
+  expirationDate: string | null; isCurrent: boolean;
 }
 
 export interface UnitStrengthData {
-  total_authorized: number; total_assigned: number; present_for_duty: number;
+  totalAuthorized: number; totalAssigned: number; presentForDuty: number;
   deployed: number; tdy: number; leave: number; medical: number;
-  inactive: number; fill_rate_pct: number;
+  inactive: number; fillRatePct: number;
 }
 
 export interface MOSFillData { required: number; assigned: number; shortfall: number; }
@@ -1317,14 +1318,14 @@ export interface MOSFillData { required: number; assigned: number; shortfall: nu
 export interface QualStatusData { total: number; current: number; percent: number; }
 
 export interface PersonnelReadinessData {
-  p_rating: string; percent_ready: number;
-  fill_rate_pct: number; qualification_pct: number; fitness_pct: number;
+  pRating: string; percentReady: number;
+  fillRatePct: number; qualificationPct: number; fitnessPct: number;
 }
 
 export interface EASRecord {
-  id: number; edipi: string; first_name: string; last_name: string;
-  rank: string; mos: string; pay_grade: string | null; billet: string | null;
-  eaos: string; days_until_eas: number;
+  id: number; edipi: string; firstName: string; lastName: string;
+  rank: string; mos: string; payGrade: string | null; billet: string | null;
+  eaos: string; daysUntilEas: number;
 }
 
 // --- Transportation & Movement Expansion ---
@@ -1336,110 +1337,110 @@ export type CargoType = 'PERSONNEL' | 'EQUIPMENT' | 'SUPPLY' | 'MIXED';
 
 export interface ConvoySerial {
   id: number;
-  convoy_plan_id: number;
-  serial_number: string;
-  serial_commander_id: number | null;
-  serial_commander_name?: string;
-  vehicle_count: number;
-  pax_count: number;
-  march_order: number;
-  march_speed_kph: number;
-  catch_up_speed_kph: number;
-  interval_meters: number;
-  created_at: string;
+  convoyPlanId: number;
+  serialNumber: string;
+  serialCommanderId: number | null;
+  serialCommanderName?: string;
+  vehicleCount: number;
+  paxCount: number;
+  marchOrder: number;
+  marchSpeedKph: number;
+  catchUpSpeedKph: number;
+  intervalMeters: number;
+  createdAt: string;
 }
 
 export interface ConvoyPlan {
   id: number;
   name: string;
-  unit_id: number;
-  created_by: number;
+  unitId: number;
+  createdBy: number;
   status: ConvoyPlanStatus;
-  route_name: string | null;
-  route_description: string | null;
-  total_distance_km: number | null;
-  estimated_duration_hours: number | null;
-  route_primary: string | null;
-  route_alternate: string | null;
-  departure_time_planned: string | null;
-  sp_time: string | null;
-  rp_time: string | null;
-  brief_time: string | null;
-  rehearsal_time: string | null;
-  movement_credit_number: string | null;
-  convoy_commander_id: number | null;
-  risk_assessment_level: RiskAssessmentLevel | null;
-  comm_plan: string | null;
-  recovery_plan: string | null;
-  medevac_plan: string | null;
-  created_at: string;
-  updated_at: string;
+  routeName: string | null;
+  routeDescription: string | null;
+  totalDistanceKm: number | null;
+  estimatedDurationHours: number | null;
+  routePrimary: string | null;
+  routeAlternate: string | null;
+  departureTimePlanned: string | null;
+  spTime: string | null;
+  rpTime: string | null;
+  briefTime: string | null;
+  rehearsalTime: string | null;
+  movementCreditNumber: string | null;
+  convoyCommanderId: number | null;
+  riskAssessmentLevel: RiskAssessmentLevel | null;
+  commPlan: string | null;
+  recoveryPlan: string | null;
+  medevacPlan: string | null;
+  createdAt: string;
+  updatedAt: string;
   serials: ConvoySerial[];
-  movement_id?: number | null;
+  movementId?: number | null;
 }
 
 export interface MarchTableData {
-  sp_time: string;
-  rp_time: string;
+  spTime: string;
+  rpTime: string;
   checkpoints: Array<{
     name: string;
-    distance_km: number;
-    cumulative_distance_km: number;
+    distanceKm: number;
+    cumulativeDistanceKm: number;
     time: string;
-    speed_kph: number;
+    speedKph: number;
   }>;
-  total_distance_km: number;
-  total_duration_hours: number;
-  march_speed_kph: number;
-  catch_up_speed_kph: number;
-  fuel_estimate?: {
-    total_gallons: number;
-    total_liters: number;
-    per_vehicle_gallons: number;
+  totalDistanceKm: number;
+  totalDurationHours: number;
+  marchSpeedKph: number;
+  catchUpSpeedKph: number;
+  fuelEstimate?: {
+    totalGallons: number;
+    totalLiters: number;
+    perVehicleGallons: number;
   };
 }
 
 export interface LiftRequest {
   id: number;
-  requesting_unit_id: number;
-  requesting_unit_name?: string;
-  supporting_unit_id: number | null;
-  supporting_unit_name?: string;
-  cargo_type: CargoType;
-  cargo_description: string;
-  weight_lbs: number | null;
-  cube_ft: number | null;
-  pax_count: number;
+  requestingUnitId: number;
+  requestingUnitName?: string;
+  supportingUnitId: number | null;
+  supportingUnitName?: string;
+  cargoType: CargoType;
+  cargoDescription: string;
+  weightLbs: number | null;
+  cubeFt: number | null;
+  paxCount: number;
   hazmat: boolean;
   priority: LiftRequestPriority;
-  required_delivery_date: string;
+  requiredDeliveryDate: string;
   status: LiftRequestStatus;
-  pickup_location: string;
-  pickup_lat: number | null;
-  pickup_lon: number | null;
-  delivery_location: string;
-  delivery_lat: number | null;
-  delivery_lon: number | null;
-  assigned_movement_id: number | null;
-  created_at: string;
-  updated_at: string;
+  pickupLocation: string;
+  pickupLat: number | null;
+  pickupLon: number | null;
+  deliveryLocation: string;
+  deliveryLat: number | null;
+  deliveryLon: number | null;
+  assignedMovementId: number | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MovementHistoryRecord {
   id: number;
-  convoy_id: string | null;
+  convoyId: string | null;
   origin: string;
   destination: string;
-  departure_time: string | null;
+  departureTime: string | null;
   eta: string | null;
-  actual_arrival: string | null;
-  vehicle_count: number;
-  cargo_description: string | null;
+  actualArrival: string | null;
+  vehicleCount: number;
+  cargoDescription: string | null;
   status: string;
-  on_time: boolean;
-  duration_hours: number | null;
-  average_speed_kph: number | null;
-  convoy_plan_name?: string;
+  onTime: boolean;
+  durationHours: number | null;
+  averageSpeedKph: number | null;
+  convoyPlanName?: string;
 }
 
 // Medical / CASEVAC
@@ -1513,103 +1514,103 @@ export enum BloodTypeEnum {
 
 export interface CasualtyReport {
   id: number;
-  casualty_id: string;
-  unit_id: number;
-  personnel_id: number | null;
-  incident_datetime: string;
-  reported_datetime: string;
-  location_lat: number;
-  location_lon: number;
-  location_mgrs: string | null;
-  location_description: string | null;
+  casualtyId: string;
+  unitId: number;
+  personnelId: number | null;
+  incidentDatetime: string;
+  reportedDatetime: string;
+  locationLat: number;
+  locationLon: number;
+  locationMgrs: string | null;
+  locationDescription: string | null;
   precedence: CASEVACPrecedence;
-  number_of_patients: number;
-  special_equipment_required: string;
-  security_at_pickup: string;
-  patient_type: string;
-  marking_method: string;
-  nationality_status: string;
-  nbc_contamination: boolean;
-  mechanism_of_injury: string | null;
-  injuries_description: string | null;
-  triage_category: TriageCategory | null;
-  tccc_interventions: Record<string, unknown> | null;
+  numberOfPatients: number;
+  specialEquipmentRequired: string;
+  securityAtPickup: string;
+  patientType: string;
+  markingMethod: string;
+  nationalityStatus: string;
+  nbcContamination: boolean;
+  mechanismOfInjury: string | null;
+  injuriesDescription: string | null;
+  triageCategory: TriageCategory | null;
+  tcccInterventions: Record<string, unknown> | null;
   status: CasualtyReportStatus;
-  transport_method: string | null;
-  evacuation_status: EvacuationStatus | null;
-  receiving_facility_id: number | null;
-  pickup_time: string | null;
-  arrival_at_facility_time: string | null;
+  transportMethod: string | null;
+  evacuationStatus: EvacuationStatus | null;
+  receivingFacilityId: number | null;
+  pickupTime: string | null;
+  arrivalAtFacilityTime: string | null;
   remarks: string | null;
   logs: CasualtyLog[];
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CasualtyLog {
   id: number;
-  casualty_report_id: number;
-  event_type: string;
-  event_time: string;
+  casualtyReportId: number;
+  eventType: string;
+  eventTime: string;
   notes: string | null;
 }
 
 export interface MedicalFacility {
   id: number;
   name: string;
-  facility_type: MTFType;
+  facilityType: MTFType;
   callsign: string | null;
-  unit_id: number | null;
-  location_lat: number;
-  location_lon: number;
-  location_mgrs: string | null;
+  unitId: number | null;
+  locationLat: number;
+  locationLon: number;
+  locationMgrs: string | null;
   capacity: number;
-  current_census: number;
+  currentCensus: number;
   status: MTFStatus;
-  surgical_capability: boolean;
-  blood_bank: boolean;
-  vent_capacity: number;
-  contact_freq: string | null;
-  physician_staffing: number;
-  pa_staffing: number;
-  medic_staffing: number;
-  surgical_tech_staffing: number;
+  surgicalCapability: boolean;
+  bloodBank: boolean;
+  ventCapacity: number;
+  contactFreq: string | null;
+  physicianStaffing: number;
+  paStaffing: number;
+  medicStaffing: number;
+  surgicalTechStaffing: number;
 }
 
 export interface BloodProductRecord {
   id: number;
-  facility_id: number;
-  product_type: BloodProductType;
-  blood_type: BloodTypeEnum;
-  units_on_hand: number;
-  units_used_24h: number;
-  expiration_date: string | null;
-  walking_blood_bank_donors: number;
+  facilityId: number;
+  productType: BloodProductType;
+  bloodType: BloodTypeEnum;
+  unitsOnHand: number;
+  unitsUsed24h: number;
+  expirationDate: string | null;
+  walkingBloodBankDonors: number;
 }
 
 export interface MedicalBurnRate {
   id: number;
-  unit_id: number;
-  supply_catalog_item_id: number;
-  supply_name: string;
-  period_start: string;
-  period_end: string;
-  quantity_used: number;
-  quantity_on_hand: number;
-  days_of_supply: number | null;
-  burn_rate_per_day: number;
-  projected_exhaustion_date: string | null;
+  unitId: number;
+  supplyCatalogItemId: number;
+  supplyName: string;
+  periodStart: string;
+  periodEnd: string;
+  quantityUsed: number;
+  quantityOnHand: number;
+  daysOfSupply: number | null;
+  burnRatePerDay: number;
+  projectedExhaustionDate: string | null;
 }
 
 export interface PERSTATMedical {
-  unit_id: number;
-  total_strength: number;
-  effective_strength: number;
-  medical_holds: number;
-  active_casualties: number;
-  triage_breakdown: Record<string, number>;
-  tccc_cert_rate_pct: number;
-  blood_type_distribution: Record<string, number>;
+  unitId: number;
+  totalStrength: number;
+  effectiveStrength: number;
+  medicalHolds: number;
+  activeCasualties: number;
+  triageBreakdown: Record<string, number>;
+  tcccCertRatePct: number;
+  bloodTypeDistribution: Record<string, number>;
   timestamp: string;
 }
 
@@ -1622,85 +1623,85 @@ export interface AlertRule {
   id: number;
   name: string;
   description?: string;
-  alert_type: string;
+  alertType: string;
   severity: string;
   metric: string;
   operator: RuleOperator;
-  threshold_value: number;
-  is_scope_all: boolean;
-  scope_unit_id?: number;
-  cooldown_minutes: number;
-  last_fired_at?: string;
-  is_active: boolean;
-  created_by: number;
-  created_at?: string;
-  updated_at?: string;
+  thresholdValue: number;
+  isScopeAll: boolean;
+  scopeUnitId?: number;
+  cooldownMinutes: number;
+  lastFiredAt?: string;
+  isActive: boolean;
+  createdBy: number;
+  createdAt?: string;
+  updatedAt?: string;
   // Advanced fields
-  scope_type?: string;
-  scope_echelon?: string;
-  include_subordinates?: boolean;
-  metric_type?: string;
-  metric_item_filter?: Record<string, any>;
-  notify_roles?: string[];
-  check_interval_minutes?: number;
-  auto_recommend?: boolean;
-  recommend_type?: string;
-  recommend_source_unit_id?: number;
-  recommend_assign_to_role?: string;
+  scopeType?: string;
+  scopeEchelon?: string;
+  includeSubordinates?: boolean;
+  metricType?: string;
+  metricItemFilter?: Record<string, any>;
+  notifyRoles?: string[];
+  checkIntervalMinutes?: number;
+  autoRecommend?: boolean;
+  recommendType?: string;
+  recommendSourceUnitId?: number;
+  recommendAssignToRole?: string;
 }
 
 export interface LogisticsRecommendation {
   id: number;
-  recommendation_type: string;
-  triggered_by_rule_id?: number;
-  triggered_by_metric?: string;
-  target_unit_id: number;
+  recommendationType: string;
+  triggeredByRuleId?: number;
+  triggeredByMetric?: string;
+  targetUnitId: number;
   description: string;
-  recommended_items?: any[];
-  recommended_source?: string;
-  recommended_vehicles?: any[];
-  recommended_personnel?: any[];
-  recommended_route?: string;
-  estimated_weight?: number;
-  estimated_cost?: number;
-  estimated_duration?: string;
+  recommendedItems?: any[];
+  recommendedSource?: string;
+  recommendedVehicles?: any[];
+  recommendedPersonnel?: any[];
+  recommendedRoute?: string;
+  estimatedWeight?: number;
+  estimatedCost?: number;
+  estimatedDuration?: string;
   status: 'PENDING' | 'APPROVED' | 'DENIED' | 'EXECUTED' | 'EXPIRED';
-  assigned_to_user_id?: number;
-  assigned_to_role?: string;
-  generated_movement_id?: number;
-  generated_requisition_id?: number;
-  created_at?: string;
-  decided_at?: string;
-  decided_by?: number;
+  assignedToUserId?: number;
+  assignedToRole?: string;
+  generatedMovementId?: number;
+  generatedRequisitionId?: number;
+  createdAt?: string;
+  decidedAt?: string;
+  decidedBy?: number;
   notes?: string;
-  expires_at?: string;
+  expiresAt?: string;
 }
 
 export interface Notification {
   id: number;
-  user_id: number;
-  alert_id?: number;
+  userId: number;
+  alertId?: number;
   title: string;
   body: string;
-  link_url?: string;
+  linkUrl?: string;
   channel: NotificationChannelType;
-  is_read: boolean;
-  read_at?: string;
-  created_at: string;
+  isRead: boolean;
+  readAt?: string;
+  createdAt: string;
 }
 
 export interface NotificationPreference {
   id: number;
-  user_id: number;
-  alert_type: string;
+  userId: number;
+  alertType: string;
   channel: NotificationChannelType;
-  min_severity: string;
+  minSeverity: string;
 }
 
 export interface AlertSummary {
-  total_active: number;
-  by_severity: { CRITICAL: number; WARNING: number; INFO: number };
-  by_type: Record<string, number>;
+  totalActive: number;
+  bySeverity: { CRITICAL: number; WARNING: number; INFO: number };
+  byType: Record<string, number>;
 }
 
 // --- Fuel / POL Management ---
@@ -1714,83 +1715,83 @@ export type ConsumptionSourceType = 'MANUAL' | 'CALCULATED' | 'TM_REFERENCE';
 
 export interface FuelStoragePoint {
   id: number;
-  unit_id: number;
+  unitId: number;
   name: string;
-  facility_type: FuelFacilityType;
-  fuel_type: FuelType;
-  capacity_gallons: number;
-  current_gallons: number;
-  fill_percentage: number;
+  facilityType: FuelFacilityType;
+  fuelType: FuelType;
+  capacityGallons: number;
+  currentGallons: number;
+  fillPercentage: number;
   status: FuelStorageStatus;
   latitude: number | null;
   longitude: number | null;
   mgrs: string | null;
-  location_description: string | null;
-  last_resupply_date: string | null;
-  next_resupply_eta: string | null;
-  equipment_id: number | null;
-  created_at: string;
-  updated_at: string;
+  locationDescription: string | null;
+  lastResupplyDate: string | null;
+  nextResupplyEta: string | null;
+  equipmentId: number | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface FuelTransaction {
   id: number;
-  storage_point_id: number;
-  storage_point_name?: string;
-  transaction_type: FuelTransactionType;
-  fuel_type: FuelType;
-  quantity_gallons: number;
-  receiving_unit_id: number | null;
-  vehicle_bumper_number: string | null;
-  vehicle_type: string | null;
-  document_number: string | null;
-  meter_reading_before: number | null;
-  meter_reading_after: number | null;
+  storagePointId: number;
+  storagePointName?: string;
+  transactionType: FuelTransactionType;
+  fuelType: FuelType;
+  quantityGallons: number;
+  receivingUnitId: number | null;
+  vehicleBumperNumber: string | null;
+  vehicleType: string | null;
+  documentNumber: string | null;
+  meterReadingBefore: number | null;
+  meterReadingAfter: number | null;
   notes: string | null;
-  performed_by_name?: string;
-  transaction_date: string;
-  created_at: string;
+  performedByName?: string;
+  transactionDate: string;
+  createdAt: string;
 }
 
 export interface FuelConsumptionRate {
   id: number;
-  equipment_catalog_item_id: number;
-  equipment_name?: string;
-  fuel_type: FuelType;
-  gallons_per_hour_idle: number;
-  gallons_per_hour_tactical: number;
-  gallons_per_mile: number | null;
-  gallons_per_flight_hour: number | null;
+  equipmentCatalogItemId: number;
+  equipmentName?: string;
+  fuelType: FuelType;
+  gallonsPerHourIdle: number;
+  gallonsPerHourTactical: number;
+  gallonsPerMile: number | null;
+  gallonsPerFlightHour: number | null;
   source: ConsumptionSourceType;
   notes: string | null;
-  updated_at: string;
+  updatedAt: string;
 }
 
 export interface FuelForecast {
-  unit_id: number;
-  forecast_date: string;
-  operational_tempo: OperationalTempo;
-  projected_daily_consumption_gallons: number;
-  current_on_hand_gallons: number;
-  days_of_supply: number;
-  resupply_required_by_date: string;
+  unitId: number;
+  forecastDate: string;
+  operationalTempo: OperationalTempo;
+  projectedDailyConsumptionGallons: number;
+  currentOnHandGallons: number;
+  daysOfSupply: number;
+  resupplyRequiredByDate: string;
   alert: boolean;
 }
 
 export interface FuelDashboard {
-  unit_id: number;
-  storage_points: FuelStoragePoint[];
-  total_capacity_gallons: number;
-  total_on_hand_gallons: number;
-  fill_percentage: number;
-  days_of_supply: number;
-  limiting_fuel_type: string | null;
+  unitId: number;
+  storagePoints: FuelStoragePoint[];
+  totalCapacityGallons: number;
+  totalOnHandGallons: number;
+  fillPercentage: number;
+  daysOfSupply: number;
+  limitingFuelType: string | null;
   alert: boolean;
   forecast: {
-    operational_tempo: OperationalTempo;
-    projected_daily_consumption: number;
-    days_of_supply: number;
-    resupply_required_by: string;
+    operationalTempo: OperationalTempo;
+    projectedDailyConsumption: number;
+    daysOfSupply: number;
+    resupplyRequiredBy: string;
   };
 }
 
@@ -1811,121 +1812,121 @@ export type AuditEntityType = 'SENSITIVE_ITEM' | 'CUSTODY_TRANSFER' | 'INVENTORY
 
 export interface SensitiveItem {
   id: number;
-  serial_number: string;
-  item_type: SensitiveItemType;
+  serialNumber: string;
+  itemType: SensitiveItemType;
   nomenclature: string;
   nsn: string | null;
   tamcn: string | null;
-  security_classification: SecurityClassification;
-  owning_unit_id: number;
-  current_holder_id: number | null;
-  current_holder_name: string | null;
-  hand_receipt_number: string | null;
-  sub_hand_receipt_number: string | null;
-  condition_code: ItemConditionCode;
+  securityClassification: SecurityClassification;
+  owningUnitId: number;
+  currentHolderId: number | null;
+  currentHolderName: string | null;
+  handReceiptNumber: string | null;
+  subHandReceiptNumber: string | null;
+  conditionCode: ItemConditionCode;
   status: SensitiveItemStatus;
-  last_inventory_date: string | null;
-  last_transfer_date: string | null;
-  created_at: string;
-  updated_at: string;
+  lastInventoryDate: string | null;
+  lastTransferDate: string | null;
+  createdAt: string;
+  updatedAt: string;
   notes: string | null;
 }
 
 export interface CustodyTransfer {
   id: number;
-  sensitive_item_id: number;
-  from_personnel_id: number | null;
-  from_personnel_name: string | null;
-  to_personnel_id: number | null;
-  to_personnel_name: string | null;
-  from_unit_id: number | null;
-  to_unit_id: number | null;
-  transfer_type: TransferType;
-  transfer_date: string;
-  document_number: string | null;
-  authorized_by: number | null;
-  witnessed_by: number | null;
+  sensitiveItemId: number;
+  fromPersonnelId: number | null;
+  fromPersonnelName: string | null;
+  toPersonnelId: number | null;
+  toPersonnelName: string | null;
+  fromUnitId: number | null;
+  toUnitId: number | null;
+  transferType: TransferType;
+  transferDate: string;
+  documentNumber: string | null;
+  authorizedBy: number | null;
+  witnessedBy: number | null;
   reason: string | null;
   notes: string | null;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface InventoryEvent {
   id: number;
-  unit_id: number;
-  inventory_type: InventoryEventType;
-  conducted_by: number;
-  conducted_by_name: string | null;
-  witnessed_by: number | null;
-  started_at: string;
-  completed_at: string | null;
-  total_items_expected: number;
-  total_items_verified: number;
+  unitId: number;
+  inventoryType: InventoryEventType;
+  conductedBy: number;
+  conductedByName: string | null;
+  witnessedBy: number | null;
+  startedAt: string;
+  completedAt: string | null;
+  totalItemsExpected: number;
+  totalItemsVerified: number;
   discrepancies: number;
   status: InventoryEventStatus;
-  approved_by: number | null;
-  approved_at: string | null;
+  approvedBy: number | null;
+  approvedAt: string | null;
   notes: string | null;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface InventoryLineItem {
   id: number;
-  inventory_event_id: number;
-  sensitive_item_id: number;
+  inventoryEventId: number;
+  sensitiveItemId: number;
   verified: boolean;
-  serial_number_verified: boolean;
-  condition_code: ItemConditionCode | null;
-  discrepancy_type: DiscrepancyType | null;
+  serialNumberVerified: boolean;
+  conditionCode: ItemConditionCode | null;
+  discrepancyType: DiscrepancyType | null;
   notes: string | null;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface AuditLogEntry {
   id: number;
-  user_id: number;
+  userId: number;
   action: AuditAction;
-  entity_type: AuditEntityType;
-  entity_id: number | null;
+  entityType: AuditEntityType;
+  entityId: number | null;
   description: string;
-  ip_address: string | null;
-  user_agent: string | null;
-  created_at: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  createdAt: string;
 }
 
 export interface HandReceipt {
-  personnel_id: number;
-  personnel_name: string;
+  personnelId: number;
+  personnelName: string;
   rank: string;
   edipi: string;
-  unit_name: string;
-  total_items: number;
+  unitName: string;
+  totalItems: number;
   items: SensitiveItem[];
-  generated_at: string;
+  generatedAt: string;
 }
 
 // Transportation manifest types
 export interface LocationInventoryItem {
-  item_id: string;
-  item_type: 'equipment' | 'supply' | 'personnel';
+  itemId: string;
+  itemType: 'equipment' | 'supply' | 'personnel';
   nomenclature: string;
   tamcn?: string;
   nsn?: string;
   category: string;
-  available_qty: number;
-  weight_lbs?: number;
+  availableQty: number;
+  weightLbs?: number;
   status: string;
 }
 
 export interface ManifestEntry {
-  item_id: string;
+  itemId: string;
   nomenclature: string;
   category: string;
   quantity: number;
   priority: 'ROUTINE' | 'PRIORITY' | 'URGENT' | 'FLASH';
-  special_handling?: string;
-  weight_lbs?: number;
-  added_at: string;
+  specialHandling?: string;
+  weightLbs?: number;
+  addedAt: string;
 }
 
 // --- Transportation Personnel Assignment & Certification Verification ---
@@ -1936,36 +1937,36 @@ export type QualificationType =
 
 export interface ConvoyCargoItem {
   id: number;
-  movement_id: number;
-  convoy_vehicle_id: number;
+  movementId: number;
+  convoyVehicleId: number;
   description: string | null;
   quantity: number;
-  weight_lbs: number | null;
-  is_hazmat: boolean;
-  supply_catalog_item_id: number | null;
-  equipment_catalog_item_id: number | null;
+  weightLbs: number | null;
+  isHazmat: boolean;
+  supplyCatalogItemId: number | null;
+  equipmentCatalogItemId: number | null;
 }
 
 export interface QualifiedPersonnelItem {
   id: number;
   edipi: string;
   rank: string | null;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   mos: string | null;
-  pay_grade: string | null;
-  is_assigned_to_movement: boolean;
-  qualifications: { qualification_type: string; qualification_name: string; is_current: boolean; expiration_date: string | null }[];
+  payGrade: string | null;
+  isAssignedToMovement: boolean;
+  qualifications: { qualificationType: string; qualificationName: string; isCurrent: boolean; expirationDate: string | null }[];
 }
 
 export interface QualifiedPersonnelResponse {
   personnel: QualifiedPersonnelItem[];
   total: number;
-  required_qualifications: string[];
+  requiredQualifications: string[];
 }
 
 export interface ValidateAssignmentRequest {
-  personnel_id: number;
+  personnelId: number;
   role: string;
   vehicle_tamcn: string;
   movement_id: number;
@@ -1974,22 +1975,22 @@ export interface ValidateAssignmentRequest {
 export interface ValidateAssignmentResponse {
   valid: boolean;
   reason: string;
-  missing_qualifications: string[];
-  assigned_to_other_vehicle: boolean;
+  missingQualifications: string[];
+  assignedToOtherVehicle: boolean;
 }
 
 export interface FullManifestVehicle {
-  convoy_vehicle_id: number;
-  bumper_number: string;
-  vehicle_type: string;
+  convoyVehicleId: number;
+  bumperNumber: string;
+  vehicleType: string;
   tamcn: string;
   personnel: { role: string; id: number; rank: string; name: string }[];
   cargo: ConvoyCargoItem[];
-  total_cargo_weight: number;
+  totalCargoWeight: number;
 }
 
 export interface FullManifestResponse {
-  movement_id: number;
-  convoy_id: string;
+  movementId: number;
+  convoyId: string;
   vehicles: FullManifestVehicle[];
 }

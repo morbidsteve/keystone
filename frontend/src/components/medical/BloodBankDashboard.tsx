@@ -50,7 +50,7 @@ interface BloodBankDashboardProps {
 
 export default function BloodBankDashboard({ products, facilities }: BloodBankDashboardProps) {
   const facilitiesWithBlood = useMemo(() => {
-    const ids = new Set(products.map((p) => p.facility_id));
+    const ids = new Set(products.map((p) => p.facilityId));
     return facilities.filter((f) => ids.has(f.id));
   }, [products, facilities]);
 
@@ -60,18 +60,18 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
 
   const filteredProducts = useMemo(() => {
     if (!selectedFacilityId) return products;
-    return products.filter((p) => p.facility_id === selectedFacilityId);
+    return products.filter((p) => p.facilityId === selectedFacilityId);
   }, [products, selectedFacilityId]);
 
   // Aggregate by blood type
   const bloodTypeCards = useMemo(() => {
     return BLOOD_TYPE_ORDER.map((bt) => {
-      const matching = filteredProducts.filter((p) => p.blood_type === bt);
-      const totalUnits = matching.reduce((sum, p) => sum + p.units_on_hand, 0);
-      const totalUsed24h = matching.reduce((sum, p) => sum + p.units_used_24h, 0);
-      const totalDonors = matching.reduce((sum, p) => sum + p.walking_blood_bank_donors, 0);
+      const matching = filteredProducts.filter((p) => p.bloodType === bt);
+      const totalUnits = matching.reduce((sum, p) => sum + p.unitsOnHand, 0);
+      const totalUsed24h = matching.reduce((sum, p) => sum + p.unitsUsed24h, 0);
+      const totalDonors = matching.reduce((sum, p) => sum + p.walkingBloodBankDonors, 0);
       const earliestExpiry = matching
-        .map((p) => p.expiration_date)
+        .map((p) => p.expirationDate)
         .filter(Boolean)
         .sort()[0] ?? null;
 
@@ -88,7 +88,7 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
   }, [filteredProducts]);
 
   const totalWBBDonors = useMemo(() => {
-    return filteredProducts.reduce((sum, p) => sum + p.walking_blood_bank_donors, 0);
+    return filteredProducts.reduce((sum, p) => sum + p.walkingBloodBankDonors, 0);
   }, [filteredProducts]);
 
   const selectStyle: React.CSSProperties = {
@@ -131,7 +131,7 @@ export default function BloodBankDashboard({ products, facilities }: BloodBankDa
             <option value="">ALL FACILITIES</option>
             {facilitiesWithBlood.map((f) => (
               <option key={f.id} value={f.id}>
-                {f.name} ({f.facility_type})
+                {f.name} ({f.facilityType})
               </option>
             ))}
           </select>

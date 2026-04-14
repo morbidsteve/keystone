@@ -128,13 +128,13 @@ export default function RouteMap({
         {/* Unit markers */}
         {mapData?.units.map(unit => (
           <Marker
-            key={unit.unit_id}
+            key={unit.unitId}
             position={[unit.latitude, unit.longitude]}
-            icon={createMilSymbolIcon(unit.symbol_sidc, 35, getStatusColor(unit.supply_status))}
+            icon={createMilSymbolIcon(unit.symbolSidc, 35, getStatusColor(unit.supplyStatus))}
             eventHandlers={{
               click: () => {
                 if (selectionMode === 'origin') {
-                  onUnitClick(unit.unit_id, unit.abbreviation, unit.latitude, unit.longitude);
+                  onUnitClick(unit.unitId, unit.abbreviation, unit.latitude, unit.longitude);
                 } else if (selectionMode === 'destination') {
                   onDestinationUnitClick(unit.abbreviation, unit.latitude, unit.longitude);
                 }
@@ -143,7 +143,7 @@ export default function RouteMap({
           >
             <Tooltip permanent={false}>
               <span className="font-[var(--font-mono)] text-[10px]">
-                {unit.abbreviation} ({unit.supply_status})
+                {unit.abbreviation} ({unit.supplyStatus})
               </span>
             </Tooltip>
           </Marker>
@@ -154,7 +154,7 @@ export default function RouteMap({
           <Marker
             key={sp.id}
             position={[sp.latitude, sp.longitude]}
-            icon={createSupplyPointIcon(sp.point_type)}
+            icon={createSupplyPointIcon(sp.pointType)}
             eventHandlers={{
               click: () => {
                 if (selectionMode === 'origin') {
@@ -167,7 +167,7 @@ export default function RouteMap({
           >
             <Tooltip permanent={false}>
               <span className="font-[var(--font-mono)] text-[10px]">
-                {sp.name} ({sp.point_type})
+                {sp.name} ({sp.pointType})
               </span>
             </Tooltip>
           </Marker>
@@ -195,7 +195,7 @@ export default function RouteMap({
             >
               <Tooltip sticky>
                 <span className="font-[var(--font-mono)] text-[10px]">
-                  {route.name} ({route.route_type}) — {route.status}
+                  {route.name} ({route.routeType}) — {route.status}
                 </span>
               </Tooltip>
             </Polyline>

@@ -226,7 +226,7 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
     (async () => {
       try {
         const dests = await getExportDestinations();
-        setDestinations(dests.filter((d) => d.is_active));
+        setDestinations(dests.filter((d) => d.isActive));
       } catch {
         // ignore
       } finally {
@@ -301,14 +301,14 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
               EXPORT RESULTS
             </div>
             {results.map((r) => (
-              <div key={r.destination_id} className="cursor-default" style={{ color: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)' }}>
+              <div key={r.destinationId} className="cursor-default" style={{ color: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)' }}>
                 <div className="w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: r.success ? 'var(--color-green, #22c55e)' : 'var(--color-red, #ef4444)' }} />
                 <div className="flex-1">
                   <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold">
-                    {r.destination_name}
+                    {r.destinationName}
                   </div>
                   <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-                    {r.success ? `Success (${r.status_code})` : `Failed: ${r.error || 'Unknown error'}`}
+                    {r.success ? `Success (${r.statusCode})` : `Failed: ${r.error || 'Unknown error'}`}
                   </div>
                 </div>
               </div>
@@ -342,7 +342,7 @@ function ApiExportModal({ reportId, onClose }: { reportId: string; onClose: () =
                   </div>
                 </div>
                 <div className="font-[var(--font-mono)] text-[8px] py-0.5 px-1.5 rounded-[var(--radius)] bg-[var(--color-bg-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)] uppercase tracking-[0.5px]">
-                  {d.auth_type}
+                  {d.authType}
                 </div>
               </div>
             ))}
@@ -520,11 +520,11 @@ function ReportHeader({ content }: { content: ReportContent }) {
   return (
     <div className="border-b border-b-[var(--color-border)] pb-2">
       <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)]">
-        {content.report_type} REPORT
+        {content.reportType} REPORT
       </div>
       <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex gap-4 mt-1">
         {content.unit && <span>Unit: {content.unit.name} ({content.unit.abbreviation})</span>}
-        {content.generated_at && <span>Generated: {formatDate(content.generated_at)}</span>}
+        {content.generatedAt && <span>Generated: {formatDate(content.generatedAt)}</span>}
       </div>
     </div>
   );
@@ -536,15 +536,15 @@ function LogstatSection({ content }: { content: ReportContent }) {
     <>
       {/* Summary stats */}
       <div className="grid gap-2 grid-cols-5">
-        <StatBox value={`${content.equipment_readiness?.readiness_pct ?? 0}%`} label="EQUIP READINESS" color={statusColor(content.equipment_readiness?.status || '')} />
-        <StatBox value={String(content.open_work_orders ?? 0)} label="OPEN WORK ORDERS" />
-        <StatBox value={String(content.active_movements ?? 0)} label="ACTIVE MOVEMENTS" />
-        <StatBox value={String(content.personnel_strength ?? 0)} label="PERSONNEL" />
-        <StatBox value={String(content.total_supply_items ?? 0)} label="SUPPLY ITEMS" />
+        <StatBox value={`${content.equipmentReadiness?.readinessPct ?? 0}%`} label="EQUIP READINESS" color={statusColor(content.equipmentReadiness?.status || '')} />
+        <StatBox value={String(content.openWorkOrders ?? 0)} label="OPEN WORK ORDERS" />
+        <StatBox value={String(content.activeMovements ?? 0)} label="ACTIVE MOVEMENTS" />
+        <StatBox value={String(content.personnelStrength ?? 0)} label="PERSONNEL" />
+        <StatBox value={String(content.totalSupplyItems ?? 0)} label="SUPPLY ITEMS" />
       </div>
 
       {/* Supply status by class */}
-      {content.supply_status && content.supply_status.length > 0 && (
+      {content.supplyStatus && content.supplyStatus.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>SUPPLY STATUS BY CLASS</div>
           <table style={tableStyle}>
@@ -557,14 +557,14 @@ function LogstatSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.supply_status.map((s) => (
+              {content.supplyStatus.map((s) => (
                 <tr key={s.class}>
                   <td style={tdStyle}>{s.class}</td>
-                  <td style={tdStyle}>{s.class_name}</td>
+                  <td style={tdStyle}>{s.className}</td>
                   <td style={tdStyle}>{s.items.length}</td>
                   <td style={tdStyle}>
-                    <span className="font-semibold" style={{ color: statusColor(s.overall_status || '') }}>
-                      {s.overall_status || 'N/A'}
+                    <span className="font-semibold" style={{ color: statusColor(s.overallStatus || '') }}>
+                      {s.overallStatus || 'N/A'}
                     </span>
                   </td>
                 </tr>
@@ -582,13 +582,13 @@ function ReadinessSection({ content }: { content: ReportContent }) {
   return (
     <>
       <div className="grid gap-2 grid-cols-4">
-        <StatBox value={`${content.overall_readiness_pct ?? 0}%`} label="OVERALL READINESS" color={statusColor(content.overall_status || '')} />
-        <StatBox value={String(content.total_possessed ?? 0)} label="TOTAL POSSESSED" />
-        <StatBox value={String(content.total_mission_capable ?? 0)} label="MISSION CAPABLE" />
-        <StatBox value={String(content.total_nmc ?? 0)} label="NOT MC" />
+        <StatBox value={`${content.overallReadinessPct ?? 0}%`} label="OVERALL READINESS" color={statusColor(content.overallStatus || '')} />
+        <StatBox value={String(content.totalPossessed ?? 0)} label="TOTAL POSSESSED" />
+        <StatBox value={String(content.totalMissionCapable ?? 0)} label="MISSION CAPABLE" />
+        <StatBox value={String(content.totalNmc ?? 0)} label="NOT MC" />
       </div>
 
-      {content.equipment_types && content.equipment_types.length > 0 && (
+      {content.equipmentTypes && content.equipmentTypes.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>EQUIPMENT BY TYPE</div>
           <table style={tableStyle}>
@@ -605,15 +605,15 @@ function ReadinessSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.equipment_types.map((e) => (
+              {content.equipmentTypes.map((e) => (
                 <tr key={e.tamcn}>
                   <td style={tdStyle}>{e.tamcn}</td>
                   <td style={tdStyle}>{e.nomenclature}</td>
-                  <td style={tdStyle}>{e.total_possessed}</td>
-                  <td style={tdStyle}>{e.mission_capable}</td>
-                  <td style={tdStyle}>{e.nmc_maintenance ?? '-'}</td>
-                  <td style={tdStyle}>{e.nmc_supply ?? '-'}</td>
-                  <td style={tdStyle}>{e.readiness_pct}%</td>
+                  <td style={tdStyle}>{e.totalPossessed}</td>
+                  <td style={tdStyle}>{e.missionCapable}</td>
+                  <td style={tdStyle}>{e.nmcMaintenance ?? '-'}</td>
+                  <td style={tdStyle}>{e.nmcSupply ?? '-'}</td>
+                  <td style={tdStyle}>{e.readinessPct}%</td>
                   <td style={tdStyle}><span className="font-semibold" style={{ color: statusColor(e.status) }}>{e.status}</span></td>
                 </tr>
               ))}
@@ -622,18 +622,18 @@ function ReadinessSection({ content }: { content: ReportContent }) {
         </div>
       )}
 
-      {content.individual_status_breakdown && (
+      {content.individualStatusBreakdown && (
         <div>
           <div style={sectionTitleStyle}>INDIVIDUAL EQUIPMENT STATUS</div>
           <div className="grid gap-2 grid-cols-5">
-            {Object.entries(content.individual_status_breakdown).map(([s, count]) => (
+            {Object.entries(content.individualStatusBreakdown).map(([s, count]) => (
               <StatBox key={s} value={String(count)} label={s} />
             ))}
           </div>
         </div>
       )}
 
-      {content.deadlined_items && content.deadlined_items.length > 0 && (
+      {content.deadlinedItems && content.deadlinedItems.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>DEADLINED ITEMS</div>
           <table style={tableStyle}>
@@ -645,10 +645,10 @@ function ReadinessSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.deadlined_items.map((d, i) => (
+              {content.deadlinedItems.map((d, i) => (
                 <tr key={i}>
-                  <td style={tdStyle}>{d.bumper_number}</td>
-                  <td style={tdStyle}>{d.equipment_type}</td>
+                  <td style={tdStyle}>{d.bumperNumber}</td>
+                  <td style={tdStyle}>{d.equipmentType}</td>
                   <td style={tdStyle}>{d.tamcn}</td>
                 </tr>
               ))}
@@ -666,16 +666,16 @@ function SupplyStatusSection({ content }: { content: ReportContent }) {
     <>
       <div className="grid gap-2 grid-cols-4">
         <StatBox
-          value={content.overall_health || 'N/A'}
+          value={content.overallHealth || 'N/A'}
           label="OVERALL HEALTH"
-          color={statusColor(content.overall_health || '')}
+          color={statusColor(content.overallHealth || '')}
         />
-        <StatBox value={String(content.total_classes_tracked ?? 0)} label="CLASSES TRACKED" />
-        <StatBox value={String(content.red_classes ?? 0)} label="RED CLASSES" color={statusColor('RED')} />
-        <StatBox value={String(content.amber_classes ?? 0)} label="AMBER CLASSES" color={statusColor('AMBER')} />
+        <StatBox value={String(content.totalClassesTracked ?? 0)} label="CLASSES TRACKED" />
+        <StatBox value={String(content.redClasses ?? 0)} label="RED CLASSES" color={statusColor('RED')} />
+        <StatBox value={String(content.amberClasses ?? 0)} label="AMBER CLASSES" color={statusColor('AMBER')} />
       </div>
 
-      {content.class_summaries && content.class_summaries.length > 0 && (
+      {content.classSummaries && content.classSummaries.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>SUPPLY CLASS BREAKDOWN</div>
           <table style={tableStyle}>
@@ -692,15 +692,15 @@ function SupplyStatusSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.class_summaries.map((c) => (
-                <tr key={c.supply_class}>
-                  <td style={tdStyle}>{c.supply_class}</td>
-                  <td style={tdStyle}>{c.class_name}</td>
-                  <td style={tdStyle}>{c.total_on_hand.toLocaleString()}</td>
-                  <td style={tdStyle}>{c.total_required.toLocaleString()}</td>
-                  <td style={tdStyle}>{c.fill_rate_pct}%</td>
-                  <td style={tdStyle}>{c.avg_dos}</td>
-                  <td style={tdStyle}>{c.red_items}</td>
+              {content.classSummaries.map((c) => (
+                <tr key={c.supplyClass}>
+                  <td style={tdStyle}>{c.supplyClass}</td>
+                  <td style={tdStyle}>{c.className}</td>
+                  <td style={tdStyle}>{c.totalOnHand.toLocaleString()}</td>
+                  <td style={tdStyle}>{c.totalRequired.toLocaleString()}</td>
+                  <td style={tdStyle}>{c.fillRatePct}%</td>
+                  <td style={tdStyle}>{c.avgDos}</td>
+                  <td style={tdStyle}>{c.redItems}</td>
                   <td style={tdStyle}><span className="font-semibold" style={{ color: statusColor(c.status) }}>{c.status}</span></td>
                 </tr>
               ))}
@@ -710,7 +710,7 @@ function SupplyStatusSection({ content }: { content: ReportContent }) {
       )}
 
       {/* Critical items */}
-      {content.class_summaries?.some((c) => c.critical_items.length > 0) && (
+      {content.classSummaries?.some((c) => c.criticalItems.length > 0) && (
         <div>
           <div style={sectionTitleStyle}>CRITICAL ITEMS (RED STATUS)</div>
           <table style={tableStyle}>
@@ -724,12 +724,12 @@ function SupplyStatusSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.class_summaries?.filter((c) => c.critical_items.length > 0).flatMap((c) =>
-                c.critical_items.map((ci, i) => (
-                  <tr key={`${c.supply_class}-${i}`}>
-                    <td style={tdStyle}>{c.supply_class}</td>
+              {content.classSummaries?.filter((c) => c.criticalItems.length > 0).flatMap((c) =>
+                c.criticalItems.map((ci, i) => (
+                  <tr key={`${c.supplyClass}-${i}`}>
+                    <td style={tdStyle}>{c.supplyClass}</td>
                     <td style={tdStyle}>{ci.item}</td>
-                    <td style={tdStyle}>{ci.on_hand}</td>
+                    <td style={tdStyle}>{ci.onHand}</td>
                     <td style={tdStyle}>{ci.required}</td>
                     <td className="font-semibold" style={{ color: statusColor('RED') }}>{ci.dos}</td>
                   </tr>
@@ -747,17 +747,17 @@ function SupplyStatusSection({ content }: { content: ReportContent }) {
 function EquipmentStatusSection({ content }: { content: ReportContent }) {
   return (
     <>
-      {content.fleet_readiness && (
+      {content.fleetReadiness && (
         <div className="grid gap-2 grid-cols-5">
-          <StatBox value={`${content.fleet_readiness.readiness_pct}%`} label="FLEET READINESS" color={statusColor(content.fleet_readiness.status)} />
-          <StatBox value={String(content.fleet_readiness.total_possessed)} label="TOTAL POSSESSED" />
-          <StatBox value={String(content.fleet_readiness.total_mission_capable)} label="MISSION CAPABLE" />
-          <StatBox value={String(content.fleet_readiness.total_nmc_maintenance)} label="NMC-M" />
-          <StatBox value={String(content.fleet_readiness.total_nmc_supply)} label="NMC-S" />
+          <StatBox value={`${content.fleetReadiness.readinessPct}%`} label="FLEET READINESS" color={statusColor(content.fleetReadiness.status)} />
+          <StatBox value={String(content.fleetReadiness.totalPossessed)} label="TOTAL POSSESSED" />
+          <StatBox value={String(content.fleetReadiness.totalMissionCapable)} label="MISSION CAPABLE" />
+          <StatBox value={String(content.fleetReadiness.totalNmcMaintenance)} label="NMC-M" />
+          <StatBox value={String(content.fleetReadiness.totalNmcSupply)} label="NMC-S" />
         </div>
       )}
 
-      {content.fleet_by_type && content.fleet_by_type.length > 0 && (
+      {content.fleetByType && content.fleetByType.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>FLEET BY TYPE</div>
           <table style={tableStyle}>
@@ -774,15 +774,15 @@ function EquipmentStatusSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.fleet_by_type.map((e) => (
+              {content.fleetByType.map((e) => (
                 <tr key={e.tamcn}>
                   <td style={tdStyle}>{e.tamcn}</td>
                   <td style={tdStyle}>{e.nomenclature}</td>
-                  <td style={tdStyle}>{e.total_possessed}</td>
-                  <td style={tdStyle}>{e.mission_capable}</td>
-                  <td style={tdStyle}>{e.nmc_maintenance ?? '-'}</td>
-                  <td style={tdStyle}>{e.nmc_supply ?? '-'}</td>
-                  <td style={tdStyle}>{e.readiness_pct}%</td>
+                  <td style={tdStyle}>{e.totalPossessed}</td>
+                  <td style={tdStyle}>{e.missionCapable}</td>
+                  <td style={tdStyle}>{e.nmcMaintenance ?? '-'}</td>
+                  <td style={tdStyle}>{e.nmcSupply ?? '-'}</td>
+                  <td style={tdStyle}>{e.readinessPct}%</td>
                   <td style={tdStyle}><span className="font-semibold" style={{ color: statusColor(e.status) }}>{e.status}</span></td>
                 </tr>
               ))}
@@ -791,18 +791,18 @@ function EquipmentStatusSection({ content }: { content: ReportContent }) {
         </div>
       )}
 
-      {content.individual_status_breakdown && (
+      {content.individualStatusBreakdown && (
         <div>
-          <div style={sectionTitleStyle}>INDIVIDUAL EQUIPMENT STATUS ({content.individual_total ?? 0} total)</div>
+          <div style={sectionTitleStyle}>INDIVIDUAL EQUIPMENT STATUS ({content.individualTotal ?? 0} total)</div>
           <div className="grid gap-2 grid-cols-5">
-            {Object.entries(content.individual_status_breakdown).map(([s, count]) => (
+            {Object.entries(content.individualStatusBreakdown).map(([s, count]) => (
               <StatBox key={s} value={String(count)} label={s} />
             ))}
           </div>
         </div>
       )}
 
-      {content.top_deadlined_items && content.top_deadlined_items.length > 0 && (
+      {content.topDeadlinedItems && content.topDeadlinedItems.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>TOP DEADLINED ITEMS</div>
           <table style={tableStyle}>
@@ -816,13 +816,13 @@ function EquipmentStatusSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.top_deadlined_items.map((d, i) => (
+              {content.topDeadlinedItems.map((d, i) => (
                 <tr key={i}>
-                  <td style={tdStyle}>{d.bumper_number}</td>
-                  <td style={tdStyle}>{d.equipment_type}</td>
+                  <td style={tdStyle}>{d.bumperNumber}</td>
+                  <td style={tdStyle}>{d.equipmentType}</td>
                   <td style={tdStyle}>{d.tamcn}</td>
                   <td style={tdStyle}>{d.fault || 'N/A'}</td>
-                  <td style={tdStyle}>{d.fault_severity || 'N/A'}</td>
+                  <td style={tdStyle}>{d.faultSeverity || 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
@@ -838,24 +838,24 @@ function MaintenanceSection({ content }: { content: ReportContent }) {
   return (
     <>
       <div className="grid gap-2 grid-cols-4">
-        <StatBox value={String(content.total_work_orders ?? 0)} label="TOTAL WORK ORDERS" />
-        <StatBox value={`${content.avg_completion_time_hours ?? 0}h`} label="AVG COMPLETION" />
-        <StatBox value={String(content.total_labor_hours ?? 0)} label="LABOR HOURS" />
-        <StatBox value={String(content.parts_on_order ?? 0)} label="PARTS ON ORDER" />
+        <StatBox value={String(content.totalWorkOrders ?? 0)} label="TOTAL WORK ORDERS" />
+        <StatBox value={`${content.avgCompletionTimeHours ?? 0}h`} label="AVG COMPLETION" />
+        <StatBox value={String(content.totalLaborHours ?? 0)} label="LABOR HOURS" />
+        <StatBox value={String(content.partsOnOrder ?? 0)} label="PARTS ON ORDER" />
       </div>
 
-      {content.work_order_counts && (
+      {content.workOrderCounts && (
         <div>
           <div style={sectionTitleStyle}>WORK ORDER STATUS</div>
           <div className="grid gap-2 grid-cols-4">
-            {Object.entries(content.work_order_counts).map(([status, count]) => (
+            {Object.entries(content.workOrderCounts).map(([status, count]) => (
               <StatBox key={status} value={String(count)} label={status.replace(/_/g, ' ')} />
             ))}
           </div>
         </div>
       )}
 
-      {content.top_issues && content.top_issues.length > 0 && (
+      {content.topIssues && content.topIssues.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>TOP MAINTENANCE ISSUES</div>
           <table style={tableStyle}>
@@ -866,10 +866,10 @@ function MaintenanceSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.top_issues.map((issue, i) => (
+              {content.topIssues.map((issue, i) => (
                 <tr key={i}>
-                  <td style={tdStyle}>{issue.equipment_type}</td>
-                  <td style={tdStyle}>{issue.open_work_orders}</td>
+                  <td style={tdStyle}>{issue.equipmentType}</td>
+                  <td style={tdStyle}>{issue.openWorkOrders}</td>
                 </tr>
               ))}
             </tbody>
@@ -885,27 +885,27 @@ function MovementSection({ content }: { content: ReportContent }) {
   return (
     <>
       <div className="grid gap-2 grid-cols-4">
-        <StatBox value={String(content.total_movements ?? 0)} label="TOTAL MOVEMENTS" />
-        <StatBox value={String(content.total_vehicles_in_transit ?? 0)} label="VEHICLES IN TRANSIT" />
-        <StatBox value={String(content.total_personnel_in_transit ?? 0)} label="PERSONNEL IN TRANSIT" />
+        <StatBox value={String(content.totalMovements ?? 0)} label="TOTAL MOVEMENTS" />
+        <StatBox value={String(content.totalVehiclesInTransit ?? 0)} label="VEHICLES IN TRANSIT" />
+        <StatBox value={String(content.totalPersonnelInTransit ?? 0)} label="PERSONNEL IN TRANSIT" />
         <StatBox
-          value={String(content.status_counts?.EN_ROUTE ?? 0)}
+          value={String(content.statusCounts?.EN_ROUTE ?? 0)}
           label="EN ROUTE"
         />
       </div>
 
-      {content.status_counts && (
+      {content.statusCounts && (
         <div>
           <div style={sectionTitleStyle}>MOVEMENT STATUS</div>
           <div className="grid gap-2 grid-cols-5">
-            {Object.entries(content.status_counts).map(([status, count]) => (
+            {Object.entries(content.statusCounts).map(([status, count]) => (
               <StatBox key={status} value={String(count)} label={status.replace(/_/g, ' ')} />
             ))}
           </div>
         </div>
       )}
 
-      {content.recent_completions && content.recent_completions.length > 0 && (
+      {content.recentCompletions && content.recentCompletions.length > 0 && (
         <div>
           <div style={sectionTitleStyle}>RECENT COMPLETIONS</div>
           <table style={tableStyle}>
@@ -919,12 +919,12 @@ function MovementSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {content.recent_completions.map((c, i) => (
+              {content.recentCompletions.map((c, i) => (
                 <tr key={i}>
-                  <td style={tdStyle}>{c.convoy_id || 'N/A'}</td>
+                  <td style={tdStyle}>{c.convoyId || 'N/A'}</td>
                   <td style={tdStyle}>{c.origin}</td>
                   <td style={tdStyle}>{c.destination}</td>
-                  <td style={tdStyle}>{c.vehicle_count}</td>
+                  <td style={tdStyle}>{c.vehicleCount}</td>
                   <td style={tdStyle}>{c.arrival ? formatDate(c.arrival) : 'N/A'}</td>
                 </tr>
               ))}
@@ -941,26 +941,26 @@ function PersonnelSection({ content }: { content: ReportContent }) {
   return (
     <>
       <div className="grid gap-2 grid-cols-3">
-        <StatBox value={String(content.total_assigned ?? 0)} label="TOTAL ASSIGNED" />
-        <StatBox value={String(content.total_active ?? 0)} label="ACTIVE" color={statusColor('GREEN')} />
+        <StatBox value={String(content.totalAssigned ?? 0)} label="TOTAL ASSIGNED" />
+        <StatBox value={String(content.totalActive ?? 0)} label="ACTIVE" color={statusColor('GREEN')} />
         <StatBox
-          value={String((content.total_assigned ?? 0) - (content.total_active ?? 0))}
+          value={String((content.totalAssigned ?? 0) - (content.totalActive ?? 0))}
           label="INACTIVE"
         />
       </div>
 
-      {content.status_breakdown && (
+      {content.statusBreakdown && (
         <div>
           <div style={sectionTitleStyle}>STATUS BREAKDOWN</div>
           <div className="grid gap-2 grid-cols-3">
-            {Object.entries(content.status_breakdown).map(([status, count]) => (
+            {Object.entries(content.statusBreakdown).map(([status, count]) => (
               <StatBox key={status} value={String(count)} label={status} />
             ))}
           </div>
         </div>
       )}
 
-      {content.rank_breakdown && Object.keys(content.rank_breakdown).length > 0 && (
+      {content.rankBreakdown && Object.keys(content.rankBreakdown).length > 0 && (
         <div>
           <div style={sectionTitleStyle}>BY RANK</div>
           <table style={tableStyle}>
@@ -971,7 +971,7 @@ function PersonnelSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(content.rank_breakdown)
+              {Object.entries(content.rankBreakdown)
                 .sort(([, a], [, b]) => b - a)
                 .map(([rank, count]) => (
                   <tr key={rank}>
@@ -984,7 +984,7 @@ function PersonnelSection({ content }: { content: ReportContent }) {
         </div>
       )}
 
-      {content.mos_breakdown && Object.keys(content.mos_breakdown).length > 0 && (
+      {content.mosBreakdown && Object.keys(content.mosBreakdown).length > 0 && (
         <div>
           <div style={sectionTitleStyle}>BY MOS</div>
           <table style={tableStyle}>
@@ -995,7 +995,7 @@ function PersonnelSection({ content }: { content: ReportContent }) {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(content.mos_breakdown)
+              {Object.entries(content.mosBreakdown)
                 .sort(([, a], [, b]) => b - a)
                 .map(([mos, count]) => (
                   <tr key={mos}>

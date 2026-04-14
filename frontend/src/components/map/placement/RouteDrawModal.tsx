@@ -129,7 +129,7 @@ export default function RouteDrawModal() {
       if (routeDrawing.editingRouteId) {
         await mapApi.updateRoute(routeDrawing.editingRouteId, {
           name: name.trim(),
-          route_type: routeType,
+          routeType: routeType,
           status,
           description: description.trim(),
           waypoints,
@@ -137,7 +137,7 @@ export default function RouteDrawModal() {
       } else {
         await mapApi.createRoute({
           name: name.trim(),
-          route_type: routeType,
+          routeType: routeType,
           status,
           description: description.trim(),
           waypoints,

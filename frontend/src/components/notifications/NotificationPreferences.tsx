@@ -51,14 +51,14 @@ export default function NotificationPreferences() {
   const allAlertTypes = Object.values(AlertType);
 
   const getPreference = (alertType: string): NotificationPreference | undefined =>
-    preferences.find(p => p.alert_type === alertType);
+    preferences.find(p => p.alertType === alertType);
 
   const handleChannelChange = (alertType: string, channel: string) => {
     const existing = getPreference(alertType);
     updateMutation.mutate({
       alertType,
       channel,
-      min_severity: existing?.min_severity ?? 'WARNING',
+      min_severity: existing?.minSeverity ?? 'WARNING',
     });
   };
 
@@ -126,7 +126,7 @@ export default function NotificationPreferences() {
                   </td>
                   <td className="py-2 px-3">
                     <select
-                      value={pref?.min_severity ?? 'WARNING'}
+                      value={pref?.minSeverity ?? 'WARNING'}
                       onChange={(e) => handleSeverityChange(alertType, e.target.value)}
                       style={selectStyle}
                     >

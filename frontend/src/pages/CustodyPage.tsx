@@ -87,24 +87,24 @@ export default function CustodyPage() {
   // New item registration form
   const [showNewItemForm, setShowNewItemForm] = useState(false);
   const [newItem, setNewItem] = useState({
-    serial_number: '',
+    serialNumber: '',
     nomenclature: '',
-    item_type: 'WEAPON' as SensitiveItemType,
+    itemType: 'WEAPON' as SensitiveItemType,
     nsn: '',
-    security_classification: 'UNCLASSIFIED' as SecurityClassification,
-    condition_code: 'A' as ItemConditionCode,
-    hand_receipt_number: '',
-    current_holder_name: '',
+    securityClassification: 'UNCLASSIFIED' as SecurityClassification,
+    conditionCode: 'A' as ItemConditionCode,
+    handReceiptNumber: '',
+    currentHolderName: '',
     notes: '',
   });
 
   // New transfer form
   const [showNewTransferForm, setShowNewTransferForm] = useState(false);
   const [newTransfer, setNewTransfer] = useState({
-    sensitive_item_id: '',
-    to_personnel_name: '',
-    transfer_type: 'ISSUE' as TransferType,
-    document_number: '',
+    sensitiveItemId: '',
+    toPersonnelName: '',
+    transferType: 'ISSUE' as TransferType,
+    documentNumber: '',
     reason: '',
   });
 
@@ -153,7 +153,7 @@ export default function CustodyPage() {
       ...prev,
       nomenclature: entry.nomenclature,
       nsn: entry.nsn,
-      item_type: entry.itemType,
+      itemType: entry.itemType,
     }));
     setShowCatalogDropdown(false);
     if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current);
@@ -168,14 +168,14 @@ export default function CustodyPage() {
       toast.success('Sensitive item registered successfully');
       setShowNewItemForm(false);
       setNewItem({
-        serial_number: '',
+        serialNumber: '',
         nomenclature: '',
-        item_type: 'WEAPON' as SensitiveItemType,
+        itemType: 'WEAPON' as SensitiveItemType,
         nsn: '',
-        security_classification: 'UNCLASSIFIED' as SecurityClassification,
-        condition_code: 'A' as ItemConditionCode,
-        hand_receipt_number: '',
-        current_holder_name: '',
+        securityClassification: 'UNCLASSIFIED' as SecurityClassification,
+        conditionCode: 'A' as ItemConditionCode,
+        handReceiptNumber: '',
+        currentHolderName: '',
         notes: '',
       });
     },
@@ -225,15 +225,15 @@ export default function CustodyPage() {
     if (!items) return [];
     let result = [...items];
     if (filterType !== 'ALL') {
-      result = result.filter((i) => i.item_type === filterType);
+      result = result.filter((i) => i.itemType === filterType);
     }
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
         (i) =>
-          i.serial_number.toLowerCase().includes(term) ||
+          i.serialNumber.toLowerCase().includes(term) ||
           i.nomenclature.toLowerCase().includes(term) ||
-          (i.current_holder_name ?? '').toLowerCase().includes(term),
+          (i.currentHolderName ?? '').toLowerCase().includes(term),
       );
     }
     return result;
@@ -252,12 +252,12 @@ export default function CustodyPage() {
   const onHandCount = items?.filter((i) => i.status === 'ON_HAND').length ?? 0;
   const missingCount = missingItems.length;
   const lastInventoryDate = items
-    ?.filter((i) => i.last_inventory_date)
+    ?.filter((i) => i.lastInventoryDate)
     .sort(
       (a, b) =>
-        new Date(b.last_inventory_date!).getTime() -
-        new Date(a.last_inventory_date!).getTime(),
-    )[0]?.last_inventory_date;
+        new Date(b.lastInventoryDate!).getTime() -
+        new Date(a.lastInventoryDate!).getTime(),
+    )[0]?.lastInventoryDate;
 
   // -------------------------------------------------------------------------
   // Render helpers
@@ -384,9 +384,9 @@ export default function CustodyPage() {
               <input
                 type="text"
                 placeholder="e.g., W123456"
-                value={newItem.serial_number}
+                value={newItem.serialNumber}
                 onChange={(e) =>
-                  setNewItem({ ...newItem, serial_number: e.target.value })
+                  setNewItem({ ...newItem, serialNumber: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
                 required
@@ -493,9 +493,9 @@ export default function CustodyPage() {
             <div>
               <label style={labelStyle}>ITEM TYPE</label>
               <select
-                value={newItem.item_type}
+                value={newItem.itemType}
                 onChange={(e) =>
-                  setNewItem({ ...newItem, item_type: e.target.value as SensitiveItemType })
+                  setNewItem({ ...newItem, itemType: e.target.value as SensitiveItemType })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
@@ -523,9 +523,9 @@ export default function CustodyPage() {
             <div>
               <label style={labelStyle}>SECURITY CLASSIFICATION</label>
               <select
-                value={newItem.security_classification}
+                value={newItem.securityClassification}
                 onChange={(e) =>
-                  setNewItem({ ...newItem, security_classification: e.target.value as SecurityClassification })
+                  setNewItem({ ...newItem, securityClassification: e.target.value as SecurityClassification })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
@@ -541,9 +541,9 @@ export default function CustodyPage() {
             <div>
               <label style={labelStyle}>CONDITION CODE</label>
               <select
-                value={newItem.condition_code}
+                value={newItem.conditionCode}
                 onChange={(e) =>
-                  setNewItem({ ...newItem, condition_code: e.target.value as ItemConditionCode })
+                  setNewItem({ ...newItem, conditionCode: e.target.value as ItemConditionCode })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
@@ -561,9 +561,9 @@ export default function CustodyPage() {
               <input
                 type="text"
                 placeholder="e.g., HR-2026-0041"
-                value={newItem.hand_receipt_number}
+                value={newItem.handReceiptNumber}
                 onChange={(e) =>
-                  setNewItem({ ...newItem, hand_receipt_number: e.target.value })
+                  setNewItem({ ...newItem, handReceiptNumber: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
               />
@@ -573,9 +573,9 @@ export default function CustodyPage() {
               <input
                 type="text"
                 placeholder="e.g., Sgt Johnson, M.R."
-                value={newItem.current_holder_name}
+                value={newItem.currentHolderName}
                 onChange={(e) =>
-                  setNewItem({ ...newItem, current_holder_name: e.target.value })
+                  setNewItem({ ...newItem, currentHolderName: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
               />
@@ -603,15 +603,15 @@ export default function CustodyPage() {
                 disabled={createItemMutation.isPending}
                 onClick={() => {
                   createItemMutation.mutate({
-                    serial_number: newItem.serial_number,
+                    serialNumber: newItem.serialNumber,
                     nomenclature: newItem.nomenclature,
-                    item_type: newItem.item_type,
+                    itemType: newItem.itemType,
                     nsn: newItem.nsn || undefined,
-                    security_classification: newItem.security_classification,
-                    condition_code: newItem.condition_code,
-                    hand_receipt_number: newItem.hand_receipt_number || undefined,
-                    current_holder_name: newItem.current_holder_name || undefined,
-                    owning_unit_id: numericUnitId,
+                    securityClassification: newItem.securityClassification,
+                    conditionCode: newItem.conditionCode,
+                    handReceiptNumber: newItem.handReceiptNumber || undefined,
+                    currentHolderName: newItem.currentHolderName || undefined,
+                    owningUnitId: numericUnitId,
                     notes: newItem.notes || undefined,
                   });
                 }}
@@ -668,7 +668,7 @@ export default function CustodyPage() {
               <div
                 className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
               >
-                S/N: {selectedItem.serial_number}
+                S/N: {selectedItem.serialNumber}
               </div>
             </div>
             {chainLoading ? (
@@ -676,7 +676,7 @@ export default function CustodyPage() {
             ) : (
               <CustodyChainTimeline
                 transfers={custodyChain ?? []}
-                currentHolderName={selectedItem.current_holder_name}
+                currentHolderName={selectedItem.currentHolderName}
               />
             )}
           </Card>
@@ -714,16 +714,16 @@ export default function CustodyPage() {
             <div>
               <label style={labelStyle}>ITEM (SERIAL #)</label>
               <select
-                value={newTransfer.sensitive_item_id}
+                value={newTransfer.sensitiveItemId}
                 onChange={(e) =>
-                  setNewTransfer({ ...newTransfer, sensitive_item_id: e.target.value })
+                  setNewTransfer({ ...newTransfer, sensitiveItemId: e.target.value })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
                 <option value="">Select item...</option>
                 {(items ?? []).map((item) => (
                   <option key={item.id} value={item.id}>
-                    {item.serial_number} — {item.nomenclature}
+                    {item.serialNumber} — {item.nomenclature}
                   </option>
                 ))}
               </select>
@@ -733,9 +733,9 @@ export default function CustodyPage() {
               <input
                 type="text"
                 placeholder="Personnel name"
-                value={newTransfer.to_personnel_name}
+                value={newTransfer.toPersonnelName}
                 onChange={(e) =>
-                  setNewTransfer({ ...newTransfer, to_personnel_name: e.target.value })
+                  setNewTransfer({ ...newTransfer, toPersonnelName: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
               />
@@ -743,11 +743,11 @@ export default function CustodyPage() {
             <div>
               <label style={labelStyle}>TRANSFER TYPE</label>
               <select
-                value={newTransfer.transfer_type}
+                value={newTransfer.transferType}
                 onChange={(e) =>
                   setNewTransfer({
                     ...newTransfer,
-                    transfer_type: e.target.value as TransferType,
+                    transferType: e.target.value as TransferType,
                   })
                 }
                 style={{ ...selectStyle, width: '100%' }}
@@ -764,9 +764,9 @@ export default function CustodyPage() {
               <input
                 type="text"
                 placeholder="HR-2026-XXXX"
-                value={newTransfer.document_number}
+                value={newTransfer.documentNumber}
                 onChange={(e) =>
-                  setNewTransfer({ ...newTransfer, document_number: e.target.value })
+                  setNewTransfer({ ...newTransfer, documentNumber: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
               />
@@ -795,10 +795,10 @@ export default function CustodyPage() {
                   toast.success('Custody transfer submitted successfully');
                   setShowNewTransferForm(false);
                   setNewTransfer({
-                    sensitive_item_id: '',
-                    to_personnel_name: '',
-                    transfer_type: 'ISSUE' as TransferType,
-                    document_number: '',
+                    sensitiveItemId: '',
+                    toPersonnelName: '',
+                    transferType: 'ISSUE' as TransferType,
+                    documentNumber: '',
                     reason: '',
                   });
                 }}
@@ -839,9 +839,9 @@ export default function CustodyPage() {
               <tbody>
                 {transfers.map((transfer) => {
                   const typeColor =
-                    TRANSFER_TYPE_COLORS[transfer.transfer_type] ?? '#6b7280';
+                    TRANSFER_TYPE_COLORS[transfer.transferType] ?? '#6b7280';
                   const matchItem = items?.find(
-                    (i) => i.id === transfer.sensitive_item_id,
+                    (i) => i.id === transfer.sensitiveItemId,
                   );
 
                   return (
@@ -849,17 +849,17 @@ export default function CustodyPage() {
                       <td
                         className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] whitespace-nowrap"
                       >
-                        {new Date(transfer.transfer_date).toLocaleDateString()}
+                        {new Date(transfer.transferDate).toLocaleDateString()}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
                       >
-                        {matchItem?.serial_number ?? `Item #${transfer.sensitive_item_id}`}
+                        {matchItem?.serialNumber ?? `Item #${transfer.sensitiveItemId}`}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text)]"
                       >
-                        {transfer.from_personnel_name ?? '—'}
+                        {transfer.fromPersonnelName ?? '—'}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text)]"
@@ -869,7 +869,7 @@ export default function CustodyPage() {
                             size={10}
                             className="text-[var(--color-text-muted)]"
                           />
-                          {transfer.to_personnel_name ?? '—'}
+                          {transfer.toPersonnelName ?? '—'}
                         </div>
                       </td>
                       <td
@@ -878,13 +878,13 @@ export default function CustodyPage() {
                         <span
                           className="py-0.5 px-1.5 rounded-[3px] font-semibold text-[9px]" style={{ backgroundColor: `${typeColor}20`, color: typeColor }}
                         >
-                          {transfer.transfer_type.replace(/_/g, ' ')}
+                          {transfer.transferType.replace(/_/g, ' ')}
                         </span>
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
                       >
-                        {transfer.document_number ?? '—'}
+                        {transfer.documentNumber ?? '—'}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap"

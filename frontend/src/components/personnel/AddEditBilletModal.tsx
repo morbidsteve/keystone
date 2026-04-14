@@ -117,12 +117,12 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
-        setUnitId(initialData.unit_id);
-        setBilletIdCode(initialData.billet_id_code);
-        setBilletTitle(initialData.billet_title);
-        setMosRequired(initialData.mos_required ?? '');
-        setRankRequired(initialData.rank_required ?? '');
-        setIsKeyBillet(initialData.is_key_billet);
+        setUnitId(initialData.unitId);
+        setBilletIdCode(initialData.billetIdCode);
+        setBilletTitle(initialData.billetTitle);
+        setMosRequired(initialData.mosRequired ?? '');
+        setRankRequired(initialData.rankRequired ?? '');
+        setIsKeyBillet(initialData.isKeyBillet);
       } else {
         setUnitId(4);
         setBilletIdCode('');
@@ -140,12 +140,12 @@ export default function AddEditBilletModal({ isOpen, onClose, onSaved, initialDa
     setSaving(true);
     try {
       const payload: Partial<BilletRecord> = {
-        unit_id: unitId,
-        billet_id_code: billetIdCode,
-        billet_title: billetTitle,
-        mos_required: mosRequired || null,
-        rank_required: rankRequired || null,
-        is_key_billet: isKeyBillet,
+        unitId: unitId,
+        billetIdCode: billetIdCode,
+        billetTitle: billetTitle,
+        mosRequired: mosRequired || null,
+        rankRequired: rankRequired || null,
+        isKeyBillet: isKeyBillet,
       };
       if (isEdit && initialData) {
         await updateBillet(initialData.id, payload);

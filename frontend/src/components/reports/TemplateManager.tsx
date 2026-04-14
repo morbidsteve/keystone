@@ -90,12 +90,12 @@ export default function TemplateManager() {
 
   const startEdit = (t: ReportTemplate) => {
     setFormName(t.name);
-    setFormType(t.report_type);
+    setFormType(t.reportType);
     setFormDescription(t.description || '');
-    setFormBody(t.template_body);
+    setFormBody(t.templateBody);
     setFormSections([...t.sections]);
-    setFormClassification(t.classification_default);
-    setFormIsDefault(t.is_default);
+    setFormClassification(t.classificationDefault);
+    setFormIsDefault(t.isDefault);
     setEditingId(t.id);
     setShowForm(true);
   };
@@ -113,23 +113,23 @@ export default function TemplateManager() {
       if (editingId) {
         const updated = await updateTemplate(editingId, {
           name: formName,
-          report_type: formType,
+          reportType: formType,
           description: formDescription || undefined,
-          template_body: formBody,
+          templateBody: formBody,
           sections: formSections,
-          classification_default: formClassification,
-          is_default: formIsDefault,
+          classificationDefault: formClassification,
+          isDefault: formIsDefault,
         });
         setTemplates((prev) => prev.map((t) => (t.id === editingId ? updated : t)));
       } else {
         const created = await createTemplate({
           name: formName,
-          report_type: formType,
+          reportType: formType,
           description: formDescription || undefined,
-          template_body: formBody,
+          templateBody: formBody,
           sections: formSections,
-          classification_default: formClassification,
-          is_default: formIsDefault,
+          classificationDefault: formClassification,
+          isDefault: formIsDefault,
         });
         setTemplates((prev) => [...prev, created]);
       }
@@ -417,30 +417,30 @@ export default function TemplateManager() {
                       <span
                         className="py-0.5 px-1.5 rounded-[var(--radius)] bg-[var(--color-bg)] border border-[var(--color-border)] text-[8px] tracking-[0.5px]"
                       >
-                        {t.report_type}
+                        {t.reportType}
                       </span>
                     </td>
                     <td style={tdStyle}>
                       <span
-                        className="py-0.5 px-1.5 rounded-[var(--radius)] text-[8px] tracking-[0.5px]" style={{ backgroundColor: t.classification_default === 'SECRET' ||
-                            t.classification_default === 'TS' ||
-                            t.classification_default === 'TS_SCI'
+                        className="py-0.5 px-1.5 rounded-[var(--radius)] text-[8px] tracking-[0.5px]" style={{ backgroundColor: t.classificationDefault === 'SECRET' ||
+                            t.classificationDefault === 'TS' ||
+                            t.classificationDefault === 'TS_SCI'
                               ? 'rgba(239,68,68,0.1)'
-                              : 'var(--color-bg)', border: t.classification_default === 'SECRET' ||
-                            t.classification_default === 'TS' ||
-                            t.classification_default === 'TS_SCI'
+                              : 'var(--color-bg)', border: t.classificationDefault === 'SECRET' ||
+                            t.classificationDefault === 'TS' ||
+                            t.classificationDefault === 'TS_SCI'
                               ? '1px solid rgba(239,68,68,0.3)'
-                              : '1px solid var(--color-border)', color: t.classification_default === 'SECRET' ||
-                            t.classification_default === 'TS' ||
-                            t.classification_default === 'TS_SCI'
+                              : '1px solid var(--color-border)', color: t.classificationDefault === 'SECRET' ||
+                            t.classificationDefault === 'TS' ||
+                            t.classificationDefault === 'TS_SCI'
                               ? 'var(--color-red, #ef4444)'
                               : 'var(--color-text-muted)' }}
                       >
-                        {t.classification_default}
+                        {t.classificationDefault}
                       </span>
                     </td>
                     <td style={tdStyle}>
-                      {t.is_default && (
+                      {t.isDefault && (
                         <span
                           className="py-0.5 px-1.5 rounded-[var(--radius)] bg-[rgba(34,197,94,0.1)] text-[var(--color-green, #22c55e)] text-[8px] tracking-[0.5px]" style={{ border: '1px solid rgba(34,197,94,0.3)' }}
                         >

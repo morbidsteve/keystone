@@ -129,11 +129,11 @@ export default function NearbyModal() {
                   </div>
                   {data.units.map((u) => (
                     <div
-                      key={u.unit_id}
+                      key={u.unitId}
                       style={rowStyle}
                       onClick={() => {
                         clearNearby();
-                        selectEntity('unit', u.unit_id, u);
+                        selectEntity('unit', u.unitId, u);
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
@@ -152,15 +152,15 @@ export default function NearbyModal() {
                           </span>
                         </div>
                         <span
-                          className="text-[9px] font-bold" style={{ color: statusColor[u.supply_status] ?? '#94a3b8' }}
+                          className="text-[9px] font-bold" style={{ color: statusColor[u.supplyStatus] ?? '#94a3b8' }}
                         >
-                          {u.supply_status}
+                          {u.supplyStatus}
                         </span>
                       </div>
                       <div className="text-[9px] text-[#64748b] mt-0.5">
                         {u.mgrs ?? formatCoords(u.latitude, u.longitude)}
                         <span className="ml-2">
-                          Readiness: {u.readiness_pct}%
+                          Readiness: {u.readinessPct}%
                         </span>
                       </div>
                     </div>
@@ -195,7 +195,7 @@ export default function NearbyModal() {
                           {sp.name}
                         </span>
                         <span className="text-[9px] text-[#94a3b8]">
-                          {sp.point_type.replace(/_/g, ' ')}
+                          {sp.pointType.replace(/_/g, ' ')}
                         </span>
                       </div>
                       <div className="text-[9px] text-[#64748b] mt-0.5">
@@ -233,7 +233,7 @@ export default function NearbyModal() {
                     >
                       <div className="flex justify-between items-center">
                         <span className="text-[#e2e8f0] text-[11px] font-semibold">
-                          {a.unit_name}
+                          {a.unitName}
                         </span>
                         <span
                           className="text-[9px] font-bold" style={{ color: severityColor[a.severity] ?? '#94a3b8' }}

@@ -388,7 +388,7 @@ export async function getReadinessDashboard(): Promise<{
         limitingFactor: string | null;
       }>;
     };
-  }>('/readiness/dashboard');
+  }>('/readiness');
   return response.data.data;
 }
 
@@ -418,7 +418,7 @@ export async function getUnitStrength(
     return generateStrength(unitId);
   }
   const response = await apiClient.get<{ data: UnitStrengthReport }>(
-    `/readiness/${unitId}/strength`,
+    `/readiness/strength/${unitId}`,
   );
   return response.data.data;
 }
@@ -433,7 +433,7 @@ export async function updateUnitStrength(
     return { ...current, ...data } as UnitStrengthReport;
   }
   const response = await apiClient.put<{ data: UnitStrengthReport }>(
-    `/readiness/${unitId}/strength`,
+    `/readiness/strength/${unitId}`,
     data,
   );
   return response.data.data;

@@ -45,7 +45,7 @@ export default function MIRCSourcesPanel() {
       setLoading(true);
       setError(null);
       const data = await getDataSources();
-      setSources(data.filter((s) => s.source_type === 'mirc_directory' || s.source_type === 'irc_server'));
+      setSources(data.filter((s) => s.sourceType === 'mirc_directory' || s.sourceType === 'irc_server'));
     } catch {
       setError('Failed to load sources');
     } finally {
@@ -126,7 +126,7 @@ export default function MIRCSourcesPanel() {
       <Card title={`EDIT: ${editingSource.name}`}>
         <DataSourceForm
           initial={editingSource}
-          sourceType={editingSource.source_type}
+          sourceType={editingSource.sourceType}
           onSubmit={handleUpdate}
           onCancel={() => setEditingSource(null)}
         />
@@ -148,11 +148,11 @@ export default function MIRCSourcesPanel() {
     );
   }
 
-  const directoryWatchers = sources.filter((s) => s.source_type === 'mirc_directory');
-  const ircConnections = sources.filter((s) => s.source_type === 'irc_server');
+  const directoryWatchers = sources.filter((s) => s.sourceType === 'mirc_directory');
+  const ircConnections = sources.filter((s) => s.sourceType === 'irc_server');
 
   const renderSourceRow = (source: DataSource) => {
-    const TypeIcon = source.source_type === 'mirc_directory' ? FolderSearch : Radio;
+    const TypeIcon = source.sourceType === 'mirc_directory' ? FolderSearch : Radio;
     const isSelected = selectedSource === source.id;
 
     return (
@@ -179,18 +179,18 @@ export default function MIRCSourcesPanel() {
             <div
               className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-0.5"
             >
-              {source.source_type === 'irc_server'
+              {source.sourceType === 'irc_server'
                 ? `${(source.config as { host: string }).host}:${(source.config as { port: number }).port}`
-                : (source.config as { directory_path: string }).directory_path}
+                : (source.config as { directoryPath: string }).directoryPath}
             </div>
           </div>
           <div className="flex items-center gap-2.5">
-            {source.last_run && (
+            {source.lastRun && (
               <span
                 className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
                 <Clock size={10} />
-                {formatRelativeTime(source.last_run)}
+                {formatRelativeTime(source.lastRun)}
               </span>
             )}
             <DataSourceStatusPill status={source.status} />
@@ -243,7 +243,7 @@ export default function MIRCSourcesPanel() {
         )}
 
         {/* Error display */}
-        {source.last_error && isSelected && (
+        {source.lastError && isSelected && (
           <div
             className="flex items-start gap-1.5 mt-2 py-1.5 px-2 bg-[rgba(255,107,107,0.08)] rounded-[var(--radius)]"
           >
@@ -251,7 +251,7 @@ export default function MIRCSourcesPanel() {
             <span
               className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)] break-words"
             >
-              {source.last_error}
+              {source.lastError}
             </span>
           </div>
         )}
@@ -260,10 +260,10 @@ export default function MIRCSourcesPanel() {
         {isSelected && (
           <div className="flex gap-4 mt-2">
             <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-              {source.files_processed} files processed
+              {source.filesProcessed} files processed
             </span>
             <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-              {source.records_ingested.toLocaleString()} records ingested
+              {source.recordsIngested.toLocaleString()} records ingested
             </span>
           </div>
         )}

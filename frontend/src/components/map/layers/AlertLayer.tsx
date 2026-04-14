@@ -38,6 +38,7 @@ export default function AlertLayer({ alerts }: AlertLayerProps) {
   return (
     <>
       {alerts.map((alert) => {
+        if (alert.latitude == null || alert.longitude == null) return null;
         const color = getAlertColor(alert.severity);
         const isCritical = alert.severity === 'CRITICAL';
 
@@ -61,7 +62,7 @@ export default function AlertLayer({ alerts }: AlertLayerProps) {
               <div
                 className="font-[var(--font-mono)] text-[9px] font-bold text-[#111] py-0.5 px-1"
               >
-                {getAlertIcon(alert.severity)} {alert.severity} - {alert.alert_type.replace(/_/g, ' ')}
+                {getAlertIcon(alert.severity)} {alert.severity} - {alert.alertType.replace(/_/g, ' ')}
               </div>
             </Tooltip>
           </CircleMarker>

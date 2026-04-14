@@ -10,10 +10,11 @@ import type {
 
 export async function getSupplyRecords(filters?: SupplyFilters): Promise<PaginatedResponse<SupplyRecord>> {
   if (isDemoMode) return mockApi.getSupplyRecords(filters);
-  const response = await apiClient.get<PaginatedResponse<SupplyRecord>>('/supply', {
+  const response = await apiClient.get<ApiResponse<SupplyRecord[]>>('/supply', {
     params: filters,
   });
-  return response.data;
+  const arr = Array.isArray(response.data?.data) ? response.data.data : [];
+  return { data: arr, total: arr.length, page: 1, pageSize: arr.length };
 }
 
 export async function getSupplyById(id: string): Promise<SupplyRecord> {

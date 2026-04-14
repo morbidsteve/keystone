@@ -66,7 +66,7 @@ export default function LiftRequestBoard({
     const inTransit = requests.filter((r) => r.status === 'IN_TRANSIT').length;
     const deliveredThisMonth = requests.filter((r) => {
       if (r.status !== 'DELIVERED') return false;
-      const d = new Date(r.updated_at);
+      const d = new Date(r.updatedAt);
       const now = new Date();
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     }).length;
@@ -185,11 +185,11 @@ export default function LiftRequestBoard({
                           {req.priority}
                         </span>
                         <div className="flex items-center gap-1">
-                          <CargoIcon type={req.cargo_type} />
+                          <CargoIcon type={req.cargoType} />
                           <span
                             className="font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)]"
                           >
-                            {req.cargo_type}
+                            {req.cargoType}
                           </span>
                         </div>
                       </div>
@@ -198,12 +198,12 @@ export default function LiftRequestBoard({
                       <div
                         className="font-[var(--font-mono)] text-[9px] text-[var(--color-text)] mb-1"
                       >
-                        {req.pickup_location}
+                        {req.pickupLocation}
                       </div>
                       <div
                         className="font-[var(--font-mono)] text-[9px] text-[var(--color-accent)] mb-1.5 flex items-center gap-1"
                       >
-                        <span className="text-[var(--color-text-muted)]">&#8594;</span> {req.delivery_location}
+                        <span className="text-[var(--color-text-muted)]">&#8594;</span> {req.deliveryLocation}
                       </div>
 
                       {/* Weight/PAX + date */}
@@ -211,12 +211,12 @@ export default function LiftRequestBoard({
                         className="flex justify-between font-[var(--font-mono)] text-[8px] text-[var(--color-text-muted)]"
                       >
                         <span>
-                          {req.weight_lbs ? `${(req.weight_lbs / 1000).toFixed(1)}K lbs` : ''}
-                          {req.weight_lbs && req.pax_count > 0 ? ' / ' : ''}
-                          {req.pax_count > 0 ? `${req.pax_count} PAX` : ''}
-                          {!req.weight_lbs && req.pax_count === 0 ? '--' : ''}
+                          {req.weightLbs ? `${(req.weightLbs / 1000).toFixed(1)}K lbs` : ''}
+                          {req.weightLbs && req.paxCount > 0 ? ' / ' : ''}
+                          {req.paxCount > 0 ? `${req.paxCount} PAX` : ''}
+                          {!req.weightLbs && req.paxCount === 0 ? '--' : ''}
                         </span>
-                        <span>RDD: {req.required_delivery_date}</span>
+                        <span>RDD: {req.requiredDeliveryDate}</span>
                       </div>
 
                       {/* Hazmat indicator */}
@@ -235,17 +235,17 @@ export default function LiftRequestBoard({
                         >
                           <div className="mb-1">
                             <strong className="text-[var(--color-text-muted)]">CARGO:</strong>{' '}
-                            {req.cargo_description}
+                            {req.cargoDescription}
                           </div>
                           <div className="mb-1">
                             <strong className="text-[var(--color-text-muted)]">UNIT:</strong>{' '}
-                            {req.requesting_unit_name}
-                            {req.supporting_unit_name && ` (Spt: ${req.supporting_unit_name})`}
+                            {req.requestingUnitName}
+                            {req.supportingUnitName && ` (Spt: ${req.supportingUnitName})`}
                           </div>
-                          {req.cube_ft && (
+                          {req.cubeFt && (
                             <div>
                               <strong className="text-[var(--color-text-muted)]">CUBE:</strong>{' '}
-                              {req.cube_ft} ft3
+                              {req.cubeFt} ft3
                             </div>
                           )}
                         </div>

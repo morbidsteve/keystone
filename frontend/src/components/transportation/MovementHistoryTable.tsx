@@ -28,27 +28,27 @@ export default function MovementHistoryTable({
   const [onTimeOnly, setOnTimeOnly] = useState(false);
 
   const filteredRecords = useMemo(() => {
-    if (onTimeOnly) return records.filter((r) => r.on_time);
+    if (onTimeOnly) return records.filter((r) => r.onTime);
     return records;
   }, [records, onTimeOnly]);
 
   const stats = useMemo(() => {
     const total = records.length;
-    const onTime = records.filter((r) => r.on_time).length;
+    const onTime = records.filter((r) => r.onTime).length;
     const onTimeRate = total > 0 ? ((onTime / total) * 100).toFixed(1) : '0.0';
     const avgDuration =
       total > 0
         ? (
-            records.reduce((a, r) => a + (r.duration_hours ?? 0), 0) / total
+            records.reduce((a, r) => a + (r.durationHours ?? 0), 0) / total
           ).toFixed(1)
         : '0.0';
-    const lateMovements = records.filter((r) => !r.on_time);
+    const lateMovements = records.filter((r) => !r.onTime);
     const avgDelay =
       lateMovements.length > 0
         ? (
             lateMovements.reduce((a, r) => {
-              if (!r.eta || !r.actual_arrival) return a;
-              const diff = (new Date(r.actual_arrival).getTime() - new Date(r.eta).getTime()) / 3600000;
+              if (!r.eta || !r.actualArrival) return a;
+              const diff = (new Date(r.actualArrival).getTime() - new Date(r.eta).getTime()) / 3600000;
               return a + Math.max(0, diff);
             }, 0) / lateMovements.length
           ).toFixed(1)
@@ -172,30 +172,30 @@ export default function MovementHistoryTable({
               <tbody>
                 {filteredRecords.map((rec) => (
                   <tr key={rec.id}>
-                    <td style={cellStyle}>{formatDate(rec.departure_time)}</td>
+                    <td style={cellStyle}>{formatDate(rec.departureTime)}</td>
                     <td className="text-[var(--color-text-bright)]">
-                      {rec.convoy_id ?? '--'}
+                      {rec.convoyId ?? '--'}
                     </td>
                     <td style={cellStyle}>
                       <span className="text-[var(--color-text)]">{rec.origin}</span>
                       <span className="text-[var(--color-text-muted)] mx-1">&#8594;</span>
                       <span className="text-[var(--color-text)]">{rec.destination}</span>
                     </td>
-                    <td style={cellStyle}>{rec.vehicle_count}</td>
+                    <td style={cellStyle}>{rec.vehicleCount}</td>
                     <td style={cellStyle}>{formatDate(rec.eta)}</td>
-                    <td style={cellStyle}>{formatDate(rec.actual_arrival)}</td>
+                    <td style={cellStyle}>{formatDate(rec.actualArrival)}</td>
                     <td style={{ ...cellStyle, textAlign: 'center' }}>
-                      {rec.on_time ? (
+                      {rec.onTime ? (
                         <Check size={14} className="text-[#4ade80]" />
                       ) : (
                         <X size={14} className="text-[#f87171]" />
                       )}
                     </td>
                     <td style={cellStyle}>
-                      {rec.duration_hours ? `${rec.duration_hours}h` : '--'}
+                      {rec.durationHours ? `${rec.durationHours}h` : '--'}
                     </td>
                     <td style={cellStyle}>
-                      {rec.average_speed_kph ? `${rec.average_speed_kph} kph` : '--'}
+                      {rec.averageSpeedKph ? `${rec.averageSpeedKph} kph` : '--'}
                     </td>
                   </tr>
                 ))}

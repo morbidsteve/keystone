@@ -788,7 +788,7 @@ export const DEMO_REVIEW_QUEUE: ParsedRecord[] = [
     originalText: '3/1 BN reports CL III MOGAS critical. On-hand 1200 gal, auth 3000 gal. Consumption rate 600 gal/day.',
     parsedFields: {
       unit: '3/1',
-      supply_class: 'III',
+      supplyClass: 'III',
       item: 'MOGAS',
       on_hand: 1200,
       authorized: 3000,
@@ -832,7 +832,7 @@ export const DEMO_REVIEW_QUEUE: ParsedRecord[] = [
     originalText: 'CL III at 80%',
     parsedFields: {
       unit: '2/1',
-      supply_class: 'III',
+      supplyClass: 'III',
       fill_rate_pct: 80,
     },
     confidence: 0.70,

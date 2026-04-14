@@ -86,19 +86,19 @@ export default function ConvoyPopup({ convoy }: ConvoyPopupProps) {
         <div>
           <div className="text-[var(--color-text-muted)] mb-px">VEHICLES</div>
           <div className="text-[var(--color-text-bright)] font-semibold">
-            {convoy.vehicle_count}
+            {convoy.vehicleCount}
           </div>
         </div>
         <div>
           <div className="text-[var(--color-text-muted)] mb-px">CARGO</div>
           <div className="text-[var(--color-text-bright)] font-semibold">
-            {convoy.cargo_summary}
+            {convoy.cargoSummary}
           </div>
         </div>
         <div>
           <div className="text-[var(--color-text-muted)] mb-px">DEPARTED</div>
           <div className="text-[var(--color-text-bright)] font-semibold">
-            {formatRelativeTime(convoy.departure_time)}
+            {formatRelativeTime(convoy.departureTime)}
           </div>
         </div>
         <div>
@@ -110,14 +110,14 @@ export default function ConvoyPopup({ convoy }: ConvoyPopupProps) {
       </div>
 
       {/* Speed and heading */}
-      {convoy.speed_kph > 0 && (
+      {convoy.speedKph > 0 && (
         <div
           className="text-[9px] py-1 px-0 border-t border-t-[var(--color-border)] flex gap-4 text-[var(--color-text-muted)]"
         >
           <span>
             SPEED:{' '}
             <span className="text-[var(--color-text-bright)] font-semibold">
-              {convoy.speed_kph} KPH
+              {convoy.speedKph} KPH
             </span>
           </span>
           <span>

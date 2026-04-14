@@ -91,10 +91,10 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
             return (
               <tr key={log.id}>
                 <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
-                  {new Date(log.created_at).toLocaleString()}
+                  {new Date(log.createdAt).toLocaleString()}
                 </td>
                 <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
-                  {log.user_id === 1 ? 'admin' : `User #${log.user_id}`}
+                  {log.userId === 1 ? 'admin' : `User #${log.userId}`}
                 </td>
                 <td style={tdStyle}>
                   <span
@@ -104,7 +104,7 @@ export default function AuditLogTable({ logs, loading }: AuditLogTableProps) {
                   </span>
                 </td>
                 <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
-                  {log.entity_type.replace(/_/g, ' ')}
+                  {log.entityType.replace(/_/g, ' ')}
                 </td>
                 <td style={{ ...tdStyle, maxWidth: 400 }}>{log.description}</td>
               </tr>

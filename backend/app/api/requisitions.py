@@ -67,7 +67,7 @@ async def _verify_req_access(
 # --- List / Detail ---
 
 
-@router.get("/", response_model=List[RequisitionResponse])
+@router.get("", response_model=List[RequisitionResponse])
 async def list_requisitions(
     unit_id: Optional[int] = Query(None),
     status: Optional[RequisitionStatus] = Query(None),
@@ -132,7 +132,7 @@ async def get_requisition_detail(
 
 
 @router.post(
-    "/",
+    "",
     response_model=RequisitionResponse,
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],

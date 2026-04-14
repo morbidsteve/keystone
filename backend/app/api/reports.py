@@ -63,7 +63,7 @@ VALID_REPORT_TYPES = {
 }
 
 
-@router.get("/", response_model=List[ReportResponse])
+@router.get("", response_model=List[ReportResponse])
 async def list_reports(
     unit_id: Optional[int] = Query(None),
     report_type: Optional[ReportType] = Query(None),
@@ -249,7 +249,7 @@ async def generate_from_template(
     return report
 
 
-@router.post("/", response_model=ReportResponse, status_code=201)
+@router.post("", response_model=ReportResponse, status_code=201)
 async def create_report(
     data: ReportCreate,
     db: AsyncSession = Depends(get_db),

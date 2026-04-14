@@ -22,7 +22,7 @@ from app.schemas.supply import SupplyCreate, SupplyResponse, SupplyUpdate
 router = APIRouter()
 
 
-@router.get("/", response_model=List[SupplyResponse])
+@router.get("", response_model=List[SupplyResponse])
 async def list_supply_records(
     unit_id: Optional[int] = Query(None),
     supply_class: Optional[SupplyClass] = Query(None),
@@ -76,7 +76,7 @@ async def get_supply_record(
     return record
 
 
-@router.post("/", response_model=SupplyResponse, status_code=201)
+@router.post("", response_model=SupplyResponse, status_code=201)
 async def create_supply_record(
     data: SupplyCreate,
     db: AsyncSession = Depends(get_db),

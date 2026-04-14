@@ -49,7 +49,7 @@ export default function FuelStorageCards({
     >
       {storagePoints.map((sp) => {
         const isSelected = sp.id === selectedId;
-        const fillColor = getFillColor(sp.fill_percentage);
+        const fillColor = getFillColor(sp.fillPercentage);
         const statusColor = getStatusColor(sp.status);
 
         return (
@@ -73,7 +73,7 @@ export default function FuelStorageCards({
                 <div
                   className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px]"
                 >
-                  {facilityTypeLabels[sp.facility_type] ?? sp.facility_type}
+                  {facilityTypeLabels[sp.facilityType] ?? sp.facilityType}
                 </div>
               </div>
               <div
@@ -83,7 +83,7 @@ export default function FuelStorageCards({
                 <span
                   className="font-[var(--font-mono)] text-[9px] font-semibold py-0.5 px-1.5 rounded-[3px] bg-[rgba(59,130,246,0.15)] text-[#3b82f6] tracking-[0.5px]"
                 >
-                  {sp.fuel_type}
+                  {sp.fuelType}
                 </span>
                 {/* Status badge */}
                 <span
@@ -99,7 +99,7 @@ export default function FuelStorageCards({
               className="w-full h-[8px] bg-[var(--color-bg)] rounded-[4px] overflow-hidden mb-2"
             >
               <div
-                className="h-full rounded-[4px]" style={{ width: `${Math.min(sp.fill_percentage, 100)}%`, backgroundColor: fillColor, transition: 'width 0.3s ease' }}
+                className="h-full rounded-[4px]" style={{ width: `${Math.min(sp.fillPercentage, 100)}%`, backgroundColor: fillColor, transition: 'width 0.3s ease' }}
               />
             </div>
 
@@ -114,13 +114,13 @@ export default function FuelStorageCards({
                 <span
                   className="font-[var(--font-mono)] text-[11px] font-bold" style={{ color: fillColor }}
                 >
-                  {sp.fill_percentage.toFixed(1)}%
+                  {sp.fillPercentage.toFixed(1)}%
                 </span>
               </div>
               <span
                 className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
               >
-                {sp.current_gallons.toLocaleString()} / {sp.capacity_gallons.toLocaleString()} gal
+                {sp.currentGallons.toLocaleString()} / {sp.capacityGallons.toLocaleString()} gal
               </span>
             </div>
 

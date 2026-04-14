@@ -71,14 +71,14 @@ export default function AuditPage() {
   const securityActionCount = allSecurityActions?.length ?? 0;
   const uniqueUsers = useMemo(() => {
     if (!allLogs24h) return 0;
-    return new Set(allLogs24h.map((l) => l.user_id)).size;
+    return new Set(allLogs24h.map((l) => l.userId)).size;
   }, [allLogs24h]);
 
   const mostActiveEntityType = useMemo(() => {
     if (!allLogs24h || allLogs24h.length === 0) return '—';
     const counts: Record<string, number> = {};
     for (const log of allLogs24h) {
-      counts[log.entity_type] = (counts[log.entity_type] ?? 0) + 1;
+      counts[log.entityType] = (counts[log.entityType] ?? 0) + 1;
     }
     let maxType = '';
     let maxCount = 0;

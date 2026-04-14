@@ -56,7 +56,7 @@ router = APIRouter()
 WRITE_ROLES = [Role.ADMIN, Role.COMMANDER, Role.S3, Role.S4]
 
 
-@router.get("/", response_model=List[PersonnelSummaryResponse])
+@router.get("", response_model=List[PersonnelSummaryResponse])
 async def list_personnel(
     unit_id: Optional[int] = Query(None),
     status: Optional[PersonnelStatus] = Query(None),
@@ -309,7 +309,7 @@ async def get_personnel(
 
 
 @router.post(
-    "/",
+    "",
     response_model=PersonnelResponse,
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],

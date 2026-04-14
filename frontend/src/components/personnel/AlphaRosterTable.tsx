@@ -21,7 +21,7 @@ interface AlphaRosterTableProps {
 }
 
 type SortKey =
-  | 'last_name'
+  | 'lastName'
   | 'edipi'
   | 'rank'
   | 'pay_grade'
@@ -90,7 +90,7 @@ function dutyStatusColor(status: DutyStatusType): string {
 export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTableProps) {
   const [search, setSearch] = useState('');
   const [dutyStatusFilter, setDutyStatusFilter] = useState<DutyStatusType | 'ALL'>('ALL');
-  const [sortKey, setSortKey] = useState<SortKey>('last_name');
+  const [sortKey, setSortKey] = useState<SortKey>('lastName');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [showModal, setShowModal] = useState(false);
   const [editingMarine, setEditingMarine] = useState<PersonnelRecord | null>(null);
@@ -117,7 +117,7 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
     if (!deleteTarget) return;
     try {
       await deletePersonnel(deleteTarget.id);
-      toast.success(`${deleteTarget.rank ?? ''} ${deleteTarget.last_name} removed from roster`);
+      toast.success(`${deleteTarget.rank ?? ''} ${deleteTarget.lastName} removed from roster`);
       onRefresh?.();
     } catch (err) {
       console.error('Delete failed:', err);
@@ -147,8 +147,8 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
     if (term) {
       list = list.filter(
         (p) =>
-          p.last_name.toLowerCase().includes(term) ||
-          p.first_name.toLowerCase().includes(term) ||
+          p.lastName.toLowerCase().includes(term) ||
+          p.firstName.toLowerCase().includes(term) ||
           p.edipi.includes(term) ||
           (p.mos ?? '').toLowerCase().includes(term) ||
           (p.rank ?? '').toLowerCase().includes(term) ||
@@ -158,23 +158,23 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
 
     // Duty status filter
     if (dutyStatusFilter !== 'ALL') {
-      list = list.filter((p) => p.duty_status === dutyStatusFilter);
+      list = list.filter((p) => p.dutyStatus === dutyStatusFilter);
     }
 
     const sorted = [...list].sort((a, b) => {
       const dir = sortDir === 'asc' ? 1 : -1;
       switch (sortKey) {
-        case 'last_name': return dir * a.last_name.localeCompare(b.last_name);
+        case 'lastName': return dir * a.lastName.localeCompare(b.lastName);
         case 'edipi': return dir * a.edipi.localeCompare(b.edipi);
         case 'rank': return dir * rankSort(a.rank, b.rank);
-        case 'pay_grade': return dir * (a.pay_grade ?? '').localeCompare(b.pay_grade ?? '');
+        case 'pay_grade': return dir * (a.payGrade ?? '').localeCompare(b.payGrade ?? '');
         case 'mos': return dir * (a.mos ?? '').localeCompare(b.mos ?? '');
         case 'billet': return dir * (a.billet ?? '').localeCompare(b.billet ?? '');
         case 'status': return dir * a.status.localeCompare(b.status);
-        case 'duty_status': return dir * a.duty_status.localeCompare(b.duty_status);
-        case 'rifle_qual': return dir * (a.rifle_qual ?? '').localeCompare(b.rifle_qual ?? '');
-        case 'pft_score': return dir * ((a.pft_score ?? 0) - (b.pft_score ?? 0));
-        case 'cft_score': return dir * ((a.cft_score ?? 0) - (b.cft_score ?? 0));
+        case 'duty_status': return dir * a.dutyStatus.localeCompare(b.dutyStatus);
+        case 'rifle_qual': return dir * (a.rifleQual ?? '').localeCompare(b.rifleQual ?? '');
+        case 'pft_score': return dir * ((a.pftScore ?? 0) - (b.pftScore ?? 0));
+        case 'cft_score': return dir * ((a.cftScore ?? 0) - (b.cftScore ?? 0));
         default: return 0;
       }
     });
@@ -195,25 +195,25 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
   const exportData = useMemo(
     () =>
       filtered.map((p) => ({
-        last_name: p.last_name,
-        first_name: p.first_name,
+        lastName: p.lastName,
+        firstName: p.firstName,
         edipi: p.edipi,
         rank: p.rank ?? '',
-        pay_grade: p.pay_grade ?? '',
+        pay_grade: p.payGrade ?? '',
         mos: p.mos ?? '',
         billet: p.billet ?? '',
         status: p.status,
-        duty_status: p.duty_status,
-        rifle_qual: p.rifle_qual ?? '',
-        pft_score: p.pft_score ?? '',
-        cft_score: p.cft_score ?? '',
+        duty_status: p.dutyStatus,
+        rifle_qual: p.rifleQual ?? '',
+        pft_score: p.pftScore ?? '',
+        cft_score: p.cftScore ?? '',
       })) as Record<string, unknown>[],
     [filtered],
   );
 
   const exportColumns = [
-    { key: 'last_name', header: 'Last Name' },
-    { key: 'first_name', header: 'First Name' },
+    { key: 'lastName', header: 'Last Name' },
+    { key: 'firstName', header: 'First Name' },
     { key: 'edipi', header: 'EDIPI' },
     { key: 'rank', header: 'Rank' },
     { key: 'pay_grade', header: 'Pay Grade' },
@@ -227,7 +227,7 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
   ];
 
   const columns: { key: SortKey; label: string; width?: number }[] = [
-    { key: 'last_name', label: 'NAME' },
+    { key: 'lastName', label: 'NAME' },
     { key: 'edipi', label: 'EDIPI', width: 100 },
     { key: 'rank', label: 'RANK', width: 70 },
     { key: 'pay_grade', label: 'PAY GRD', width: 65 },
@@ -377,15 +377,15 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                 >
                   <td style={cellStyle}>
                     <span className="text-[var(--color-text-bright)] font-semibold">
-                      {p.last_name}
+                      {p.lastName}
                     </span>
-                    <span className="text-[var(--color-text-muted)]">, {p.first_name}</span>
+                    <span className="text-[var(--color-text-muted)]">, {p.firstName}</span>
                   </td>
                   <td style={cellStyle}>{p.edipi}</td>
                   <td className="font-semibold">
                     {p.rank ?? '—'}
                   </td>
-                  <td style={cellStyle}>{p.pay_grade ?? '—'}</td>
+                  <td style={cellStyle}>{p.payGrade ?? '—'}</td>
                   <td style={{ ...cellStyle, color: 'var(--color-accent)' }}>{p.mos ?? '—'}</td>
                   <td style={{ ...cellStyle, maxWidth: 160 }}>{p.billet ?? '—'}</td>
                   <td style={cellStyle}>
@@ -396,29 +396,29 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
                   </td>
                   <td style={cellStyle}>
                     <span
-                      className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-semibold font-[var(--font-mono)] tracking-[0.5px]" style={{ color: dutyStatusColor(p.duty_status), backgroundColor: `${dutyStatusColor(p.duty_status)}15`, border: `1px solid ${dutyStatusColor(p.duty_status)}40` }}
+                      className="inline-block py-px px-1.5 rounded-[2px] text-[9px] font-semibold font-[var(--font-mono)] tracking-[0.5px]" style={{ color: dutyStatusColor(p.dutyStatus), backgroundColor: `${dutyStatusColor(p.dutyStatus)}15`, border: `1px solid ${dutyStatusColor(p.dutyStatus)}40` }}
                     >
-                      {p.duty_status}
+                      {p.dutyStatus}
                     </span>
                   </td>
                   <td style={cellStyle}>
                     <span
-                      className="font-semibold" style={{ color: rifleQualColor(p.rifle_qual) }}
+                      className="font-semibold" style={{ color: rifleQualColor(p.rifleQual) }}
                     >
-                      {p.rifle_qual ?? '—'}
+                      {p.rifleQual ?? '—'}
                     </span>
                   </td>
-                  <td style={{ ...cellStyle, fontWeight: 600, textAlign: 'right', color: (p.pft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
-                    {p.pft_score ?? '—'}
+                  <td style={{ ...cellStyle, fontWeight: 600, textAlign: 'right', color: (p.pftScore ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
+                    {p.pftScore ?? '—'}
                   </td>
-                  <td style={{ ...cellStyle, fontWeight: 600, textAlign: 'right', color: (p.cft_score ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
-                    {p.cft_score ?? '—'}
+                  <td style={{ ...cellStyle, fontWeight: 600, textAlign: 'right', color: (p.cftScore ?? 0) >= 235 ? 'var(--color-text-bright)' : '#f87171' }}>
+                    {p.cftScore ?? '—'}
                   </td>
                   <td style={cellStyle}>
-                    {p.current_movement_id ? (
+                    {p.currentMovementId ? (
                       <span
                         className="inline-block py-px px-1.5 rounded-[2px] font-[var(--font-mono)] text-[9px] font-semibold tracking-[0.5px] text-[#fb923c] bg-[rgba(251,146,60,0.15)] cursor-pointer" style={{ border: '1px solid rgba(251, 146, 60, 0.4)' }}
-                        title={`Movement #${p.current_movement_id}`}
+                        title={`Movement #${p.currentMovementId}`}
                       >
                         EN ROUTE
                       </span>
@@ -475,7 +475,7 @@ export default function AlphaRosterTable({ personnel, onRefresh }: AlphaRosterTa
       <ConfirmDialog
         isOpen={deleteTarget !== null}
         title="DELETE PERSONNEL"
-        message={deleteTarget ? `Delete ${deleteTarget.rank ?? ''} ${deleteTarget.last_name}, ${deleteTarget.first_name}? This action cannot be undone.` : ''}
+        message={deleteTarget ? `Delete ${deleteTarget.rank ?? ''} ${deleteTarget.lastName}, ${deleteTarget.firstName}? This action cannot be undone.` : ''}
         confirmLabel="DELETE"
         variant="danger"
         onConfirm={handleDeleteConfirm}

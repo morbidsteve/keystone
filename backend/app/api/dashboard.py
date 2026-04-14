@@ -196,6 +196,7 @@ async def _get_supply_overview(
 
 
 @router.get("/supply-overview", response_model=List[SupplyClassSummary])
+@router.get("/supply", response_model=List[SupplyClassSummary])
 async def get_supply_overview(
     unit_id: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_db),
@@ -212,6 +213,7 @@ async def get_supply_overview(
 
 
 @router.get("/readiness-overview", response_model=List[ReadinessSummary])
+@router.get("/readiness", response_model=List[ReadinessSummary])
 async def get_readiness_overview(
     unit_id: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_db),

@@ -17,10 +17,11 @@ export async function getEquipmentRecords(
   filters?: EquipmentFilters,
 ): Promise<PaginatedResponse<EquipmentRecord>> {
   if (isDemoMode) return mockApi.getEquipmentRecords(filters);
-  const response = await apiClient.get<PaginatedResponse<EquipmentRecord>>('/equipment', {
+  const response = await apiClient.get<ApiResponse<EquipmentRecord[]>>('/equipment', {
     params: filters,
   });
-  return response.data;
+  const arr = Array.isArray(response.data?.data) ? response.data.data : [];
+  return { data: arr, total: arr.length, page: 1, pageSize: arr.length };
 }
 
 export async function getEquipmentById(id: string): Promise<EquipmentRecord> {
@@ -60,10 +61,11 @@ export async function getIndividualEquipment(
   filters?: IndividualEquipmentFilters,
 ): Promise<PaginatedResponse<EquipmentItem>> {
   if (isDemoMode) return mockApi.getIndividualEquipment(filters);
-  const response = await apiClient.get<PaginatedResponse<EquipmentItem>>('/equipment/individual', {
+  const response = await apiClient.get<ApiResponse<EquipmentItem[]>>('/equipment/individual', {
     params: filters,
   });
-  return response.data;
+  const arr = Array.isArray(response.data?.data) ? response.data.data : [];
+  return { data: arr, total: arr.length, page: 1, pageSize: arr.length };
 }
 
 export async function getIndividualEquipmentById(id: string): Promise<EquipmentItem> {

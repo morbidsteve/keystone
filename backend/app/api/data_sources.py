@@ -159,7 +159,7 @@ def _validate_config(source_type: DataSourceType, config: dict) -> None:
         raise BadRequestError(f"Invalid configuration for {source_type.value}: {exc}")
 
 
-@router.get("/", response_model=List[DataSourceResponse])
+@router.get("", response_model=List[DataSourceResponse])
 async def list_data_sources(
     source_type: Optional[DataSourceType] = Query(None),
     is_enabled: Optional[bool] = Query(None),
@@ -183,7 +183,7 @@ async def list_data_sources(
     return [DataSourceResponse.model_validate(s) for s in sources]
 
 
-@router.post("/", response_model=DataSourceResponse)
+@router.post("", response_model=DataSourceResponse)
 async def create_data_source(
     data: DataSourceCreate,
     db: AsyncSession = Depends(get_db),

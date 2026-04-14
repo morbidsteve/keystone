@@ -53,7 +53,8 @@ WRITE_ROLES = [Role.ADMIN, Role.COMMANDER, Role.S4]
 # --- Work Order CRUD ---
 
 
-@router.get("/", response_model=List[MaintenanceWorkOrderResponse])
+@router.get("", response_model=List[MaintenanceWorkOrderResponse])
+@router.get("/work-orders", response_model=List[MaintenanceWorkOrderResponse])
 async def list_work_orders(
     unit_id: Optional[int] = Query(None),
     equipment_id: Optional[int] = Query(None),
@@ -103,6 +104,7 @@ async def list_work_orders(
 
 
 @router.get("/{wo_id}", response_model=MaintenanceWorkOrderDetailResponse)
+@router.get("/work-orders/{wo_id}", response_model=MaintenanceWorkOrderDetailResponse)
 async def get_work_order(
     wo_id: int,
     db: AsyncSession = Depends(get_db),
@@ -130,7 +132,13 @@ async def get_work_order(
 
 
 @router.post(
-    "/",
+    "",
+    response_model=MaintenanceWorkOrderResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+@router.post(
+    "/work-orders",
     response_model=MaintenanceWorkOrderResponse,
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],
@@ -165,6 +173,11 @@ async def create_work_order(
 
 @router.put(
     "/{wo_id}",
+    response_model=MaintenanceWorkOrderResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+@router.put(
+    "/work-orders/{wo_id}",
     response_model=MaintenanceWorkOrderResponse,
     dependencies=[Depends(require_role(WRITE_ROLES))],
 )
@@ -213,6 +226,11 @@ async def update_work_order(
 
 @router.delete(
     "/{wo_id}",
+    status_code=204,
+    dependencies=[Depends(require_role([Role.ADMIN]))],
+)
+@router.delete(
+    "/work-orders/{wo_id}",
     status_code=204,
     dependencies=[Depends(require_role([Role.ADMIN]))],
 )
@@ -273,6 +291,12 @@ async def _get_work_order_for_sub(
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],
 )
+@router.post(
+    "/work-orders/{wo_id}/parts",
+    response_model=MaintenancePartResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
 async def add_part(
     wo_id: int,
     data: MaintenancePartCreate,
@@ -291,6 +315,11 @@ async def add_part(
 
 @router.put(
     "/{wo_id}/parts/{part_id}",
+    response_model=MaintenancePartResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+@router.put(
+    "/work-orders/{wo_id}/parts/{part_id}",
     response_model=MaintenancePartResponse,
     dependencies=[Depends(require_role(WRITE_ROLES))],
 )
@@ -328,6 +357,11 @@ async def update_part(
     status_code=204,
     dependencies=[Depends(require_role(WRITE_ROLES))],
 )
+@router.delete(
+    "/work-orders/{wo_id}/parts/{part_id}",
+    status_code=204,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
 async def delete_part(
     wo_id: int,
     part_id: int,
@@ -360,6 +394,12 @@ async def delete_part(
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],
 )
+@router.post(
+    "/work-orders/{wo_id}/labor",
+    response_model=MaintenanceLaborResponse,
+    status_code=201,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
 async def add_labor(
     wo_id: int,
     data: MaintenanceLaborCreate,
@@ -378,6 +418,11 @@ async def add_labor(
 
 @router.put(
     "/{wo_id}/labor/{labor_id}",
+    response_model=MaintenanceLaborResponse,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+@router.put(
+    "/work-orders/{wo_id}/labor/{labor_id}",
     response_model=MaintenanceLaborResponse,
     dependencies=[Depends(require_role(WRITE_ROLES))],
 )
@@ -412,6 +457,11 @@ async def update_labor(
 
 @router.delete(
     "/{wo_id}/labor/{labor_id}",
+    status_code=204,
+    dependencies=[Depends(require_role(WRITE_ROLES))],
+)
+@router.delete(
+    "/work-orders/{wo_id}/labor/{labor_id}",
     status_code=204,
     dependencies=[Depends(require_role(WRITE_ROLES))],
 )

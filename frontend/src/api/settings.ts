@@ -3,12 +3,12 @@ import { isDemoMode } from './mockClient';
 
 export interface ClassificationSetting {
   level: string;
-  banner_text: string;
+  bannerText: string;
   color: string;
 }
 
 export async function getClassification(): Promise<ClassificationSetting> {
-  if (isDemoMode) return { level: 'UNCLASSIFIED', banner_text: 'UNCLASSIFIED', color: 'green' };
+  if (isDemoMode) return { level: 'UNCLASSIFIED', bannerText: 'UNCLASSIFIED', color: 'green' };
   const { data } = await apiClient.get('/settings/classification');
   return data;
 }
@@ -26,17 +26,17 @@ export async function updateClassification(setting: ClassificationSetting): Prom
 export interface TileLayerConfig {
   name: string;
   label: string;
-  url_template: string;
+  urlTemplate: string;
   attribution: string;
-  max_zoom: number;
+  maxZoom: number;
   enabled: boolean;
   order: number;
 }
 
 const DEFAULT_TILE_LAYERS: TileLayerConfig[] = [
-  { name: 'osm', label: 'OpenStreetMap', url_template: '/tiles/osm/{z}/{x}/{y}.png', attribution: 'OpenStreetMap', max_zoom: 19, enabled: true, order: 0 },
-  { name: 'satellite', label: 'Satellite', url_template: '/tiles/satellite/{z}/{y}/{x}', attribution: 'Esri', max_zoom: 18, enabled: true, order: 1 },
-  { name: 'topo', label: 'Topographic', url_template: '/tiles/topo/{z}/{x}/{y}.png', attribution: 'OpenTopoMap', max_zoom: 17, enabled: true, order: 2 },
+  { name: 'osm', label: 'OpenStreetMap', urlTemplate: '/tiles/osm/{z}/{x}/{y}.png', attribution: 'OpenStreetMap', maxZoom: 19, enabled: true, order: 0 },
+  { name: 'satellite', label: 'Satellite', urlTemplate: '/tiles/satellite/{z}/{y}/{x}', attribution: 'Esri', maxZoom: 18, enabled: true, order: 1 },
+  { name: 'topo', label: 'Topographic', urlTemplate: '/tiles/topo/{z}/{x}/{y}.png', attribution: 'OpenTopoMap', maxZoom: 17, enabled: true, order: 2 },
 ];
 
 export async function getTileLayers(): Promise<TileLayerConfig[]> {

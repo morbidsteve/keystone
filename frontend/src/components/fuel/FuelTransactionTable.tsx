@@ -61,7 +61,7 @@ const cellStyle: React.CSSProperties = {
 
 export default function FuelTransactionTable({ transactions }: FuelTransactionTableProps) {
   const sorted = [...transactions].sort(
-    (a, b) => new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime(),
+    (a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime(),
   );
 
   if (sorted.length === 0) {
@@ -92,7 +92,7 @@ export default function FuelTransactionTable({ transactions }: FuelTransactionTa
         </thead>
         <tbody>
           {sorted.map((txn) => {
-            const badge = typeBadgeStyles[txn.transaction_type] ?? typeBadgeStyles.SAMPLE;
+            const badge = typeBadgeStyles[txn.transactionType] ?? typeBadgeStyles.SAMPLE;
             return (
               <tr
                 key={txn.id}
@@ -100,34 +100,34 @@ export default function FuelTransactionTable({ transactions }: FuelTransactionTa
                   transition: 'background-color var(--transition)',
                 }}
               >
-                <td style={cellStyle}>{formatDate(txn.transaction_date)}</td>
+                <td style={cellStyle}>{formatDate(txn.transactionDate)}</td>
                 <td style={cellStyle}>
                   <span
                     className="font-[var(--font-mono)] text-[9px] font-semibold py-0.5 px-2 rounded-[3px] tracking-[0.5px]" style={{ backgroundColor: badge.bg, color: badge.color }}
                   >
-                    {txn.transaction_type}
+                    {txn.transactionType}
                   </span>
                 </td>
-                <td style={cellStyle}>{txn.fuel_type}</td>
+                <td style={cellStyle}>{txn.fuelType}</td>
                 <td
-                  className="font-semibold" style={{ color: txn.transaction_type === 'RECEIPT'
+                  className="font-semibold" style={{ color: txn.transactionType === 'RECEIPT'
                         ? '#22c55e'
-                        : txn.transaction_type === 'LOSS'
+                        : txn.transactionType === 'LOSS'
                           ? '#ef4444'
                           : 'var(--color-text)' }}
                 >
-                  {formatQuantity(txn.transaction_type, txn.quantity_gallons)} gal
+                  {formatQuantity(txn.transactionType, txn.quantityGallons)} gal
                 </td>
-                <td style={cellStyle}>{txn.storage_point_name ?? `SP-${txn.storage_point_id}`}</td>
+                <td style={cellStyle}>{txn.storagePointName ?? `SP-${txn.storagePointId}`}</td>
                 <td style={cellStyle}>
-                  {txn.vehicle_bumper_number
-                    ? `${txn.vehicle_bumper_number}${txn.vehicle_type ? ` (${txn.vehicle_type})` : ''}`
-                    : txn.vehicle_type ?? '—'}
+                  {txn.vehicleBumperNumber
+                    ? `${txn.vehicleBumperNumber}${txn.vehicleType ? ` (${txn.vehicleType})` : ''}`
+                    : txn.vehicleType ?? '—'}
                 </td>
                 <td className="text-[var(--color-text-muted)]">
-                  {txn.document_number ?? '—'}
+                  {txn.documentNumber ?? '—'}
                 </td>
-                <td style={cellStyle}>{txn.performed_by_name ?? '—'}</td>
+                <td style={cellStyle}>{txn.performedByName ?? '—'}</td>
                 <td
                   className="text-[var(--color-text-muted)] max-w-[200px] overflow-hidden text-ellipsis"
                   title={txn.notes ?? ''}

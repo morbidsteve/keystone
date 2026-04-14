@@ -9,7 +9,9 @@ export async function getAlerts(params?: {
 }): Promise<Alert[]> {
   if (isDemoMode) return mockApi.getAlerts(params);
   const response = await apiClient.get<ApiResponse<Alert[]>>('/alerts', { params });
-  return response.data.data;
+  const data = response.data.data;
+  // Backend returns paginated {items, total, offset, limit} — extract the array
+  return Array.isArray(data) ? data : (data as any)?.items ?? [];
 }
 
 export async function acknowledgeAlert(id: string): Promise<Alert> {
@@ -26,7 +28,7 @@ export async function getAlertCount(): Promise<number> {
 
 export async function getAlertSummary(unitId?: string): Promise<AlertSummary> {
   if (isDemoMode) return mockGetAlertSummary(unitId);
-  const params = unitId ? `?unit_id=${unitId}` : '';
+  const params = unitId ? `?unitId=${unitId}` : '';
   const res = await apiClient.get(`/alerts/summary${params}`);
   return res.data;
 }

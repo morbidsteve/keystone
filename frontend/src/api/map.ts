@@ -5,7 +5,7 @@ import type { ApiResponse } from '@/lib/types';
 // ── Map Types ──────────────────────────────────────────────────────────
 
 export interface SupplyBreakdown {
-  supply_class: string;
+  supplyClass: string;
   name: string;
   percentage: number;
   dos: number;
@@ -14,37 +14,37 @@ export interface SupplyBreakdown {
 
 export interface EquipmentSummary {
   type: string;
-  mission_capable: number;
+  missionCapable: number;
   total: number;
-  readiness_pct: number;
+  readinessPct: number;
 }
 
 export interface InboundConvoy {
-  convoy_id: string;
+  convoyId: string;
   name: string;
   eta: string;
   status: string;
-  cargo_summary: string;
+  cargoSummary: string;
 }
 
 export interface MapUnit {
-  unit_id: string;
+  unitId: string;
   name: string;
   abbreviation: string;
   echelon: string;
   latitude: number;
   longitude: number;
   mgrs?: string;
-  supply_status: string;
-  readiness_pct: number;
-  worst_supply_class: string;
-  worst_dos: number;
-  symbol_sidc: string;
-  position_source?: string;
-  last_updated?: string;
-  supply_breakdown?: SupplyBreakdown[];
-  equipment_summary?: EquipmentSummary[];
-  inbound_convoys?: InboundConvoy[];
+  supplyStatus: string;
+  readinessPct: number;
+  worstSupplyClass: string;
+  worstDos: number;
+  symbolSidc: string;
+  positionSource?: string;
+  lastUpdated?: string;
+  supplyBreakdown?: SupplyBreakdown[];
+  equipmentSummary?: EquipmentSummary[];
+  inboundConvoys?: InboundConvoy[];
 }
 
 export interface ConvoyEndpoint {
@@ -55,65 +55,65 @@ export interface ConvoyEndpoint {
 }
 
 export interface MapConvoy {
-  convoy_id: string;
+  convoyId: string;
   name: string;
   origin: ConvoyEndpoint;
   destination: ConvoyEndpoint;
-  current_position: { lat: number; lon: number; mgrs?: string } | null;
-  route_geometry: [number, number][];
+  currentPosition: { lat: number; lon: number; mgrs?: string } | null;
+  routeGeometry: [number, number][];
   status: string;
-  vehicle_count: number;
-  cargo_summary: string;
-  departure_time: string;
+  vehicleCount: number;
+  cargoSummary: string;
+  departureTime: string;
   eta: string;
-  speed_kph: number;
+  speedKph: number;
   heading: number;
 }
 
 export interface ConvoyVehicleDetail {
-  vehicle_id: string;
-  vehicle_type: 'HMMWV' | 'MTVR' | 'JLTV' | 'LVSR' | 'LAV' | 'ACV' | 'AAV' | string;
+  vehicleId: string;
+  vehicleType: 'HMMWV' | 'MTVR' | 'JLTV' | 'LVSR' | 'LAV' | 'ACV' | 'AAV' | string;
   tamcn: string;
-  bumper_number: string;
-  call_sign: string;
+  bumperNumber: string;
+  callSign: string;
   status: 'FMC' | 'NMC' | 'BROKEN_DOWN' | 'MOVING' | 'STOPPED';
   position: { lat: number; lon: number };
   heading: number;
-  speed_kph: number;
-  last_updated: string;
+  speedKph: number;
+  lastUpdated: string;
   crew: {
-    personnel_id: string;
+    personnelId: string;
     rank: string;
     name: string;
     role: 'DRIVER' | 'TC' | 'GUNNER' | 'PAX';
   }[];
   cargo: {
-    item_id: string;
-    item_name: string;
-    supply_class: string;
+    itemId: string;
+    itemName: string;
+    supplyClass: string;
     quantity: number;
     uom: string;
-    total_weight_kg: number;
+    totalWeightKg: number;
   }[];
 }
 
 export interface ConvoyMovementDetail extends MapConvoy {
   vehicles: ConvoyVehicleDetail[];
-  total_personnel: number;
-  total_cargo_weight_kg: number;
-  progress_percent: number;
+  totalPersonnel: number;
+  totalCargoWeightKg: number;
+  progressPercent: number;
 }
 
 export interface MapSupplyPoint {
   id: string;
   name: string;
-  point_type: string;
+  pointType: string;
   latitude: number;
   longitude: number;
   mgrs?: string;
   status: string;
-  parent_unit_name: string;
-  capacity_notes: string;
+  parentUnitName: string;
+  capacityNotes: string;
 }
 
 export interface RouteWaypoint {
@@ -126,7 +126,7 @@ export interface RouteWaypoint {
 export interface MapRoute {
   id: string;
   name: string;
-  route_type: string;
+  routeType: string;
   status: string;
   waypoints: RouteWaypoint[];
   description: string;
@@ -134,10 +134,10 @@ export interface MapRoute {
 
 export interface MapAlert {
   id: string;
-  alert_type: string;
+  alertType: string;
   severity: string;
   message: string;
-  unit_name: string;
+  unitName: string;
   latitude: number;
   longitude: number;
   mgrs?: string;
@@ -156,145 +156,145 @@ export interface MapData {
 const mockMapData: MapData = {
   units: [
     {
-      unit_id: '1mef',
+      unitId: '1mef',
       name: 'I Marine Expeditionary Force',
       abbreviation: 'I MEF',
       echelon: 'MEF',
       latitude: 33.3,
       longitude: -117.35,
       mgrs: '11SMS6741584600',
-      supply_status: 'GREEN',
-      readiness_pct: 92,
-      worst_supply_class: 'V',
-      worst_dos: 8,
-      symbol_sidc: 'SFGPU-----G----',
-      position_source: 'GCCS',
-      last_updated: new Date(Date.now() - 300000).toISOString(),
-      supply_breakdown: [
-        { supply_class: 'I', name: 'Subsistence', percentage: 95, dos: 14, status: 'GREEN' },
-        { supply_class: 'III', name: 'POL', percentage: 88, dos: 10, status: 'GREEN' },
-        { supply_class: 'V', name: 'Ammunition', percentage: 72, dos: 8, status: 'AMBER' },
-        { supply_class: 'VIII', name: 'Medical', percentage: 91, dos: 12, status: 'GREEN' },
-        { supply_class: 'IX', name: 'Repair Parts', percentage: 78, dos: 9, status: 'AMBER' },
+      supplyStatus: 'GREEN',
+      readinessPct: 92,
+      worstSupplyClass: 'V',
+      worstDos: 8,
+      symbolSidc: 'SFGPU-----G----',
+      positionSource: 'GCCS',
+      lastUpdated: new Date(Date.now() - 300000).toISOString(),
+      supplyBreakdown: [
+        { supplyClass: 'I', name: 'Subsistence', percentage: 95, dos: 14, status: 'GREEN' },
+        { supplyClass: 'III', name: 'POL', percentage: 88, dos: 10, status: 'GREEN' },
+        { supplyClass: 'V', name: 'Ammunition', percentage: 72, dos: 8, status: 'AMBER' },
+        { supplyClass: 'VIII', name: 'Medical', percentage: 91, dos: 12, status: 'GREEN' },
+        { supplyClass: 'IX', name: 'Repair Parts', percentage: 78, dos: 9, status: 'AMBER' },
       ],
-      equipment_summary: [
-        { type: 'LAV-25', mission_capable: 42, total: 48, readiness_pct: 88 },
-        { type: 'HMMWV', mission_capable: 180, total: 200, readiness_pct: 90 },
-        { type: 'M1A1', mission_capable: 28, total: 32, readiness_pct: 88 },
+      equipmentSummary: [
+        { type: 'LAV-25', missionCapable: 42, total: 48, readinessPct: 88 },
+        { type: 'HMMWV', missionCapable: 180, total: 200, readinessPct: 90 },
+        { type: 'M1A1', missionCapable: 28, total: 32, readinessPct: 88 },
       ],
-      inbound_convoys: [
+      inboundConvoys: [
         {
-          convoy_id: 'cv1',
+          convoyId: 'cv1',
           name: 'SUPPLY RUN ALPHA',
           eta: new Date(Date.now() + 7200000).toISOString(),
           status: 'EN_ROUTE',
-          cargo_summary: 'CL I, CL III',
+          cargoSummary: 'CL I, CL III',
         },
       ],
     },
     {
-      unit_id: '1mardiv',
+      unitId: '1mardiv',
       name: '1st Marine Division',
       abbreviation: '1 MARDIV',
       echelon: 'DIVISION',
       latitude: 33.31,
       longitude: -117.32,
       mgrs: '11SMS7021185700',
-      supply_status: 'AMBER',
-      readiness_pct: 85,
-      worst_supply_class: 'V',
-      worst_dos: 5,
-      symbol_sidc: 'SFGPU-----F----',
-      position_source: 'GCCS',
-      last_updated: new Date(Date.now() - 600000).toISOString(),
-      supply_breakdown: [
-        { supply_class: 'I', name: 'Subsistence', percentage: 90, dos: 12, status: 'GREEN' },
-        { supply_class: 'III', name: 'POL', percentage: 75, dos: 7, status: 'AMBER' },
-        { supply_class: 'V', name: 'Ammunition', percentage: 58, dos: 5, status: 'RED' },
-        { supply_class: 'IX', name: 'Repair Parts', percentage: 68, dos: 6, status: 'AMBER' },
+      supplyStatus: 'AMBER',
+      readinessPct: 85,
+      worstSupplyClass: 'V',
+      worstDos: 5,
+      symbolSidc: 'SFGPU-----F----',
+      positionSource: 'GCCS',
+      lastUpdated: new Date(Date.now() - 600000).toISOString(),
+      supplyBreakdown: [
+        { supplyClass: 'I', name: 'Subsistence', percentage: 90, dos: 12, status: 'GREEN' },
+        { supplyClass: 'III', name: 'POL', percentage: 75, dos: 7, status: 'AMBER' },
+        { supplyClass: 'V', name: 'Ammunition', percentage: 58, dos: 5, status: 'RED' },
+        { supplyClass: 'IX', name: 'Repair Parts', percentage: 68, dos: 6, status: 'AMBER' },
       ],
-      equipment_summary: [
-        { type: 'LAV-25', mission_capable: 36, total: 48, readiness_pct: 75 },
-        { type: 'HMMWV', mission_capable: 155, total: 180, readiness_pct: 86 },
+      equipmentSummary: [
+        { type: 'LAV-25', missionCapable: 36, total: 48, readinessPct: 75 },
+        { type: 'HMMWV', missionCapable: 155, total: 180, readinessPct: 86 },
       ],
     },
     {
-      unit_id: '1mar',
+      unitId: '1mar',
       name: '1st Marine Regiment',
       abbreviation: '1 MAR',
       echelon: 'REGIMENT',
       latitude: 33.28,
       longitude: -117.37,
       mgrs: '11SMS6554582389',
-      supply_status: 'GREEN',
-      readiness_pct: 91,
-      worst_supply_class: 'IX',
-      worst_dos: 7,
-      symbol_sidc: 'SFGPU-----E----',
-      position_source: 'BFT',
-      last_updated: new Date(Date.now() - 120000).toISOString(),
+      supplyStatus: 'GREEN',
+      readinessPct: 91,
+      worstSupplyClass: 'IX',
+      worstDos: 7,
+      symbolSidc: 'SFGPU-----E----',
+      positionSource: 'BFT',
+      lastUpdated: new Date(Date.now() - 120000).toISOString(),
     },
     {
-      unit_id: '1-1',
+      unitId: '1-1',
       name: '1st Battalion, 1st Marines',
       abbreviation: '1/1',
       echelon: 'BATTALION',
       latitude: 33.27,
       longitude: -117.34,
       mgrs: '11SMS6833581271',
-      supply_status: 'RED',
-      readiness_pct: 68,
-      worst_supply_class: 'V',
-      worst_dos: 2,
-      symbol_sidc: 'SFGPU-----D----',
-      position_source: 'BFT',
-      last_updated: new Date(Date.now() - 60000).toISOString(),
-      supply_breakdown: [
-        { supply_class: 'I', name: 'Subsistence', percentage: 82, dos: 8, status: 'GREEN' },
-        { supply_class: 'III', name: 'POL', percentage: 55, dos: 4, status: 'AMBER' },
-        { supply_class: 'V', name: 'Ammunition', percentage: 28, dos: 2, status: 'RED' },
-        { supply_class: 'VIII', name: 'Medical', percentage: 70, dos: 6, status: 'AMBER' },
-        { supply_class: 'IX', name: 'Repair Parts', percentage: 45, dos: 3, status: 'RED' },
+      supplyStatus: 'RED',
+      readinessPct: 68,
+      worstSupplyClass: 'V',
+      worstDos: 2,
+      symbolSidc: 'SFGPU-----D----',
+      positionSource: 'BFT',
+      lastUpdated: new Date(Date.now() - 60000).toISOString(),
+      supplyBreakdown: [
+        { supplyClass: 'I', name: 'Subsistence', percentage: 82, dos: 8, status: 'GREEN' },
+        { supplyClass: 'III', name: 'POL', percentage: 55, dos: 4, status: 'AMBER' },
+        { supplyClass: 'V', name: 'Ammunition', percentage: 28, dos: 2, status: 'RED' },
+        { supplyClass: 'VIII', name: 'Medical', percentage: 70, dos: 6, status: 'AMBER' },
+        { supplyClass: 'IX', name: 'Repair Parts', percentage: 45, dos: 3, status: 'RED' },
       ],
-      equipment_summary: [
-        { type: 'LAV-25', mission_capable: 8, total: 14, readiness_pct: 57 },
-        { type: 'HMMWV', mission_capable: 28, total: 40, readiness_pct: 70 },
+      equipmentSummary: [
+        { type: 'LAV-25', missionCapable: 8, total: 14, readinessPct: 57 },
+        { type: 'HMMWV', missionCapable: 28, total: 40, readinessPct: 70 },
       ],
-      inbound_convoys: [
+      inboundConvoys: [
         {
-          convoy_id: 'cv2',
+          convoyId: 'cv2',
           name: 'EMERGENCY RESUPPLY',
           eta: new Date(Date.now() + 3600000).toISOString(),
           status: 'EN_ROUTE',
-          cargo_summary: 'CL V (Priority)',
+          cargoSummary: 'CL V (Priority)',
         },
       ],
     },
     {
-      unit_id: '2-1',
+      unitId: '2-1',
       name: '2nd Battalion, 1st Marines',
       abbreviation: '2/1',
       echelon: 'BATTALION',
       latitude: 33.26,
       longitude: -117.39,
       mgrs: '11SMS6367480178',
-      supply_status: 'AMBER',
-      readiness_pct: 79,
-      worst_supply_class: 'III',
-      worst_dos: 5,
-      symbol_sidc: 'SFGPU-----D----',
-      position_source: 'BFT',
-      last_updated: new Date(Date.now() - 180000).toISOString(),
+      supplyStatus: 'AMBER',
+      readinessPct: 79,
+      worstSupplyClass: 'III',
+      worstDos: 5,
+      symbolSidc: 'SFGPU-----D----',
+      positionSource: 'BFT',
+      lastUpdated: new Date(Date.now() - 180000).toISOString(),
     },
   ],
   convoys: [
     {
-      convoy_id: 'cv1',
+      convoyId: 'cv1',
       name: 'SUPPLY RUN ALPHA',
       origin: { name: 'LOG BASE CHARLIE', lat: 33.35, lon: -117.30, mgrs: '11SMS7208690129' },
       destination: { name: 'I MEF HQ', lat: 33.30, lon: -117.35, mgrs: '11SMS6741584600' },
-      current_position: { lat: 33.33, lon: -117.32, mgrs: '11SMS7021887917' },
-      route_geometry: [
+      currentPosition: { lat: 33.33, lon: -117.32, mgrs: '11SMS7021887917' },
+      routeGeometry: [
         [33.35, -117.30],
         [33.34, -117.31],
         [33.33, -117.32],
@@ -303,20 +303,20 @@ const mockMapData: MapData = {
         [33.30, -117.35],
       ],
       status: 'EN_ROUTE',
-      vehicle_count: 12,
-      cargo_summary: 'CL I: 20T, CL III: 5000 GAL',
-      departure_time: new Date(Date.now() - 3600000).toISOString(),
+      vehicleCount: 12,
+      cargoSummary: 'CL I: 20T, CL III: 5000 GAL',
+      departureTime: new Date(Date.now() - 3600000).toISOString(),
       eta: new Date(Date.now() + 3600000).toISOString(),
-      speed_kph: 35,
+      speedKph: 35,
       heading: 225,
     },
     {
-      convoy_id: 'cv2',
+      convoyId: 'cv2',
       name: 'EMERGENCY RESUPPLY',
       origin: { name: 'ASP BRAVO', lat: 33.32, lon: -117.28, mgrs: '11SMS7393886798' },
       destination: { name: '1/1 BN CP', lat: 33.27, lon: -117.34, mgrs: '11SMS6833581271' },
-      current_position: { lat: 33.30, lon: -117.30, mgrs: '11SMS7207084585' },
-      route_geometry: [
+      currentPosition: { lat: 33.30, lon: -117.30, mgrs: '11SMS7207084585' },
+      routeGeometry: [
         [33.32, -117.28],
         [33.31, -117.29],
         [33.30, -117.30],
@@ -325,20 +325,20 @@ const mockMapData: MapData = {
         [33.27, -117.34],
       ],
       status: 'EN_ROUTE',
-      vehicle_count: 6,
-      cargo_summary: 'CL V: 15T (PRIORITY)',
-      departure_time: new Date(Date.now() - 1800000).toISOString(),
+      vehicleCount: 6,
+      cargoSummary: 'CL V: 15T (PRIORITY)',
+      departureTime: new Date(Date.now() - 1800000).toISOString(),
       eta: new Date(Date.now() + 1800000).toISOString(),
-      speed_kph: 45,
+      speedKph: 45,
       heading: 210,
     },
     {
-      convoy_id: 'cv3',
+      convoyId: 'cv3',
       name: 'ROUTINE SUPPLY BRAVO',
       origin: { name: 'DEPOT ALPHA', lat: 33.36, lon: -117.25, mgrs: '11SMS7673691244' },
       destination: { name: '2/1 BN CP', lat: 33.26, lon: -117.39, mgrs: '11SMS6367480178' },
-      current_position: null,
-      route_geometry: [
+      currentPosition: null,
+      routeGeometry: [
         [33.36, -117.25],
         [33.34, -117.28],
         [33.32, -117.31],
@@ -346,11 +346,11 @@ const mockMapData: MapData = {
         [33.26, -117.39],
       ],
       status: 'PLANNED',
-      vehicle_count: 8,
-      cargo_summary: 'CL I, CL III, CL IX',
-      departure_time: new Date(Date.now() + 14400000).toISOString(),
+      vehicleCount: 8,
+      cargoSummary: 'CL I, CL III, CL IX',
+      departureTime: new Date(Date.now() + 14400000).toISOString(),
       eta: new Date(Date.now() + 21600000).toISOString(),
-      speed_kph: 0,
+      speedKph: 0,
       heading: 0,
     },
   ],
@@ -358,64 +358,64 @@ const mockMapData: MapData = {
     {
       id: 'sp1',
       name: 'LOG BASE CHARLIE',
-      point_type: 'LOG_BASE',
+      pointType: 'LOG_BASE',
       latitude: 33.35,
       longitude: -117.30,
       mgrs: '11SMS7208690129',
       status: 'ACTIVE',
-      parent_unit_name: 'CLR-1',
-      capacity_notes: 'Full capacity, 3-day surge stock',
+      parentUnitName: 'CLR-1',
+      capacityNotes: 'Full capacity, 3-day surge stock',
     },
     {
       id: 'sp2',
       name: 'ASP BRAVO',
-      point_type: 'AMMO_SUPPLY_POINT',
+      pointType: 'AMMO_SUPPLY_POINT',
       latitude: 33.32,
       longitude: -117.28,
       mgrs: '11SMS7393886798',
       status: 'ACTIVE',
-      parent_unit_name: '1st EOD Co',
-      capacity_notes: 'CL V primary distribution',
+      parentUnitName: '1st EOD Co',
+      capacityNotes: 'CL V primary distribution',
     },
     {
       id: 'sp3',
       name: 'FARP DELTA',
-      point_type: 'FARP',
+      pointType: 'FARP',
       latitude: 33.29,
       longitude: -117.40,
       mgrs: '11SMS6275683508',
       status: 'ACTIVE',
-      parent_unit_name: 'HMLA-367',
-      capacity_notes: 'JP-5, 10K gal capacity',
+      parentUnitName: 'HMLA-367',
+      capacityNotes: 'JP-5, 10K gal capacity',
     },
     {
       id: 'sp4',
       name: 'LZ EAGLE',
-      point_type: 'LZ',
+      pointType: 'LZ',
       latitude: 33.25,
       longitude: -117.36,
       mgrs: '11SMS6646579060',
       status: 'PLANNED',
-      parent_unit_name: '1/1 BN',
-      capacity_notes: 'Emergency resupply LZ, CH-53 capable',
+      parentUnitName: '1/1 BN',
+      capacityNotes: 'Emergency resupply LZ, CH-53 capable',
     },
     {
       id: 'sp5',
       name: 'WATER POINT 3',
-      point_type: 'WATER_POINT',
+      pointType: 'WATER_POINT',
       latitude: 33.28,
       longitude: -117.33,
       mgrs: '11SMS6927082377',
       status: 'ACTIVE',
-      parent_unit_name: '7th ESB',
-      capacity_notes: 'ROWPU operational, 20K gal/day',
+      parentUnitName: '7th ESB',
+      capacityNotes: 'ROWPU operational, 20K gal/day',
     },
   ],
   routes: [
     {
       id: 'r1',
       name: 'MSR TAMPA',
-      route_type: 'MSR',
+      routeType: 'MSR',
       status: 'OPEN',
       waypoints: [
         { lat: 33.36, lon: -117.25, mgrs: '11SMS7673691244', label: 'DEPOT ALPHA' },
@@ -430,7 +430,7 @@ const mockMapData: MapData = {
     {
       id: 'r2',
       name: 'ASR LION',
-      route_type: 'ASR',
+      routeType: 'ASR',
       status: 'OPEN',
       waypoints: [
         { lat: 33.30, lon: -117.25, label: 'ASR LION START' },
@@ -445,7 +445,7 @@ const mockMapData: MapData = {
     {
       id: 'r3',
       name: 'ASR TIGER',
-      route_type: 'ASR',
+      routeType: 'ASR',
       status: 'RESTRICTED',
       waypoints: [
         { lat: 33.35, lon: -117.35 },
@@ -460,30 +460,30 @@ const mockMapData: MapData = {
   alerts: [
     {
       id: 'a1',
-      alert_type: 'SUPPLY_CRITICAL',
+      alertType: 'SUPPLY_CRITICAL',
       severity: 'CRITICAL',
       message: '1/1 BN CL V at 28% - 2 DOS remaining',
-      unit_name: '1/1',
+      unitName: '1/1',
       latitude: 33.27,
       longitude: -117.34,
       mgrs: '11SMS6833581271',
     },
     {
       id: 'a2',
-      alert_type: 'EQUIPMENT_DOWN',
+      alertType: 'EQUIPMENT_DOWN',
       severity: 'WARNING',
       message: '1 MARDIV LAV-25 readiness below 80%',
-      unit_name: '1 MARDIV',
+      unitName: '1 MARDIV',
       latitude: 33.31,
       longitude: -117.32,
       mgrs: '11SMS7021185700',
     },
     {
       id: 'a3',
-      alert_type: 'MOVEMENT_DELAYED',
+      alertType: 'MOVEMENT_DELAYED',
       severity: 'WARNING',
       message: 'ASR TIGER restricted - alternate routing in effect',
-      unit_name: '',
+      unitName: '',
       latitude: 33.31,
       longitude: -117.36,
       mgrs: '11SMS6648885712',
@@ -526,70 +526,70 @@ function generateMockConvoyMovements(): ConvoyMovementDetail[] {
   return baseConvoys
     .filter((c) => c.status === 'EN_ROUTE' || c.status === 'DELAYED')
     .map((convoy) => {
-      if (convoy.convoy_id === 'cv1') {
+      if (convoy.convoyId === 'cv1') {
         return {
           ...convoy,
-          progress_percent: 50,
-          total_personnel: 7,
-          total_cargo_weight_kg: 11900,
+          progressPercent: 50,
+          totalPersonnel: 7,
+          totalCargoWeightKg: 11900,
           vehicles: [
             {
-              vehicle_id: 'veh-cv1-001',
-              vehicle_type: 'HMMWV' as const,
+              vehicleId: 'veh-cv1-001',
+              vehicleType: 'HMMWV' as const,
               tamcn: 'D1100',
-              bumper_number: 'A1-01',
-              call_sign: 'ALPHA-1',
+              bumperNumber: 'A1-01',
+              callSign: 'ALPHA-1',
               status: 'MOVING' as const,
-              position: { lat: convoy.current_position!.lat, lon: convoy.current_position!.lon },
+              position: { lat: convoy.currentPosition!.lat, lon: convoy.currentPosition!.lon },
               heading: convoy.heading,
-              speed_kph: convoy.speed_kph,
-              last_updated: new Date().toISOString(),
+              speedKph: convoy.speedKph,
+              lastUpdated: new Date().toISOString(),
               crew: [
-                { personnel_id: 'p1', rank: 'Cpl', name: 'Garcia, L.', role: 'DRIVER' as const },
-                { personnel_id: 'p2', rank: 'Sgt', name: 'Martinez, R.', role: 'TC' as const },
+                { personnelId: 'p1', rank: 'Cpl', name: 'Garcia, L.', role: 'DRIVER' as const },
+                { personnelId: 'p2', rank: 'Sgt', name: 'Martinez, R.', role: 'TC' as const },
               ],
               cargo: [
-                { item_id: 'i1', item_name: 'MRE Case', supply_class: 'I', quantity: 50, uom: 'CASE', total_weight_kg: 1100 },
+                { itemId: 'i1', itemName: 'MRE Case', supplyClass: 'I', quantity: 50, uom: 'CASE', totalWeightKg: 1100 },
               ],
             },
             {
-              vehicle_id: 'veh-cv1-002',
-              vehicle_type: 'MTVR' as const,
+              vehicleId: 'veh-cv1-002',
+              vehicleType: 'MTVR' as const,
               tamcn: 'D0054',
-              bumper_number: 'A1-02',
-              call_sign: 'ALPHA-2',
+              bumperNumber: 'A1-02',
+              callSign: 'ALPHA-2',
               status: 'MOVING' as const,
-              position: { lat: convoy.current_position!.lat - 0.002, lon: convoy.current_position!.lon + 0.001 },
+              position: { lat: convoy.currentPosition!.lat - 0.002, lon: convoy.currentPosition!.lon + 0.001 },
               heading: convoy.heading - 1,
-              speed_kph: convoy.speed_kph - 1,
-              last_updated: new Date().toISOString(),
+              speedKph: convoy.speedKph - 1,
+              lastUpdated: new Date().toISOString(),
               crew: [
-                { personnel_id: 'p3', rank: 'LCpl', name: 'Smith, J.', role: 'DRIVER' as const },
-                { personnel_id: 'p4', rank: 'PFC', name: 'Johnson, M.', role: 'TC' as const },
+                { personnelId: 'p3', rank: 'LCpl', name: 'Smith, J.', role: 'DRIVER' as const },
+                { personnelId: 'p4', rank: 'PFC', name: 'Johnson, M.', role: 'TC' as const },
               ],
               cargo: [
-                { item_id: 'i2', item_name: 'Diesel Fuel', supply_class: 'III', quantity: 5000, uom: 'GAL', total_weight_kg: 4200 },
-                { item_id: 'i3', item_name: 'MRE Case', supply_class: 'I', quantity: 200, uom: 'CASE', total_weight_kg: 4400 },
+                { itemId: 'i2', itemName: 'Diesel Fuel', supplyClass: 'III', quantity: 5000, uom: 'GAL', totalWeightKg: 4200 },
+                { itemId: 'i3', itemName: 'MRE Case', supplyClass: 'I', quantity: 200, uom: 'CASE', totalWeightKg: 4400 },
               ],
             },
             {
-              vehicle_id: 'veh-cv1-003',
-              vehicle_type: 'JLTV' as const,
+              vehicleId: 'veh-cv1-003',
+              vehicleType: 'JLTV' as const,
               tamcn: 'D1195',
-              bumper_number: 'A1-03',
-              call_sign: 'ALPHA-3',
+              bumperNumber: 'A1-03',
+              callSign: 'ALPHA-3',
               status: 'MOVING' as const,
-              position: { lat: convoy.current_position!.lat - 0.004, lon: convoy.current_position!.lon + 0.002 },
+              position: { lat: convoy.currentPosition!.lat - 0.004, lon: convoy.currentPosition!.lon + 0.002 },
               heading: convoy.heading + 1,
-              speed_kph: convoy.speed_kph + 1,
-              last_updated: new Date().toISOString(),
+              speedKph: convoy.speedKph + 1,
+              lastUpdated: new Date().toISOString(),
               crew: [
-                { personnel_id: 'p5', rank: 'LCpl', name: 'Brown, K.', role: 'DRIVER' as const },
-                { personnel_id: 'p6', rank: 'PFC', name: 'Davis, R.', role: 'GUNNER' as const },
-                { personnel_id: 'p7', rank: 'PFC', name: 'Miller, A.', role: 'PAX' as const },
+                { personnelId: 'p5', rank: 'LCpl', name: 'Brown, K.', role: 'DRIVER' as const },
+                { personnelId: 'p6', rank: 'PFC', name: 'Davis, R.', role: 'GUNNER' as const },
+                { personnelId: 'p7', rank: 'PFC', name: 'Miller, A.', role: 'PAX' as const },
               ],
               cargo: [
-                { item_id: 'i4', item_name: 'Medical Supplies', supply_class: 'VIII', quantity: 10, uom: 'KIT', total_weight_kg: 2200 },
+                { itemId: 'i4', itemName: 'Medical Supplies', supplyClass: 'VIII', quantity: 10, uom: 'KIT', totalWeightKg: 2200 },
               ],
             },
           ],
@@ -598,47 +598,47 @@ function generateMockConvoyMovements(): ConvoyMovementDetail[] {
       // cv2 - EMERGENCY RESUPPLY
       return {
         ...convoy,
-        progress_percent: 33,
-        total_personnel: 4,
-        total_cargo_weight_kg: 15000,
+        progressPercent: 33,
+        totalPersonnel: 4,
+        totalCargoWeightKg: 15000,
         vehicles: [
           {
-            vehicle_id: 'veh-cv2-001',
-            vehicle_type: 'MTVR' as const,
+            vehicleId: 'veh-cv2-001',
+            vehicleType: 'MTVR' as const,
             tamcn: 'D0054',
-            bumper_number: 'B2-01',
-            call_sign: 'BRAVO-1',
+            bumperNumber: 'B2-01',
+            callSign: 'BRAVO-1',
             status: 'MOVING' as const,
-            position: { lat: convoy.current_position!.lat, lon: convoy.current_position!.lon },
+            position: { lat: convoy.currentPosition!.lat, lon: convoy.currentPosition!.lon },
             heading: convoy.heading,
-            speed_kph: convoy.speed_kph,
-            last_updated: new Date().toISOString(),
+            speedKph: convoy.speedKph,
+            lastUpdated: new Date().toISOString(),
             crew: [
-              { personnel_id: 'p8', rank: 'Cpl', name: 'Wilson, T.', role: 'DRIVER' as const },
-              { personnel_id: 'p9', rank: 'Sgt', name: 'Taylor, D.', role: 'TC' as const },
+              { personnelId: 'p8', rank: 'Cpl', name: 'Wilson, T.', role: 'DRIVER' as const },
+              { personnelId: 'p9', rank: 'Sgt', name: 'Taylor, D.', role: 'TC' as const },
             ],
             cargo: [
-              { item_id: 'i5', item_name: '5.56mm Ball', supply_class: 'V', quantity: 100, uom: 'CASE', total_weight_kg: 7500 },
+              { itemId: 'i5', itemName: '5.56mm Ball', supplyClass: 'V', quantity: 100, uom: 'CASE', totalWeightKg: 7500 },
             ],
           },
           {
-            vehicle_id: 'veh-cv2-002',
-            vehicle_type: 'MTVR' as const,
+            vehicleId: 'veh-cv2-002',
+            vehicleType: 'MTVR' as const,
             tamcn: 'D0054',
-            bumper_number: 'B2-02',
-            call_sign: 'BRAVO-2',
+            bumperNumber: 'B2-02',
+            callSign: 'BRAVO-2',
             status: 'MOVING' as const,
-            position: { lat: convoy.current_position!.lat - 0.002, lon: convoy.current_position!.lon + 0.001 },
+            position: { lat: convoy.currentPosition!.lat - 0.002, lon: convoy.currentPosition!.lon + 0.001 },
             heading: convoy.heading + 2,
-            speed_kph: convoy.speed_kph - 2,
-            last_updated: new Date().toISOString(),
+            speedKph: convoy.speedKph - 2,
+            lastUpdated: new Date().toISOString(),
             crew: [
-              { personnel_id: 'p10', rank: 'LCpl', name: 'Anderson, P.', role: 'DRIVER' as const },
-              { personnel_id: 'p11', rank: 'PFC', name: 'Thomas, S.', role: 'TC' as const },
+              { personnelId: 'p10', rank: 'LCpl', name: 'Anderson, P.', role: 'DRIVER' as const },
+              { personnelId: 'p11', rank: 'PFC', name: 'Thomas, S.', role: 'TC' as const },
             ],
             cargo: [
-              { item_id: 'i6', item_name: '7.62mm Linked', supply_class: 'V', quantity: 50, uom: 'CASE', total_weight_kg: 5000 },
-              { item_id: 'i7', item_name: 'Grenades, Frag', supply_class: 'V', quantity: 20, uom: 'CASE', total_weight_kg: 2500 },
+              { itemId: 'i6', itemName: '7.62mm Linked', supplyClass: 'V', quantity: 50, uom: 'CASE', totalWeightKg: 5000 },
+              { itemId: 'i7', itemName: 'Grenades, Frag', supplyClass: 'V', quantity: 20, uom: 'CASE', totalWeightKg: 2500 },
             ],
           },
         ],
@@ -688,10 +688,16 @@ export async function getMapAlerts(): Promise<MapAlert[]> {
 
 export async function getActiveConvoyMovements(): Promise<ConvoyMovementDetail[]> {
   if (isDemoMode) return generateMockConvoyMovements();
-  const response = await apiClient.get<ApiResponse<ConvoyMovementDetail[]>>(
-    '/transportation/active-convoys/map',
-  );
-  return response.data.data;
+  try {
+    const response = await apiClient.get<ApiResponse<ConvoyMovementDetail[]>>(
+      '/transportation/active-convoys/map',
+    );
+    return response.data.data ?? [];
+  } catch (err: unknown) {
+    const status = (err as { response?: { status?: number } })?.response?.status;
+    if (status === 404) return [];
+    throw err;
+  }
 }
 
 // ── Position Update ───────────────────────────────────────────────────
@@ -701,12 +707,12 @@ export async function updateUnitPosition(
   data: { latitude?: number; longitude?: number; mgrs?: string },
 ): Promise<MapUnit> {
   if (isDemoMode) {
-    const unit = mockMapData.units.find((u) => u.unit_id === unitId);
+    const unit = mockMapData.units.find((u) => u.unitId === unitId);
     if (!unit) throw new Error(`Unit ${unitId} not found`);
     if (data.latitude !== undefined) unit.latitude = data.latitude;
     if (data.longitude !== undefined) unit.longitude = data.longitude;
     if (data.mgrs !== undefined) unit.mgrs = data.mgrs;
-    unit.last_updated = new Date().toISOString();
+    unit.lastUpdated = new Date().toISOString();
     persistMapData();
     return { ...unit };
   }
@@ -726,13 +732,13 @@ export async function createSupplyPoint(
     const newPoint: MapSupplyPoint = {
       id: 'sp-new-' + Date.now(),
       name: data.name || 'New Supply Point',
-      point_type: data.point_type || 'LOG_BASE',
+      pointType: data.pointType || 'LOG_BASE',
       latitude: data.latitude || 0,
       longitude: data.longitude || 0,
       mgrs: data.mgrs,
       status: data.status || 'PLANNED',
-      parent_unit_name: data.parent_unit_name || '',
-      capacity_notes: data.capacity_notes || '',
+      parentUnitName: data.parentUnitName || '',
+      capacityNotes: data.capacityNotes || '',
     };
     mockMapData.supplyPoints.push(newPoint);
     persistMapData();
@@ -802,7 +808,7 @@ export async function createRoute(
     const newRoute: MapRoute = {
       id: 'r-new-' + Date.now(),
       name: data.name || 'New Route',
-      route_type: data.route_type || 'ASR',
+      routeType: data.routeType || 'ASR',
       status: data.status || 'OPEN',
       waypoints: data.waypoints || [],
       description: data.description || '',
@@ -852,7 +858,7 @@ export async function uploadRouteFile(file: File): Promise<{ created_routes: num
     const newRoute: MapRoute = {
       id: 'r-import-' + Date.now(),
       name: file.name.replace(/\.[^.]+$/, ''),
-      route_type: 'ASR',
+      routeType: 'ASR',
       status: 'OPEN',
       waypoints: [
         { lat: 33.30, lon: -117.30 },
@@ -882,10 +888,10 @@ export async function getNearby(params: {
   lat?: number;
   lon?: number;
   mgrs?: string;
-  radius_km?: number;
+  radiusKm?: number;
 }): Promise<NearbyResult> {
   if (isDemoMode) {
-    const radiusKm = params.radius_km ?? 10;
+    const radiusKm = params.radiusKm ?? 10;
     const centerLat = params.lat ?? 33.3;
     const centerLon = params.lon ?? -117.35;
 

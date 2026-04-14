@@ -101,23 +101,23 @@ interface ApiPersonnelItem {
   name?: string;
   rank?: string;
   mos?: string;
-  unit_name?: string;
+  unitName?: string;
 }
 
 /** Shape of an individual equipment record from /equipment/individual. */
 interface ApiEquipmentItem {
   id?: number | string;
-  bumper_number?: string;
-  equipment_type?: string;
+  bumperNumber?: string;
+  equipmentType?: string;
   status?: string;
-  unit_name?: string;
+  unitName?: string;
   serial_number?: string;
 }
 
 /** Shape of a requisition record from /requisitions. */
 interface ApiRequisitionItem {
   id: number | string;
-  requisition_number?: string;
+  requisitionNumber?: string;
   name?: string;
   status?: string;
 }
@@ -125,7 +125,7 @@ interface ApiRequisitionItem {
 /** Shape of a maintenance work-order record from /maintenance. */
 interface ApiWorkOrderItem {
   id: number | string;
-  work_order_number?: string;
+  workOrderNumber?: string;
   status?: string;
   description?: string;
 }
@@ -762,7 +762,7 @@ export default function CommandPalette() {
               label: p.rank ? `${p.rank} ${p.full_name || p.name}` : (p.full_name || p.name || 'Unknown'),
               category: 'Personnel' as CategoryKey,
               icon: <Users size={16} />,
-              subtitle: [p.mos, p.unit_name].filter(Boolean).join(' - '),
+              subtitle: [p.mos, p.unitName].filter(Boolean).join(' - '),
               path: `/personnel?search=${encodeURIComponent(p.full_name || p.name || '')}`,
             })),
           () => searchDemoPersonnel(q),
@@ -776,11 +776,11 @@ export default function CommandPalette() {
           { search: q, limit: MAX_PER_CATEGORY },
           (items) =>
             (items as unknown as ApiEquipmentItem[]).map((e) => ({
-              id: `api-eq-${e.id || e.bumper_number}`,
-              label: `${e.equipment_type || 'Equipment'} ${e.bumper_number || ''}`.trim(),
+              id: `api-eq-${e.id || e.bumperNumber}`,
+              label: `${e.equipmentType || 'Equipment'} ${e.bumperNumber || ''}`.trim(),
               category: 'Equipment' as CategoryKey,
               icon: <Truck size={16} />,
-              subtitle: [e.status, e.unit_name, e.serial_number ? `S/N: ${e.serial_number}` : ''].filter(Boolean).join(' - '),
+              subtitle: [e.status, e.unitName, e.serial_number ? `S/N: ${e.serial_number}` : ''].filter(Boolean).join(' - '),
               path: '/equipment',
             })),
           () => searchDemoEquipment(q),
@@ -821,7 +821,7 @@ export default function CommandPalette() {
           (items) =>
             (items as unknown as ApiRequisitionItem[]).map((r) => ({
               id: `api-req-${r.id}`,
-              label: r.requisition_number || r.name || `REQ-${r.id}`,
+              label: r.requisitionNumber || r.name || `REQ-${r.id}`,
               category: 'Requisitions' as CategoryKey,
               icon: <ClipboardList size={16} />,
               subtitle: r.status || '',
@@ -837,7 +837,7 @@ export default function CommandPalette() {
           (items) =>
             (items as unknown as ApiWorkOrderItem[]).map((w) => ({
               id: `api-wo-${w.id}`,
-              label: w.work_order_number || `WO-${w.id}`,
+              label: w.workOrderNumber || `WO-${w.id}`,
               category: 'Work Orders' as CategoryKey,
               icon: <Wrench size={16} />,
               subtitle: [w.status, w.description].filter(Boolean).join(' - '),

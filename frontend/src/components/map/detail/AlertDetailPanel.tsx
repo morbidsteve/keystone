@@ -78,7 +78,7 @@ export function AlertDetailPanel({ data }: AlertDetailPanelProps) {
             {data.severity}
           </div>
           <div className="text-[9px] text-[#94a3b8] mt-px">
-            {getAlertTypeLabel(data.alert_type)}
+            {getAlertTypeLabel(data.alertType)}
           </div>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function AlertDetailPanel({ data }: AlertDetailPanelProps) {
         </div>
         <div style={styles.detailRow}>
           <span style={styles.detailLabel}>Alert Type</span>
-          <span style={styles.detailValue}>{getAlertTypeLabel(data.alert_type)}</span>
+          <span style={styles.detailValue}>{getAlertTypeLabel(data.alertType)}</span>
         </div>
         <div style={styles.detailRow}>
           <span style={styles.detailLabel}>Severity</span>
@@ -104,10 +104,10 @@ export function AlertDetailPanel({ data }: AlertDetailPanelProps) {
             {data.severity}
           </span>
         </div>
-        {data.unit_name && (
+        {data.unitName && (
           <div style={styles.detailRow}>
             <span style={styles.detailLabel}>Unit</span>
-            <span style={styles.detailValue}>{data.unit_name}</span>
+            <span style={styles.detailValue}>{data.unitName}</span>
           </div>
         )}
       </div>

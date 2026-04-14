@@ -37,27 +37,27 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
   const [name, setName] = useState(initial?.name || '');
 
   // MIRC Directory
-  const [dirPath, setDirPath] = useState((initialConfig?.directory_path as string) || '');
+  const [dirPath, setDirPath] = useState((initialConfig?.directoryPath as string) || '');
   const [filePattern, setFilePattern] = useState(
-    (initialConfig?.file_pattern as string) || (sourceType === 'excel_directory' ? '*.xlsx' : '*.log'),
+    (initialConfig?.filePattern as string) || (sourceType === 'excel_directory' ? '*.xlsx' : '*.log'),
   );
   const [pollInterval, setPollInterval] = useState(
-    (initialConfig?.poll_interval_seconds as number) || (sourceType === 'excel_directory' ? 120 : 60),
+    (initialConfig?.pollIntervalSeconds as number) || (sourceType === 'excel_directory' ? 120 : 60),
   );
 
   // IRC Server
   const [host, setHost] = useState((initialConfig?.host as string) || '');
   const [port, setPort] = useState((initialConfig?.port as number) || 6667);
-  const [useSsl, setUseSsl] = useState((initialConfig?.use_ssl as boolean) ?? false);
+  const [useSsl, setUseSsl] = useState((initialConfig?.useSsl as boolean) ?? false);
   const [nick, setNick] = useState((initialConfig?.nick as string) || '');
   const [channels, setChannels] = useState(
     Array.isArray(initialConfig?.channels) ? (initialConfig.channels as string[]).join(', ') : '',
   );
-  const [bufferSeconds, setBufferSeconds] = useState((initialConfig?.buffer_seconds as number) || 30);
+  const [bufferSeconds, setBufferSeconds] = useState((initialConfig?.bufferSeconds as number) || 30);
 
   // Excel Directory
   const [templateId, setTemplateId] = useState<string>(
-    initialConfig?.template_id != null ? String(initialConfig.template_id) : '',
+    initialConfig?.templateId != null ? String(initialConfig.templateId) : '',
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,9 +67,9 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
 
     if (sourceType === 'mirc_directory') {
       config = {
-        directory_path: dirPath,
-        file_pattern: filePattern,
-        poll_interval_seconds: pollInterval,
+        directoryPath: dirPath,
+        filePattern: filePattern,
+        pollIntervalSeconds: pollInterval,
       };
     } else if (sourceType === 'irc_server') {
       const channelList = channels
@@ -79,23 +79,23 @@ export default function DataSourceForm({ initial, sourceType, onSubmit, onCancel
       config = {
         host,
         port,
-        use_ssl: useSsl,
+        useSsl: useSsl,
         nick,
         channels: channelList,
-        buffer_seconds: bufferSeconds,
+        bufferSeconds: bufferSeconds,
       };
     } else if (sourceType === 'excel_directory') {
       config = {
-        directory_path: dirPath,
-        file_pattern: filePattern,
-        poll_interval_seconds: pollInterval,
-        template_id: templateId ? Number(templateId) : null,
+        directoryPath: dirPath,
+        filePattern: filePattern,
+        pollIntervalSeconds: pollInterval,
+        templateId: templateId ? Number(templateId) : null,
       };
     }
 
     onSubmit({
       name,
-      source_type: sourceType,
+      sourceType: sourceType,
       config,
     });
   };

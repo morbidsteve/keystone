@@ -4,11 +4,11 @@ import { useWebSocket } from '@/hooks/useWebSocket';
 interface ConvoyPositionUpdate {
   movementId: string;
   vehicles: Array<{
-    vehicle_id: string;
+    vehicleId: string;
     lat: number;
     lon: number;
     heading: number;
-    speed_kph: number;
+    speedKph: number;
     status: string;
   }>;
 }

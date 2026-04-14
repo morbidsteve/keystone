@@ -74,7 +74,7 @@ export default function ConvoyPlanDetail({
 
   const handleAddToManifest = (entry: ManifestEntry) => {
     setManifest(prev => {
-      const existing = prev.findIndex(e => e.item_id === entry.item_id);
+      const existing = prev.findIndex(e => e.itemId === entry.itemId);
       if (existing >= 0) {
         const updated = [...prev];
         updated[existing] = entry;
@@ -87,7 +87,7 @@ export default function ConvoyPlanDetail({
   };
 
   const handleRemoveFromManifest = (itemId: string) => {
-    setManifest(prev => prev.filter(e => e.item_id !== itemId));
+    setManifest(prev => prev.filter(e => e.itemId !== itemId));
   };
 
   const handleEditManifestEntry = (entry: ManifestEntry) => {
@@ -165,8 +165,8 @@ export default function ConvoyPlanDetail({
             {plan.name}
           </span>
           <Badge label={plan.status} colorSet={STATUS_COLORS[plan.status]} />
-          {plan.risk_assessment_level && (
-            <Badge label={`RISK: ${plan.risk_assessment_level}`} colorSet={RISK_COLORS[plan.risk_assessment_level]} />
+          {plan.riskAssessmentLevel && (
+            <Badge label={`RISK: ${plan.riskAssessmentLevel}`} colorSet={RISK_COLORS[plan.riskAssessmentLevel]} />
           )}
         </div>
         <div className="flex gap-2">
@@ -217,34 +217,34 @@ export default function ConvoyPlanDetail({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <div style={fieldLabelStyle}>ROUTE NAME</div>
-            <div style={fieldValueStyle}>{plan.route_name ?? '--'}</div>
+            <div style={fieldValueStyle}>{plan.routeName ?? '--'}</div>
           </div>
           <div>
             <div style={fieldLabelStyle}>MCN</div>
-            <div style={fieldValueStyle}>{plan.movement_credit_number ?? 'Not assigned'}</div>
+            <div style={fieldValueStyle}>{plan.movementCreditNumber ?? 'Not assigned'}</div>
           </div>
           <div className="col-span-full">
             <div style={fieldLabelStyle}>DESCRIPTION</div>
-            <div style={fieldValueStyle}>{plan.route_description ?? '--'}</div>
+            <div style={fieldValueStyle}>{plan.routeDescription ?? '--'}</div>
           </div>
           <div>
             <div style={fieldLabelStyle}>PRIMARY ROUTE</div>
-            <div style={fieldValueStyle}>{plan.route_primary ?? '--'}</div>
+            <div style={fieldValueStyle}>{plan.routePrimary ?? '--'}</div>
           </div>
           <div>
             <div style={fieldLabelStyle}>ALTERNATE ROUTE</div>
-            <div style={fieldValueStyle}>{plan.route_alternate ?? '--'}</div>
+            <div style={fieldValueStyle}>{plan.routeAlternate ?? '--'}</div>
           </div>
           <div>
             <div style={fieldLabelStyle}>TOTAL DISTANCE</div>
             <div className="text-[var(--color-text-bright)]">
-              {plan.total_distance_km ? `${plan.total_distance_km} km` : '--'}
+              {plan.totalDistanceKm ? `${plan.totalDistanceKm} km` : '--'}
             </div>
           </div>
           <div>
             <div style={fieldLabelStyle}>ESTIMATED DURATION</div>
             <div className="text-[var(--color-text-bright)]">
-              {plan.estimated_duration_hours ? `${plan.estimated_duration_hours} hours` : '--'}
+              {plan.estimatedDurationHours ? `${plan.estimatedDurationHours} hours` : '--'}
             </div>
           </div>
         </div>
@@ -254,11 +254,11 @@ export default function ConvoyPlanDetail({
       <Card title="TIMING">
         <div className="flex gap-0 overflow-auto">
           {[
-            { label: 'BRIEF', time: plan.brief_time, icon: Clock },
-            { label: 'REHEARSAL', time: plan.rehearsal_time, icon: MapPin },
-            { label: 'DEPARTURE', time: plan.departure_time_planned, icon: Clock },
-            { label: 'SP TIME', time: plan.sp_time, icon: MapPin },
-            { label: 'RP TIME', time: plan.rp_time, icon: MapPin },
+            { label: 'BRIEF', time: plan.briefTime, icon: Clock },
+            { label: 'REHEARSAL', time: plan.rehearsalTime, icon: MapPin },
+            { label: 'DEPARTURE', time: plan.departureTimePlanned, icon: Clock },
+            { label: 'SP TIME', time: plan.spTime, icon: MapPin },
+            { label: 'RP TIME', time: plan.rpTime, icon: MapPin },
           ].map((item, idx) => (
             <div
               key={item.label}
@@ -296,14 +296,14 @@ export default function ConvoyPlanDetail({
               {plan.serials.map((serial) => (
                 <tr key={serial.id}>
                   <td className="text-[var(--color-text-bright)]">
-                    {serial.serial_number}
+                    {serial.serialNumber}
                   </td>
-                  <td style={cellStyle}>{serial.serial_commander_name ?? '--'}</td>
-                  <td style={cellStyle}>{serial.vehicle_count}</td>
-                  <td style={cellStyle}>{serial.pax_count}</td>
-                  <td style={cellStyle}>{serial.march_order}</td>
-                  <td style={cellStyle}>{serial.march_speed_kph}</td>
-                  <td style={cellStyle}>{serial.interval_meters}</td>
+                  <td style={cellStyle}>{serial.serialCommanderName ?? '--'}</td>
+                  <td style={cellStyle}>{serial.vehicleCount}</td>
+                  <td style={cellStyle}>{serial.paxCount}</td>
+                  <td style={cellStyle}>{serial.marchOrder}</td>
+                  <td style={cellStyle}>{serial.marchSpeedKph}</td>
+                  <td style={cellStyle}>{serial.intervalMeters}</td>
                 </tr>
               ))}
             </tbody>
@@ -312,14 +312,14 @@ export default function ConvoyPlanDetail({
         <div
           className="mt-2 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]"
         >
-          Total: {plan.serials.reduce((a, s) => a + s.vehicle_count, 0)} vehicles,{' '}
-          {plan.serials.reduce((a, s) => a + s.pax_count, 0)} PAX
+          Total: {plan.serials.reduce((a, s) => a + s.vehicleCount, 0)} vehicles,{' '}
+          {plan.serials.reduce((a, s) => a + s.paxCount, 0)} PAX
         </div>
       </Card>
 
       {/* Manifest */}
       <Card title="MANIFEST">
-        <ConvoyManifestView movementId={plan.movement_id ?? 0} />
+        <ConvoyManifestView movementId={plan.movementId ?? 0} />
       </Card>
 
       {/* Contingencies */}
@@ -328,26 +328,26 @@ export default function ConvoyPlanDetail({
           <div style={sectionLabelStyle}>
             <Radio size={12} /> COMM PLAN
           </div>
-          <div style={fieldValueStyle}>{plan.comm_plan ?? 'No comm plan specified'}</div>
+          <div style={fieldValueStyle}>{plan.commPlan ?? 'No comm plan specified'}</div>
         </Card>
         <Card>
           <div style={sectionLabelStyle}>
             <ShieldAlert size={12} /> RECOVERY PLAN
           </div>
-          <div style={fieldValueStyle}>{plan.recovery_plan ?? 'No recovery plan specified'}</div>
+          <div style={fieldValueStyle}>{plan.recoveryPlan ?? 'No recovery plan specified'}</div>
         </Card>
         <Card>
           <div style={sectionLabelStyle}>
             <Cross size={12} /> MEDEVAC PLAN
           </div>
-          <div style={fieldValueStyle}>{plan.medevac_plan ?? 'No MEDEVAC plan specified'}</div>
+          <div style={fieldValueStyle}>{plan.medevacPlan ?? 'No MEDEVAC plan specified'}</div>
         </Card>
       </div>
 
       {/* Origin Inventory */}
       <Card title="ORIGIN INVENTORY">
         <OriginInventoryTable
-          location={plan.route_primary ?? 'default'}
+          location={plan.routePrimary ?? 'default'}
           onItemClick={(item) => setSelectedItem(item)}
         />
       </Card>
@@ -365,12 +365,12 @@ export default function ConvoyPlanDetail({
       <AddToManifestModal
         isOpen={selectedItem != null || editingEntry != null}
         item={selectedItem ? selectedItem : editingEntry ? {
-          item_id: editingEntry.item_id,
-          item_type: 'equipment',
+          itemId: editingEntry.itemId,
+          itemType: 'equipment',
           nomenclature: editingEntry.nomenclature,
           category: editingEntry.category,
-          available_qty: 999,
-          weight_lbs: editingEntry.weight_lbs ? editingEntry.weight_lbs / editingEntry.quantity : undefined,
+          availableQty: 999,
+          weightLbs: editingEntry.weightLbs ? editingEntry.weightLbs / editingEntry.quantity : undefined,
           status: 'SERVICEABLE',
         } : null}
         existingEntry={editingEntry}
@@ -386,7 +386,7 @@ export default function ConvoyPlanDetail({
         vehicleTamcn={assignVehicle?.tamcn ?? 'D1100'}
         vehicleType={assignVehicle?.vehicleType ?? 'HMMWV'}
         bumperNumber={assignVehicle?.bumperNumber ?? ''}
-        movementId={plan.movement_id ?? 0}
+        movementId={plan.movementId ?? 0}
         onSave={(assignments) => {
           console.log('Personnel assignments saved:', assignments);
         }}

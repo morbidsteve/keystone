@@ -9,20 +9,20 @@ export interface TAKConnection {
   host: string;
   port: number;
   protocol: 'tcp' | 'ssl' | 'http';
-  api_port: number;
-  use_tls: boolean;
-  cert_file: string | null;
-  api_token: string | null;
-  unit_id: number | null;
-  cot_types_filter: string[] | null;
-  channel_filter: string | null;
-  is_active: boolean;
-  connection_status: 'connected' | 'disconnected' | 'error' | 'polling';
-  last_connected: string | null;
-  last_error: string | null;
-  created_by: number | null;
-  created_at: string;
-  updated_at: string | null;
+  apiPort: number;
+  useTls: boolean;
+  certFile: string | null;
+  apiToken: string | null;
+  unitId: number | null;
+  cotTypesFilter: string[] | null;
+  channelFilter: string | null;
+  isActive: boolean;
+  connectionStatus: 'connected' | 'disconnected' | 'error' | 'polling';
+  lastConnected: string | null;
+  lastError: string | null;
+  createdBy: number | null;
+  createdAt: string;
+  updatedAt: string | null;
 }
 
 export interface TAKConnectionCreate {
@@ -30,14 +30,14 @@ export interface TAKConnectionCreate {
   host: string;
   port?: number;
   protocol?: 'tcp' | 'ssl' | 'http';
-  api_port?: number;
-  use_tls?: boolean;
-  cert_file?: string;
-  api_token?: string;
-  unit_id?: number;
-  cot_types_filter?: string[];
-  channel_filter?: string;
-  is_active?: boolean;
+  apiPort?: number;
+  useTls?: boolean;
+  certFile?: string;
+  apiToken?: string;
+  unitId?: number;
+  cotTypesFilter?: string[];
+  channelFilter?: string;
+  isActive?: boolean;
 }
 
 export interface TAKConnectionUpdate {
@@ -45,31 +45,31 @@ export interface TAKConnectionUpdate {
   host?: string;
   port?: number;
   protocol?: 'tcp' | 'ssl' | 'http';
-  api_port?: number;
-  use_tls?: boolean;
-  cert_file?: string;
-  api_token?: string;
-  unit_id?: number;
-  cot_types_filter?: string[];
-  channel_filter?: string;
-  is_active?: boolean;
+  apiPort?: number;
+  useTls?: boolean;
+  certFile?: string;
+  apiToken?: string;
+  unitId?: number;
+  cotTypesFilter?: string[];
+  channelFilter?: string;
+  isActive?: boolean;
 }
 
 export interface TAKConnectionStatus {
-  connection_id: number;
+  connectionId: number;
   name: string;
   status: string;
-  connected_at: string | null;
-  last_poll: string | null;
-  last_error: string | null;
-  messages_received: number;
+  connectedAt: string | null;
+  lastPoll: string | null;
+  lastError: string | null;
+  messagesReceived: number;
 }
 
 export interface TAKTestResult {
   success: boolean;
-  status_code: number | null;
-  latency_ms: number | null;
-  server_info: string | null;
+  statusCode: number | null;
+  latencyMs: number | null;
+  serverInfo: string | null;
   message: string;
 }
 
@@ -78,10 +78,10 @@ export interface TAKMessage {
   uid: string | null;
   callsign: string | null;
   channel: string | null;
-  content_preview: string | null;
+  contentPreview: string | null;
   confidence: number;
   status: string;
-  received_at: string | null;
+  receivedAt: string | null;
 }
 
 export interface COTIngestResponse {
@@ -99,26 +99,26 @@ const DEMO_TAK_CONNECTION: TAKConnection = {
   host: 'tak-alpha.keystone.usmc.mil',
   port: 8089,
   protocol: 'ssl',
-  api_port: 8443,
-  use_tls: true,
-  cert_file: '/certs/tak-alpha.pem',
-  api_token: null,
-  unit_id: 4,
-  cot_types_filter: ['a-f-G', 'b-m-p-s-m'],
-  channel_filter: null,
-  is_active: true,
-  connection_status: 'connected',
-  last_connected: new Date().toISOString(),
-  last_error: null,
-  created_by: 1,
-  created_at: '2026-02-15T00:00:00Z',
-  updated_at: '2026-03-01T12:00:00Z',
+  apiPort: 8443,
+  useTls: true,
+  certFile: '/certs/tak-alpha.pem',
+  apiToken: null,
+  unitId: 4,
+  cotTypesFilter: ['a-f-G', 'b-m-p-s-m'],
+  channelFilter: null,
+  isActive: true,
+  connectionStatus: 'connected',
+  lastConnected: new Date().toISOString(),
+  lastError: null,
+  createdBy: 1,
+  createdAt: '2026-02-15T00:00:00Z',
+  updatedAt: '2026-03-01T12:00:00Z',
 };
 
 const DEMO_TAK_MESSAGES: TAKMessage[] = [
-  { id: 1, uid: 'ALPHA-6', callsign: 'ALPHA-6', channel: 'BN TAC 1', content_preview: 'Position update: Grid 38SMB 4823 1567', confidence: 0.95, status: 'PARSED', received_at: new Date(Date.now() - 300000).toISOString() },
-  { id: 2, uid: 'BRAVO-6', callsign: 'BRAVO-6', channel: 'BN TAC 1', content_preview: 'LOGPAC request: CL III emergency resupply', confidence: 0.88, status: 'PARSED', received_at: new Date(Date.now() - 600000).toISOString() },
-  { id: 3, uid: 'FST-11', callsign: 'STEEL RAIN', channel: 'FIRES NET', content_preview: 'Fire mission complete. BDA pending.', confidence: 0.92, status: 'PARSED', received_at: new Date(Date.now() - 900000).toISOString() },
+  { id: 1, uid: 'ALPHA-6', callsign: 'ALPHA-6', channel: 'BN TAC 1', contentPreview: 'Position update: Grid 38SMB 4823 1567', confidence: 0.95, status: 'PARSED', receivedAt: new Date(Date.now() - 300000).toISOString() },
+  { id: 2, uid: 'BRAVO-6', callsign: 'BRAVO-6', channel: 'BN TAC 1', contentPreview: 'LOGPAC request: CL III emergency resupply', confidence: 0.88, status: 'PARSED', receivedAt: new Date(Date.now() - 600000).toISOString() },
+  { id: 3, uid: 'FST-11', callsign: 'STEEL RAIN', channel: 'FIRES NET', contentPreview: 'Fire mission complete. BDA pending.', confidence: 0.92, status: 'PARSED', receivedAt: new Date(Date.now() - 900000).toISOString() },
 ];
 
 const mockDelay = (ms = 200 + Math.random() * 200): Promise<void> =>
@@ -153,7 +153,7 @@ export async function deleteConnection(id: number): Promise<void> {
 }
 
 export async function testConnection(id: number): Promise<TAKTestResult> {
-  if (isDemoMode) { await mockDelay(); void id; return { success: true, status_code: 200, latency_ms: 45, server_info: 'TAK Server 4.8.0 (Demo)', message: 'Connection successful' }; }
+  if (isDemoMode) { await mockDelay(); void id; return { success: true, statusCode: 200, latencyMs: 45, serverInfo: 'TAK Server 4.8.0 (Demo)', message: 'Connection successful' }; }
   const response = await apiClient.post<TAKTestResult>(`/tak/connections/${id}/test`);
   return response.data;
 }
@@ -175,7 +175,7 @@ export async function stopPolling(id: number): Promise<{ status: string; message
 }
 
 export async function getConnectionStatus(id: number): Promise<TAKConnectionStatus> {
-  if (isDemoMode) { await mockDelay(); return { connection_id: id, name: DEMO_TAK_CONNECTION.name, status: 'connected', connected_at: DEMO_TAK_CONNECTION.last_connected, last_poll: new Date().toISOString(), last_error: null, messages_received: 47 }; }
+  if (isDemoMode) { await mockDelay(); return { connectionId: id, name: DEMO_TAK_CONNECTION.name, status: 'connected', connectedAt: DEMO_TAK_CONNECTION.lastConnected, lastPoll: new Date().toISOString(), lastError: null, messagesReceived: 47 }; }
   const response = await apiClient.get<TAKConnectionStatus>(`/tak/connections/${id}/status`);
   return response.data;
 }
@@ -194,8 +194,8 @@ export async function submitCOTMessage(
 ): Promise<COTIngestResponse> {
   if (isDemoMode) { await mockDelay(); void connectionId; return { success: true, message: 'CoT message ingested (demo)', parsed: { type: 'a-f-G', uid: 'DEMO-' + Date.now(), content: xmlContent.substring(0, 100) }, errors: null }; }
   const response = await apiClient.post<COTIngestResponse>('/tak/ingest/cot', {
-    xml_content: xmlContent,
-    connection_id: connectionId,
+    xmlContent: xmlContent,
+    connectionId: connectionId,
   });
   return response.data;
 }

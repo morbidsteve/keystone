@@ -31,7 +31,7 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
   };
 
   const handleDelete = async (b: BilletRecord) => {
-    if (!window.confirm(`Delete billet "${b.billet_title}" (${b.billet_id_code})? This cannot be undone.`)) return;
+    if (!window.confirm(`Delete billet "${b.billetTitle}" (${b.billetIdCode})? This cannot be undone.`)) return;
     try {
       await deleteBillet(b.id);
       onRefresh?.();
@@ -43,10 +43,10 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
   const handleAssign = async (billetId: number, marine: PersonnelRecord) => {
     try {
       await updateBillet(billetId, {
-        is_filled: true,
-        filled_by_id: marine.id,
-        filled_by_name: `${marine.rank ?? ''} ${marine.last_name}`.trim(),
-        filled_date: new Date().toISOString().split('T')[0],
+        isFilled: true,
+        filledById: marine.id,
+        filledByName: `${marine.rank ?? ''} ${marine.lastName}`.trim(),
+        filledDate: new Date().toISOString().split('T')[0],
       });
       setAssigningBilletId(null);
       setAssignSearch('');
@@ -59,10 +59,10 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
   const handleUnassign = async (b: BilletRecord) => {
     try {
       await updateBillet(b.id, {
-        is_filled: false,
-        filled_by_id: null,
-        filled_by_name: undefined,
-        filled_date: null,
+        isFilled: false,
+        filledById: null,
+        filledByName: undefined,
+        filledDate: null,
       });
       onRefresh?.();
     } catch (err) {
@@ -79,17 +79,17 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
     const term = assignSearch.toLowerCase();
     return personnel.filter(
       (p) =>
-        p.last_name.toLowerCase().includes(term) ||
-        p.first_name.toLowerCase().includes(term) ||
+        p.lastName.toLowerCase().includes(term) ||
+        p.firstName.toLowerCase().includes(term) ||
         (p.rank ?? '').toLowerCase().includes(term) ||
         (p.mos ?? '').toLowerCase().includes(term),
     );
   }, [personnel, assignSearch]);
   const stats = useMemo(() => {
     const total = billets.length;
-    const filled = billets.filter((b) => b.is_filled).length;
+    const filled = billets.filter((b) => b.isFilled).length;
     const vacant = total - filled;
-    const keyVacancies = billets.filter((b) => b.is_key_billet && !b.is_filled);
+    const keyVacancies = billets.filter((b) => b.isKeyBillet && !b.isFilled);
     return { total, filled, vacant, keyVacancies };
   }, [billets]);
 
@@ -176,7 +176,7 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
               <tr
                 key={b.id}
                 style={{
-                  borderLeft: !b.is_filled ? '3px solid #f87171' : '3px solid transparent',
+                  borderLeft: !b.isFilled ? '3px solid #f87171' : '3px solid transparent',
                   transition: 'background-color 150ms',
                 }}
                 onMouseEnter={(e) => {
@@ -187,25 +187,25 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
                 }}
               >
                 <td className="font-semibold">
-                  {b.billet_id_code}
+                  {b.billetIdCode}
                 </td>
                 <td className="font-semibold">
-                  {b.billet_title}
+                  {b.billetTitle}
                 </td>
-                <td style={cellStyle}>{b.mos_required ?? '—'}</td>
-                <td style={cellStyle}>{b.rank_required ?? '—'}</td>
+                <td style={cellStyle}>{b.mosRequired ?? '—'}</td>
+                <td style={cellStyle}>{b.rankRequired ?? '—'}</td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
-                  {b.is_key_billet && (
+                  {b.isKeyBillet && (
                     <Star size={13} className="text-[#fbbf24]" />
                   )}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
                   <span
-                    className="inline-block w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: b.is_filled ? '#4ade80' : '#f87171' }}
+                    className="inline-block w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: b.isFilled ? '#4ade80' : '#f87171' }}
                   />
                 </td>
                 <td style={cellStyle}>
-                  {b.filled_by_name ?? (
+                  {b.filledByName ?? (
                     <span className="text-[#f87171] text-[10px] italic">
                       VACANT
                     </span>
@@ -225,7 +225,7 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
                     >
                       DEL
                     </button>
-                    {b.is_filled ? (
+                    {b.isFilled ? (
                       <button
                         onClick={() => handleUnassign(b)}
                         className="font-[var(--font-mono)] text-[9px] font-semibold text-[#fbbf24] bg-transparent rounded-[2px] py-0.5 px-1.5 cursor-pointer tracking-[0.5px]" style={{ border: '1px solid rgba(251,191,36,0.3)' }}
@@ -241,7 +241,7 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
                       </button>
                     )}
                   </div>
-                  {assigningBilletId === b.id && !b.is_filled && (
+                  {assigningBilletId === b.id && !b.isFilled && (
                     <div
                       className="absolute right-0 z-[40] w-[260px] bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-[var(--radius)]" style={{ top: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }}
                     >
@@ -262,9 +262,9 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
                             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
                           >
                             <span className="text-[var(--color-text-bright)] font-semibold">
-                              {m.rank ?? ''} {m.last_name}
+                              {m.rank ?? ''} {m.lastName}
                             </span>
-                            <span className="text-[var(--color-text-muted)]">, {m.first_name}</span>
+                            <span className="text-[var(--color-text-muted)]">, {m.firstName}</span>
                             <span className="text-[var(--color-accent)] ml-1.5">{m.mos ?? ''}</span>
                           </div>
                         ))}
@@ -304,15 +304,15 @@ export default function BilletTracker({ billets, onRefresh, personnel }: BilletT
                   <span
                     className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
                   >
-                    {b.billet_title}
+                    {b.billetTitle}
                   </span>
                 </div>
                 <div
                   className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] flex gap-3"
                 >
-                  <span>{b.billet_id_code}</span>
-                  <span>MOS: {b.mos_required ?? 'ANY'}</span>
-                  <span>RANK: {b.rank_required ?? 'ANY'}</span>
+                  <span>{b.billetIdCode}</span>
+                  <span>MOS: {b.mosRequired ?? 'ANY'}</span>
+                  <span>RANK: {b.rankRequired ?? 'ANY'}</span>
                 </div>
               </div>
             ))}

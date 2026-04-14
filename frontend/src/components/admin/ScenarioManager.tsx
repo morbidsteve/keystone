@@ -257,7 +257,7 @@ function ScenarioCard({
           <div
             className="font-bold text-[var(--color-text-bright)] mb-1"
           >
-            {scenario.display_name}
+            {scenario.displayName}
           </div>
           <div
             className="text-[var(--color-text-muted)] overflow-hidden" style={{ lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
@@ -269,15 +269,15 @@ function ScenarioCard({
           >
             <span style={badgeStyle('var(--color-accent)')}>
               <Clock size={8} />
-              {scenario.duration_days} DAYS
+              {scenario.durationDays} DAYS
             </span>
             <span style={badgeStyle('var(--color-text-muted)')}>
               <Zap size={8} />
-              {scenario.phase_count} PHASES
+              {scenario.phaseCount} PHASES
             </span>
             <span style={badgeStyle('var(--color-text-muted)')}>
               <UsersIcon size={8} />
-              {scenario.unit_count} UNITS
+              {scenario.unitCount} UNITS
             </span>
           </div>
         </div>
@@ -320,16 +320,16 @@ function ScenarioCard({
                 >
                   {detail.phases.map((phase, i) => {
                     const totalH = detail.phases.reduce(
-                      (acc, p) => acc + p.duration_h,
+                      (acc, p) => acc + p.durationH,
                       0,
                     );
                     const widthPct =
-                      totalH > 0 ? (phase.duration_h / totalH) * 100 : 0;
+                      totalH > 0 ? (phase.durationH / totalH) * 100 : 0;
                     const tc = tempoColor(phase.tempo);
                     return (
                       <div
                         key={i}
-                        title={`${phase.name}\n${phase.duration_h}h - ${phase.tempo} tempo\n${phase.description}`}
+                        title={`${phase.name}\n${phase.durationH}h - ${phase.tempo} tempo\n${phase.description}`}
                         className="flex items-center justify-center overflow-hidden relative" style={{ width: `${widthPct}%`, minWidth: widthPct > 3 ? undefined : 4, backgroundColor: `${tc}22`, borderRight: i < detail.phases.length - 1
                               ? '1px solid var(--color-border)'
                               : 'none' }}
@@ -362,7 +362,7 @@ function ScenarioCard({
                       />
                       <span>{phase.name}</span>
                       <span className="opacity-60">
-                        ({phase.duration_h}h)
+                        ({phase.durationH}h)
                       </span>
                     </div>
                   ))}
@@ -397,7 +397,7 @@ function ScenarioCard({
               </div>
 
               {/* AO Info */}
-              {detail.area_of_operation && (
+              {detail.areaOfOperation && (
                 <div>
                   <div
                     className="font-bold tracking-[1px] text-[var(--color-text-muted)] mb-1"
@@ -408,11 +408,11 @@ function ScenarioCard({
                     className="flex items-center gap-1.5 text-[var(--color-text)]"
                   >
                     <MapPin size={10} className="text-[var(--color-accent)]" />
-                    {detail.area_of_operation.name}
+                    {detail.areaOfOperation.name}
                     <span className="text-[var(--color-text-muted)] text-[9px]">
-                      ({detail.area_of_operation.center[0].toFixed(2)},{' '}
-                      {detail.area_of_operation.center[1].toFixed(2)}) r=
-                      {detail.area_of_operation.radius_km}km
+                      ({detail.areaOfOperation.center[0].toFixed(2)},{' '}
+                      {detail.areaOfOperation.center[1].toFixed(2)}) r=
+                      {detail.areaOfOperation.radiusKm}km
                     </span>
                   </div>
                 </div>
@@ -515,10 +515,10 @@ export default function ScenarioManager() {
         await startSimulation(scenarioName, speed);
         setStatus({
           status: 'running',
-          scenario_name: scenarioName,
+          scenarioName: scenarioName,
           speed,
-          started_at: new Date().toISOString(),
-          events_processed: 0,
+          startedAt: new Date().toISOString(),
+          eventsProcessed: 0,
         });
       } catch (err: unknown) {
         const msg =
@@ -629,11 +629,11 @@ export default function ScenarioManager() {
           </div>
 
           {/* Current scenario name */}
-          {status.scenario_name && (
+          {status.scenarioName && (
             <div
               className="text-[var(--color-text)] py-0.5 px-2 border border-[var(--color-border)] rounded-[var(--radius)]"
             >
-              {status.scenario_name.replace(/_/g, ' ').toUpperCase()}
+              {status.scenarioName.replace(/_/g, ' ').toUpperCase()}
             </div>
           )}
 
@@ -660,12 +660,12 @@ export default function ScenarioManager() {
           )}
 
           {/* Events processed */}
-          {isSimActive && status.events_processed != null && (
+          {isSimActive && status.eventsProcessed != null && (
             <div
               className="flex items-center gap-1 text-[var(--color-text-muted)]"
             >
               <Activity size={10} />
-              {status.events_processed.toLocaleString()} events
+              {status.eventsProcessed.toLocaleString()} events
             </div>
           )}
 
@@ -709,14 +709,14 @@ export default function ScenarioManager() {
         </div>
 
         {/* Started at / sim time row */}
-        {status.started_at && (
+        {status.startedAt && (
           <div
             className="flex gap-4 text-[var(--color-text-muted)]" style={{ padding: '0 12px 12px 12px' }}
           >
             <span>
-              Started: {new Date(status.started_at).toLocaleString()}
+              Started: {new Date(status.startedAt).toLocaleString()}
             </span>
-            {status.sim_time && <span>Sim Time: {status.sim_time}</span>}
+            {status.simTime && <span>Sim Time: {status.simTime}</span>}
           </div>
         )}
       </Card>

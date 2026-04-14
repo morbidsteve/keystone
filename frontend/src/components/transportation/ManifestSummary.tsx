@@ -67,7 +67,7 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
   }
 
   const totalItems = entries.reduce((acc, e) => acc + e.quantity, 0);
-  const totalWeight = entries.reduce((acc, e) => acc + (e.weight_lbs ?? 0), 0);
+  const totalWeight = entries.reduce((acc, e) => acc + (e.weightLbs ?? 0), 0);
 
   return (
     <div className="flex flex-col gap-2.5">
@@ -128,7 +128,7 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
             {entries.map((entry) => {
               const pColor = PRIORITY_COLORS[entry.priority];
               return (
-                <tr key={entry.item_id}>
+                <tr key={entry.itemId}>
                   <td
                     className="text-[var(--color-text-bright)] max-w-[240px] overflow-hidden text-ellipsis whitespace-nowrap"
                   >
@@ -138,7 +138,7 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
                     {entry.quantity}
                   </td>
                   <td style={{ ...cellStyle, textAlign: 'right' }}>
-                    {entry.weight_lbs != null ? `${entry.weight_lbs.toLocaleString()} lbs` : '--'}
+                    {entry.weightLbs != null ? `${entry.weightLbs.toLocaleString()} lbs` : '--'}
                   </td>
                   <td style={cellStyle}>
                     <span
@@ -150,7 +150,7 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
                   <td
                     className="overflow-hidden text-ellipsis whitespace-nowrap text-[var(--color-text-muted)] text-[9px]"
                   >
-                    {entry.special_handling ?? '--'}
+                    {entry.specialHandling ?? '--'}
                   </td>
                   <td style={{ ...cellStyle, textAlign: 'center' }}>
                     <div className="flex gap-1 justify-center">
@@ -162,7 +162,7 @@ export default function ManifestSummary({ entries, onEdit, onRemove }: ManifestS
                         <Pencil size={10} />
                       </button>
                       <button
-                        onClick={() => onRemove(entry.item_id)}
+                        onClick={() => onRemove(entry.itemId)}
                         title="Remove"
                         className="flex items-center justify-center w-[22px] h-[22px] bg-transparent rounded-[var(--radius)] text-[#f87171] cursor-pointer border border-[rgba(248,113,113,0.4)]"
                       >

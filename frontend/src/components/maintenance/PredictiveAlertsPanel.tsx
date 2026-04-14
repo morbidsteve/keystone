@@ -67,13 +67,13 @@ export default function PredictiveAlertsPanel({ unitId }: PredictiveAlertsPanelP
                 <span
                   className="font-[var(--font-mono)] text-xs font-semibold text-[var(--color-text-bright)] tracking-[0.5px]"
                 >
-                  {rec.equipment_type}
+                  {rec.equipmentType}
                 </span>
               </div>
               <span
-                className="font-[var(--font-mono)] text-[10px] font-semibold" style={{ color: rec.days_until_failure <= 10 ? 'var(--color-danger)' : 'var(--color-warning)' }}
+                className="font-[var(--font-mono)] text-[10px] font-semibold" style={{ color: rec.daysUntilFailure <= 10 ? 'var(--color-danger)' : 'var(--color-warning)' }}
               >
-                {rec.days_until_failure}D TO FAILURE
+                {rec.daysUntilFailure}D TO FAILURE
               </span>
             </div>
 

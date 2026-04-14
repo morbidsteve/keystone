@@ -141,7 +141,7 @@ export default function AllSourcesPanel() {
       <Card title={`EDIT SOURCE: ${editingSource.name}`}>
         <DataSourceForm
           initial={editingSource}
-          sourceType={editingSource.source_type}
+          sourceType={editingSource.sourceType}
           onSubmit={handleUpdate}
           onCancel={() => setEditingSource(null)}
         />
@@ -333,7 +333,7 @@ export default function AllSourcesPanel() {
         {!loading && sources.length > 0 && (
           <div className="flex flex-col gap-1.5">
             {sources.map((source) => {
-              const TypeIcon = typeIcons[source.source_type];
+              const TypeIcon = typeIcons[source.sourceType];
               const isSelected = selectedSource === source.id;
 
               return (
@@ -362,18 +362,18 @@ export default function AllSourcesPanel() {
                       <div
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-0.5 flex gap-3"
                       >
-                        <span>{typeLabels[source.source_type]}</span>
-                        <span>{source.files_processed} files</span>
-                        <span>{source.records_ingested.toLocaleString()} records</span>
+                        <span>{typeLabels[source.sourceType]}</span>
+                        <span>{source.filesProcessed} files</span>
+                        <span>{source.recordsIngested.toLocaleString()} records</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2.5">
-                      {source.last_run && (
+                      {source.lastRun && (
                         <span
                           className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                         >
                           <Clock size={10} />
-                          {formatRelativeTime(source.last_run)}
+                          {formatRelativeTime(source.lastRun)}
                         </span>
                       )}
                       <DataSourceStatusPill status={source.status} />
@@ -438,7 +438,7 @@ export default function AllSourcesPanel() {
                   )}
 
                   {/* Error display */}
-                  {source.last_error && isSelected && (
+                  {source.lastError && isSelected && (
                     <div
                       className="flex items-start gap-1.5 mt-2 py-1.5 px-2 bg-[rgba(255,107,107,0.08)] rounded-[var(--radius)]"
                     >
@@ -449,7 +449,7 @@ export default function AllSourcesPanel() {
                       <span
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)] break-words"
                       >
-                        {source.last_error}
+                        {source.lastError}
                       </span>
                     </div>
                   )}

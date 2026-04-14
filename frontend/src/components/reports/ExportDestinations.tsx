@@ -58,9 +58,9 @@ export default function ExportDestinations() {
   const startEdit = (dest: ExportDestination) => {
     setFormName(dest.name);
     setFormUrl(dest.url);
-    setFormAuthType(dest.auth_type);
-    setFormAuthValue(dest.auth_value || '');
-    setFormActive(dest.is_active);
+    setFormAuthType(dest.authType);
+    setFormAuthValue(dest.authValue || '');
+    setFormActive(dest.isActive);
     setEditingId(dest.id);
     setShowForm(true);
   };
@@ -75,7 +75,7 @@ export default function ExportDestinations() {
           url: formUrl,
           auth_type: formAuthType,
           auth_value: formAuthValue || undefined,
-          is_active: formActive,
+          isActive: formActive,
         });
         setDestinations((prev) => prev.map((d) => (d.id === editingId ? updated : d)));
       } else {
@@ -84,7 +84,7 @@ export default function ExportDestinations() {
           url: formUrl,
           auth_type: formAuthType,
           auth_value: formAuthValue || undefined,
-          is_active: formActive,
+          isActive: formActive,
         };
         const created = await createExportDestination(data);
         setDestinations((prev) => [...prev, created]);
@@ -226,17 +226,17 @@ export default function ExportDestinations() {
         ) : (
           destinations.map((d) => (
             <div key={d.id} className="flex items-center gap-2.5 py-2 px-2.5 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-[var(--radius)]">
-              <Globe size={14} className="shrink-0" style={{ color: d.is_active ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)' }} />
+              <Globe size={14} className="shrink-0" style={{ color: d.isActive ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)' }} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)] font-semibold">
                     {d.name}
                   </span>
-                  <span className="font-[var(--font-mono)] text-[8px] py-px px-1.5 rounded-[var(--radius)] uppercase tracking-[0.5px]" style={{ backgroundColor: d.is_active ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.05)', border: d.is_active ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--color-border)', color: d.is_active ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)' }}>
-                    {d.is_active ? 'ACTIVE' : 'INACTIVE'}
+                  <span className="font-[var(--font-mono)] text-[8px] py-px px-1.5 rounded-[var(--radius)] uppercase tracking-[0.5px]" style={{ backgroundColor: d.isActive ? 'rgba(34,197,94,0.1)' : 'rgba(255,255,255,0.05)', border: d.isActive ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--color-border)', color: d.isActive ? 'var(--color-green, #22c55e)' : 'var(--color-text-muted)' }}>
+                    {d.isActive ? 'ACTIVE' : 'INACTIVE'}
                   </span>
                   <span className="font-[var(--font-mono)] text-[8px] py-px px-1.5 rounded-[var(--radius)] bg-[var(--color-bg)] border border-[var(--color-border)] text-[var(--color-text-muted)] uppercase tracking-[0.5px]">
-                    {d.auth_type}
+                    {d.authType}
                   </span>
                 </div>
                 <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap">

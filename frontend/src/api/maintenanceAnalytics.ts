@@ -8,115 +8,115 @@ import { isDemoMode } from './mockClient';
 // ── Types ────────────────────────────────────────────────────────────
 
 export interface PersonnelWorkload {
-  personnel_id: number;
+  personnelId: number;
   edipi: string;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   rank: string;
   mos: string;
-  total_hours: number;
-  work_order_count: number;
-  avg_hours_per_wo: number;
-  labor_breakdown: Record<string, number>;
+  totalHours: number;
+  workOrderCount: number;
+  avgHoursPerWo: number;
+  laborBreakdown: Record<string, number>;
 }
 
 export interface EquipmentReliability {
-  equipment_type: string;
-  total_wos: number;
-  corrective_count: number;
-  preventive_count: number;
-  corrective_pct: number;
-  preventive_pct: number;
+  equipmentType: string;
+  totalWos: number;
+  correctiveCount: number;
+  preventiveCount: number;
+  correctivePct: number;
+  preventivePct: number;
 }
 
 export interface PartFailure {
-  part_number: string;
+  partNumber: string;
   nomenclature: string;
   nsn: string;
-  replacement_count: number;
-  total_quantity: number;
-  avg_cost_per_part: number;
-  total_cost: number;
+  replacementCount: number;
+  totalQuantity: number;
+  avgCostPerPart: number;
+  totalCost: number;
 }
 
 export interface MTBFMTTRData {
-  equipment_type: string;
-  mtbf_days: number;
-  mttr_hours: number;
-  mtbf_trend: 'IMPROVING' | 'DEGRADING' | 'STABLE';
-  corrective_wos_total: number;
-  last_corrective_date: string | null;
-  health_score: number;
+  equipmentType: string;
+  mtbfDays: number;
+  mttrHours: number;
+  mtbfTrend: 'IMPROVING' | 'DEGRADING' | 'STABLE';
+  correctiveWosTotal: number;
+  lastCorrectiveDate: string | null;
+  healthScore: number;
 }
 
 export interface PMRecommendation {
-  equipment_type: string;
+  equipmentType: string;
   recommendation: string;
   reason: string;
   priority: number;
-  days_until_failure: number;
+  daysUntilFailure: number;
 }
 
 export interface PartsForecast {
-  part_number: string;
+  partNumber: string;
   nomenclature: string;
-  forecast_quantity: number;
-  equipment_types: string[];
-  avg_cost_per_part: number;
-  total_forecast_cost: number;
+  forecastQuantity: number;
+  equipmentTypes: string[];
+  avgCostPerPart: number;
+  totalForecastCost: number;
 }
 
 // ── Mock Data ────────────────────────────────────────────────────────
 
 const MOCK_PERSONNEL_WORKLOAD: PersonnelWorkload[] = [
-  { personnel_id: 1, edipi: '1234567890', first_name: 'Marcus', last_name: 'Rodriguez', rank: 'Cpl', mos: '3521', total_hours: 145.5, work_order_count: 12, avg_hours_per_wo: 12.1, labor_breakdown: { INSPECT: 20, DIAGNOSE: 35.5, REPAIR: 60, REPLACE: 25, TEST: 5 } },
-  { personnel_id: 2, edipi: '2345678901', first_name: 'James', last_name: 'Mitchell', rank: 'LCpl', mos: '3521', total_hours: 128.0, work_order_count: 10, avg_hours_per_wo: 12.8, labor_breakdown: { INSPECT: 15, DIAGNOSE: 28, REPAIR: 55, REPLACE: 20, TEST: 10 } },
-  { personnel_id: 3, edipi: '3456789012', first_name: 'David', last_name: 'Chen', rank: 'Sgt', mos: '3531', total_hours: 110.5, work_order_count: 8, avg_hours_per_wo: 13.8, labor_breakdown: { INSPECT: 30, DIAGNOSE: 25, REPAIR: 30, REPLACE: 15, TEST: 10.5 } },
-  { personnel_id: 4, edipi: '4567890123', first_name: 'Tyler', last_name: 'Brooks', rank: 'PFC', mos: '3521', total_hours: 98.0, work_order_count: 9, avg_hours_per_wo: 10.9, labor_breakdown: { INSPECT: 10, DIAGNOSE: 18, REPAIR: 45, REPLACE: 20, TEST: 5 } },
-  { personnel_id: 5, edipi: '5678901234', first_name: 'Ryan', last_name: 'Jackson', rank: 'LCpl', mos: '3531', total_hours: 86.5, work_order_count: 7, avg_hours_per_wo: 12.4, labor_breakdown: { INSPECT: 12, DIAGNOSE: 20, REPAIR: 35, REPLACE: 14.5, TEST: 5 } },
-  { personnel_id: 6, edipi: '6789012345', first_name: 'Kevin', last_name: 'Torres', rank: 'Cpl', mos: '3521', total_hours: 75.0, work_order_count: 6, avg_hours_per_wo: 12.5, labor_breakdown: { INSPECT: 8, DIAGNOSE: 15, REPAIR: 32, REPLACE: 12, TEST: 8 } },
-  { personnel_id: 7, edipi: '7890123456', first_name: 'Brandon', last_name: 'Lee', rank: 'PFC', mos: '3531', total_hours: 62.0, work_order_count: 5, avg_hours_per_wo: 12.4, labor_breakdown: { INSPECT: 6, DIAGNOSE: 12, REPAIR: 28, REPLACE: 10, TEST: 6 } },
-  { personnel_id: 8, edipi: '8901234567', first_name: 'Andrew', last_name: 'Harris', rank: 'LCpl', mos: '3521', total_hours: 55.5, work_order_count: 5, avg_hours_per_wo: 11.1, labor_breakdown: { INSPECT: 5, DIAGNOSE: 10, REPAIR: 25, REPLACE: 8.5, TEST: 7 } },
+  { personnelId: 1, edipi: '1234567890', firstName: 'Marcus', lastName: 'Rodriguez', rank: 'Cpl', mos: '3521', totalHours: 145.5, workOrderCount: 12, avgHoursPerWo: 12.1, laborBreakdown: { INSPECT: 20, DIAGNOSE: 35.5, REPAIR: 60, REPLACE: 25, TEST: 5 } },
+  { personnelId: 2, edipi: '2345678901', firstName: 'James', lastName: 'Mitchell', rank: 'LCpl', mos: '3521', totalHours: 128.0, workOrderCount: 10, avgHoursPerWo: 12.8, laborBreakdown: { INSPECT: 15, DIAGNOSE: 28, REPAIR: 55, REPLACE: 20, TEST: 10 } },
+  { personnelId: 3, edipi: '3456789012', firstName: 'David', lastName: 'Chen', rank: 'Sgt', mos: '3531', totalHours: 110.5, workOrderCount: 8, avgHoursPerWo: 13.8, laborBreakdown: { INSPECT: 30, DIAGNOSE: 25, REPAIR: 30, REPLACE: 15, TEST: 10.5 } },
+  { personnelId: 4, edipi: '4567890123', firstName: 'Tyler', lastName: 'Brooks', rank: 'PFC', mos: '3521', totalHours: 98.0, workOrderCount: 9, avgHoursPerWo: 10.9, laborBreakdown: { INSPECT: 10, DIAGNOSE: 18, REPAIR: 45, REPLACE: 20, TEST: 5 } },
+  { personnelId: 5, edipi: '5678901234', firstName: 'Ryan', lastName: 'Jackson', rank: 'LCpl', mos: '3531', totalHours: 86.5, workOrderCount: 7, avgHoursPerWo: 12.4, laborBreakdown: { INSPECT: 12, DIAGNOSE: 20, REPAIR: 35, REPLACE: 14.5, TEST: 5 } },
+  { personnelId: 6, edipi: '6789012345', firstName: 'Kevin', lastName: 'Torres', rank: 'Cpl', mos: '3521', totalHours: 75.0, workOrderCount: 6, avgHoursPerWo: 12.5, laborBreakdown: { INSPECT: 8, DIAGNOSE: 15, REPAIR: 32, REPLACE: 12, TEST: 8 } },
+  { personnelId: 7, edipi: '7890123456', firstName: 'Brandon', lastName: 'Lee', rank: 'PFC', mos: '3531', totalHours: 62.0, workOrderCount: 5, avgHoursPerWo: 12.4, laborBreakdown: { INSPECT: 6, DIAGNOSE: 12, REPAIR: 28, REPLACE: 10, TEST: 6 } },
+  { personnelId: 8, edipi: '8901234567', firstName: 'Andrew', lastName: 'Harris', rank: 'LCpl', mos: '3521', totalHours: 55.5, workOrderCount: 5, avgHoursPerWo: 11.1, laborBreakdown: { INSPECT: 5, DIAGNOSE: 10, REPAIR: 25, REPLACE: 8.5, TEST: 7 } },
 ];
 
 const MOCK_EQUIPMENT_RELIABILITY: EquipmentReliability[] = [
-  { equipment_type: 'HMMWV', total_wos: 45, corrective_count: 28, preventive_count: 17, corrective_pct: 62.2, preventive_pct: 37.8 },
-  { equipment_type: 'MTVR', total_wos: 32, corrective_count: 18, preventive_count: 14, corrective_pct: 56.3, preventive_pct: 43.7 },
-  { equipment_type: 'LAV-25', total_wos: 24, corrective_count: 16, preventive_count: 8, corrective_pct: 66.7, preventive_pct: 33.3 },
-  { equipment_type: 'AAV-P7A1', total_wos: 18, corrective_count: 12, preventive_count: 6, corrective_pct: 66.7, preventive_pct: 33.3 },
-  { equipment_type: 'JLTV', total_wos: 12, corrective_count: 5, preventive_count: 7, corrective_pct: 41.7, preventive_pct: 58.3 },
+  { equipmentType: 'HMMWV', totalWos: 45, correctiveCount: 28, preventiveCount: 17, correctivePct: 62.2, preventivePct: 37.8 },
+  { equipmentType: 'MTVR', totalWos: 32, correctiveCount: 18, preventiveCount: 14, correctivePct: 56.3, preventivePct: 43.7 },
+  { equipmentType: 'LAV-25', totalWos: 24, correctiveCount: 16, preventiveCount: 8, correctivePct: 66.7, preventivePct: 33.3 },
+  { equipmentType: 'AAV-P7A1', totalWos: 18, correctiveCount: 12, preventiveCount: 6, correctivePct: 66.7, preventivePct: 33.3 },
+  { equipmentType: 'JLTV', totalWos: 12, correctiveCount: 5, preventiveCount: 7, correctivePct: 41.7, preventivePct: 58.3 },
 ];
 
 const MOCK_PARTS_FAILURE: PartFailure[] = [
-  { part_number: 'M001234', nomenclature: 'Engine Oil Filter', nsn: '4310-00-123-4567', replacement_count: 24, total_quantity: 48, avg_cost_per_part: 18.50, total_cost: 888.0 },
-  { part_number: 'M002345', nomenclature: 'Brake Pad Set', nsn: '2530-01-234-5678', replacement_count: 18, total_quantity: 36, avg_cost_per_part: 145.00, total_cost: 5220.0 },
-  { part_number: 'M003456', nomenclature: 'Alternator Assembly', nsn: '2920-01-345-6789', replacement_count: 12, total_quantity: 12, avg_cost_per_part: 425.00, total_cost: 5100.0 },
-  { part_number: 'M004567', nomenclature: 'Hydraulic Hose', nsn: '4720-01-456-7890', replacement_count: 15, total_quantity: 30, avg_cost_per_part: 85.00, total_cost: 2550.0 },
-  { part_number: 'M005678', nomenclature: 'Air Filter Element', nsn: '2940-00-567-8901', replacement_count: 22, total_quantity: 44, avg_cost_per_part: 32.00, total_cost: 1408.0 },
-  { part_number: 'M006789', nomenclature: 'Radiator Cap', nsn: '2930-01-678-9012', replacement_count: 10, total_quantity: 10, avg_cost_per_part: 22.00, total_cost: 220.0 },
-  { part_number: 'M007890', nomenclature: 'Starter Motor', nsn: '2920-01-789-0123', replacement_count: 8, total_quantity: 8, avg_cost_per_part: 380.00, total_cost: 3040.0 },
-  { part_number: 'M008901', nomenclature: 'Fuel Filter', nsn: '4330-01-890-1234', replacement_count: 20, total_quantity: 40, avg_cost_per_part: 28.00, total_cost: 1120.0 },
+  { partNumber: 'M001234', nomenclature: 'Engine Oil Filter', nsn: '4310-00-123-4567', replacementCount: 24, totalQuantity: 48, avgCostPerPart: 18.50, totalCost: 888.0 },
+  { partNumber: 'M002345', nomenclature: 'Brake Pad Set', nsn: '2530-01-234-5678', replacementCount: 18, totalQuantity: 36, avgCostPerPart: 145.00, totalCost: 5220.0 },
+  { partNumber: 'M003456', nomenclature: 'Alternator Assembly', nsn: '2920-01-345-6789', replacementCount: 12, totalQuantity: 12, avgCostPerPart: 425.00, totalCost: 5100.0 },
+  { partNumber: 'M004567', nomenclature: 'Hydraulic Hose', nsn: '4720-01-456-7890', replacementCount: 15, totalQuantity: 30, avgCostPerPart: 85.00, totalCost: 2550.0 },
+  { partNumber: 'M005678', nomenclature: 'Air Filter Element', nsn: '2940-00-567-8901', replacementCount: 22, totalQuantity: 44, avgCostPerPart: 32.00, totalCost: 1408.0 },
+  { partNumber: 'M006789', nomenclature: 'Radiator Cap', nsn: '2930-01-678-9012', replacementCount: 10, totalQuantity: 10, avgCostPerPart: 22.00, totalCost: 220.0 },
+  { partNumber: 'M007890', nomenclature: 'Starter Motor', nsn: '2920-01-789-0123', replacementCount: 8, totalQuantity: 8, avgCostPerPart: 380.00, totalCost: 3040.0 },
+  { partNumber: 'M008901', nomenclature: 'Fuel Filter', nsn: '4330-01-890-1234', replacementCount: 20, totalQuantity: 40, avgCostPerPart: 28.00, totalCost: 1120.0 },
 ];
 
 const MOCK_MTBF_MTTR: MTBFMTTRData[] = [
-  { equipment_type: 'HMMWV', mtbf_days: 22.5, mttr_hours: 8.5, mtbf_trend: 'DEGRADING', corrective_wos_total: 28, last_corrective_date: '2026-03-01T10:30:00Z', health_score: 10 },
-  { equipment_type: 'MTVR', mtbf_days: 45.2, mttr_hours: 12.3, mtbf_trend: 'STABLE', corrective_wos_total: 18, last_corrective_date: '2026-02-28T14:00:00Z', health_score: 60 },
-  { equipment_type: 'LAV-25', mtbf_days: 38.1, mttr_hours: 18.7, mtbf_trend: 'DEGRADING', corrective_wos_total: 16, last_corrective_date: '2026-03-02T09:15:00Z', health_score: 40 },
-  { equipment_type: 'AAV-P7A1', mtbf_days: 55.8, mttr_hours: 24.2, mtbf_trend: 'IMPROVING', corrective_wos_total: 12, last_corrective_date: '2026-02-15T11:00:00Z', health_score: 80 },
-  { equipment_type: 'JLTV', mtbf_days: 92.3, mttr_hours: 6.1, mtbf_trend: 'STABLE', corrective_wos_total: 5, last_corrective_date: '2026-01-20T08:45:00Z', health_score: 100 },
+  { equipmentType: 'HMMWV', mtbfDays: 22.5, mttrHours: 8.5, mtbfTrend: 'DEGRADING', correctiveWosTotal: 28, lastCorrectiveDate: '2026-03-01T10:30:00Z', healthScore: 10 },
+  { equipmentType: 'MTVR', mtbfDays: 45.2, mttrHours: 12.3, mtbfTrend: 'STABLE', correctiveWosTotal: 18, lastCorrectiveDate: '2026-02-28T14:00:00Z', healthScore: 60 },
+  { equipmentType: 'LAV-25', mtbfDays: 38.1, mttrHours: 18.7, mtbfTrend: 'DEGRADING', correctiveWosTotal: 16, lastCorrectiveDate: '2026-03-02T09:15:00Z', healthScore: 40 },
+  { equipmentType: 'AAV-P7A1', mtbfDays: 55.8, mttrHours: 24.2, mtbfTrend: 'IMPROVING', correctiveWosTotal: 12, lastCorrectiveDate: '2026-02-15T11:00:00Z', healthScore: 80 },
+  { equipmentType: 'JLTV', mtbfDays: 92.3, mttrHours: 6.1, mtbfTrend: 'STABLE', correctiveWosTotal: 5, lastCorrectiveDate: '2026-01-20T08:45:00Z', healthScore: 100 },
 ];
 
 const MOCK_PM_RECOMMENDATIONS: PMRecommendation[] = [
-  { equipment_type: 'HMMWV M1151 (H-21)', recommendation: 'Schedule preventive maintenance', reason: 'Predicted corrective failure in 8 days based on MTBF=22.5d', priority: 1, days_until_failure: 8 },
-  { equipment_type: 'LAV-25 (L-14)', recommendation: 'Schedule preventive maintenance', reason: 'Predicted corrective failure in 14 days based on MTBF=38.1d', priority: 1, days_until_failure: 14 },
-  { equipment_type: 'HMMWV M1165 (H-33)', recommendation: 'Schedule preventive maintenance', reason: 'Predicted corrective failure in 21 days based on MTBF=22.5d', priority: 2, days_until_failure: 21 },
+  { equipmentType: 'HMMWV M1151 (H-21)', recommendation: 'Schedule preventive maintenance', reason: 'Predicted corrective failure in 8 days based on MTBF=22.5d', priority: 1, daysUntilFailure: 8 },
+  { equipmentType: 'LAV-25 (L-14)', recommendation: 'Schedule preventive maintenance', reason: 'Predicted corrective failure in 14 days based on MTBF=38.1d', priority: 1, daysUntilFailure: 14 },
+  { equipmentType: 'HMMWV M1165 (H-33)', recommendation: 'Schedule preventive maintenance', reason: 'Predicted corrective failure in 21 days based on MTBF=22.5d', priority: 2, daysUntilFailure: 21 },
 ];
 
 const MOCK_PARTS_FORECAST: PartsForecast[] = [
-  { part_number: 'M001234', nomenclature: 'Engine Oil Filter', forecast_quantity: 8, equipment_types: ['HMMWV', 'MTVR'], avg_cost_per_part: 18.50, total_forecast_cost: 148.0 },
-  { part_number: 'M002345', nomenclature: 'Brake Pad Set', forecast_quantity: 4, equipment_types: ['HMMWV'], avg_cost_per_part: 145.00, total_forecast_cost: 580.0 },
-  { part_number: 'M003456', nomenclature: 'Alternator Assembly', forecast_quantity: 2, equipment_types: ['HMMWV', 'LAV-25'], avg_cost_per_part: 425.00, total_forecast_cost: 850.0 },
-  { part_number: 'M004567', nomenclature: 'Hydraulic Hose', forecast_quantity: 3, equipment_types: ['LAV-25', 'AAV-P7A1'], avg_cost_per_part: 85.00, total_forecast_cost: 255.0 },
+  { partNumber: 'M001234', nomenclature: 'Engine Oil Filter', forecastQuantity: 8, equipmentTypes: ['HMMWV', 'MTVR'], avgCostPerPart: 18.50, totalForecastCost: 148.0 },
+  { partNumber: 'M002345', nomenclature: 'Brake Pad Set', forecastQuantity: 4, equipmentTypes: ['HMMWV'], avgCostPerPart: 145.00, totalForecastCost: 580.0 },
+  { partNumber: 'M003456', nomenclature: 'Alternator Assembly', forecastQuantity: 2, equipmentTypes: ['HMMWV', 'LAV-25'], avgCostPerPart: 425.00, totalForecastCost: 850.0 },
+  { partNumber: 'M004567', nomenclature: 'Hydraulic Hose', forecastQuantity: 3, equipmentTypes: ['LAV-25', 'AAV-P7A1'], avgCostPerPart: 85.00, totalForecastCost: 255.0 },
 ];
 
 // ── API Functions ────────────────────────────────────────────────────

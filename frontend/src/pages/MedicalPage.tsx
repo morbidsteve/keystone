@@ -133,7 +133,7 @@ export default function MedicalPage() {
     return facilities.filter((f) => f.status === MTFStatus.OPERATIONAL).length;
   }, [facilities]);
 
-  const tcccCertRate = perstat?.tccc_cert_rate_pct ?? 0;
+  const tcccCertRate = perstat?.tcccCertRatePct ?? 0;
 
   // -------------------------------------------------------------------------
   // Render helpers

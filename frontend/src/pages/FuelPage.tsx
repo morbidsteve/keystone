@@ -57,23 +57,23 @@ export default function FuelPage() {
   const [showNewSPForm, setShowNewSPForm] = useState(false);
   const [newSP, setNewSP] = useState({
     name: '',
-    facility_type: 'FSP' as FuelFacilityType,
-    fuel_type: 'JP8' as FuelType,
-    capacity_gallons: 10000,
+    facilityType: 'FSP' as FuelFacilityType,
+    fuelType: 'JP8' as FuelType,
+    capacityGallons: 10000,
     mgrs: '',
-    location_description: '',
+    locationDescription: '',
   });
 
   // New transaction form
   const [showNewTxnForm, setShowNewTxnForm] = useState(false);
   const [newTxn, setNewTxn] = useState({
-    storage_point_id: 1,
-    transaction_type: 'ISSUE' as FuelTransactionType,
-    fuel_type: 'JP8' as FuelType,
-    quantity_gallons: 0,
-    vehicle_bumper_number: '',
-    vehicle_type: '',
-    document_number: '',
+    storagePointId: 1,
+    transactionType: 'ISSUE' as FuelTransactionType,
+    fuelType: 'JP8' as FuelType,
+    quantityGallons: 0,
+    vehicleBumperNumber: '',
+    vehicleType: '',
+    documentNumber: '',
     notes: '',
   });
 
@@ -100,7 +100,7 @@ export default function FuelPage() {
   const { data: transactions, isLoading: txnLoading } = useQuery({
     queryKey: ['fuel-transactions', numericUnitId, txnFilterPeriod],
     queryFn: () =>
-      getFuelTransactions({ unit_id: numericUnitId, period_days: txnFilterPeriod }),
+      getFuelTransactions({ unitId: numericUnitId, periodDays: txnFilterPeriod }),
     enabled: activeTab === 'transactions' || activeTab === 'dashboard',
   });
 
@@ -123,10 +123,10 @@ export default function FuelPage() {
     if (!transactions) return [];
     let result = [...transactions];
     if (txnFilterType !== 'ALL') {
-      result = result.filter((t) => t.transaction_type === txnFilterType);
+      result = result.filter((t) => t.transactionType === txnFilterType);
     }
     if (txnFilterSP !== 'ALL') {
-      result = result.filter((t) => t.storage_point_id === Number(txnFilterSP));
+      result = result.filter((t) => t.storagePointId === Number(txnFilterSP));
     }
     return result;
   }, [transactions, txnFilterType, txnFilterSP]);
@@ -195,7 +195,7 @@ export default function FuelPage() {
   const renderDashboard = () => (
     <div className="flex flex-col gap-4">
       {/* Alert banner when DOS <= 3 */}
-      {dashboard && dashboard.days_of_supply <= 3 && (
+      {dashboard && dashboard.daysOfSupply <= 3 && (
         <div
           className="py-3 px-4 bg-[rgba(239,68,68,0.12)] rounded-[var(--radius)] flex items-center gap-2.5 border border-[rgba(239,68,68,0.3)]"
         >
@@ -204,13 +204,13 @@ export default function FuelPage() {
             <div
               className="font-[var(--font-mono)] text-[11px] font-bold text-[#ef4444] mb-0.5"
             >
-              FUEL CRITICAL — {dashboard.days_of_supply.toFixed(1)} DAYS OF SUPPLY
+              FUEL CRITICAL — {dashboard.daysOfSupply.toFixed(1)} DAYS OF SUPPLY
             </div>
             <div
               className="font-[var(--font-mono)] text-[10px] text-[#f87171]"
             >
-              Limiting fuel type: {dashboard.limiting_fuel_type ?? 'N/A'}. Resupply required NLT{' '}
-              {dashboard.forecast.resupply_required_by}.
+              Limiting fuel type: {dashboard.limitingFuelType ?? 'N/A'}. Resupply required NLT{' '}
+              {dashboard.forecast.resupplyRequiredBy}.
             </div>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function FuelPage() {
             {
               label: 'TOTAL CAPACITY',
               value: dashboard
-                ? `${(dashboard.total_capacity_gallons / 1000).toFixed(0)}k gal`
+                ? `${(dashboard.totalCapacityGallons / 1000).toFixed(0)}k gal`
                 : '—',
               color: 'var(--color-text-bright)',
               icon: Droplet,
@@ -235,12 +235,12 @@ export default function FuelPage() {
             {
               label: 'ON HAND',
               value: dashboard
-                ? `${(dashboard.total_on_hand_gallons / 1000).toFixed(1)}k gal`
+                ? `${(dashboard.totalOnHandGallons / 1000).toFixed(1)}k gal`
                 : '—',
               color: dashboard
-                ? dashboard.fill_percentage > 50
+                ? dashboard.fillPercentage > 50
                   ? '#22c55e'
-                  : dashboard.fill_percentage >= 20
+                  : dashboard.fillPercentage >= 20
                     ? '#f59e0b'
                     : '#ef4444'
                 : 'var(--color-text-muted)',
@@ -248,11 +248,11 @@ export default function FuelPage() {
             },
             {
               label: 'DAYS OF SUPPLY',
-              value: dashboard ? dashboard.days_of_supply.toFixed(1) : '—',
+              value: dashboard ? dashboard.daysOfSupply.toFixed(1) : '—',
               color: dashboard
-                ? dashboard.days_of_supply > 5
+                ? dashboard.daysOfSupply > 5
                   ? '#22c55e'
-                  : dashboard.days_of_supply > 3
+                  : dashboard.daysOfSupply > 3
                     ? '#f59e0b'
                     : '#ef4444'
                 : 'var(--color-text-muted)',
@@ -261,7 +261,7 @@ export default function FuelPage() {
             {
               label: 'DAILY CONSUMPTION',
               value: dashboard
-                ? `${(dashboard.forecast.projected_daily_consumption / 1000).toFixed(1)}k gal`
+                ? `${(dashboard.forecast.projectedDailyConsumption / 1000).toFixed(1)}k gal`
                 : '—',
               color: '#3b82f6',
               icon: AlertTriangle,
@@ -401,9 +401,9 @@ export default function FuelPage() {
             <div>
               <span style={labelStyle}>STORAGE POINT</span>
               <select
-                value={newTxn.storage_point_id}
+                value={newTxn.storagePointId}
                 onChange={(e) =>
-                  setNewTxn({ ...newTxn, storage_point_id: Number(e.target.value) })
+                  setNewTxn({ ...newTxn, storagePointId: Number(e.target.value) })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
@@ -417,11 +417,11 @@ export default function FuelPage() {
             <div>
               <span style={labelStyle}>TYPE</span>
               <select
-                value={newTxn.transaction_type}
+                value={newTxn.transactionType}
                 onChange={(e) =>
                   setNewTxn({
                     ...newTxn,
-                    transaction_type: e.target.value as FuelTransactionType,
+                    transactionType: e.target.value as FuelTransactionType,
                   })
                 }
                 style={{ ...selectStyle, width: '100%' }}
@@ -436,9 +436,9 @@ export default function FuelPage() {
             <div>
               <span style={labelStyle}>FUEL TYPE</span>
               <select
-                value={newTxn.fuel_type}
+                value={newTxn.fuelType}
                 onChange={(e) =>
-                  setNewTxn({ ...newTxn, fuel_type: e.target.value as FuelType })
+                  setNewTxn({ ...newTxn, fuelType: e.target.value as FuelType })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
@@ -452,9 +452,9 @@ export default function FuelPage() {
               <span style={labelStyle}>QUANTITY (GAL)</span>
               <input
                 type="number"
-                value={newTxn.quantity_gallons || ''}
+                value={newTxn.quantityGallons || ''}
                 onChange={(e) =>
-                  setNewTxn({ ...newTxn, quantity_gallons: Number(e.target.value) })
+                  setNewTxn({ ...newTxn, quantityGallons: Number(e.target.value) })
                 }
                 style={{ ...inputStyle, width: '100%' }}
                 placeholder="0"
@@ -464,9 +464,9 @@ export default function FuelPage() {
               <span style={labelStyle}>BUMPER #</span>
               <input
                 type="text"
-                value={newTxn.vehicle_bumper_number}
+                value={newTxn.vehicleBumperNumber}
                 onChange={(e) =>
-                  setNewTxn({ ...newTxn, vehicle_bumper_number: e.target.value })
+                  setNewTxn({ ...newTxn, vehicleBumperNumber: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
                 placeholder="HQ-12"
@@ -476,8 +476,8 @@ export default function FuelPage() {
               <span style={labelStyle}>VEHICLE TYPE</span>
               <input
                 type="text"
-                value={newTxn.vehicle_type}
-                onChange={(e) => setNewTxn({ ...newTxn, vehicle_type: e.target.value })}
+                value={newTxn.vehicleType}
+                onChange={(e) => setNewTxn({ ...newTxn, vehicleType: e.target.value })}
                 style={{ ...inputStyle, width: '100%' }}
                 placeholder="JLTV"
               />
@@ -486,9 +486,9 @@ export default function FuelPage() {
               <span style={labelStyle}>DOCUMENT #</span>
               <input
                 type="text"
-                value={newTxn.document_number}
+                value={newTxn.documentNumber}
                 onChange={(e) =>
-                  setNewTxn({ ...newTxn, document_number: e.target.value })
+                  setNewTxn({ ...newTxn, documentNumber: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
                 placeholder="FSP-I-2026-0001"
@@ -570,9 +570,9 @@ export default function FuelPage() {
             <div>
               <span style={labelStyle}>FACILITY TYPE</span>
               <select
-                value={newSP.facility_type}
+                value={newSP.facilityType}
                 onChange={(e) =>
-                  setNewSP({ ...newSP, facility_type: e.target.value as FuelFacilityType })
+                  setNewSP({ ...newSP, facilityType: e.target.value as FuelFacilityType })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
@@ -588,9 +588,9 @@ export default function FuelPage() {
             <div>
               <span style={labelStyle}>FUEL TYPE</span>
               <select
-                value={newSP.fuel_type}
+                value={newSP.fuelType}
                 onChange={(e) =>
-                  setNewSP({ ...newSP, fuel_type: e.target.value as FuelType })
+                  setNewSP({ ...newSP, fuelType: e.target.value as FuelType })
                 }
                 style={{ ...selectStyle, width: '100%' }}
               >
@@ -605,9 +605,9 @@ export default function FuelPage() {
               <span style={labelStyle}>CAPACITY (GAL)</span>
               <input
                 type="number"
-                value={newSP.capacity_gallons || ''}
+                value={newSP.capacityGallons || ''}
                 onChange={(e) =>
-                  setNewSP({ ...newSP, capacity_gallons: Number(e.target.value) })
+                  setNewSP({ ...newSP, capacityGallons: Number(e.target.value) })
                 }
                 style={{ ...inputStyle, width: '100%' }}
                 placeholder="10000"
@@ -627,9 +627,9 @@ export default function FuelPage() {
               <span style={labelStyle}>LOCATION DESC</span>
               <input
                 type="text"
-                value={newSP.location_description}
+                value={newSP.locationDescription}
                 onChange={(e) =>
-                  setNewSP({ ...newSP, location_description: e.target.value })
+                  setNewSP({ ...newSP, locationDescription: e.target.value })
                 }
                 style={{ ...inputStyle, width: '100%' }}
                 placeholder="MSR TAMPA km 12"
@@ -675,9 +675,9 @@ export default function FuelPage() {
               <tbody>
                 {(storagePoints ?? []).map((sp: FuelStoragePoint) => {
                   const fillColor =
-                    sp.fill_percentage > 50
+                    sp.fillPercentage > 50
                       ? '#22c55e'
-                      : sp.fill_percentage >= 20
+                      : sp.fillPercentage >= 20
                         ? '#f59e0b'
                         : '#ef4444';
                   const statusColor =
@@ -697,27 +697,27 @@ export default function FuelPage() {
                       <td
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
-                        {sp.facility_type}
+                        {sp.facilityType}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] text-[#3b82f6] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
-                        {sp.fuel_type}
+                        {sp.fuelType}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                       >
-                        {sp.capacity_gallons.toLocaleString()}
+                        {sp.capacityGallons.toLocaleString()}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                       >
-                        {sp.current_gallons.toLocaleString()}
+                        {sp.currentGallons.toLocaleString()}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[11px] font-semibold py-2 px-2.5 border-b border-b-[var(--color-border)] text-right" style={{ color: fillColor }}
                       >
-                        {sp.fill_percentage.toFixed(1)}%
+                        {sp.fillPercentage.toFixed(1)}%
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] py-2 px-2.5 border-b border-b-[var(--color-border)]"
@@ -736,12 +736,12 @@ export default function FuelPage() {
                       <td
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
-                        {sp.last_resupply_date ?? '—'}
+                        {sp.lastResupplyDate ?? '—'}
                       </td>
                       <td
                         className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                       >
-                        {sp.next_resupply_eta ?? '—'}
+                        {sp.nextResupplyEta ?? '—'}
                       </td>
                     </tr>
                   );
@@ -792,37 +792,37 @@ export default function FuelPage() {
                   <td
                     className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-bright)] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                   >
-                    {rate.equipment_name ?? `Item #${rate.equipment_catalog_item_id}`}
+                    {rate.equipmentName ?? `Item #${rate.equipmentCatalogItemId}`}
                   </td>
                   <td
                     className="font-[var(--font-mono)] text-[10px] text-[#3b82f6] py-2 px-2.5 border-b border-b-[var(--color-border)]"
                   >
-                    {rate.fuel_type}
+                    {rate.fuelType}
                   </td>
                   <td
                     className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                   >
-                    {rate.gallons_per_hour_idle > 0 ? rate.gallons_per_hour_idle.toFixed(1) : '—'}
+                    {rate.gallonsPerHourIdle > 0 ? rate.gallonsPerHourIdle.toFixed(1) : '—'}
                   </td>
                   <td
                     className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-bright)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                   >
-                    {rate.gallons_per_hour_tactical > 0
-                      ? rate.gallons_per_hour_tactical.toFixed(1)
+                    {rate.gallonsPerHourTactical > 0
+                      ? rate.gallonsPerHourTactical.toFixed(1)
                       : '—'}
                   </td>
                   <td
                     className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right"
                   >
-                    {rate.gallons_per_mile != null ? rate.gallons_per_mile.toFixed(2) : '—'}
+                    {rate.gallonsPerMile != null ? rate.gallonsPerMile.toFixed(2) : '—'}
                   </td>
                   <td
-                    className="font-[var(--font-mono)] text-[11px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right" style={{ fontWeight: rate.gallons_per_flight_hour != null ? 600 : 400, color: rate.gallons_per_flight_hour != null
+                    className="font-[var(--font-mono)] text-[11px] py-2 px-2.5 border-b border-b-[var(--color-border)] text-right" style={{ fontWeight: rate.gallonsPerFlightHour != null ? 600 : 400, color: rate.gallonsPerFlightHour != null
                           ? '#f59e0b'
                           : 'var(--color-text-muted)' }}
                   >
-                    {rate.gallons_per_flight_hour != null
-                      ? `${rate.gallons_per_flight_hour} gal/hr`
+                    {rate.gallonsPerFlightHour != null
+                      ? `${rate.gallonsPerFlightHour} gal/hr`
                       : '—'}
                   </td>
                   <td
@@ -885,7 +885,7 @@ export default function FuelPage() {
             <span
               className="font-[var(--font-mono)] text-[10px] font-bold text-[#ef4444] tracking-[1px]"
             >
-              {dashboard.days_of_supply.toFixed(1)} DOS
+              {dashboard.daysOfSupply.toFixed(1)} DOS
             </span>
           </div>
         )}

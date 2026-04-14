@@ -109,9 +109,9 @@ export default function TileLayerSettings() {
       {
         name: `layer_${Date.now()}`,
         label: 'New Layer',
-        url_template: '/tiles/osm/{z}/{x}/{y}.png',
+        urlTemplate: '/tiles/osm/{z}/{x}/{y}.png',
         attribution: '',
-        max_zoom: 19,
+        maxZoom: 19,
         enabled: true,
         order: layers.length,
       },
@@ -327,8 +327,8 @@ export default function TileLayerSettings() {
                   <label style={labelStyle}>URL TEMPLATE</label>
                   <input
                     type="text"
-                    value={layer.url_template}
-                    onChange={(e) => updateLayer(index, 'url_template', e.target.value)}
+                    value={layer.urlTemplate}
+                    onChange={(e) => updateLayer(index, 'urlTemplate', e.target.value)}
                     placeholder="/tiles/osm/{z}/{x}/{y}.png"
                     style={inputStyle}
                   />
@@ -355,9 +355,9 @@ export default function TileLayerSettings() {
                   <label style={labelStyle}>MAX ZOOM</label>
                   <input
                     type="number"
-                    value={layer.max_zoom}
+                    value={layer.maxZoom}
                     onChange={(e) =>
-                      updateLayer(index, 'max_zoom', parseInt(e.target.value, 10) || 19)
+                      updateLayer(index, 'maxZoom', parseInt(e.target.value, 10) || 19)
                     }
                     min={1}
                     max={22}

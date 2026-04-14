@@ -27,7 +27,7 @@ interface RecommendedItem {
 }
 
 interface RecommendedVehicle {
-  vehicle_type: string;
+  vehicleType: string;
   status: string;
 }
 
@@ -161,15 +161,15 @@ export default function PredictionsTab() {
               <div className="flex flex-col gap-2.5">
                 {/* Header row */}
                 <div className="flex gap-2 items-center flex-wrap">
-                  <span style={badgeStyle(RECOMMENDATION_TYPE_COLORS[rec.recommendation_type] || 'var(--color-text-muted)')}>
-                    {rec.recommendation_type.replace(/_/g, ' ')}
+                  <span style={badgeStyle(RECOMMENDATION_TYPE_COLORS[rec.recommendationType] || 'var(--color-text-muted)')}>
+                    {rec.recommendationType.replace(/_/g, ' ')}
                   </span>
                   <span style={badgeStyle(STATUS_COLORS[rec.status] || 'var(--color-text-muted)')}>
                     {rec.status}
                   </span>
-                  {rec.assigned_to_role && (
+                  {rec.assignedToRole && (
                     <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px]">
-                      ASSIGNED: {rec.assigned_to_role}
+                      ASSIGNED: {rec.assignedToRole}
                     </span>
                   )}
                 </div>
@@ -178,27 +178,27 @@ export default function PredictionsTab() {
                   {rec.description}
                 </div>
 
-                {rec.triggered_by_metric && (
+                {rec.triggeredByMetric && (
                   <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-warning)]">
-                    TRIGGER: {rec.triggered_by_metric}
+                    TRIGGER: {rec.triggeredByMetric}
                   </div>
                 )}
 
                 {/* Items Table */}
-                {rec.recommended_items && rec.recommended_items.length > 0 && (
+                {rec.recommendedItems && rec.recommendedItems.length > 0 && (
                   <div>
                     <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1.5px] mb-1">ITEMS</div>
                     <div className="overflow-x-auto">
                       <table className="w-full border-collapse font-[var(--font-mono)]">
                         <thead>
                           <tr>
-                            {Object.keys(rec.recommended_items[0] as RecommendedItem).map((key) => (
+                            {Object.keys(rec.recommendedItems[0] as RecommendedItem).map((key) => (
                               <th key={key} style={miniThStyle}>{key.toUpperCase().replace(/_/g, ' ')}</th>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
-                          {(rec.recommended_items as RecommendedItem[]).map((item, idx) => (
+                          {(rec.recommendedItems as RecommendedItem[]).map((item, idx) => (
                             <tr key={idx}>
                               {Object.values(item).map((val, vidx) => (
                                 <td key={vidx} style={miniTdStyle}>{typeof val === 'number' ? val.toLocaleString() : String(val)}</td>
@@ -212,13 +212,13 @@ export default function PredictionsTab() {
                 )}
 
                 {/* Vehicles */}
-                {rec.recommended_vehicles && rec.recommended_vehicles.length > 0 && (
+                {rec.recommendedVehicles && rec.recommendedVehicles.length > 0 && (
                   <div>
                     <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1.5px] mb-1">VEHICLES</div>
                     <div className="flex gap-2 flex-wrap">
-                      {(rec.recommended_vehicles as RecommendedVehicle[]).map((v, idx) => (
+                      {(rec.recommendedVehicles as RecommendedVehicle[]).map((v, idx) => (
                         <div key={idx} className="py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
-                          {v.vehicle_type} <span className="text-[9px]" style={{ color: v.status === 'FMC' ? 'var(--color-success, #22c55e)' : 'var(--color-danger)' }}>{v.status}</span>
+                          {v.vehicleType} <span className="text-[9px]" style={{ color: v.status === 'FMC' ? 'var(--color-success, #22c55e)' : 'var(--color-danger)' }}>{v.status}</span>
                         </div>
                       ))}
                     </div>
@@ -226,11 +226,11 @@ export default function PredictionsTab() {
                 )}
 
                 {/* Personnel */}
-                {rec.recommended_personnel && rec.recommended_personnel.length > 0 && (
+                {rec.recommendedPersonnel && rec.recommendedPersonnel.length > 0 && (
                   <div>
                     <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1.5px] mb-1">PERSONNEL</div>
                     <div className="flex gap-2 flex-wrap">
-                      {(rec.recommended_personnel as RecommendedPerson[]).map((p, idx) => (
+                      {(rec.recommendedPersonnel as RecommendedPerson[]).map((p, idx) => (
                         <div key={idx} className="py-1.5 px-2.5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)] font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
                           {p.rank} {p.name} <span className="text-[var(--color-text-muted)] text-[9px]">({p.role})</span>
                         </div>
@@ -241,24 +241,24 @@ export default function PredictionsTab() {
 
                 {/* Estimates */}
                 <div className="flex gap-4 flex-wrap">
-                  {rec.estimated_cost != null && (
+                  {rec.estimatedCost != null && (
                     <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
-                      COST: <span className="text-[var(--color-text-bright)]">${rec.estimated_cost.toLocaleString()}</span>
+                      COST: <span className="text-[var(--color-text-bright)]">${rec.estimatedCost.toLocaleString()}</span>
                     </div>
                   )}
-                  {rec.estimated_weight != null && (
+                  {rec.estimatedWeight != null && (
                     <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
-                      WEIGHT: <span className="text-[var(--color-text-bright)]">{rec.estimated_weight.toLocaleString()} lbs</span>
+                      WEIGHT: <span className="text-[var(--color-text-bright)]">{rec.estimatedWeight.toLocaleString()} lbs</span>
                     </div>
                   )}
-                  {rec.estimated_duration && (
+                  {rec.estimatedDuration && (
                     <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
-                      DURATION: <span className="text-[var(--color-text-bright)]">{rec.estimated_duration}</span>
+                      DURATION: <span className="text-[var(--color-text-bright)]">{rec.estimatedDuration}</span>
                     </div>
                   )}
-                  {rec.recommended_source && (
+                  {rec.recommendedSource && (
                     <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
-                      SOURCE: <span className="text-[var(--color-text-bright)]">{rec.recommended_source}</span>
+                      SOURCE: <span className="text-[var(--color-text-bright)]">{rec.recommendedSource}</span>
                     </div>
                   )}
                 </div>
@@ -270,9 +270,9 @@ export default function PredictionsTab() {
                   </div>
                 )}
 
-                {rec.decided_at && (
+                {rec.decidedAt && (
                   <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-                    Decided {formatRelativeTime(rec.decided_at)}
+                    Decided {formatRelativeTime(rec.decidedAt)}
                   </div>
                 )}
 
@@ -303,9 +303,9 @@ export default function PredictionsTab() {
                 )}
 
                 {/* Timestamp */}
-                {rec.created_at && (
+                {rec.createdAt && (
                   <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-                    Created {formatRelativeTime(rec.created_at)}
+                    Created {formatRelativeTime(rec.createdAt)}
                   </div>
                 )}
               </div>

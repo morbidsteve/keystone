@@ -43,8 +43,8 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
 
   const originMGRS = latLonToMGRS(data.origin.lat, data.origin.lon);
   const destMGRS = latLonToMGRS(data.destination.lat, data.destination.lon);
-  const currentMGRS = data.current_position
-    ? latLonToMGRS(data.current_position.lat, data.current_position.lon)
+  const currentMGRS = data.currentPosition
+    ? latLonToMGRS(data.currentPosition.lat, data.currentPosition.lon)
     : null;
 
   const handleCopy = (label: string, lat: number, lon: number, mgrsVal: string) => {
@@ -102,11 +102,11 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
             </div>
             <div style={styles.detailRow}>
               <span style={styles.detailLabel}>Vehicles</span>
-              <span style={styles.detailValue}>{data.vehicle_count}</span>
+              <span style={styles.detailValue}>{data.vehicleCount}</span>
             </div>
             <div style={styles.detailRow}>
               <span style={styles.detailLabel}>Cargo</span>
-              <span style={styles.detailValue}>{data.cargo_summary}</span>
+              <span style={styles.detailValue}>{data.cargoSummary}</span>
             </div>
           </div>
 
@@ -198,7 +198,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
           </div>
 
           {/* Current Position */}
-          {data.current_position && currentMGRS && (
+          {data.currentPosition && currentMGRS && (
             <div style={styles.section}>
               <div style={styles.sectionHeader}>
                 <MapPin size={11} className="mr-1" />
@@ -208,7 +208,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
                 <div style={styles.coordRow}>
                   <span style={styles.coordLabel}>GPS</span>
                   <span style={styles.coordValue}>
-                    {formatGPS(data.current_position.lat, data.current_position.lon)}
+                    {formatGPS(data.currentPosition.lat, data.currentPosition.lon)}
                   </span>
                 </div>
                 <div style={styles.coordRow}>
@@ -218,7 +218,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
               </div>
               <button
                 onClick={() =>
-                  handleCopy('current', data.current_position!.lat, data.current_position!.lon, currentMGRS!)
+                  handleCopy('current', data.currentPosition!.lat, data.currentPosition!.lon, currentMGRS!)
                 }
                 style={styles.copyBtn}
               >
@@ -242,11 +242,11 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
                 {getConvoyStatusLabel(data.status)}
               </span>
             </div>
-            {data.speed_kph > 0 && (
+            {data.speedKph > 0 && (
               <>
                 <div style={styles.detailRow}>
                   <span style={styles.detailLabel}>Speed</span>
-                  <span style={styles.detailValue}>{data.speed_kph} KPH</span>
+                  <span style={styles.detailValue}>{data.speedKph} KPH</span>
                 </div>
                 <div style={styles.detailRow}>
                   <span style={styles.detailLabel}>Heading</span>
@@ -277,7 +277,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
                   Departure
                 </div>
                 <div style={styles.mutedText}>
-                  {formatRelativeTime(data.departure_time)}
+                  {formatRelativeTime(data.departureTime)}
                 </div>
                 <div className="text-[#94a3b8] text-[9px] mt-0.5">
                   From {data.origin.name}
@@ -285,7 +285,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
               </div>
             </div>
             <div style={styles.timelineConnector} />
-            {data.current_position && (
+            {data.currentPosition && (
               <>
                 <div style={styles.timelineItem}>
                   <div style={timelineDot('#fbbf24')} />
@@ -294,7 +294,7 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
                       In Transit
                     </div>
                     <div style={styles.mutedText}>
-                      {data.speed_kph > 0 ? `Moving at ${data.speed_kph} KPH` : 'Stationary'}
+                      {data.speedKph > 0 ? `Moving at ${data.speedKph} KPH` : 'Stationary'}
                     </div>
                   </div>
                 </div>
@@ -331,11 +331,11 @@ export function ConvoyDetailPanel({ data }: ConvoyDetailPanelProps) {
             </div>
             <div style={styles.detailRow}>
               <span style={styles.detailLabel}>Vehicles</span>
-              <span style={styles.detailValue}>{data.vehicle_count}</span>
+              <span style={styles.detailValue}>{data.vehicleCount}</span>
             </div>
             <div style={styles.detailRow}>
               <span style={styles.detailLabel}>Cargo</span>
-              <span style={styles.detailValue}>{data.cargo_summary}</span>
+              <span style={styles.detailValue}>{data.cargoSummary}</span>
             </div>
           </div>
         </div>

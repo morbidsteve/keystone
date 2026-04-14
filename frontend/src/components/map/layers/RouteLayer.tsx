@@ -45,10 +45,16 @@ export default function RouteLayer({ routes }: RouteLayerProps) {
   return (
     <>
       {routes.map((route) => {
-        const style = getRouteStyle(route.route_type, route.status);
-        const positions = route.waypoints.map(
-          (wp) => [wp.lat, wp.lon] as [number, number],
-        );
+        const style = getRouteStyle(route.routeType, route.status);
+        const positions = route.waypoints
+          .filter(
+            (wp) =>
+              typeof wp.lat === 'number' &&
+              typeof wp.lon === 'number' &&
+              !Number.isNaN(wp.lat) &&
+              !Number.isNaN(wp.lon),
+          )
+          .map((wp) => [wp.lat, wp.lon] as [number, number]);
 
         if (positions.length < 2) return null;
 
@@ -72,7 +78,7 @@ export default function RouteLayer({ routes }: RouteLayerProps) {
               >
                 <div className="font-bold">{route.name}</div>
                 <div>
-                  {route.route_type} | {route.status}
+                  {route.routeType} | {route.status}
                 </div>
                 {route.description && (
                   <div className="mt-0.5 font-normal">

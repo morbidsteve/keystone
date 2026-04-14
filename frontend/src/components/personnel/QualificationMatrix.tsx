@@ -44,12 +44,12 @@ export default function QualificationMatrix({ quals, readiness }: QualificationM
         className="flex items-center gap-5 py-4 px-5 bg-[var(--color-bg)] border border-[var(--color-border)] rounded-[var(--radius)]"
       >
         <div
-          className="flex items-center justify-center w-[56px] h-[56px]" style={{ borderRadius: '50%', border: `3px solid ${pRatingColor(readiness.p_rating)}`, backgroundColor: `${pRatingColor(readiness.p_rating)}15` }}
+          className="flex items-center justify-center w-[56px] h-[56px]" style={{ borderRadius: '50%', border: `3px solid ${pRatingColor(readiness.pRating)}`, backgroundColor: `${pRatingColor(readiness.pRating)}15` }}
         >
           <span
-            className="font-[var(--font-mono)] text-lg font-bold" style={{ color: pRatingColor(readiness.p_rating) }}
+            className="font-[var(--font-mono)] text-lg font-bold" style={{ color: pRatingColor(readiness.pRating) }}
           >
-            {readiness.p_rating}
+            {readiness.pRating}
           </span>
         </div>
 
@@ -57,12 +57,12 @@ export default function QualificationMatrix({ quals, readiness }: QualificationM
           <div
             className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)] mb-1.5"
           >
-            PERSONNEL READINESS: {readiness.percent_ready.toFixed(1)}%
+            PERSONNEL READINESS: {readiness.percentReady.toFixed(1)}%
           </div>
           <div
             className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] leading-relaxed"
           >
-            Fill Rate (50%): {readiness.fill_rate_pct.toFixed(1)}% | Qualifications (30%): {readiness.qualification_pct.toFixed(1)}% | Fitness (20%): {readiness.fitness_pct.toFixed(1)}%
+            Fill Rate (50%): {readiness.fillRatePct.toFixed(1)}% | Qualifications (30%): {readiness.qualificationPct.toFixed(1)}% | Fitness (20%): {readiness.fitnessPct.toFixed(1)}%
           </div>
         </div>
       </div>
@@ -118,9 +118,9 @@ export default function QualificationMatrix({ quals, readiness }: QualificationM
         </div>
         <div className="flex gap-4 flex-wrap">
           {[
-            { label: 'FILL RATE', weight: '50%', value: readiness.fill_rate_pct, color: qualColor(readiness.fill_rate_pct) },
-            { label: 'QUALIFICATIONS', weight: '30%', value: readiness.qualification_pct, color: qualColor(readiness.qualification_pct) },
-            { label: 'FITNESS', weight: '20%', value: readiness.fitness_pct, color: qualColor(readiness.fitness_pct) },
+            { label: 'FILL RATE', weight: '50%', value: readiness.fillRatePct, color: qualColor(readiness.fillRatePct) },
+            { label: 'QUALIFICATIONS', weight: '30%', value: readiness.qualificationPct, color: qualColor(readiness.qualificationPct) },
+            { label: 'FITNESS', weight: '20%', value: readiness.fitnessPct, color: qualColor(readiness.fitnessPct) },
           ].map((item) => (
             <div
               key={item.label}

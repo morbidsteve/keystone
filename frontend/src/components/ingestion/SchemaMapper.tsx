@@ -101,10 +101,10 @@ export default function SchemaMapper() {
       try {
         const groups = await getCanonicalFields();
         setCanonicalGroups(groups);
-        if (groups.length > 0) setExpandedEntity(groups[0].entity_name);
+        if (groups.length > 0) setExpandedEntity(groups[0].entityName);
       } catch {
         setCanonicalGroups(DEMO_CANONICAL_GROUPS);
-        setExpandedEntity('supply_status');
+        setExpandedEntity('supplyStatus');
       }
     })();
   }, []);
@@ -123,25 +123,25 @@ export default function SchemaMapper() {
       else setSourceType('CUSTOM');
 
       try {
-        const detected = await autoDetectTemplate(preview.headers, preview.sample_rows);
+        const detected = await autoDetectTemplate(preview.headers, preview.sampleRows);
         setAutoDetectResult(detected);
 
         if (detected.matched && detected.template) {
           const preMappings: ColumnMapping[] = [];
-          for (const [srcCol, cfg] of Object.entries(detected.template.field_mappings)) {
-            const group = canonicalGroups.find((g) => g.entity_name === cfg.target_entity);
-            const field = group?.fields.find((f) => f.field_name === cfg.target_field);
+          for (const [srcCol, cfg] of Object.entries(detected.template.fieldMappings)) {
+            const group = canonicalGroups.find((g) => g.entityName === cfg.targetEntity);
+            const field = group?.fields.find((f) => f.fieldName === cfg.targetField);
             preMappings.push({
               sourceColumn: srcCol,
-              targetEntity: cfg.target_entity,
-              targetField: cfg.target_field,
-              targetDisplayName: field?.display_name || cfg.target_field,
+              targetEntity: cfg.targetEntity,
+              targetField: cfg.targetField,
+              targetDisplayName: field?.displayName || cfg.targetField,
               transform: cfg.transform || '',
             });
           }
           setMappings(preMappings);
           if (detected.template.name) setTemplateName(detected.template.name);
-          if (detected.template.source_type) setSourceType(detected.template.source_type);
+          if (detected.template.sourceType) setSourceType(detected.template.sourceType);
         }
       } catch {
         setAutoDetectResult(null);
@@ -151,14 +151,14 @@ export default function SchemaMapper() {
     } catch {
       const ext = file.name.split('.').pop()?.toLowerCase() || '';
       setFilePreview({
-        file_name: file.name,
+        fileName: file.name,
         headers: ['UNIT', 'CLASS', 'ITEM', 'ON HAND', 'AUTH', 'DOS', 'STATUS'],
-        sample_rows: [
+        sampleRows: [
           { UNIT: '1/1 BN', CLASS: 'I', ITEM: 'MRE', 'ON HAND': 2400, AUTH: 3000, DOS: 8, STATUS: 'GREEN' },
           { UNIT: '1/1 BN', CLASS: 'III', ITEM: 'JP-8', 'ON HAND': 12000, AUTH: 20000, DOS: 4, STATUS: 'AMBER' },
           { UNIT: '2/1 BN', CLASS: 'V', ITEM: '5.56mm Ball', 'ON HAND': 45000, AUTH: 100000, DOS: 2, STATUS: 'RED' },
         ],
-        row_count: 3,
+        rowCount: 3,
       });
       if (['xlsx', 'xls'].includes(ext)) setSourceType('EXCEL');
       else if (ext === 'csv') setSourceType('CSV');
@@ -179,12 +179,12 @@ export default function SchemaMapper() {
           ...filtered,
           {
             sourceColumn: selectedSourceCol,
-            targetEntity: field.entity_name,
-            targetField: field.field_name,
-            targetDisplayName: field.display_name,
-            transform: field.data_type === 'float' ? 'float'
-              : field.data_type === 'integer' ? 'integer'
-              : field.data_type === 'datetime' ? 'datetime'
+            targetEntity: field.entityName,
+            targetField: field.fieldName,
+            targetDisplayName: field.displayName,
+            transform: field.dataType === 'float' ? 'float'
+              : field.dataType === 'integer' ? 'integer'
+              : field.dataType === 'datetime' ? 'datetime'
               : '',
           },
         ];
@@ -213,23 +213,23 @@ export default function SchemaMapper() {
     const fieldMappings: Record<string, FieldMappingConfig> = {};
     for (const m of mappings) {
       fieldMappings[m.sourceColumn] = {
-        target_entity: m.targetEntity,
-        target_field: m.targetField,
+        targetEntity: m.targetEntity,
+        targetField: m.targetField,
         transform: m.transform || undefined,
       };
     }
 
     try {
-      const result = await previewMapping(fieldMappings, filePreview.sample_rows);
+      const result = await previewMapping(fieldMappings, filePreview.sampleRows);
       setPreviewRows(result.rows);
       setPreviewStats({
-        total: result.total_rows,
-        success: result.successful_rows,
-        errors: result.error_count,
+        total: result.totalRows,
+        success: result.successfulRows,
+        errors: result.errorCount,
       });
       setStep('preview');
     } catch {
-      const rows: MappingPreviewRow[] = filePreview.sample_rows.map((row) => {
+      const rows: MappingPreviewRow[] = filePreview.sampleRows.map((row) => {
         const mapped: Record<string, unknown> = {};
         for (const m of mappings) {
           const val = row[m.sourceColumn];
@@ -259,8 +259,8 @@ export default function SchemaMapper() {
     const fieldMappings: Record<string, FieldMappingConfig> = {};
     for (const m of mappings) {
       fieldMappings[m.sourceColumn] = {
-        target_entity: m.targetEntity,
-        target_field: m.targetField,
+        targetEntity: m.targetEntity,
+        targetField: m.targetField,
         transform: m.transform || undefined,
       };
     }
@@ -269,9 +269,9 @@ export default function SchemaMapper() {
       await createTemplate({
         name: templateName,
         description: templateDescription || undefined,
-        source_type: sourceType,
-        field_mappings: fieldMappings,
-        header_patterns: filePreview?.headers,
+        sourceType: sourceType,
+        fieldMappings: fieldMappings,
+        headerPatterns: filePreview?.headers,
       });
       setSaveSuccess(true);
     } catch {

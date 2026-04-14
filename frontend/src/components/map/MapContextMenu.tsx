@@ -110,7 +110,7 @@ export default function MapContextMenu() {
       const result = await mapApi.getNearby({
         lat: queryLat,
         lon: queryLon,
-        radius_km: 5,
+        radiusKm: 5,
       });
       showNearby(queryLat, queryLon, result);
     } catch {

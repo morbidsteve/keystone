@@ -70,7 +70,7 @@ export function SupplyPointDetailPanel({ data }: SupplyPointDetailPanelProps) {
         </div>
         <div style={styles.detailRow}>
           <span style={styles.detailLabel}>Type</span>
-          <span style={styles.detailValue}>{getPointTypeLabel(data.point_type)}</span>
+          <span style={styles.detailValue}>{getPointTypeLabel(data.pointType)}</span>
         </div>
         <div style={styles.detailRow}>
           <span style={styles.detailLabel}>Status</span>
@@ -85,7 +85,7 @@ export function SupplyPointDetailPanel({ data }: SupplyPointDetailPanelProps) {
         </div>
         <div style={styles.detailRow}>
           <span style={styles.detailLabel}>Operating Unit</span>
-          <span style={styles.detailValue}>{data.parent_unit_name}</span>
+          <span style={styles.detailValue}>{data.parentUnitName}</span>
         </div>
       </div>
 
@@ -112,11 +112,11 @@ export function SupplyPointDetailPanel({ data }: SupplyPointDetailPanelProps) {
       </div>
 
       {/* Capacity Notes */}
-      {data.capacity_notes && (
+      {data.capacityNotes && (
         <div style={styles.section}>
           <div style={styles.sectionHeader}>CAPACITY NOTES</div>
           <div style={styles.notesBlock}>
-            {data.capacity_notes}
+            {data.capacityNotes}
           </div>
         </div>
       )}

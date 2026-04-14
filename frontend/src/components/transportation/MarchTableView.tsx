@@ -90,7 +90,7 @@ export default function MarchTableView({
           <div
             className="font-[var(--font-mono)] text-base font-bold text-[#4ade80]"
           >
-            {formatDate(marchTable.sp_time)}
+            {formatDate(marchTable.spTime)}
           </div>
         </div>
         <div
@@ -107,7 +107,7 @@ export default function MarchTableView({
           <div
             className="font-[var(--font-mono)] text-base font-bold text-[#f87171]"
           >
-            {formatDate(marchTable.rp_time)}
+            {formatDate(marchTable.rpTime)}
           </div>
         </div>
       </div>
@@ -146,12 +146,12 @@ export default function MarchTableView({
                     >
                       {cp.name}
                     </td>
-                    <td style={cellStyle}>{cp.distance_km}</td>
-                    <td style={cellStyle}>{cp.cumulative_distance_km}</td>
+                    <td style={cellStyle}>{cp.distanceKm}</td>
+                    <td style={cellStyle}>{cp.cumulativeDistanceKm}</td>
                     <td style={{ ...cellStyle, color: 'var(--color-accent)' }}>
                       {formatDate(cp.time)}
                     </td>
-                    <td style={cellStyle}>{cp.speed_kph || '--'}</td>
+                    <td style={cellStyle}>{cp.speedKph || '--'}</td>
                   </tr>
                 );
               })}
@@ -173,7 +173,7 @@ export default function MarchTableView({
           <div
             className="font-[var(--font-mono)] text-xl font-bold text-[var(--color-text-bright)]"
           >
-            {marchTable.total_distance_km} km
+            {marchTable.totalDistanceKm} km
           </div>
         </div>
         <div
@@ -187,7 +187,7 @@ export default function MarchTableView({
           <div
             className="font-[var(--font-mono)] text-xl font-bold text-[var(--color-text-bright)]"
           >
-            {marchTable.total_duration_hours}h
+            {marchTable.totalDurationHours}h
           </div>
         </div>
         <div
@@ -201,7 +201,7 @@ export default function MarchTableView({
           <div
             className="font-[var(--font-mono)] text-xl font-bold text-[var(--color-text-bright)]"
           >
-            {marchTable.march_speed_kph} kph
+            {marchTable.marchSpeedKph} kph
           </div>
         </div>
         <div
@@ -215,13 +215,13 @@ export default function MarchTableView({
           <div
             className="font-[var(--font-mono)] text-xl font-bold text-[var(--color-text-bright)]"
           >
-            {marchTable.catch_up_speed_kph} kph
+            {marchTable.catchUpSpeedKph} kph
           </div>
         </div>
       </div>
 
       {/* Fuel estimate */}
-      {marchTable.fuel_estimate && (
+      {marchTable.fuelEstimate && (
         <Card>
           <div
             className="font-[var(--font-mono)] text-[9px] font-semibold tracking-[1.5px] text-[var(--color-text-muted)] uppercase mb-3 flex items-center gap-1.5"
@@ -238,7 +238,7 @@ export default function MarchTableView({
               <div
                 className="font-[var(--font-mono)] text-lg font-bold text-[#fb923c]"
               >
-                {marchTable.fuel_estimate.total_gallons}
+                {marchTable.fuelEstimate.totalGallons}
               </div>
             </div>
             <div>
@@ -250,7 +250,7 @@ export default function MarchTableView({
               <div
                 className="font-[var(--font-mono)] text-lg font-bold text-[#fb923c]"
               >
-                {marchTable.fuel_estimate.total_liters}
+                {marchTable.fuelEstimate.totalLiters}
               </div>
             </div>
             <div>
@@ -262,7 +262,7 @@ export default function MarchTableView({
               <div
                 className="font-[var(--font-mono)] text-lg font-bold text-[#fb923c]"
               >
-                {marchTable.fuel_estimate.per_vehicle_gallons}
+                {marchTable.fuelEstimate.perVehicleGallons}
               </div>
             </div>
           </div>

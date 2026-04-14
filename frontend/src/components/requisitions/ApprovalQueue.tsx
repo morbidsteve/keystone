@@ -43,7 +43,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
   const toast = useToast();
   const [denyReason, setDenyReason] = useState('');
   const [showDenyInput, setShowDenyInput] = useState(false);
-  const [approveQty, setApproveQty] = useState<number>(req.quantity_requested);
+  const [approveQty, setApproveQty] = useState<number>(req.quantityRequested);
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
 
   const invalidateAll = () => {
@@ -52,7 +52,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
   };
 
   const approveMut = useMutation({
-    mutationFn: () => approveRequisition(req.id, { quantity_approved: approveQty }),
+    mutationFn: () => approveRequisition(req.id, { quantityApproved: approveQty }),
     onSuccess: () => {
       setShowApproveConfirm(false);
       invalidateAll();
@@ -112,7 +112,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
         <span
           className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-accent)]"
         >
-          {req.requisition_number}
+          {req.requisitionNumber}
         </span>
         <span
           className="inline-flex items-center gap-1 py-0.5 px-1.5 rounded-[2px] text-[9px] font-bold tracking-[0.5px] font-[var(--font-mono)]" style={{ color: priorityColor(req.priority), border: `1px solid ${priorityColor(req.priority)}`, backgroundColor: `color-mix(in srgb, ${priorityColor(req.priority)} 10%, transparent)` }}
@@ -136,7 +136,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
             <div
               className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text)]"
             >
-              {req.quantity_requested.toLocaleString()} {req.unit_of_issue}
+              {(req.quantityRequested ?? 0).toLocaleString()} {req.unitOfIssue ?? ''}
             </div>
           </div>
           <div>
@@ -144,7 +144,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
             <div
               className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)]"
             >
-              {req.requested_by_name ?? `ID ${req.requested_by_id}`}
+              {req.requestedByName ?? `ID ${req.requestedById}`}
             </div>
           </div>
           <div>
@@ -153,7 +153,7 @@ function ApprovalCard({ req, onRefresh }: { req: Requisition; onRefresh?: () => 
               className="font-[var(--font-mono)] text-[11px] text-[var(--color-text)] flex items-center gap-1"
             >
               <Clock size={10} className="text-[var(--color-text-muted)]" />
-              {req.submitted_at ? new Date(req.submitted_at).toLocaleDateString() : '--'}
+              {req.submittedAt ? new Date(req.submittedAt).toLocaleDateString() : '--'}
             </div>
           </div>
         </div>

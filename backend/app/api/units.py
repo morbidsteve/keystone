@@ -18,7 +18,7 @@ from app.schemas.unit import UnitCreate, UnitResponse, UnitUpdate
 router = APIRouter()
 
 
-@router.get("/", response_model=List[UnitResponse])
+@router.get("", response_model=List[UnitResponse])
 async def list_units(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -58,7 +58,7 @@ async def get_unit(
     return unit
 
 
-@router.post("/", response_model=UnitResponse, status_code=201)
+@router.post("", response_model=UnitResponse, status_code=201)
 async def create_unit(
     data: UnitCreate,
     db: AsyncSession = Depends(get_db),

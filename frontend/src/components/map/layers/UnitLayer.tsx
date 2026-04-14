@@ -18,16 +18,16 @@ function UnitMarker({
 }) {
   const selectEntity = useMapStore((s) => s.selectEntity);
   const statusColor = showSupplyOverlay
-    ? getStatusColor(unit.supply_status)
+    ? getStatusColor(unit.supplyStatus)
     : undefined;
-  const icon = useMilSymbolIcon(unit.symbol_sidc, 35, statusColor);
+  const icon = useMilSymbolIcon(unit.symbolSidc, 35, statusColor);
 
   return (
     <Marker
       position={[unit.latitude, unit.longitude]}
       icon={icon}
       eventHandlers={{
-        click: () => selectEntity('unit', unit.unit_id, unit),
+        click: () => selectEntity('unit', unit.unitId, unit),
       }}
     >
       <Tooltip
@@ -48,13 +48,16 @@ function UnitMarker({
 export default function UnitLayer({ units, showSupplyOverlay }: UnitLayerProps) {
   return (
     <>
-      {units.map((unit) => (
-        <UnitMarker
-          key={unit.unit_id}
-          unit={unit}
-          showSupplyOverlay={showSupplyOverlay}
-        />
-      ))}
+      {units.map((unit) => {
+        if (unit.latitude == null || unit.longitude == null) return null;
+        return (
+          <UnitMarker
+            key={unit.unitId}
+            unit={unit}
+            showSupplyOverlay={showSupplyOverlay}
+          />
+        );
+      })}
     </>
   );
 }

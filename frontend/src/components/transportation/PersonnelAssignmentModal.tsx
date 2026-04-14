@@ -20,7 +20,7 @@ interface PersonnelAssignmentModalProps {
   vehicleType: string;
   bumperNumber: string;
   movementId: number;
-  onSave: (assignments: { role: string; personnel_id: number }[]) => void;
+  onSave: (assignments: { role: string; personnelId: number }[]) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -125,21 +125,21 @@ export default function PersonnelAssignmentModal({
   };
 
   const handleSave = () => {
-    const assignments: { role: string; personnel_id: number }[] = [];
+    const assignments: { role: string; personnelId: number }[] = [];
     for (const [role, pid] of Object.entries(selections)) {
       if (pid != null) {
-        assignments.push({ role, personnel_id: pid });
+        assignments.push({ role, personnelId: pid });
       }
     }
     for (const pid of paxList) {
-      assignments.push({ role: 'PAX', personnel_id: pid });
+      assignments.push({ role: 'PAX', personnelId: pid });
     }
     onSave(assignments);
     onClose();
   };
 
   const formatPersonnel = (p: QualifiedPersonnelItem): string =>
-    `${p.rank ?? ''} ${p.last_name}, ${p.first_name} (${p.mos ?? 'N/A'})`;
+    `${p.rank ?? ''} ${p.lastName}, ${p.firstName} (${p.mos ?? 'N/A'})`;
 
   // ---------------------------------------------------------------------------
   // Styles
@@ -251,7 +251,7 @@ export default function PersonnelAssignmentModal({
           {CREW_ROLES.map((role) => {
             const query = queryMap[role.key];
             const personnelList = query?.data?.personnel ?? [];
-            const requiredQuals = query?.data?.required_qualifications ?? [];
+            const requiredQuals = query?.data?.requiredQualifications ?? [];
             const isLoading = query?.isLoading ?? false;
             const isEmpty = !isLoading && personnelList.length === 0;
 

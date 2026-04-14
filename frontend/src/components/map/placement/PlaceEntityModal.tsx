@@ -127,12 +127,12 @@ export default function PlaceEntityModal() {
 
         await mapApi.createSupplyPoint({
           name: name.trim(),
-          point_type: resolvedType,
+          pointType: resolvedType,
           latitude: lat,
           longitude: lon,
           status,
-          parent_unit_name: parentUnit,
-          capacity_notes: capacityNotes,
+          parentUnitName: parentUnit,
+          capacityNotes: capacityNotes,
         });
       }
 

@@ -23,13 +23,13 @@ export default function ConvoyVehicleMarker({
   const icon = useMemo(
     () =>
       createVehicleIcon({
-        type: vehicle.vehicle_type,
+        type: vehicle.vehicleType,
         status: vehicle.status,
         heading: vehicle.heading,
-        bumperNumber: vehicle.bumper_number,
+        bumperNumber: vehicle.bumperNumber,
         isLead: isLeadVehicle,
       }),
-    [vehicle.vehicle_type, vehicle.status, vehicle.heading, vehicle.bumper_number, isLeadVehicle],
+    [vehicle.vehicleType, vehicle.status, vehicle.heading, vehicle.bumperNumber, isLeadVehicle],
   );
 
   return (
@@ -38,7 +38,7 @@ export default function ConvoyVehicleMarker({
       icon={icon}
       eventHandlers={{
         click: () => {
-          selectEntity('convoy_vehicle' as any, vehicle.vehicle_id, {
+          selectEntity('convoy_vehicle' as any, vehicle.vehicleId, {
             ...vehicle,
             convoyId,
             convoyName,

@@ -13,6 +13,7 @@ import CatalogManager from '@/components/admin/CatalogManager';
 import { Role, Echelon, type User, type Unit } from '@/lib/types';
 import { ECHELON_ORDER, ECHELON_ALLOWED_CHILDREN } from '@/lib/constants';
 import { mockApi } from '@/api/mockClient';
+import { getUsers, registerUser } from '@/api/auth';
 import { useClassificationStore } from '@/stores/classificationStore';
 import { useToast } from '@/hooks/useToast';
 
@@ -35,16 +36,6 @@ const CLASSIFICATION_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 const ROLE_OPTIONS = Object.values(Role);
-
-const initialUsers: User[] = [
-  { id: 1, username: 'col.harris', full_name: 'COL Harris, R.J.', role: Role.COMMANDER, unit_id: 3, email: 'harris@keystone.usmc.mil', is_active: true, created_at: '2026-03-01T00:00:00Z' },
-  { id: 2, username: 'maj.chen', full_name: 'MAJ Chen, W.', role: Role.S4, unit_id: 3, email: 'chen@keystone.usmc.mil', is_active: true, created_at: '2026-03-01T00:00:00Z' },
-  { id: 3, username: 'capt.rodriguez', full_name: 'CAPT Rodriguez, M.A.', role: Role.S3, unit_id: 3, email: 'rodriguez@keystone.usmc.mil', is_active: true, created_at: '2026-03-01T00:00:00Z' },
-  { id: 4, username: 'lt.davis', full_name: 'LT Davis, K.P.', role: Role.OPERATOR, unit_id: 4, email: 'davis@keystone.usmc.mil', is_active: true, created_at: '2026-03-01T00:00:00Z' },
-  { id: 5, username: 'sgt.jones', full_name: 'SGT Jones, T.L.', role: Role.OPERATOR, unit_id: 4, email: 'jones@keystone.usmc.mil', is_active: true, created_at: '2026-03-01T00:00:00Z' },
-  { id: 6, username: 'cpl.smith', full_name: 'CPL Smith, A.B.', role: Role.OPERATOR, unit_id: 5, email: 'smith@keystone.usmc.mil', is_active: true, created_at: '2026-03-01T00:00:00Z' },
-  { id: 7, username: 'pvt.wilson', full_name: 'PVT Wilson, D.', role: Role.VIEWER, unit_id: 5, email: 'wilson@keystone.usmc.mil', is_active: false, created_at: '2026-03-01T00:00:00Z' },
-];
 
 // ---------------------------------------------------------------------------
 // Shared styles
@@ -190,16 +181,17 @@ export default function AdminPage() {
   const toast = useToast();
 
   // ── User management state ──
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [userForm, setUserForm] = useState({
     username: '',
     full_name: '',
     email: '',
+    password: '',
     role: Role.OPERATOR as string,
-    unit_id: '',
-    is_active: true,
+    unitId: '',
+    isActive: true,
   });
 
   const [deactivateTarget, setDeactivateTarget] = useState<User | null>(null);
@@ -223,7 +215,7 @@ export default function AdminPage() {
 
   // ── Classification state ──
   const [selectedLevel, setSelectedLevel] = useState(classification.level);
-  const [customBannerText, setCustomBannerText] = useState(classification.banner_text);
+  const [customBannerText, setCustomBannerText] = useState(classification.bannerText);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -231,8 +223,9 @@ export default function AdminPage() {
   const selectedColor = selectedOption?.color || 'green';
   const previewColors = CLASSIFICATION_COLORS[selectedColor] || CLASSIFICATION_COLORS.green;
 
-  // ── Load units on mount ──
+  // ── Load users and units on mount ──
   useEffect(() => {
+    getUsers().then(setUsers).catch(console.error);
     mockApi.getUnits().then(setUnits).catch(console.error);
   }, []);
 
@@ -240,7 +233,7 @@ export default function AdminPage() {
 
   const openAddUser = () => {
     setEditingUser(null);
-    setUserForm({ username: '', full_name: '', email: '', role: Role.OPERATOR, unit_id: '', is_active: true });
+    setUserForm({ username: '', full_name: '', email: '', password: '', role: Role.OPERATOR, unitId: '', isActive: true });
     setUserModalOpen(true);
   };
 
@@ -250,46 +243,52 @@ export default function AdminPage() {
       username: user.username,
       full_name: user.full_name,
       email: user.email,
+      password: '',
       role: typeof user.role === 'string' ? user.role : user.role,
-      unit_id: user.unit_id?.toString() ?? '',
-      is_active: user.is_active,
+      unitId: user.unit_id?.toString() ?? '',
+      isActive: user.is_active,
     });
     setUserModalOpen(true);
   };
 
-  const handleSaveUser = () => {
+  const handleSaveUser = async () => {
     if (!userForm.username.trim() || !userForm.full_name.trim()) return;
-    if (editingUser) {
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.id === editingUser.id
-            ? {
-                ...u,
-                username: userForm.username,
-                full_name: userForm.full_name,
-                email: userForm.email,
-                role: userForm.role as Role,
-                unit_id: userForm.unit_id ? Number(userForm.unit_id) : null,
-                is_active: userForm.is_active,
-              }
-            : u,
-        ),
-      );
-    } else {
-      const newUser: User = {
-        id: Math.max(...users.map((u) => u.id)) + 1,
-        username: userForm.username,
-        full_name: userForm.full_name,
-        email: userForm.email,
-        role: userForm.role as Role,
-        unit_id: userForm.unit_id ? Number(userForm.unit_id) : null,
-        is_active: userForm.is_active,
-        created_at: new Date().toISOString(),
-      };
-      setUsers((prev) => [...prev, newUser]);
+    if (!editingUser && !userForm.password.trim()) return; // password required for new users
+
+    try {
+      if (editingUser) {
+        // For now, update local state (add API call when PUT endpoint is available)
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === editingUser.id
+              ? {
+                  ...u,
+                  username: userForm.username,
+                  full_name: userForm.full_name,
+                  email: userForm.email,
+                  role: userForm.role as Role,
+                  unit_id: userForm.unitId ? Number(userForm.unitId) : null,
+                  is_active: userForm.isActive,
+                }
+              : u,
+          ),
+        );
+      } else {
+        const newUser = await registerUser({
+          username: userForm.username,
+          full_name: userForm.full_name,
+          email: userForm.email,
+          password: userForm.password,
+          role: userForm.role,
+          unit_id: userForm.unitId ? Number(userForm.unitId) : null,
+        });
+        setUsers((prev) => [...prev, newUser]);
+      }
+      setUserModalOpen(false);
+      toast.success(editingUser ? 'User updated successfully' : 'User created successfully');
+    } catch (err: any) {
+      toast.danger(err?.response?.data?.detail || err?.message || 'Failed to save user');
     }
-    setUserModalOpen(false);
-    toast.success(editingUser ? 'User updated successfully' : 'User created successfully');
   };
 
   const handleToggleActive = () => {
@@ -374,7 +373,7 @@ export default function AdminPage() {
     try {
       await updateClassification({
         level: selectedLevel,
-        banner_text: customBannerText,
+        bannerText: customBannerText,
         color: selectedColor,
       });
       setSaveSuccess(true);
@@ -775,6 +774,18 @@ export default function AdminPage() {
                   style={inputStyle}
                 />
               </div>
+              {!editingUser && (
+                <div>
+                  <label style={labelStyle}>PASSWORD</label>
+                  <input
+                    type="password"
+                    value={userForm.password}
+                    onChange={(e) => setUserForm((f) => ({ ...f, password: e.target.value }))}
+                    placeholder="Enter password"
+                    style={inputStyle}
+                  />
+                </div>
+              )}
               <div className="flex gap-3">
                 <div className="flex-1">
                   <label style={labelStyle}>ROLE</label>
@@ -794,8 +805,8 @@ export default function AdminPage() {
                   <label style={labelStyle}>UNIT ID</label>
                   <input
                     type="number"
-                    value={userForm.unit_id}
-                    onChange={(e) => setUserForm((f) => ({ ...f, unit_id: e.target.value }))}
+                    value={userForm.unitId}
+                    onChange={(e) => setUserForm((f) => ({ ...f, unitId: e.target.value }))}
                     placeholder="e.g. 3"
                     style={inputStyle}
                   />
@@ -804,9 +815,9 @@ export default function AdminPage() {
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  checked={userForm.is_active}
+                  checked={userForm.isActive}
                   onChange={(e) =>
-                    setUserForm((f) => ({ ...f, is_active: e.target.checked }))
+                    setUserForm((f) => ({ ...f, isActive: e.target.checked }))
                   }
                   id="user-active"
                 />

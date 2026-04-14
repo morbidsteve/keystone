@@ -88,18 +88,18 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
       }),
       columnHelper.accessor('onHand', {
         header: 'ON HAND',
-        cell: (info) => info.getValue().toLocaleString(),
+        cell: (info) => (info.getValue() ?? 0).toLocaleString(),
       }),
       columnHelper.accessor('authorized', {
         header: 'REQUIRED',
         cell: (info) => (
           <span className="text-[var(--color-text-muted)]">
-            {info.getValue().toLocaleString()}
+            {(info.getValue() ?? 0).toLocaleString()}
           </span>
         ),
       }),
       columnHelper.accessor(
-        (row) => Math.round((row.onHand / row.authorized) * 100),
+        (row) => (row.authorized ? Math.round((row.onHand / row.authorized) * 100) : 0),
         {
           id: 'percent',
           header: '%',
@@ -118,13 +118,13 @@ export default function SupplyTable({ unitFilter, classFilter, statusFilter }: S
       ),
       columnHelper.accessor('dos', {
         header: 'DOS',
-        cell: (info) => `${info.getValue()}D`,
+        cell: (info) => `${info.getValue() ?? 0}D`,
       }),
       columnHelper.accessor('consumptionRate', {
         header: 'RATE',
         cell: (info) => (
           <span className="text-[var(--color-text-muted)]">
-            {info.getValue()}/day
+            {info.getValue() ?? 0}/day
           </span>
         ),
       }),

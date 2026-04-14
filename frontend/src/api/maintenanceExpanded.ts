@@ -156,7 +156,7 @@ export async function getMaintenanceDeadlines(
   }
   const response = await apiClient.get<MaintenanceDeadline[]>(
     '/maintenance/deadlines',
-    { params: unitId ? { unit_id: unitId } : undefined },
+    { params: unitId ? { unitId: unitId } : undefined },
   );
   return response.data;
 }
@@ -235,7 +235,7 @@ export async function getPMSchedule(
     '/maintenance/pm-schedule',
     {
       params: {
-        ...(unitId ? { unit_id: unitId } : {}),
+        ...(unitId ? { unitId: unitId } : {}),
         ...(overdueOnly ? { overdue_only: true } : {}),
       },
     },

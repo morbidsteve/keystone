@@ -118,7 +118,7 @@ export default function ReadinessPage() {
 
   // Convert history to trend chart data
   const trendData = useMemo(() => {
-    if (!history) return [];
+    if (!Array.isArray(history)) return [];
     return history.map((s) => ({
       date: s.snapshotDate,
       overall: s.overallReadinessPct,
@@ -327,7 +327,7 @@ export default function ReadinessPage() {
           )}
 
           {/* Dashboard cards */}
-          {dashboard && (
+          {Array.isArray(dashboard?.units) && dashboard.units.length > 0 && (
             <div>
               <div
                 className="font-[var(--font-mono)] text-[9px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-muted)] mb-2.5"
@@ -420,7 +420,7 @@ export default function ReadinessPage() {
         <div>
           {rollupLoading ? (
             renderLoadingSkeleton()
-          ) : rollup && rollup.subordinates.length > 0 ? (
+          ) : rollup && Array.isArray(rollup.subordinates) && rollup.subordinates.length > 0 ? (
             <ReadinessRollupTree
               parentUnitName={getUnitName(numericUnitId, dashboard?.units)}
               subordinates={rollup.subordinates}

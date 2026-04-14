@@ -20,13 +20,13 @@ export default function ClassificationBanner({ position }: ClassificationBannerP
   return (
     <div
       role="banner"
-      aria-label={`Classification: ${classification.banner_text}`}
+      aria-label={`Classification: ${classification.bannerText}`}
       className="fixed left-0 right-0 h-[24px] flex items-center justify-center z-[9999]" style={{ [position]: 0, backgroundColor: colors.bg }}
     >
       <span
         className="font-[var(--font-mono)] text-[11px] font-bold tracking-[3px]" style={{ color: colors.text }}
       >
-        {classification.banner_text}
+        {classification.bannerText}
       </span>
     </div>
   );

@@ -29,8 +29,8 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
       dos: number;
     }> = [];
 
-    const dailyBurn = forecast.projected_daily_consumption_gallons;
-    const startGallons = forecast.current_on_hand_gallons;
+    const dailyBurn = forecast.projectedDailyConsumptionGallons;
+    const startGallons = forecast.currentOnHandGallons;
 
     for (let day = 0; day <= 14; day++) {
       const remaining = Math.max(0, startGallons - dailyBurn * day);
@@ -46,7 +46,7 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
   }, [forecast]);
 
   const daysUntilResupply = useMemo(() => {
-    const resupplyDate = new Date(forecast.resupply_required_by_date);
+    const resupplyDate = new Date(forecast.resupplyRequiredByDate);
     const now = new Date();
     const diff = (resupplyDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
     return Math.max(0, Math.round(diff * 10) / 10);
@@ -59,7 +59,7 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
     SURGE: '#ef4444',
   };
 
-  const tempoColor = tempoColors[forecast.operational_tempo] ?? '#3b82f6';
+  const tempoColor = tempoColors[forecast.operationalTempo] ?? '#3b82f6';
 
   return (
     <div>
@@ -70,18 +70,18 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
         {[
           {
             label: 'OP TEMPO',
-            value: forecast.operational_tempo,
+            value: forecast.operationalTempo,
             color: tempoColor,
           },
           {
             label: 'DAILY BURN',
-            value: `${forecast.projected_daily_consumption_gallons.toLocaleString()} gal`,
+            value: `${forecast.projectedDailyConsumptionGallons.toLocaleString()} gal`,
             color: 'var(--color-text-bright)',
           },
           {
             label: 'CURRENT DOS',
-            value: forecast.days_of_supply.toFixed(1),
-            color: forecast.days_of_supply <= 3 ? '#ef4444' : forecast.days_of_supply <= 5 ? '#f59e0b' : '#22c55e',
+            value: forecast.daysOfSupply.toFixed(1),
+            color: forecast.daysOfSupply <= 3 ? '#ef4444' : forecast.daysOfSupply <= 5 ? '#f59e0b' : '#22c55e',
           },
           {
             label: 'RESUPPLY IN',
@@ -116,8 +116,8 @@ export default function FuelForecastChart({ forecast }: FuelForecastChartProps) 
           <span
             className="font-[var(--font-mono)] text-[10px] text-[#ef4444] font-semibold"
           >
-            CRITICAL: {forecast.days_of_supply.toFixed(1)} DOS remaining. Resupply required NLT{' '}
-            {forecast.resupply_required_by_date}.
+            CRITICAL: {forecast.daysOfSupply.toFixed(1)} DOS remaining. Resupply required NLT{' '}
+            {forecast.resupplyRequiredByDate}.
           </span>
         </div>
       )}

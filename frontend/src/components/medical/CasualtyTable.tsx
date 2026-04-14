@@ -106,10 +106,10 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
           cmp = a.status.localeCompare(b.status);
           break;
         case 'reported':
-          cmp = new Date(a.reported_datetime).getTime() - new Date(b.reported_datetime).getTime();
+          cmp = new Date(a.reportedDatetime).getTime() - new Date(b.reportedDatetime).getTime();
           break;
         case 'patients':
-          cmp = a.number_of_patients - b.number_of_patients;
+          cmp = a.numberOfPatients - b.numberOfPatients;
           break;
       }
       return sortAsc ? cmp : -cmp;
@@ -210,7 +210,7 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
             >
               <td className="text-[var(--color-text-bright)]">
-                {c.casualty_id}
+                {c.casualtyId}
               </td>
               <td style={cellStyle}>
                 <span style={badgeStyle(precedenceColor(c.precedence))}>
@@ -218,9 +218,9 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
                 </span>
               </td>
               <td style={cellStyle}>
-                {c.triage_category ? (
-                  <span style={badgeStyle(triageColor(c.triage_category))}>
-                    {formatLabel(c.triage_category)}
+                {c.triageCategory ? (
+                  <span style={badgeStyle(triageColor(c.triageCategory))}>
+                    {formatLabel(c.triageCategory)}
                   </span>
                 ) : (
                   <span className="text-[var(--color-text-muted)] text-[10px]">--</span>
@@ -232,22 +232,22 @@ export default function CasualtyTable({ casualties }: CasualtyTableProps) {
                 </span>
               </td>
               <td style={cellStyle}>
-                <span style={badgeStyle(evacColor(c.evacuation_status))}>
-                  {c.evacuation_status ? formatLabel(c.evacuation_status) : '--'}
+                <span style={badgeStyle(evacColor(c.evacuationStatus))}>
+                  {c.evacuationStatus ? formatLabel(c.evacuationStatus) : '--'}
                 </span>
               </td>
               <td className="overflow-hidden text-ellipsis">
                 <MapPin size={10} className="align-middle mr-1 text-[var(--color-text-muted)]" />
-                {c.location_description || c.location_mgrs || `${c.location_lat.toFixed(4)}, ${c.location_lon.toFixed(4)}`}
+                {c.locationDescription || c.locationMgrs || `${c.locationLat.toFixed(4)}, ${c.locationLon.toFixed(4)}`}
               </td>
               <td className="overflow-hidden text-ellipsis text-[10px]">
-                {c.mechanism_of_injury || '--'}
+                {c.mechanismOfInjury || '--'}
               </td>
               <td className="font-semibold">
-                {c.number_of_patients}
+                {c.numberOfPatients}
               </td>
               <td className="text-[10px]">
-                {relativeTime(c.reported_datetime)}
+                {relativeTime(c.reportedDatetime)}
               </td>
             </tr>
           ))}

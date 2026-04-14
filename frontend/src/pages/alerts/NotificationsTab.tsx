@@ -37,7 +37,7 @@ export default function NotificationsTab() {
     },
   });
 
-  const unreadCount = notifications.filter(n => !n.is_read).length;
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
     <>
@@ -75,12 +75,12 @@ export default function NotificationsTab() {
             notifications.map((notif) => (
               <div
                 key={notif.id}
-                className="py-2.5 px-3.5 border border-[var(--color-border)] rounded-[var(--radius)] flex gap-2.5 items-start" style={{ backgroundColor: notif.is_read ? 'var(--color-bg)' : 'var(--color-bg-surface)', borderLeft: notif.is_read ? '3px solid var(--color-border)' : '3px solid var(--color-accent)', opacity: notif.is_read ? 0.7 : 1 }}
+                className="py-2.5 px-3.5 border border-[var(--color-border)] rounded-[var(--radius)] flex gap-2.5 items-start" style={{ backgroundColor: notif.isRead ? 'var(--color-bg)' : 'var(--color-bg-surface)', borderLeft: notif.isRead ? '3px solid var(--color-border)' : '3px solid var(--color-accent)', opacity: notif.isRead ? 0.7 : 1 }}
               >
-                <Bell size={14} className="shrink-0 mt-0.5" style={{ color: notif.is_read ? 'var(--color-text-muted)' : 'var(--color-accent)' }} />
+                <Bell size={14} className="shrink-0 mt-0.5" style={{ color: notif.isRead ? 'var(--color-text-muted)' : 'var(--color-accent)' }} />
                 <div className="flex-1 min-w-0">
                   <div
-                    className="font-[var(--font-mono)] text-[11px] mb-[3px]" style={{ fontWeight: notif.is_read ? 400 : 700, color: notif.is_read ? 'var(--color-text)' : 'var(--color-text-bright)' }}
+                    className="font-[var(--font-mono)] text-[11px] mb-[3px]" style={{ fontWeight: notif.isRead ? 400 : 700, color: notif.isRead ? 'var(--color-text)' : 'var(--color-text-bright)' }}
                   >
                     {notif.title}
                   </div>
@@ -92,16 +92,16 @@ export default function NotificationsTab() {
                   <div
                     className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] flex gap-2"
                   >
-                    <span>{formatRelativeTime(notif.created_at)}</span>
-                    {notif.link_url && (
-                      <span className="text-[var(--color-accent)]">{notif.link_url}</span>
+                    <span>{formatRelativeTime(notif.createdAt)}</span>
+                    {notif.linkUrl && (
+                      <span className="text-[var(--color-accent)]">{notif.linkUrl}</span>
                     )}
-                    {notif.is_read && notif.read_at && (
-                      <span>Read {formatRelativeTime(notif.read_at)}</span>
+                    {notif.isRead && notif.readAt && (
+                      <span>Read {formatRelativeTime(notif.readAt)}</span>
                     )}
                   </div>
                 </div>
-                {!notif.is_read && (
+                {!notif.isRead && (
                   <button
                     onClick={() => markReadMutation.mutate(notif.id)}
                     title="Mark as read"

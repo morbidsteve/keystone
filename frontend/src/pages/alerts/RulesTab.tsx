@@ -33,10 +33,10 @@ export default function RulesTab() {
   });
 
   const toggleMutation = useMutation({
-    mutationFn: (rule: AlertRule) => updateAlertRule(rule.id, { is_active: !rule.is_active }),
+    mutationFn: (rule: AlertRule) => updateAlertRule(rule.id, { isActive: !rule.isActive }),
     onSuccess: (_data, rule) => {
       queryClient.invalidateQueries({ queryKey: ['alert-rules'] });
-      toast.success(`Rule ${rule.is_active ? 'disabled' : 'enabled'}`);
+      toast.success(`Rule ${rule.isActive ? 'disabled' : 'enabled'}`);
     },
     onError: () => {
       toast.danger('Failed to update alert rule');
@@ -63,31 +63,31 @@ export default function RulesTab() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const notifyRolesArr = notifyRoles.length > 0 ? notifyRoles : undefined;
-    const supplyClass = formData.get('supply_class') as string;
-    const metricItemFilter = supplyClass ? { supply_class: supplyClass } : undefined;
+    const supplyClass = formData.get('supplyClass') as string;
+    const metricItemFilter = supplyClass ? { supplyClass: supplyClass } : undefined;
     createMutation.mutate({
       name: formData.get('name') as string,
       description: formData.get('description') as string,
-      alert_type: formData.get('alert_type') as string,
+      alertType: formData.get('alertType') as string,
       severity: formData.get('severity') as string,
       metric: formData.get('metric') as string,
       operator: formData.get('operator') as AlertRule['operator'],
-      threshold_value: Number(formData.get('threshold_value')),
-      cooldown_minutes: Number(formData.get('cooldown_minutes') || 60),
-      is_scope_all: scopeType === 'ANY_UNIT',
-      is_active: true,
-      scope_type: scopeType,
-      scope_echelon: scopeType === 'ECHELON' ? (formData.get('scope_echelon') as string) : undefined,
-      scope_unit_id: scopeType === 'SPECIFIC_UNIT' ? Number(formData.get('scope_unit_id')) : undefined,
-      include_subordinates: scopeType === 'SUBORDINATES',
-      metric_type: metricType,
-      metric_item_filter: metricItemFilter,
-      notify_roles: notifyRolesArr,
-      check_interval_minutes: Number(formData.get('check_interval_minutes') || 15),
-      auto_recommend: autoRecommend,
-      recommend_type: autoRecommend ? (formData.get('recommend_type') as string) : undefined,
-      recommend_source_unit_id: autoRecommend && formData.get('recommend_source_unit_id') ? Number(formData.get('recommend_source_unit_id')) : undefined,
-      recommend_assign_to_role: autoRecommend ? (formData.get('recommend_assign_to_role') as string) : undefined,
+      thresholdValue: Number(formData.get('thresholdValue')),
+      cooldownMinutes: Number(formData.get('cooldownMinutes') || 60),
+      isScopeAll: scopeType === 'ANY_UNIT',
+      isActive: true,
+      scopeType: scopeType,
+      scopeEchelon: scopeType === 'ECHELON' ? (formData.get('scopeEchelon') as string) : undefined,
+      scopeUnitId: scopeType === 'SPECIFIC_UNIT' ? Number(formData.get('scopeUnitId')) : undefined,
+      includeSubordinates: scopeType === 'SUBORDINATES',
+      metricType: metricType,
+      metricItemFilter: metricItemFilter,
+      notifyRoles: notifyRolesArr,
+      checkIntervalMinutes: Number(formData.get('checkIntervalMinutes') || 15),
+      autoRecommend: autoRecommend,
+      recommendType: autoRecommend ? (formData.get('recommendType') as string) : undefined,
+      recommendSourceUnitId: autoRecommend && formData.get('recommendSourceUnitId') ? Number(formData.get('recommendSourceUnitId')) : undefined,
+      recommendAssignToRole: autoRecommend ? (formData.get('recommendAssignToRole') as string) : undefined,
     });
   };
 
@@ -150,7 +150,7 @@ export default function RulesTab() {
               </div>
               <div>
                 <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">ALERT TYPE</label>
-                <select name="alert_type" required style={inputStyle}>
+                <select name="alertType" required style={inputStyle}>
                   <option value="LOW_DOS">LOW_DOS</option>
                   <option value="LOW_READINESS">LOW_READINESS</option>
                   <option value="PM_OVERDUE">PM_OVERDUE</option>
@@ -185,11 +185,11 @@ export default function RulesTab() {
               </div>
               <div>
                 <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">THRESHOLD</label>
-                <input name="threshold_value" type="number" step="any" required style={inputStyle} placeholder="e.g. 3" />
+                <input name="thresholdValue" type="number" step="any" required style={inputStyle} placeholder="e.g. 3" />
               </div>
               <div>
                 <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">COOLDOWN (min)</label>
-                <input name="cooldown_minutes" type="number" defaultValue={60} style={inputStyle} />
+                <input name="cooldownMinutes" type="number" defaultValue={60} style={inputStyle} />
               </div>
             </div>
 
@@ -208,13 +208,13 @@ export default function RulesTab() {
                 {scopeType === 'SPECIFIC_UNIT' && (
                   <div>
                     <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">UNIT ID</label>
-                    <input name="scope_unit_id" type="number" style={inputStyle} placeholder="Unit ID" />
+                    <input name="scopeUnitId" type="number" style={inputStyle} placeholder="Unit ID" />
                   </div>
                 )}
                 {scopeType === 'ECHELON' && (
                   <div>
                     <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">ECHELON</label>
-                    <select name="scope_echelon" style={inputStyle}>
+                    <select name="scopeEchelon" style={inputStyle}>
                       <option value="MEF">MEF</option>
                       <option value="DIVISION">DIVISION</option>
                       <option value="REGIMENT">REGIMENT</option>
@@ -245,12 +245,12 @@ export default function RulesTab() {
                 {(metricType === 'DOS' || metricType === 'ON_HAND_QTY') && (
                   <div>
                     <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">SUPPLY CLASS FILTER</label>
-                    <input name="supply_class" style={inputStyle} placeholder="e.g. V, III, IX" />
+                    <input name="supplyClass" style={inputStyle} placeholder="e.g. V, III, IX" />
                   </div>
                 )}
                 <div>
                   <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">CHECK INTERVAL (min)</label>
-                  <input name="check_interval_minutes" type="number" defaultValue={15} style={inputStyle} />
+                  <input name="checkIntervalMinutes" type="number" defaultValue={15} style={inputStyle} />
                 </div>
               </div>
             </div>
@@ -286,7 +286,7 @@ export default function RulesTab() {
                 <div className="grid gap-3 grid-cols-3">
                   <div>
                     <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">RECOMMEND TYPE</label>
-                    <select name="recommend_type" style={inputStyle}>
+                    <select name="recommendType" style={inputStyle}>
                       <option value="RESUPPLY">RESUPPLY</option>
                       <option value="MAINTENANCE">MAINTENANCE</option>
                       <option value="FUEL_DELIVERY">FUEL_DELIVERY</option>
@@ -295,11 +295,11 @@ export default function RulesTab() {
                   </div>
                   <div>
                     <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">SOURCE UNIT ID</label>
-                    <input name="recommend_source_unit_id" type="number" style={inputStyle} placeholder="Optional" />
+                    <input name="recommendSourceUnitId" type="number" style={inputStyle} placeholder="Optional" />
                   </div>
                   <div>
                     <label className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[1px] block mb-1">ASSIGN TO ROLE</label>
-                    <select name="recommend_assign_to_role" style={inputStyle}>
+                    <select name="recommendAssignToRole" style={inputStyle}>
                       <option value="S4">S4</option>
                       <option value="CO">CO</option>
                       <option value="XO">XO</option>
@@ -353,7 +353,7 @@ export default function RulesTab() {
                   <td className="font-medium">
                     {rule.name}
                   </td>
-                  <td style={tdStyle}>{rule.alert_type}</td>
+                  <td style={tdStyle}>{rule.alertType}</td>
                   <td style={tdStyle}>
                     <span style={{
                       color: rule.severity === 'CRITICAL' ? 'var(--color-danger)' :
@@ -362,19 +362,19 @@ export default function RulesTab() {
                       {rule.severity}
                     </span>
                   </td>
-                  <td style={tdStyle}>{rule.scope_type || (rule.is_scope_all ? 'ANY_UNIT' : 'SPECIFIC')}</td>
-                  <td style={tdStyle}>{rule.metric_type || '--'}</td>
+                  <td style={tdStyle}>{rule.scopeType || (rule.isScopeAll ? 'ANY_UNIT' : 'SPECIFIC')}</td>
+                  <td style={tdStyle}>{rule.metricType || '--'}</td>
                   <td style={tdStyle}>{rule.metric}</td>
-                  <td style={tdStyle}>{OPERATOR_LABELS[rule.operator] || rule.operator} {rule.threshold_value}</td>
-                  <td style={tdStyle}>{rule.cooldown_minutes}m</td>
+                  <td style={tdStyle}>{OPERATOR_LABELS[rule.operator] || rule.operator} {rule.thresholdValue}</td>
+                  <td style={tdStyle}>{rule.cooldownMinutes}m</td>
                   <td style={tdStyle}>
-                    <span className="inline-block w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: rule.is_active ? 'var(--color-success, #22c55e)' : 'var(--color-text-muted)' }} />
+                    <span className="inline-block w-[8px] h-[8px]" style={{ borderRadius: '50%', backgroundColor: rule.isActive ? 'var(--color-success, #22c55e)' : 'var(--color-text-muted)' }} />
                   </td>
                   <td style={tdStyle}>
                     <div className="flex gap-1.5">
                       <button
                         onClick={() => toggleMutation.mutate(rule)}
-                        title={rule.is_active ? 'Deactivate' : 'Activate'}
+                        title={rule.isActive ? 'Deactivate' : 'Activate'}
                         className="flex items-center py-[3px] px-1.5 bg-transparent border border-[var(--color-border)] rounded-[var(--radius)] text-[var(--color-text-muted)] cursor-pointer transition-all duration-[var(--transition)]"
                         onMouseEnter={(e) => {
                           e.currentTarget.style.borderColor = 'var(--color-accent)';

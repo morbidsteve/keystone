@@ -9,20 +9,29 @@ import type {
   WorkOrderFilters,
 } from '@/lib/types';
 
+function normalizeWorkOrder(wo: MaintenanceWorkOrder): MaintenanceWorkOrder {
+  return {
+    ...wo,
+    laborEntries: Array.isArray(wo?.laborEntries) ? wo.laborEntries : [],
+    parts: Array.isArray(wo?.parts) ? wo.parts : [],
+  };
+}
+
 export async function getWorkOrders(
   filters?: WorkOrderFilters,
 ): Promise<PaginatedResponse<MaintenanceWorkOrder>> {
   if (isDemoMode) return mockApi.getWorkOrders(filters);
-  const response = await apiClient.get<PaginatedResponse<MaintenanceWorkOrder>>('/maintenance/work-orders', {
+  const response = await apiClient.get<ApiResponse<MaintenanceWorkOrder[]>>('/maintenance/work-orders', {
     params: filters,
   });
-  return response.data;
+  const arr = Array.isArray(response.data?.data) ? response.data.data.map(normalizeWorkOrder) : [];
+  return { data: arr, total: arr.length, page: 1, pageSize: arr.length };
 }
 
 export async function getWorkOrderById(id: string): Promise<MaintenanceWorkOrder> {
   if (isDemoMode) return mockApi.getWorkOrderById(id);
   const response = await apiClient.get<ApiResponse<MaintenanceWorkOrder>>(`/maintenance/work-orders/${id}`);
-  return response.data.data;
+  return normalizeWorkOrder(response.data.data);
 }
 
 export async function createWorkOrder(

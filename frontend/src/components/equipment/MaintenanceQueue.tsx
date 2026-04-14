@@ -157,7 +157,9 @@ export default function MaintenanceQueue() {
           />
         )}
         {filteredWorkOrders.map((wo) => {
-          const totalLabor = wo.laborEntries.reduce((sum, l) => sum + l.hours, 0);
+          const laborEntries = Array.isArray(wo.laborEntries) ? wo.laborEntries : [];
+          const parts = Array.isArray(wo.parts) ? wo.parts : [];
+          const totalLabor = laborEntries.reduce((sum, l) => sum + (l.hours ?? 0), 0);
           return (
             <div
               key={wo.id}
@@ -222,7 +224,7 @@ export default function MaintenanceQueue() {
                 >
                   <span className="flex items-center gap-[3px]">
                     <Package size={9} />
-                    {wo.parts.length} {wo.parts.length === 1 ? 'part' : 'parts'}
+                    {parts.length} {parts.length === 1 ? 'part' : 'parts'}
                   </span>
                   <span className="flex items-center gap-[3px]">
                     <Clock size={9} />

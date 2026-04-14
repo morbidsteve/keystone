@@ -210,9 +210,9 @@ export default function PersonnelPage() {
               P-RATING:
             </span>
             <span
-              className="inline-block py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[11px] font-bold" style={{ color: pRatingColor(readiness.p_rating), backgroundColor: `${pRatingColor(readiness.p_rating)}15`, border: `1px solid ${pRatingColor(readiness.p_rating)}40` }}
+              className="inline-block py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[11px] font-bold" style={{ color: pRatingColor(readiness.pRating), backgroundColor: `${pRatingColor(readiness.pRating)}15`, border: `1px solid ${pRatingColor(readiness.pRating)}40` }}
             >
-              {readiness.p_rating}
+              {readiness.pRating}
             </span>
           </div>
         )}
@@ -233,13 +233,13 @@ export default function PersonnelPage() {
           className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
         >
           {[
-            { label: 'AUTHORIZED', value: strength.total_authorized, color: 'var(--color-text-bright)' },
-            { label: 'ASSIGNED', value: strength.total_assigned, color: '#60a5fa' },
-            { label: 'PRESENT', value: strength.present_for_duty, color: '#4ade80' },
+            { label: 'AUTHORIZED', value: strength.totalAuthorized, color: 'var(--color-text-bright)' },
+            { label: 'ASSIGNED', value: strength.totalAssigned, color: '#60a5fa' },
+            { label: 'PRESENT', value: strength.presentForDuty, color: '#4ade80' },
             {
               label: 'FILL RATE',
-              value: `${strength.fill_rate_pct.toFixed(1)}%`,
-              color: strength.fill_rate_pct >= 90 ? '#4ade80' : strength.fill_rate_pct >= 80 ? '#fbbf24' : '#f87171',
+              value: `${strength.fillRatePct.toFixed(1)}%`,
+              color: strength.fillRatePct >= 90 ? '#4ade80' : strength.fillRatePct >= 80 ? '#fbbf24' : '#f87171',
             },
           ].map((kpi) => (
             <div

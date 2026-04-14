@@ -65,7 +65,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
       className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
     >
       {facilities.map((f) => {
-        const pct = f.capacity > 0 ? (f.current_census / f.capacity) * 100 : 0;
+        const pct = f.capacity > 0 ? (f.currentCensus / f.capacity) * 100 : 0;
         const color = statusColor(f.status);
 
         return (
@@ -86,7 +86,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
                 <div
                   className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.5px]"
                 >
-                  {facilityTypeLabel(f.facility_type)}
+                  {facilityTypeLabel(f.facilityType)}
                 </div>
                 {f.callsign && (
                   <div
@@ -117,7 +117,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
                 <span
                   className="font-[var(--font-mono)] text-[10px] font-semibold" style={{ color: capacityColor(pct) }}
                 >
-                  {f.current_census} / {f.capacity}
+                  {f.currentCensus} / {f.capacity}
                 </span>
               </div>
               <div
@@ -133,7 +133,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
             <div
               className="flex gap-3 mb-3 flex-wrap"
             >
-              {f.surgical_capability && (
+              {f.surgicalCapability && (
                 <div
                   className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[#22c55e]"
                 >
@@ -141,7 +141,7 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
                   SURGICAL
                 </div>
               )}
-              {f.blood_bank && (
+              {f.bloodBank && (
                 <div
                   className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[#ef4444]"
                 >
@@ -149,12 +149,12 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
                   BLOOD BANK
                 </div>
               )}
-              {f.vent_capacity > 0 && (
+              {f.ventCapacity > 0 && (
                 <div
                   className="flex items-center gap-1 font-[var(--font-mono)] text-[9px] text-[#3b82f6]"
                 >
                   <Building size={12} />
-                  VENT x{f.vent_capacity}
+                  VENT x{f.ventCapacity}
                 </div>
               )}
             </div>
@@ -173,10 +173,10 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
                 className="grid gap-2 grid-cols-4"
               >
                 {[
-                  { label: 'MD', value: f.physician_staffing },
-                  { label: 'PA', value: f.pa_staffing },
-                  { label: 'MEDIC', value: f.medic_staffing },
-                  { label: 'SURG', value: f.surgical_tech_staffing },
+                  { label: 'MD', value: f.physicianStaffing },
+                  { label: 'PA', value: f.paStaffing },
+                  { label: 'MEDIC', value: f.medicStaffing },
+                  { label: 'SURG', value: f.surgicalTechStaffing },
                 ].map((s) => (
                   <div key={s.label} className="text-center">
                     <div
@@ -195,11 +195,11 @@ export default function MTFStatusCards({ facilities }: MTFStatusCardsProps) {
             </div>
 
             {/* Contact Freq */}
-            {f.contact_freq && (
+            {f.contactFreq && (
               <div
                 className="mt-2 font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
-                FREQ: <span className="text-[var(--color-text)]">{f.contact_freq}</span>
+                FREQ: <span className="text-[var(--color-text)]">{f.contactFreq}</span>
               </div>
             )}
           </div>

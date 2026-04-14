@@ -176,8 +176,9 @@ export default function UnitSelector({
         if (isDemoMode) {
           data = await mockApi.getUnits();
         } else {
-          const res = await apiClient.get<Unit[]>('/units');
-          data = res.data;
+          const res = await apiClient.get('/units');
+          const raw = res.data;
+          data = Array.isArray(raw) ? raw : (raw as any)?.data ?? [];
         }
         if (!cancelled) {
           setUnits(data);

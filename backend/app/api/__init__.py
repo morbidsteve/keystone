@@ -44,12 +44,16 @@ api_router = APIRouter()
 api_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(dashboard_router, prefix="/dashboard", tags=["Dashboard"])
 api_router.include_router(supply_router, prefix="/supply", tags=["Supply"])
-api_router.include_router(equipment_router, prefix="/equipment", tags=["Equipment"])
+# IMPORTANT: equipment_individual_router MUST be registered before equipment_router
+# because FastAPI evaluates routes in registration order, and equipment_router's
+# /{record_id:int} catch-all intercepts /equipment/individual with a 422 error
+# before the sub-router is consulted.
 api_router.include_router(
     equipment_individual_router,
     prefix="/equipment/individual",
     tags=["Equipment Individual"],
 )
+api_router.include_router(equipment_router, prefix="/equipment", tags=["Equipment"])
 api_router.include_router(
     transportation_router, prefix="/transportation", tags=["Transportation"]
 )

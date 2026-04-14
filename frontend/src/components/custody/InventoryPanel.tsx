@@ -57,12 +57,12 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
           },
           {
             label: 'ITEMS EXPECTED',
-            value: events.length > 0 ? events[0].total_items_expected.toString() : '0',
+            value: events.length > 0 ? events[0].totalItemsExpected.toString() : '0',
             color: '#3b82f6',
           },
           {
             label: 'LAST VERIFIED',
-            value: events.length > 0 ? events[0].total_items_verified.toString() : '0',
+            value: events.length > 0 ? events[0].totalItemsVerified.toString() : '0',
             color: '#22c55e',
           },
           {
@@ -105,7 +105,7 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
                 <span
                   className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
                 >
-                  {event.inventory_type.replace(/_/g, ' ')} INVENTORY
+                  {event.inventoryType.replace(/_/g, ' ')} INVENTORY
                 </span>
                 <span
                   className="py-0.5 px-1.5 rounded-[3px] font-[var(--font-mono)] text-[8px] font-bold tracking-[0.5px]" style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
@@ -116,7 +116,7 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
               <span
                 className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
-                {new Date(event.started_at).toLocaleString()}
+                {new Date(event.startedAt).toLocaleString()}
               </span>
             </div>
 
@@ -124,10 +124,10 @@ export default function InventoryPanel({ events, loading }: InventoryPanelProps)
               className="flex gap-4 font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]" style={{ marginBottom: event.notes ? 6 : 0 }}
             >
               <span>
-                Conducted by: <strong className="text-[var(--color-text)]">{event.conducted_by_name ?? 'Unknown'}</strong>
+                Conducted by: <strong className="text-[var(--color-text)]">{event.conductedByName ?? 'Unknown'}</strong>
               </span>
               <span>
-                Verified: <strong className="text-[var(--color-text)]">{event.total_items_verified}/{event.total_items_expected}</strong>
+                Verified: <strong className="text-[var(--color-text)]">{event.totalItemsVerified}/{event.totalItemsExpected}</strong>
               </span>
               {event.discrepancies > 0 && (
                 <span className="text-[#ef4444]">

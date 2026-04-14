@@ -89,13 +89,13 @@ export default function AlertsTab() {
   });
 
   const summaryData = summary || {
-    total_active: allAlerts.filter((a) => !a.acknowledged && !a.resolved).length,
-    by_severity: {
+    totalActive: allAlerts.filter((a) => !a.acknowledged && !a.resolved).length,
+    bySeverity: {
       CRITICAL: allAlerts.filter((a) => a.severity === AlertSeverity.CRITICAL && !a.acknowledged).length,
       WARNING: allAlerts.filter((a) => a.severity === AlertSeverity.WARNING && !a.acknowledged).length,
       INFO: allAlerts.filter((a) => a.severity === AlertSeverity.INFO && !a.acknowledged).length,
     },
-    by_type: {},
+    byType: {},
   };
 
   return (
@@ -103,10 +103,10 @@ export default function AlertsTab() {
       {/* Summary Cards */}
       <div className="grid-responsive-4col">
         {[
-          { label: 'TOTAL ACTIVE', value: summaryData.total_active, color: 'var(--color-text-bright)' },
-          { label: 'CRITICAL', value: summaryData.by_severity.CRITICAL, color: 'var(--color-danger)' },
-          { label: 'WARNING', value: summaryData.by_severity.WARNING, color: 'var(--color-warning)' },
-          { label: 'INFO', value: summaryData.by_severity.INFO, color: 'var(--color-info)' },
+          { label: 'TOTAL ACTIVE', value: summaryData.totalActive, color: 'var(--color-text-bright)' },
+          { label: 'CRITICAL', value: summaryData.bySeverity.CRITICAL, color: 'var(--color-danger)' },
+          { label: 'WARNING', value: summaryData.bySeverity.WARNING, color: 'var(--color-warning)' },
+          { label: 'INFO', value: summaryData.bySeverity.INFO, color: 'var(--color-info)' },
         ].map((stat) => (
           <div
             key={stat.label}

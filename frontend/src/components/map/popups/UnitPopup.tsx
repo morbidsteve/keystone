@@ -69,7 +69,7 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
             {unit.abbreviation} | {unit.echelon}
           </div>
         </div>
-        <StatusPill status={unit.supply_status} />
+        <StatusPill status={unit.supplyStatus} />
       </div>
 
       {/* Position info */}
@@ -78,15 +78,15 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
       >
         <div>
           POS: {Math.abs(unit.latitude).toFixed(2)}{unit.latitude >= 0 ? 'N' : 'S'}, {Math.abs(unit.longitude).toFixed(2)}{unit.longitude >= 0 ? 'E' : 'W'}
-          {unit.position_source && (
+          {unit.positionSource && (
             <span className="ml-2 text-[var(--color-accent)]">
-              [{unit.position_source}]
+              [{unit.positionSource}]
             </span>
           )}
         </div>
-        {unit.last_updated && (
+        {unit.lastUpdated && (
           <div className="mt-0.5">
-            UPDATED: {formatRelativeTime(unit.last_updated)}
+            UPDATED: {formatRelativeTime(unit.lastUpdated)}
           </div>
         )}
       </div>
@@ -100,29 +100,29 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
         </span>
         <span
           className="text-sm font-bold" style={{ color: getStatusColor(
-              unit.readiness_pct >= 90
+              unit.readinessPct >= 90
                 ? 'GREEN'
-                : unit.readiness_pct >= 75
+                : unit.readinessPct >= 75
                   ? 'AMBER'
                   : 'RED',
             ) }}
         >
-          {Math.round(unit.readiness_pct)}%
+          {Math.round(unit.readinessPct)}%
         </span>
       </div>
 
       {/* Supply breakdown */}
-      {unit.supply_breakdown && unit.supply_breakdown.length > 0 && (
+      {unit.supplyBreakdown && unit.supplyBreakdown.length > 0 && (
         <div className="mb-2">
           <div
             className="text-[9px] font-bold tracking-[1.5px] text-[var(--color-text-bright)] mb-1.5 uppercase"
           >
             SUPPLY STATUS
           </div>
-          {unit.supply_breakdown.map((s) => (
+          {unit.supplyBreakdown.map((s) => (
             <SupplyBar
-              key={s.supply_class}
-              label={`CL ${s.supply_class} - ${s.name}`}
+              key={s.supplyClass}
+              label={`CL ${s.supplyClass} - ${s.name}`}
               percentage={s.percentage}
               dos={s.dos}
               status={s.status}
@@ -132,7 +132,7 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
       )}
 
       {/* Equipment summary */}
-      {unit.equipment_summary && unit.equipment_summary.length > 0 && (
+      {unit.equipmentSummary && unit.equipmentSummary.length > 0 && (
         <div className="mb-2">
           <div
             className="text-[9px] font-bold tracking-[1.5px] text-[var(--color-text-bright)] mb-1 uppercase"
@@ -140,7 +140,7 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
             EQUIPMENT READINESS
           </div>
           <div className="flex flex-col gap-0.5">
-            {unit.equipment_summary.map((eq) => (
+            {unit.equipmentSummary.map((eq) => (
               <div
                 key={eq.type}
                 className="flex justify-between items-center text-[9px] py-0.5 px-0"
@@ -151,17 +151,17 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
                 <span>
                   <span
                     className="font-semibold" style={{ color: getStatusColor(
-                        eq.readiness_pct >= 90
+                        eq.readinessPct >= 90
                           ? 'GREEN'
-                          : eq.readiness_pct >= 75
+                          : eq.readinessPct >= 75
                             ? 'AMBER'
                             : 'RED',
                       ) }}
                   >
-                    {eq.mission_capable}/{eq.total}
+                    {eq.missionCapable}/{eq.total}
                   </span>
                   <span className="text-[var(--color-text-muted)] ml-1">
-                    ({Math.round(eq.readiness_pct)}%)
+                    ({Math.round(eq.readinessPct)}%)
                   </span>
                 </span>
               </div>
@@ -171,16 +171,16 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
       )}
 
       {/* Inbound convoys */}
-      {unit.inbound_convoys && unit.inbound_convoys.length > 0 && (
+      {unit.inboundConvoys && unit.inboundConvoys.length > 0 && (
         <div className="mb-1">
           <div
             className="text-[9px] font-bold tracking-[1.5px] text-[var(--color-text-bright)] mb-1 uppercase"
           >
             INBOUND CONVOYS
           </div>
-          {unit.inbound_convoys.map((cv) => (
+          {unit.inboundConvoys.map((cv) => (
             <div
-              key={cv.convoy_id}
+              key={cv.convoyId}
               className="text-[9px] py-1 px-1.5 bg-[rgba(255,255,255,0.03)] rounded-[var(--radius)] mb-0.5"
             >
               <div
@@ -192,7 +192,7 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
                 <StatusPill status={cv.status} />
               </div>
               <div className="text-[var(--color-text-muted)]">
-                ETA: {formatRelativeTime(cv.eta)} | {cv.cargo_summary}
+                ETA: {formatRelativeTime(cv.eta)} | {cv.cargoSummary}
               </div>
             </div>
           ))}
@@ -204,7 +204,7 @@ export default function UnitPopup({ unit }: UnitPopupProps) {
         className="text-center pt-1.5 border-t border-t-[var(--color-border)] mt-1"
       >
         <a
-          href={`/dashboard?unit=${unit.unit_id}`}
+          href={`/dashboard?unit=${unit.unitId}`}
           className="text-[9px] text-[var(--color-accent)] no-underline tracking-[1px] font-semibold uppercase"
         >
           VIEW DASHBOARD

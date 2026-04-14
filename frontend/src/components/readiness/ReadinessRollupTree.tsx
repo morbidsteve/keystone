@@ -15,7 +15,7 @@ interface ReadinessRollupTreeProps {
 }
 
 function getBorderColor(rating: string): string {
-  const level = rating.split('-')[1];
+  const level = (rating || '').split('-')[1];
   switch (level) {
     case '1': return '#4ade80';
     case '2': return '#fbbf24';

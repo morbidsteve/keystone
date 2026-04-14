@@ -115,11 +115,11 @@ export default function NotificationBell() {
               notifications.map((notif) => (
                 <div
                   key={notif.id}
-                  className="py-2.5 px-4 border-b border-b-[var(--color-border)] flex gap-2.5 items-start" style={{ backgroundColor: notif.is_read ? 'transparent' : 'var(--color-bg-surface)', transition: 'background-color var(--transition)' }}
+                  className="py-2.5 px-4 border-b border-b-[var(--color-border)] flex gap-2.5 items-start" style={{ backgroundColor: notif.isRead ? 'transparent' : 'var(--color-bg-surface)', transition: 'background-color var(--transition)' }}
                 >
                   <div className="flex-1 min-w-0">
                     <div
-                      className="font-[var(--font-mono)] text-[11px] mb-[3px] whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontWeight: notif.is_read ? 400 : 700, color: notif.is_read ? 'var(--color-text)' : 'var(--color-text-bright)' }}
+                      className="font-[var(--font-mono)] text-[11px] mb-[3px] whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontWeight: notif.isRead ? 400 : 700, color: notif.isRead ? 'var(--color-text)' : 'var(--color-text-bright)' }}
                     >
                       {notif.title}
                     </div>
@@ -131,10 +131,10 @@ export default function NotificationBell() {
                     <div
                       className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                     >
-                      {formatRelativeTime(notif.created_at)}
+                      {formatRelativeTime(notif.createdAt)}
                     </div>
                   </div>
-                  {!notif.is_read && (
+                  {!notif.isRead && (
                     <button
                       onClick={() => handleMarkRead(notif.id)}
                       title="Mark as read"

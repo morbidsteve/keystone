@@ -40,7 +40,7 @@ WRITE_ROLES = [Role.ADMIN, Role.S4]
 # --- Equipment CRUD ---
 
 
-@router.get("/", response_model=List[EquipmentItemResponse])
+@router.get("", response_model=List[EquipmentItemResponse])
 async def list_equipment_items(
     unit_id: Optional[int] = Query(None),
     status: Optional[EquipmentAssetStatus] = Query(None),
@@ -108,7 +108,7 @@ async def get_equipment_item(
 
 
 @router.post(
-    "/",
+    "",
     response_model=EquipmentItemResponse,
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],

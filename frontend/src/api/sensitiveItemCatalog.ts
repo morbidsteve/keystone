@@ -20,16 +20,16 @@ export interface SensitiveItemCatalogItem {
   id: number;
   nomenclature: string;
   nsn: string | null;
-  item_type: string;
+  itemType: string;
   tamcn: string | null;
   aliases: string[];
-  is_active: boolean;
+  isActive: boolean;
 }
 
 export interface SensitiveItemCatalogItemCreate {
   nomenclature: string;
   nsn?: string;
-  item_type: string;
+  itemType: string;
   tamcn?: string;
   aliases?: string[];
 }
@@ -43,10 +43,10 @@ let mockCatalogItems: SensitiveItemCatalogItem[] = SENSITIVE_ITEM_CATALOG.map(
     id: index + 1,
     nomenclature: entry.nomenclature,
     nsn: entry.nsn,
-    item_type: entry.itemType,
+    itemType: entry.itemType,
     tamcn: entry.tamcn ?? null,
     aliases: entry.aliases,
-    is_active: true,
+    isActive: true,
   }),
 );
 
@@ -68,22 +68,22 @@ function matchesQuery(q: string, ...fields: (string | null | undefined)[]): bool
 // API Functions
 // ---------------------------------------------------------------------------
 
-/** GET /api/v1/catalog/items?q=searchterm&item_type=WEAPON */
+/** GET /api/v1/catalog/items?q=searchterm&itemType=WEAPON */
 export async function getCatalogItems(params?: {
   q?: string;
-  item_type?: string;
+  itemType?: string;
 }): Promise<SensitiveItemCatalogItem[]> {
   if (isDemoMode) {
     await mockDelay();
     let results = [...mockCatalogItems];
-    if (params?.item_type) {
-      results = results.filter((i) => i.item_type === params.item_type);
+    if (params?.itemType) {
+      results = results.filter((i) => i.itemType === params.itemType);
     }
     if (params?.q && params.q.trim().length > 0) {
       const q = params.q;
       results = results.filter(
         (i) =>
-          matchesQuery(q, i.nomenclature, i.nsn, i.item_type, i.tamcn) ||
+          matchesQuery(q, i.nomenclature, i.nsn, i.itemType, i.tamcn) ||
           i.aliases.some((a) => a.toLowerCase().includes(q.toLowerCase())),
       );
     }
@@ -106,10 +106,10 @@ export async function createCatalogItem(
       id: mockNextId++,
       nomenclature: data.nomenclature,
       nsn: data.nsn ?? null,
-      item_type: data.item_type,
+      itemType: data.itemType,
       tamcn: data.tamcn ?? null,
       aliases: data.aliases ?? [],
-      is_active: true,
+      isActive: true,
     };
     mockCatalogItems = [...mockCatalogItems, newItem];
     return newItem;
@@ -134,7 +134,7 @@ export async function updateCatalogItem(
             ...item,
             ...(data.nomenclature !== undefined && { nomenclature: data.nomenclature }),
             ...(data.nsn !== undefined && { nsn: data.nsn ?? null }),
-            ...(data.item_type !== undefined && { item_type: data.item_type }),
+            ...(data.itemType !== undefined && { itemType: data.itemType }),
             ...(data.tamcn !== undefined && { tamcn: data.tamcn ?? null }),
             ...(data.aliases !== undefined && { aliases: data.aliases ?? [] }),
           }
@@ -177,12 +177,12 @@ export async function searchCatalogApi(
   if (!query || query.length < 2) return [];
   const items = await getCatalogItems({ q: query });
   return items
-    .filter((i) => i.is_active)
+    .filter((i) => i.isActive)
     .slice(0, limit)
     .map((i) => ({
       nomenclature: i.nomenclature,
       nsn: i.nsn ?? '',
-      itemType: i.item_type as SensitiveItemType,
+      itemType: i.itemType as SensitiveItemType,
       tamcn: i.tamcn ?? undefined,
       aliases: i.aliases,
     }));

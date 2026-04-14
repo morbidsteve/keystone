@@ -82,19 +82,19 @@ export default function ScheduleManager() {
     if (!formTemplateId) return;
     setSaving(true);
     try {
-      const data: Omit<ReportSchedule, 'id' | 'last_generated' | 'next_generation' | 'created_at' | 'updated_at'> = {
-        template_id: formTemplateId,
-        unit_id: formUnitId,
+      const data: Omit<ReportSchedule, 'id' | 'lastGenerated' | 'nextGeneration' | 'createdAt' | 'updatedAt'> = {
+        templateId: formTemplateId,
+        unitId: formUnitId,
         frequency: formFrequency,
-        time_of_day: formTimeOfDay,
-        is_active: true,
-        auto_distribute: formAutoDistribute,
+        timeOfDay: formTimeOfDay,
+        isActive: true,
+        autoDistribute: formAutoDistribute,
       };
       if (formFrequency === ScheduleFrequency.WEEKLY || formFrequency === ScheduleFrequency.BIWEEKLY) {
-        data.day_of_week = formDayOfWeek;
+        data.dayOfWeek = formDayOfWeek;
       }
       if (formFrequency === ScheduleFrequency.MONTHLY) {
-        data.day_of_month = formDayOfMonth;
+        data.dayOfMonth = formDayOfMonth;
       }
       const created = await createSchedule(data);
       setSchedules((prev) => [...prev, created]);
@@ -204,7 +204,7 @@ export default function ScheduleManager() {
                 >
                   {templates.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.name} ({t.report_type})
+                      {t.name} ({t.reportType})
                     </option>
                   ))}
                 </select>
@@ -354,11 +354,11 @@ export default function ScheduleManager() {
                           className="text-[var(--color-text-muted)] shrink-0"
                         />
                         <span className="font-semibold text-[var(--color-text-bright)]">
-                          {getTemplateName(s.template_id)}
+                          {getTemplateName(s.templateId)}
                         </span>
                       </div>
                     </td>
-                    <td style={tdStyle}>{getUnitName(s.unit_id)}</td>
+                    <td style={tdStyle}>{getUnitName(s.unitId)}</td>
                     <td style={tdStyle}>
                       <span
                         className="py-0.5 px-1.5 rounded-[var(--radius)] bg-[var(--color-bg)] border border-[var(--color-border)] text-[8px] tracking-[0.5px]"
@@ -369,37 +369,37 @@ export default function ScheduleManager() {
                     <td style={tdStyle}>
                       <div className="flex items-center gap-1">
                         <Clock size={10} className="text-[var(--color-text-muted)]" />
-                        {s.time_of_day || '--:--'}
-                        {s.day_of_week !== undefined &&
+                        {s.timeOfDay || '--:--'}
+                        {s.dayOfWeek !== undefined &&
                           (s.frequency === ScheduleFrequency.WEEKLY ||
                             s.frequency === ScheduleFrequency.BIWEEKLY) && (
                             <span className="text-[8px] text-[var(--color-text-muted)]">
-                              ({DAY_OF_WEEK_OPTIONS.find((d) => d.value === s.day_of_week)?.label || ''})
+                              ({DAY_OF_WEEK_OPTIONS.find((d) => d.value === s.dayOfWeek)?.label || ''})
                             </span>
                           )}
                       </div>
                     </td>
                     <td style={tdStyle}>
                       <span
-                        className="py-0.5 px-1.5 rounded-[var(--radius)] text-[8px] tracking-[0.5px]" style={{ backgroundColor: s.is_active
+                        className="py-0.5 px-1.5 rounded-[var(--radius)] text-[8px] tracking-[0.5px]" style={{ backgroundColor: s.isActive
                             ? 'rgba(34,197,94,0.1)'
-                            : 'rgba(255,255,255,0.05)', border: s.is_active
+                            : 'rgba(255,255,255,0.05)', border: s.isActive
                             ? '1px solid rgba(34,197,94,0.3)'
-                            : '1px solid var(--color-border)', color: s.is_active
+                            : '1px solid var(--color-border)', color: s.isActive
                             ? 'var(--color-green, #22c55e)'
                             : 'var(--color-text-muted)' }}
                       >
-                        {s.is_active ? 'YES' : 'NO'}
+                        {s.isActive ? 'YES' : 'NO'}
                       </span>
                     </td>
                     <td style={tdStyle}>
                       <span className="text-[9px] text-[var(--color-text-muted)]">
-                        {s.last_generated ? formatDate(s.last_generated) : '--'}
+                        {s.lastGenerated ? formatDate(s.lastGenerated) : '--'}
                       </span>
                     </td>
                     <td style={tdStyle}>
                       <span className="text-[9px] text-[var(--color-text-muted)]">
-                        {s.next_generation ? formatDate(s.next_generation) : '--'}
+                        {s.nextGeneration ? formatDate(s.nextGeneration) : '--'}
                       </span>
                     </td>
                     <td style={tdStyle}>

@@ -10,7 +10,7 @@ interface EquipmentHealthTableProps {
   unitId: number;
 }
 
-function getTrendDisplay(trend: MTBFMTTRData['mtbf_trend']): { symbol: string; color: string } {
+function getTrendDisplay(trend: MTBFMTTRData['mtbfTrend']): { symbol: string; color: string } {
   switch (trend) {
     case 'IMPROVING':
       return { symbol: '\u2191', color: 'var(--color-success)' };
@@ -94,45 +94,45 @@ export default function EquipmentHealthTable({ unitId }: EquipmentHealthTablePro
         </thead>
         <tbody>
           {data.map((row) => {
-            const trend = getTrendDisplay(row.mtbf_trend);
+            const trend = getTrendDisplay(row.mtbfTrend);
             return (
-              <tr key={row.equipment_type}>
+              <tr key={row.equipmentType}>
                 <td
                   className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)] font-semibold"
                 >
-                  {row.equipment_type}
+                  {row.equipmentType}
                 </td>
                 <td
                   className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
-                  {row.mtbf_days.toFixed(1)}
+                  {(row.mtbfDays ?? 0).toFixed(1)}
                 </td>
                 <td
                   className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
-                  {row.mttr_hours.toFixed(1)}
+                  {(row.mttrHours ?? 0).toFixed(1)}
                 </td>
                 <td
                   className="py-2 px-3 border-b border-b-[var(--color-border)] font-bold text-sm" style={{ color: trend.color }}
                 >
                   {trend.symbol}{' '}
-                  <span className="text-[9px] font-normal">{row.mtbf_trend}</span>
+                  <span className="text-[9px] font-normal">{row.mtbfTrend}</span>
                 </td>
                 <td
                   className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-bright)]"
                 >
-                  {row.corrective_wos_total}
+                  {row.correctiveWosTotal}
                 </td>
                 <td
                   className="py-2 px-3 border-b border-b-[var(--color-border)] text-[var(--color-text-muted)]"
                 >
-                  {formatDate(row.last_corrective_date)}
+                  {formatDate(row.lastCorrectiveDate)}
                 </td>
                 <td
                   className="py-2 px-3 border-b border-b-[var(--color-border)]"
                 >
-                  <span style={getHealthBadgeStyle(row.health_score)}>
-                    {row.health_score}%
+                  <span style={getHealthBadgeStyle(row.healthScore)}>
+                    {row.healthScore}%
                   </span>
                 </td>
               </tr>

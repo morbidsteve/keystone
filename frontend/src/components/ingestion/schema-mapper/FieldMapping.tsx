@@ -26,10 +26,10 @@ function EntityGroup({
   expandedEntity: string | null;
   onToggle: (entity: string) => void;
 }) {
-  const isExpanded = expandedEntity === group.entity_name;
+  const isExpanded = expandedEntity === group.entityName;
   const mappedFields = new Set(
     mappings
-      .filter((m) => m.targetEntity === group.entity_name)
+      .filter((m) => m.targetEntity === group.entityName)
       .map((m) => m.targetField),
   );
 
@@ -38,7 +38,7 @@ function EntityGroup({
       className="border border-[var(--color-border)] rounded-[var(--radius)] overflow-hidden mb-1"
     >
       <button
-        onClick={() => onToggle(group.entity_name)}
+        onClick={() => onToggle(group.entityName)}
         className="w-full flex items-center justify-between py-2 px-2.5 bg-[var(--color-bg-surface)] border-0 cursor-pointer text-[var(--color-text)]"
       >
         <div className="flex items-center gap-1.5">
@@ -50,7 +50,7 @@ function EntityGroup({
           <span
             className="font-[var(--font-mono)] text-[10px] font-semibold uppercase tracking-[1.5px] text-[var(--color-text-bright)]"
           >
-            {group.entity_group || group.entity_name}
+            {group.entityGroup || group.entityName}
           </span>
         </div>
         <span
@@ -62,7 +62,7 @@ function EntityGroup({
       {isExpanded && (
         <div className="py-1 px-1.5">
           {group.fields.map((field) => {
-            const isMapped = mappedFields.has(field.field_name);
+            const isMapped = mappedFields.has(field.fieldName);
             return (
               <button
                 key={field.id}
@@ -80,15 +80,15 @@ function EntityGroup({
                   <div
                     className="font-[var(--font-mono)] text-[11px]" style={{ color: isMapped ? 'var(--color-success)' : 'var(--color-text)' }}
                   >
-                    {field.display_name}
-                    {field.is_required && (
+                    {field.displayName}
+                    {field.isRequired && (
                       <span className="text-[var(--color-danger)] ml-[3px]">*</span>
                     )}
                   </div>
                   <div
                     className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] mt-px"
                   >
-                    {field.field_name} ({field.data_type})
+                    {field.fieldName} ({field.dataType})
                   </div>
                 </div>
                 {isMapped && <Check size={12} className="text-[var(--color-success)]" />}
@@ -158,13 +158,13 @@ export default function FieldMapping({
       >
         <span className="mono-label text-[var(--color-text-muted)]">FILE</span>
         <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-bright)]">
-          {filePreview.file_name}
+          {filePreview.fileName}
         </span>
         <span className="mono-label text-[var(--color-text-muted)] ml-auto">
           {filePreview.headers.length} COLUMNS
         </span>
         <span className="mono-label text-[var(--color-text-muted)]">
-          {filePreview.row_count} ROWS
+          {filePreview.rowCount} ROWS
         </span>
       </div>
 
@@ -177,7 +177,7 @@ export default function FieldMapping({
             {filePreview.headers.map((header) => {
               const mapping = mappings.find((m) => m.sourceColumn === header);
               const isSelected = selectedSourceCol === header;
-              const sampleValue = filePreview.sample_rows[0]?.[header];
+              const sampleValue = filePreview.sampleRows[0]?.[header];
 
               return (
                 <div
@@ -255,7 +255,7 @@ export default function FieldMapping({
           <div className="max-h-[400px] overflow-y-auto">
             {canonicalGroups.map((group) => (
               <EntityGroup
-                key={group.entity_name}
+                key={group.entityName}
                 group={group}
                 mappings={mappings}
                 onSelect={onSelectTarget}

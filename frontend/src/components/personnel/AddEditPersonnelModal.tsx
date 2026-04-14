@@ -156,11 +156,11 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
         setForm({ ...initialData } as Record<string, string | number | boolean | null>);
       } else {
         setForm({
-          edipi: '', first_name: '', last_name: '', rank: '', pay_grade: '',
-          mos: '', unit_id: 4, date_of_rank: '', eaos: '', duty_status: 'PRESENT',
-          status: 'ACTIVE', security_clearance: 'NONE', clearance_expiry: '',
-          pft_score: '', pft_date: '', cft_score: '', cft_date: '',
-          rifle_qual: '', rifle_qual_date: '', swim_qual: '', pme_complete: false,
+          edipi: '', firstName: '', lastName: '', rank: '', payGrade: '',
+          mos: '', unitId: 4, dateOfRank: '', eaos: '', dutyStatus: 'PRESENT',
+          status: 'ACTIVE', securityClearance: 'NONE', clearanceExpiry: '',
+          pftScore: '', pftDate: '', cftScore: '', cftDate: '',
+          rifleQual: '', rifleQualDate: '', swimQual: '', pmeComplete: false,
           blood_type: '', billet: '', notes: '',
         });
       }
@@ -183,28 +183,28 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
     try {
       const payload: Partial<PersonnelRecord> = {
         edipi: String(form.edipi ?? ''),
-        first_name: String(form.first_name ?? ''),
-        last_name: String(form.last_name ?? ''),
+        firstName: String(form.firstName ?? ''),
+        lastName: String(form.lastName ?? ''),
         rank: form.rank ? String(form.rank) : null,
-        unit_id: form.unit_id ? Number(form.unit_id) : null,
+        unitId: form.unitId ? Number(form.unitId) : null,
         mos: form.mos ? String(form.mos) : null,
-        pay_grade: form.pay_grade ? (String(form.pay_grade) as PersonnelRecord['pay_grade']) : null,
+        payGrade: form.payGrade ? (String(form.payGrade) as PersonnelRecord['payGrade']) : null,
         billet: form.billet ? String(form.billet) : null,
-        date_of_rank: form.date_of_rank ? String(form.date_of_rank) : null,
+        dateOfRank: form.dateOfRank ? String(form.dateOfRank) : null,
         eaos: form.eaos ? String(form.eaos) : null,
-        duty_status: (String(form.duty_status ?? 'PRESENT')) as PersonnelRecord['duty_status'],
+        dutyStatus: (String(form.dutyStatus ?? 'PRESENT')) as PersonnelRecord['dutyStatus'],
         status: String(form.status ?? 'ACTIVE'),
-        security_clearance: form.security_clearance ? (String(form.security_clearance) as PersonnelRecord['security_clearance']) : null,
-        clearance_expiry: form.clearance_expiry ? String(form.clearance_expiry) : null,
-        pft_score: form.pft_score !== '' && form.pft_score != null ? Number(form.pft_score) : null,
-        pft_date: form.pft_date ? String(form.pft_date) : null,
-        cft_score: form.cft_score !== '' && form.cft_score != null ? Number(form.cft_score) : null,
-        cft_date: form.cft_date ? String(form.cft_date) : null,
-        rifle_qual: form.rifle_qual ? (String(form.rifle_qual) as PersonnelRecord['rifle_qual']) : null,
-        rifle_qual_date: form.rifle_qual_date ? String(form.rifle_qual_date) : null,
-        swim_qual: form.swim_qual ? (String(form.swim_qual) as PersonnelRecord['swim_qual']) : null,
-        pme_complete: !!form.pme_complete,
-        drivers_license_military: !!form.drivers_license_military,
+        securityClearance: form.securityClearance ? (String(form.securityClearance) as PersonnelRecord['securityClearance']) : null,
+        clearanceExpiry: form.clearanceExpiry ? String(form.clearanceExpiry) : null,
+        pftScore: form.pftScore !== '' && form.pftScore != null ? Number(form.pftScore) : null,
+        pftDate: form.pftDate ? String(form.pftDate) : null,
+        cftScore: form.cftScore !== '' && form.cftScore != null ? Number(form.cftScore) : null,
+        cftDate: form.cftDate ? String(form.cftDate) : null,
+        rifleQual: form.rifleQual ? (String(form.rifleQual) as PersonnelRecord['rifleQual']) : null,
+        rifleQualDate: form.rifleQualDate ? String(form.rifleQualDate) : null,
+        swimQual: form.swimQual ? (String(form.swimQual) as PersonnelRecord['swimQual']) : null,
+        pmeComplete: !!form.pmeComplete,
+        driversLicenseMilitary: !!form.driversLicenseMilitary,
       };
       if (isEdit && initialData) {
         await updatePersonnel(initialData.id, payload);
@@ -291,32 +291,32 @@ export default function AddEditPersonnelModal({ isOpen, onClose, onSaved, initia
         <div style={bodyStyle}>
           {renderSection('basic', 'BASIC INFO', <>
             {renderField('EDIPI', 'edipi')}
-            {renderField('First Name', 'first_name')}
-            {renderField('Last Name', 'last_name')}
+            {renderField('First Name', 'firstName')}
+            {renderField('Last Name', 'lastName')}
             {renderField('Rank', 'rank', 'select', RANKS)}
-            {renderField('Pay Grade', 'pay_grade', 'select', PAY_GRADES)}
+            {renderField('Pay Grade', 'payGrade', 'select', PAY_GRADES)}
             {renderField('MOS', 'mos')}
-            {renderField('Unit ID', 'unit_id', 'number')}
+            {renderField('Unit ID', 'unitId', 'number')}
           </>)}
 
           {renderSection('service', 'SERVICE', <>
-            {renderField('Date of Rank', 'date_of_rank', 'date')}
+            {renderField('Date of Rank', 'dateOfRank', 'date')}
             {renderField('EAOS', 'eaos', 'date')}
-            {renderField('Duty Status', 'duty_status', 'select', DUTY_STATUSES)}
+            {renderField('Duty Status', 'dutyStatus', 'select', DUTY_STATUSES)}
             {renderField('Status', 'status', 'select', STATUSES)}
-            {renderField('Security Clearance', 'security_clearance', 'select', CLEARANCES)}
-            {renderField('Clearance Expiry', 'clearance_expiry', 'date')}
+            {renderField('Security Clearance', 'securityClearance', 'select', CLEARANCES)}
+            {renderField('Clearance Expiry', 'clearanceExpiry', 'date')}
           </>)}
 
           {renderSection('fitness', 'FITNESS', <>
-            {renderField('PFT Score', 'pft_score', 'number')}
-            {renderField('PFT Date', 'pft_date', 'date')}
-            {renderField('CFT Score', 'cft_score', 'number')}
-            {renderField('CFT Date', 'cft_date', 'date')}
-            {renderField('Rifle Qual', 'rifle_qual', 'select', RIFLE_QUALS)}
-            {renderField('Rifle Qual Date', 'rifle_qual_date', 'date')}
-            {renderField('Swim Qual', 'swim_qual', 'select', SWIM_QUALS)}
-            {renderField('PME Complete', 'pme_complete', 'checkbox')}
+            {renderField('PFT Score', 'pftScore', 'number')}
+            {renderField('PFT Date', 'pftDate', 'date')}
+            {renderField('CFT Score', 'cftScore', 'number')}
+            {renderField('CFT Date', 'cftDate', 'date')}
+            {renderField('Rifle Qual', 'rifleQual', 'select', RIFLE_QUALS)}
+            {renderField('Rifle Qual Date', 'rifleQualDate', 'date')}
+            {renderField('Swim Qual', 'swimQual', 'select', SWIM_QUALS)}
+            {renderField('PME Complete', 'pmeComplete', 'checkbox')}
           </>)}
 
           {renderSection('additional', 'ADDITIONAL', <>

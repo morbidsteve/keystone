@@ -20,10 +20,10 @@ function getEntityTitle(entity: { type: string; data: unknown }): string {
     case 'route':
       return (entity.data as MapRoute).name;
     case 'alert':
-      return (entity.data as MapAlert).alert_type.replace(/_/g, ' ');
+      return (entity.data as MapAlert).alertType.replace(/_/g, ' ');
     case 'convoy_vehicle': {
       const v = entity.data as ConvoyVehicleDetail & { convoyName?: string };
-      return `${v.call_sign} — ${v.vehicle_type}`;
+      return `${v.callSign} — ${v.vehicleType}`;
     }
     default:
       return 'Details';
@@ -38,15 +38,15 @@ function getEntitySubtitle(entity: { type: string; data: unknown }): string | nu
     }
     case 'convoy': {
       const convoy = entity.data as MapConvoy;
-      return `${convoy.vehicle_count} vehicles`;
+      return `${convoy.vehicleCount} vehicles`;
     }
     case 'supplyPoint': {
       const sp = entity.data as MapSupplyPoint;
-      return sp.point_type.replace(/_/g, ' ');
+      return sp.pointType.replace(/_/g, ' ');
     }
     case 'route': {
       const route = entity.data as MapRoute;
-      return `${route.route_type} - ${route.status}`;
+      return `${route.routeType} - ${route.status}`;
     }
     case 'alert': {
       const alert = entity.data as MapAlert;
@@ -54,7 +54,7 @@ function getEntitySubtitle(entity: { type: string; data: unknown }): string | nu
     }
     case 'convoy_vehicle': {
       const v = entity.data as ConvoyVehicleDetail & { convoyName?: string };
-      return v.convoyName || v.bumper_number;
+      return v.convoyName || v.bumperNumber;
     }
     default:
       return null;
@@ -130,17 +130,17 @@ function VehicleDetailContent({ data }: { data: ConvoyVehicleDetail }) {
     <div className="text-[11px] leading-relaxed">
       <div className="mb-3">
         <div className="text-[9px] font-bold tracking-[1.5px] text-[#94a3b8] mb-1 uppercase">VEHICLE INFO</div>
-        <div><span className="text-[#64748b]">BUMPER:</span> {data.bumper_number}</div>
+        <div><span className="text-[#64748b]">BUMPER:</span> {data.bumperNumber}</div>
         <div><span className="text-[#64748b]">TAMCN:</span> {data.tamcn}</div>
         <div><span className="text-[#64748b]">STATUS:</span> <span className="font-semibold" style={{ color: data.status === 'MOVING' ? '#22c55e' : data.status === 'STOPPED' ? '#eab308' : '#ef4444' }}>{data.status}</span></div>
-        <div><span className="text-[#64748b]">SPEED:</span> {data.speed_kph} KPH</div>
+        <div><span className="text-[#64748b]">SPEED:</span> {data.speedKph} KPH</div>
         <div><span className="text-[#64748b]">HEADING:</span> {data.heading}°</div>
       </div>
 
       <div className="mb-3">
         <div className="text-[9px] font-bold tracking-[1.5px] text-[#94a3b8] mb-1 uppercase">CREW ({data.crew.length})</div>
         {data.crew.map((p) => (
-          <div key={p.personnel_id} className="flex justify-between py-0.5 px-0">
+          <div key={p.personnelId} className="flex justify-between py-0.5 px-0">
             <span><span className="text-[#94a3b8]">{p.rank}</span> {p.name}</span>
             <span className="text-[9px] text-[#4dabf7]">{p.role}</span>
           </div>
@@ -151,15 +151,15 @@ function VehicleDetailContent({ data }: { data: ConvoyVehicleDetail }) {
       <div>
         <div className="text-[9px] font-bold tracking-[1.5px] text-[#94a3b8] mb-1 uppercase">CARGO ({data.cargo.length})</div>
         {data.cargo.map((c) => (
-          <div key={c.item_id} className="flex justify-between py-0.5 px-0">
-            <span>{c.item_name} <span className="text-[#64748b] text-[9px]">CL {c.supply_class}</span></span>
+          <div key={c.itemId} className="flex justify-between py-0.5 px-0">
+            <span>{c.itemName} <span className="text-[#64748b] text-[9px]">CL {c.supplyClass}</span></span>
             <span className="text-[#4dabf7]">{c.quantity} {c.uom}</span>
           </div>
         ))}
         {data.cargo.length === 0 && <div className="text-[#64748b] italic">No cargo</div>}
         {data.cargo.length > 0 && (
           <div className="mt-1.5 pt-1.5 font-bold" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', textAlign: 'right' as const }}>
-            {data.cargo.reduce((s, c) => s + c.total_weight_kg, 0).toLocaleString()} kg total
+            {data.cargo.reduce((s, c) => s + c.totalWeightKg, 0).toLocaleString()} kg total
           </div>
         )}
       </div>

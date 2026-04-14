@@ -55,7 +55,7 @@ function statusColor(s: RequisitionStatus): string {
   }
 }
 
-type SortField = 'requisition_number' | 'nomenclature' | 'quantity_requested' | 'quantity_approved' | 'priority' | 'status' | 'created_at';
+type SortField = 'requisitionNumber' | 'nomenclature' | 'quantityRequested' | 'quantityApproved' | 'priority' | 'status' | 'createdAt';
 type SortDir = 'asc' | 'desc';
 
 // ---------------------------------------------------------------------------
@@ -72,7 +72,7 @@ interface RequisitionTableProps {
 // ---------------------------------------------------------------------------
 
 export default function RequisitionTable({ requisitions, onRefresh }: RequisitionTableProps) {
-  const [sortField, setSortField] = useState<SortField>('created_at');
+  const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,8 +95,8 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter((r) =>
-        r.requisition_number.toLowerCase().includes(q) ||
-        (r.requested_by_name && r.requested_by_name.toLowerCase().includes(q)) ||
+        r.requisitionNumber.toLowerCase().includes(q) ||
+        (r.requestedByName && r.requestedByName.toLowerCase().includes(q)) ||
         r.nomenclature.toLowerCase().includes(q)
       );
     }
@@ -192,17 +192,17 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
         <thead>
           <tr>
             <th style={{ ...headerStyle, width: 24 }} />
-            <th style={headerStyle} onClick={() => handleSort('requisition_number')}>
-              <span className="inline-flex items-center">REQ # <SortIcon field="requisition_number" /></span>
+            <th style={headerStyle} onClick={() => handleSort('requisitionNumber')}>
+              <span className="inline-flex items-center">REQ # <SortIcon field="requisitionNumber" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('nomenclature')}>
               <span className="inline-flex items-center">NOMENCLATURE <SortIcon field="nomenclature" /></span>
             </th>
-            <th style={headerStyle} onClick={() => handleSort('quantity_requested')}>
-              <span className="inline-flex items-center">QTY REQ <SortIcon field="quantity_requested" /></span>
+            <th style={headerStyle} onClick={() => handleSort('quantityRequested')}>
+              <span className="inline-flex items-center">QTY REQ <SortIcon field="quantityRequested" /></span>
             </th>
-            <th style={headerStyle} onClick={() => handleSort('quantity_approved')}>
-              <span className="inline-flex items-center">QTY APPR <SortIcon field="quantity_approved" /></span>
+            <th style={headerStyle} onClick={() => handleSort('quantityApproved')}>
+              <span className="inline-flex items-center">QTY APPR <SortIcon field="quantityApproved" /></span>
             </th>
             <th style={headerStyle} onClick={() => handleSort('priority')}>
               <span className="inline-flex items-center">PRIORITY <SortIcon field="priority" /></span>
@@ -210,8 +210,8 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
             <th style={headerStyle} onClick={() => handleSort('status')}>
               <span className="inline-flex items-center">STATUS <SortIcon field="status" /></span>
             </th>
-            <th style={headerStyle} onClick={() => handleSort('created_at')}>
-              <span className="inline-flex items-center">CREATED <SortIcon field="created_at" /></span>
+            <th style={headerStyle} onClick={() => handleSort('createdAt')}>
+              <span className="inline-flex items-center">CREATED <SortIcon field="createdAt" /></span>
             </th>
           </tr>
         </thead>
@@ -232,7 +232,7 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
                       />
                     </div>
                     <div style={{ ...cellStyle, fontWeight: 600, color: 'var(--color-text-bright)' }}>
-                      {req.requisition_number}
+                      {req.requisitionNumber}
                     </div>
                     <div style={{ ...cellStyle, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       <Link
@@ -244,10 +244,10 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
                       </Link>
                     </div>
                     <div style={{ ...cellStyle, textAlign: 'right' }}>
-                      {req.quantity_requested.toLocaleString()}
+                      {(req.quantityRequested ?? 0).toLocaleString()}
                     </div>
                     <div style={{ ...cellStyle, textAlign: 'right' }}>
-                      {req.quantity_approved != null ? req.quantity_approved.toLocaleString() : '--'}
+                      {req.quantityApproved != null ? req.quantityApproved.toLocaleString() : '--'}
                     </div>
                     <div style={cellStyle}>
                       <span
@@ -264,7 +264,7 @@ export default function RequisitionTable({ requisitions, onRefresh }: Requisitio
                       </span>
                     </div>
                     <div style={{ ...cellStyle, color: 'var(--color-text-muted)' }}>
-                      {new Date(req.created_at).toLocaleDateString()}
+                      {new Date(req.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                   {isExpanded && (

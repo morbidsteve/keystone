@@ -109,14 +109,14 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
       <div className="flex items-center justify-between">
         <div style={sectionLabel}>
           <Truck size={12} />
-          CONVOY {manifest.convoy_id} — {manifest.vehicles.length} VEHICLES
+          CONVOY {manifest.convoyId} — {manifest.vehicles.length} VEHICLES
         </div>
       </div>
 
       {/* Vehicle cards */}
       {manifest.vehicles.map((vehicle: FullManifestVehicle) => (
         <div
-          key={vehicle.convoy_vehicle_id}
+          key={vehicle.convoyVehicleId}
           className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-[var(--radius)] p-3.5"
         >
           {/* Vehicle header */}
@@ -128,12 +128,12 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
               <div
                 className="font-[var(--font-mono)] text-[11px] font-bold text-[var(--color-text-bright)]"
               >
-                {vehicle.vehicle_type}
+                {vehicle.vehicleType}
               </div>
               <div
                 className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
               >
-                BUMPER: {vehicle.bumper_number} | TAMCN: {vehicle.tamcn}
+                BUMPER: {vehicle.bumperNumber} | TAMCN: {vehicle.tamcn}
               </div>
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
                     >
                       <span className="flex-1">
                         {c.description ?? 'Unknown item'}
-                        {c.is_hazmat && (
+                        {c.isHazmat && (
                           <span
                             className="inline-block ml-1.5 py-0 px-1 rounded-[2px] font-[var(--font-mono)] text-[8px] font-bold text-[#f87171] bg-[rgba(248,113,113,0.15)] align-middle border border-[rgba(248,113,113,0.4)]"
                           >
@@ -207,7 +207,7 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
                         className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] whitespace-nowrap"
                       >
                         x{c.quantity}
-                        {c.weight_lbs != null && ` / ${c.weight_lbs} lbs`}
+                        {c.weightLbs != null && ` / ${c.weightLbs} lbs`}
                       </span>
                     </div>
                   ))}
@@ -215,11 +215,11 @@ export default function ConvoyManifestView({ movementId }: ConvoyManifestViewPro
               )}
 
               {/* Total weight */}
-              {vehicle.total_cargo_weight > 0 && (
+              {vehicle.totalCargoWeight > 0 && (
                 <div
                   className="mt-1.5 pt-1 border-t border-t-[var(--color-border)] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-bright)]"
                 >
-                  TOTAL: {vehicle.total_cargo_weight.toLocaleString()} lbs
+                  TOTAL: {vehicle.totalCargoWeight.toLocaleString()} lbs
                 </div>
               )}
             </div>

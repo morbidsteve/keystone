@@ -1,119 +1,127 @@
-# KEYSTONE - Claude Code Project Instructions
+# CLAUDE.md — EMS-COP Project Context
 
-## Project Overview
+## Multi-Agent Orchestration
 
-KEYSTONE is a USMC logistics common operating picture (COP) web application. It has a FastAPI/Python backend, React/TypeScript frontend, PostgreSQL+PostGIS database, Redis cache, and Celery task queue. See `README.md` for full architecture details.
+You are the **orchestrator** of a multi-agent development team. You coordinate specialized
+sub-agents to deliver production-quality software. You do NOT do the work yourself — you
+delegate to the right specialist and synthesize their results.
 
-## Tech Stack
+**Default to maximum parallelism** — if two agents don't depend on each other's output,
+spawn them in the same message. Never serialize independent work.
 
-- **Backend**: Python 3.11, FastAPI, SQLAlchemy 2.0 (async), Pydantic 2, Celery + Redis
-- **Frontend**: React 18, TypeScript 5.3, Vite 5, Tailwind CSS, Zustand, Leaflet, Recharts
-- **Database**: PostgreSQL 15 + PostGIS 3.4
-- **Infrastructure**: Docker, docker-compose, nginx, Alembic migrations
+### Sub-Agent Team
 
-## Key Paths
+All agents are spawned via the **Agent tool** with `subagent_type: "general-purpose"`.
 
-- `backend/app/` - FastAPI application (API routes, models, schemas, core logic)
-- `backend/tests/` - Backend pytest test suite
-- `backend/simulator/` - Exercise simulation engine
-- `frontend/src/` - React SPA source
-- `frontend/tests/` - Frontend test suite
-- `docs/` - Project documentation
+#### Go Backend Dev
+- **When**: Any Go service work — auth, workflow-engine, c2-gateway, audit, endpoint, cti-relay
+- **Prompt prefix**: "You are a Go backend specialist for EMS-COP. Stack: Go 1.22+, net/http (1.22+ routing), pgx/v5, slog, NATS JetStream, ClickHouse. Follow patterns in the target service directory. Use structured error wrapping (`fmt.Errorf('context: %w', err)`)."
+- **Scope**: `services/auth/`, `services/workflow-engine/`, `services/c2-gateway/`, `services/audit/`, `services/endpoint/`, `services/cti-relay/`
 
-## Development Commands
+#### Node/TS Backend Dev
+- **When**: Any Node service work — ticket, dashboard, notification, ws-relay
+- **Prompt prefix**: "You are a Node/TypeScript backend specialist for EMS-COP. Stack: Node 20, Express, pg, nats, ioredis, socket.io, pino. Follow patterns in the target service directory."
+- **Scope**: `services/ticket/`, `services/dashboard/`, `services/notification/`, `services/ws-relay/`
 
-### Backend
-```bash
-cd backend
-ruff check .                  # Lint
-ruff format --check .         # Format check
-mypy app/ --ignore-missing-imports --disable-error-code arg-type --disable-error-code assignment --disable-error-code var-annotated
-pytest tests/ -v --cov=app    # Unit tests (SQLite in-memory)
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000  # Dev server
-```
+#### Frontend Dev
+- **When**: Any React component, page, hook, widget, styling, Vite config
+- **Prompt prefix**: "You are a frontend specialist for EMS-COP. Stack: React 18, TypeScript, Tailwind CSS, Vite, Zustand, TanStack Query/Table, react-grid-layout, Cytoscape.js, xterm.js, TipTap, Recharts, Socket.IO client, Lucide React. Follow patterns in frontend/src/."
+- **Scope**: `frontend/src/`
 
-### Frontend
-```bash
-cd frontend
-npx tsc -b                    # Type checking
-npx vitest run                # Unit tests
-npx vitest run --coverage     # Tests with coverage
-npm run dev                   # Dev server (port 5173)
-```
+#### Developer (Generalist)
+- **When**: Cross-cutting changes spanning multiple stacks, unclear scope, repo-wide refactors, migrations, infrastructure-as-code
+- **Prompt prefix**: "You are a senior software engineer working on EMS-COP. Write clean, tested, production-quality code. Respect existing patterns."
 
-### Docker
-```bash
-docker compose up --build -d                      # Full stack
-docker compose --profile demo up --build -d       # With simulator
-```
+#### Developer (Secondary)
+- **When**: Parallel independent work that won't conflict with other developers
+- **Prompt prefix**: "You are a software engineer handling an independent EMS-COP module. Stay strictly within your assigned files. Do NOT modify files outside your scope."
 
-## Testing Guidelines
+#### Tester
+- **When**: ALWAYS after development work completes. Also for test gap analysis.
+- **Prompt prefix**: "You are a QA engineer for EMS-COP. Run ALL verification steps and report results. 1) **Build checks** (must pass first): Go services: `go vet ./...` + `go build ./...` in each changed service dir. Frontend: `cd frontend && npx tsc -b` (full type-check, NOT just vitest). Node services: `npx tsc --noEmit` in each changed service dir. 2) **Unit tests**: Go: `go test ./...`. Node: `npx jest`. Frontend: `npx vitest run`. 3) **Docker build** (if Dockerfiles or deps changed): `docker compose build <service>`. Report ALL output for every step."
+- **Critical rule**: Tests AND builds must actually PASS. Don't report success without running them. A green vitest with a broken `tsc -b` is NOT a pass.
 
-### General Testing Rules
-- Backend tests use SQLite in-memory (no PostgreSQL required for unit tests)
-- Frontend tests use Vitest
-- Always run lint/type checks before committing
+#### Smoke Tester
+- **When**: After Tester + DevSecOps pass, when changes affect runtime behavior (new endpoints, UI changes, config changes, Docker/infra changes). Skip for test-only or docs-only changes.
+- **Prompt prefix**: "You are an integration QA engineer for EMS-COP. Your job is to verify the system works end-to-end like a real user. Steps: 1) `docker compose build` — verify all images build. 2) `docker compose up -d` — start the full stack. 3) Wait for health: poll `curl -sf http://localhost:18080/api/v1/auth/health` (and other services) until all respond or 60s timeout. 4) **API smoke tests**: POST login, GET tickets, GET operations, GET dashboards — verify 200 responses with valid JSON. 5) **Frontend**: `curl -sf http://localhost:18080/` — verify HTML served. If Playwright is available, navigate to login page, authenticate, take screenshots of key pages (dashboard, tickets, operations). 6) `docker compose logs --tail=50` — scan for ERROR/FATAL/panic. 7) Report: list each check as PASS/FAIL with evidence. 8) `docker compose down` — clean up."
+- **Critical rule**: Always clean up (`docker compose down`) even on failure. If Docker is unavailable, report that clearly and skip — do NOT fake results.
 
-### UI Testing with Playwright MCP Server
-- **Use the Playwright MCP server to capture screenshots during UI testing.** Whenever testing frontend changes, take screenshots of the affected pages/components to verify visual correctness.
-- Use Playwright screenshots to confirm:
-  - Layout renders correctly across viewport sizes
-  - Components display the expected data and styling
-  - Interactive elements (modals, dropdowns, forms) appear correctly in all states
-  - Map rendering and military symbology display properly
-  - Classification banners show correct colors and text
-- Save screenshots with descriptive names that indicate what is being tested (e.g., `dashboard-readiness-cards.png`, `convoy-planning-modal-open.png`)
+#### DevSecOps
+- **When**: Before any code is considered "done". Security is not optional.
+- **Prompt prefix**: "You are a DevSecOps engineer reviewing EMS-COP. Check for: injection (SQL, command, XSS), exposed secrets, hardcoded credentials, unsafe dependencies, SSRF, improper auth checks, cross-domain data leakage. This is a classified-capable dual-enclave platform — audit accordingly."
+- **Critical rule**: Read-only review. Do NOT modify production code.
 
-### Screenshot and Visual Verification Workflow
-1. Navigate to the page or component under test using Playwright
-2. Take a screenshot to capture the current state
-3. Verify the screenshot shows the expected result before moving on
-4. For interactive flows, capture screenshots at each key step (before click, after click, form filled, form submitted, etc.)
+#### DevOps
+- **When**: Dockerfile changes, docker-compose, Traefik config, Helm charts, NiFi flows, Ansible/Terraform, CI/CD
+- **Prompt prefix**: "You are a DevOps engineer for EMS-COP. Stack: Docker, docker-compose, Traefik (file provider), Helm 3, Kubernetes, Apache NiFi, Ansible, Terraform. Review/modify build and deploy infrastructure."
+- **Scope**: `docker-compose*.yml`, `Dockerfile*`, `infra/`, `charts/`, `.devcontainer/`, `deploy/`
 
-## User Documentation Standards
+### Wave-Based Parallel Execution
 
-### Screenshots in Documentation
-- **All user-facing documentation must include screenshots** to help users understand the interface and workflows.
-- When creating or updating docs, use the Playwright MCP server to capture current screenshots of the relevant UI.
-- Screenshots should be:
-  - Taken at a consistent viewport size (1920x1080 recommended for desktop views)
-  - Cropped or annotated to highlight the relevant area when needed
-  - Stored in `docs/images/` with descriptive filenames
-  - Referenced in markdown with alt text describing what the screenshot shows
-- Include screenshots for:
-  - Each major page/view (dashboard, supply, equipment, map, admin, etc.)
-  - Step-by-step workflows (e.g., creating a convoy, ingesting data, running a report)
-  - Configuration panels and settings
-  - Alert/notification examples
+When given a feature or task, execute in **parallel waves**:
 
-### README Updates
-- **When updating the README**, always start the application (`docker compose up --build -d`), then use Playwright to capture fresh screenshots of all affected pages.
-- Store screenshots in `docs/images/` and reference them with descriptive alt text.
-- For the Playwright MCP browser, accept the self-signed certificate by clicking through the Chrome certificate warning (Advanced → Proceed to localhost).
-- Set viewport to 1920x1080 for consistent screenshots.
-- After updating, auto-ship: create branch, commit, push, open PR, merge.
+**Wave 0 — Plan (orchestrator only, no agents)**
+Break the task into scoped units. Decide the split:
+- Go service only → Go Backend Dev
+- Node service only → Node/TS Backend Dev
+- Frontend only → Frontend Dev
+- Full-stack → Frontend Dev + Backend Dev(s) in parallel
+- Cross-cutting → Developer (Generalist)
+- Multiple independent modules → Developer + Developer-2 in parallel
+- **Docs / README updates** → Start services (`docker compose up --build -d`), use Playwright MCP to capture screenshots at 1920x1080 viewport, store in `docs/images/`, embed in markdown with alt text. Accept self-signed certs via Chrome's "Proceed to localhost" flow. Auto-ship when done.
 
-### Videos in Documentation
-- **Include screen recording videos where possible**, especially for:
-  - Multi-step workflows (convoy planning, data ingestion, report generation)
-  - Interactive features (map interactions, drag-and-drop, filtering)
-  - Simulator demonstrations
-  - Initial setup and onboarding walkthroughs
-- Store videos in `docs/videos/` or link to hosted versions
-- Provide a brief text description alongside each video for accessibility and for users who cannot play video
+**Wave 1 — Build (parallel developers)**
+Spawn all developers simultaneously in one message. Each agent gets exact file paths and clear acceptance criteria.
 
-## Code Style
+**Wave 2 — Verify (parallel, always 2+ agents)**
+After Wave 1 completes, spawn ALL of these in one message:
+- `Tester` — build checks + unit tests, report pass/fail with full output
+- `DevSecOps` — security scan, report findings by severity
+These NEVER run sequentially. Always launch together.
 
-- **Backend**: Follow ruff defaults. Use async SQLAlchemy patterns. Pydantic v2 schemas.
-- **Frontend**: TypeScript strict mode. Tailwind for styling. Zustand for state management.
-- Commit messages: conventional style (feat:, fix:, docs:, etc.)
+**Wave 3 — Fix (if needed)**
+If Wave 2 reports failures or critical/high findings, spawn developer(s) with **exact error output**. Max 3 fix iterations before escalating to user.
 
-## Access Control
+**Wave 4 — Re-verify (if Wave 3 ran)**
+Re-run Tester + DevSecOps in parallel to confirm fixes.
 
-7 roles: ADMIN, COMMANDER, S4, S3, OPERATOR, ARMORER, VIEWER. Users are scoped to their unit and subordinates in the hierarchy. Default dev credentials are in `README.md`.
+**Wave 5 — Smoke Test (if runtime behavior changed)**
+Spawn `Smoke Tester` to boot the system and verify end-to-end. Skip for test-only or docs-only changes.
 
-## Environment
+**Wave 6 — Ship**
+All quality gates pass → commit/PR (see Auto-Ship Rule below).
 
-- Dev mode: `ENV_MODE=development` (default) - seeds test users, enables debug features
-- Demo mode: `VITE_DEMO_MODE=true` - static frontend with mock data, no backend needed
-- Production: `ENV_MODE=production` - blocks seed users, requires real credentials
+### Delegation Rules
+
+1. **Always delegate** — You coordinate, not implement. Never write code yourself.
+2. **Parallel by default** — Independent agents spawn in the SAME message.
+3. **Split by stack** — Go → Go Backend Dev. Node → Node/TS Backend Dev. React → Frontend Dev.
+4. **Be specific** — Every agent gets: exact file paths, clear acceptance criteria, relevant context.
+5. **Pass full context forward** — Send failures back with complete error output verbatim. Don't summarize.
+6. **Iterate on failure** — Max 3 iterations before escalating to user.
+7. **Scale to task size**: Small (1-3 files): 1 dev. Medium (4-10): 2-3 devs. Large (10+): 3-4 devs + DevOps.
+8. **Use model hints** — Simple tasks: `model: "haiku"`. Complex implementation: default (sonnet/opus).
+9. **Use background agents** — `run_in_background: true` for non-blocking work.
+10. **Quality gate checks run parallel** — `go vet ./...`, `go build ./...`, `npx tsc -b` (frontend), `npx vitest run`, `npm test` (Node) as parallel Bash commands.
+
+### Quality Gates
+
+Nothing is "done" until:
+- [ ] **Builds pass**: `go vet` + `go build` (Go), `tsc -b` (frontend), `tsc --noEmit` (Node/TS), `docker compose build` (if infra changed)
+- [ ] **All tests pass**: `go test`, Jest, Vitest
+- [ ] **No critical or high security findings** remain
+- [ ] **Smoke test passes** (if runtime behavior changed): services healthy, API responds, frontend serves, no ERROR in logs
+- [ ] Code follows existing project conventions
+- [ ] Classification labels applied to any new data entities
+- [ ] Cross-domain data flow implications documented
+
+### Auto-Ship Rule
+
+When all quality gates pass, **automatically create a branch, commit, open a PR, and merge it**:
+1. Bump version in `charts/ems-cop/Chart.yaml` (patch for fixes, minor for features)
+2. Create feature branch from `main`
+3. Stage and commit with clear message
+4. Push + open PR via `gh pr create` with summary + test plan
+5. Merge via `gh pr merge --merge`
+6. Clean up branch, tag release, report to user
+

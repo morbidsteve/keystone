@@ -39,7 +39,7 @@ const CustomTooltip = ({
       </div>
       {payload.map((p, i) => (
         <div key={i} className="flex justify-between gap-4" style={{ color: p.color }}>
-          <span>{p.dataKey === 'corrective_count' ? 'CORRECTIVE' : 'PREVENTIVE'}</span>
+          <span>{p.dataKey === 'correctiveCount' ? 'CORRECTIVE' : 'PREVENTIVE'}</span>
           <span>{p.value}</span>
         </div>
       ))}
@@ -78,7 +78,7 @@ export default function EquipmentReliabilityChart({ unitId, days = 90 }: Equipme
             vertical={false}
           />
           <XAxis
-            dataKey="equipment_type"
+            dataKey="equipmentType"
             tick={{
               fontFamily: 'var(--font-mono)',
               fontSize: 9,
@@ -115,13 +115,13 @@ export default function EquipmentReliabilityChart({ unitId, days = 90 }: Equipme
             }}
           />
           <Bar
-            dataKey="corrective_count"
+            dataKey="correctiveCount"
             name="CORRECTIVE"
             fill="#ef4444"
             radius={[2, 2, 0, 0]}
           />
           <Bar
-            dataKey="preventive_count"
+            dataKey="preventiveCount"
             name="PREVENTIVE"
             fill="#10b981"
             radius={[2, 2, 0, 0]}

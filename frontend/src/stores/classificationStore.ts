@@ -19,7 +19,7 @@ function getPersistedClassification(): ClassificationSetting {
   } catch {
     // fall through
   }
-  return { level: 'UNCLASSIFIED', banner_text: 'UNCLASSIFIED', color: 'green' };
+  return { level: 'UNCLASSIFIED', bannerText: 'UNCLASSIFIED', color: 'green' };
 }
 
 export const useClassificationStore = create<ClassificationState>((set) => ({

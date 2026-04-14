@@ -52,7 +52,7 @@ export function RouteDetailPanel({ data }: RouteDetailPanelProps) {
       })),
       {
         name: data.name,
-        routeType: data.route_type,
+        routeType: data.routeType,
         status: data.status,
         description: data.description,
       }
@@ -182,7 +182,7 @@ export function RouteDetailPanel({ data }: RouteDetailPanelProps) {
         </div>
         <div style={styles.detailRow}>
           <span style={styles.detailLabel}>Type</span>
-          <span style={styles.detailValue}>{data.route_type}</span>
+          <span style={styles.detailValue}>{data.routeType}</span>
         </div>
         <div style={styles.detailRow}>
           <span style={styles.detailLabel}>Status</span>

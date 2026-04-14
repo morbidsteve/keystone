@@ -112,31 +112,31 @@ let demoExportDestinations: ExportDestination[] = [
     id: 1,
     name: 'GCSS-MC API',
     url: 'https://gcss-mc.example.mil/api/v2/reports/ingest',
-    auth_type: 'bearer',
-    auth_value: 'demo-token-gcss',
+    authType: 'bearer',
+    authValue: 'demo-token-gcss',
     headers: null,
-    is_active: true,
-    created_at: '2026-01-15T08:00:00Z',
+    isActive: true,
+    createdAt: '2026-01-15T08:00:00Z',
   },
   {
     id: 2,
     name: 'Higher HQ',
     url: 'https://higher-hq.example.mil/logistics/reports',
-    auth_type: 'api_key',
-    auth_value: 'demo-api-key-hq',
+    authType: 'api_key',
+    authValue: 'demo-api-key-hq',
     headers: { 'X-Unit-ID': 'IMEF' },
-    is_active: true,
-    created_at: '2026-02-01T12:00:00Z',
+    isActive: true,
+    createdAt: '2026-02-01T12:00:00Z',
   },
   {
     id: 3,
     name: 'Archive Server',
     url: 'https://archive.example.mil/reports/store',
-    auth_type: 'none',
-    auth_value: null,
+    authType: 'none',
+    authValue: null,
     headers: null,
-    is_active: false,
-    created_at: '2026-02-10T09:30:00Z',
+    isActive: false,
+    createdAt: '2026-02-10T09:30:00Z',
   },
 ];
 let demoWorkOrders = [...DEMO_WORK_ORDERS];
@@ -145,15 +145,15 @@ let demoFaults = [...DEMO_EQUIPMENT_FAULTS];
 let demoDriverAssignments = [...DEMO_DRIVER_ASSIGNMENTS];
 
 let demoTemplates: ReportTemplate[] = [
-  { id: 1, name: 'Default LOGSTAT', report_type: 'LOGSTAT', description: 'Standard logistics status template', template_body: '...', sections: ['HEADER', 'LOGISTICS_SUMMARY', 'SUPPLY_CLASS_I', 'SUPPLY_CLASS_III', 'EQUIPMENT_STATUS', 'FOOTER'], classification_default: 'CUI', is_default: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
-  { id: 2, name: 'Daily SITREP', report_type: 'SITREP', description: 'Daily situation report template', template_body: '...', sections: ['HEADER', 'SITUATION', 'PERSONNEL_STRENGTH', 'LOGISTICS_SUMMARY', 'EQUIPMENT_STATUS', 'MAINTENANCE_STATUS', 'COMMANDER_ASSESSMENT', 'FOOTER'], classification_default: 'CUI', is_default: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
-  { id: 3, name: 'Weekly PERSTAT', report_type: 'PERSTAT', description: 'Weekly personnel status template', template_body: '...', sections: ['HEADER', 'PERSONNEL_STRENGTH', 'FOOTER'], classification_default: 'CUI', is_default: false, created_by: 1, created_at: '2026-01-20T00:00:00Z' },
+  { id: 1, name: 'Default LOGSTAT', reportType: 'LOGSTAT', description: 'Standard logistics status template', templateBody: '...', sections: ['HEADER', 'LOGISTICS_SUMMARY', 'SUPPLY_CLASS_I', 'SUPPLY_CLASS_III', 'EQUIPMENT_STATUS', 'FOOTER'], classificationDefault: 'CUI', isDefault: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
+  { id: 2, name: 'Daily SITREP', reportType: 'SITREP', description: 'Daily situation report template', templateBody: '...', sections: ['HEADER', 'SITUATION', 'PERSONNEL_STRENGTH', 'LOGISTICS_SUMMARY', 'EQUIPMENT_STATUS', 'MAINTENANCE_STATUS', 'COMMANDER_ASSESSMENT', 'FOOTER'], classificationDefault: 'CUI', isDefault: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
+  { id: 3, name: 'Weekly PERSTAT', reportType: 'PERSTAT', description: 'Weekly personnel status template', templateBody: '...', sections: ['HEADER', 'PERSONNEL_STRENGTH', 'FOOTER'], classificationDefault: 'CUI', isDefault: false, createdBy: 1, createdAt: '2026-01-20T00:00:00Z' },
 ];
 
 let demoSchedules: ReportSchedule[] = [
-  { id: 1, template_id: 1, unit_id: 3, frequency: ScheduleFrequency.DAILY, time_of_day: '06:00', is_active: true, auto_distribute: true, last_generated: '2026-03-04T06:00:00Z', next_generation: '2026-03-05T06:00:00Z', created_at: '2026-02-01T00:00:00Z' },
-  { id: 2, template_id: 2, unit_id: 3, frequency: ScheduleFrequency.DAILY, time_of_day: '18:00', is_active: true, auto_distribute: false, last_generated: '2026-03-04T18:00:00Z', next_generation: '2026-03-05T18:00:00Z', created_at: '2026-02-01T00:00:00Z' },
-  { id: 3, template_id: 3, unit_id: 3, frequency: ScheduleFrequency.WEEKLY, time_of_day: '08:00', day_of_week: 0, is_active: true, auto_distribute: true, created_at: '2026-02-15T00:00:00Z' },
+  { id: 1, templateId: 1, unitId: 3, frequency: ScheduleFrequency.DAILY, timeOfDay: '06:00', isActive: true, autoDistribute: true, lastGenerated: '2026-03-04T06:00:00Z', nextGeneration: '2026-03-05T06:00:00Z', createdAt: '2026-02-01T00:00:00Z' },
+  { id: 2, templateId: 2, unitId: 3, frequency: ScheduleFrequency.DAILY, timeOfDay: '18:00', isActive: true, autoDistribute: false, lastGenerated: '2026-03-04T18:00:00Z', nextGeneration: '2026-03-05T18:00:00Z', createdAt: '2026-02-01T00:00:00Z' },
+  { id: 3, templateId: 3, unitId: 3, frequency: ScheduleFrequency.WEEKLY, timeOfDay: '08:00', dayOfWeek: 0, isActive: true, autoDistribute: true, createdAt: '2026-02-15T00:00:00Z' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -161,17 +161,17 @@ let demoSchedules: ReportSchedule[] = [
 // ---------------------------------------------------------------------------
 
 const MOCK_ALERT_RULES: AlertRule[] = [
-  { id: 1, name: 'Supply DOS < 3 Days (Critical)', description: 'Alert when supply DOS drops below 3 days', alert_type: 'LOW_DOS', severity: 'CRITICAL', metric: 'supply_dos', operator: 'LT', threshold_value: 3, is_scope_all: true, cooldown_minutes: 60, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
-  { id: 2, name: 'Supply DOS < 5 Days (Warning)', description: 'Alert when supply DOS drops below 5 days', alert_type: 'LOW_DOS', severity: 'WARNING', metric: 'supply_dos', operator: 'LT', threshold_value: 5, is_scope_all: true, cooldown_minutes: 120, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
-  { id: 3, name: 'Equipment Readiness < 70% (Critical)', description: 'Alert when equipment readiness drops below 70%', alert_type: 'LOW_READINESS', severity: 'CRITICAL', metric: 'equipment_readiness_pct', operator: 'LT', threshold_value: 70, is_scope_all: true, cooldown_minutes: 60, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
-  { id: 4, name: 'Equipment Readiness < 85% (Warning)', alert_type: 'LOW_READINESS', severity: 'WARNING', metric: 'equipment_readiness_pct', operator: 'LT', threshold_value: 85, is_scope_all: true, cooldown_minutes: 120, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
-  { id: 5, name: 'PM Overdue > 7 Days (Warning)', description: 'PM overdue by more than 7 days', alert_type: 'PM_OVERDUE', severity: 'WARNING', metric: 'pm_overdue_days', operator: 'GT', threshold_value: 7, is_scope_all: true, cooldown_minutes: 180, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
-  { id: 6, name: 'Personnel Fill < 80% (Warning)', description: 'Unit fill below 80%', alert_type: 'STRENGTH_BELOW_THRESHOLD', severity: 'WARNING', metric: 'personnel_strength_pct', operator: 'LT', threshold_value: 80, is_scope_all: true, cooldown_minutes: 240, is_active: true, created_by: 1, created_at: '2026-01-15T00:00:00Z' },
+  { id: 1, name: 'Supply DOS < 3 Days (Critical)', description: 'Alert when supply DOS drops below 3 days', alertType: 'LOW_DOS', severity: 'CRITICAL', metric: 'supply_dos', operator: 'LT', thresholdValue: 3, isScopeAll: true, cooldownMinutes: 60, isActive: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
+  { id: 2, name: 'Supply DOS < 5 Days (Warning)', description: 'Alert when supply DOS drops below 5 days', alertType: 'LOW_DOS', severity: 'WARNING', metric: 'supply_dos', operator: 'LT', thresholdValue: 5, isScopeAll: true, cooldownMinutes: 120, isActive: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
+  { id: 3, name: 'Equipment Readiness < 70% (Critical)', description: 'Alert when equipment readiness drops below 70%', alertType: 'LOW_READINESS', severity: 'CRITICAL', metric: 'equipment_readiness_pct', operator: 'LT', thresholdValue: 70, isScopeAll: true, cooldownMinutes: 60, isActive: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
+  { id: 4, name: 'Equipment Readiness < 85% (Warning)', alertType: 'LOW_READINESS', severity: 'WARNING', metric: 'equipment_readiness_pct', operator: 'LT', thresholdValue: 85, isScopeAll: true, cooldownMinutes: 120, isActive: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
+  { id: 5, name: 'PM Overdue > 7 Days (Warning)', description: 'PM overdue by more than 7 days', alertType: 'PM_OVERDUE', severity: 'WARNING', metric: 'pm_overdue_days', operator: 'GT', thresholdValue: 7, isScopeAll: true, cooldownMinutes: 180, isActive: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
+  { id: 6, name: 'Personnel Fill < 80% (Warning)', description: 'Unit fill below 80%', alertType: 'STRENGTH_BELOW_THRESHOLD', severity: 'WARNING', metric: 'personnel_strength_pct', operator: 'LT', thresholdValue: 80, isScopeAll: true, cooldownMinutes: 240, isActive: true, createdBy: 1, createdAt: '2026-01-15T00:00:00Z' },
 ];
 
 // Exported mock functions for alerts
 export function mockGetAlertSummary(_unitId?: string): AlertSummary {
-  return { total_active: 5, by_severity: { CRITICAL: 2, WARNING: 2, INFO: 1 }, by_type: { LOW_DOS: 1, LOW_READINESS: 1, CONVOY_DELAYED: 1, PM_OVERDUE: 1, EQUIPMENT_DEADLINED: 1 } };
+  return { totalActive: 5, bySeverity: { CRITICAL: 2, WARNING: 2, INFO: 1 }, byType: { LOW_DOS: 1, LOW_READINESS: 1, CONVOY_DELAYED: 1, PM_OVERDUE: 1, EQUIPMENT_DEADLINED: 1 } };
 }
 
 export function mockResolveAlert(id: string): void {
@@ -183,7 +183,7 @@ export function mockResolveAlert(id: string): void {
 export function mockGetAlertRules(): AlertRule[] { return [...MOCK_ALERT_RULES]; }
 
 export function mockCreateAlertRule(data: Partial<AlertRule>): AlertRule {
-  const rule = { id: MOCK_ALERT_RULES.length + 1, ...data, created_by: 1, created_at: new Date().toISOString() } as AlertRule;
+  const rule = { id: MOCK_ALERT_RULES.length + 1, ...data, createdBy: 1, createdAt: new Date().toISOString() } as AlertRule;
   MOCK_ALERT_RULES.push(rule);
   return rule;
 }
@@ -778,11 +778,11 @@ export const mockApi = {
       id: Date.now(),
       name: data.name,
       url: data.url,
-      auth_type: data.auth_type,
-      auth_value: data.auth_value ?? null,
+      authType: data.auth_type,
+      authValue: data.auth_value ?? null,
       headers: data.headers ?? null,
-      is_active: data.is_active ?? true,
-      created_at: new Date().toISOString(),
+      isActive: data.isActive ?? true,
+      createdAt: new Date().toISOString(),
     };
     demoExportDestinations.push(dest);
     return dest;
@@ -790,8 +790,15 @@ export const mockApi = {
 
   async updateExportDestination(id: number, data: ExportDestinationUpdate): Promise<ExportDestination> {
     await mockDelay();
+    const patch: Partial<ExportDestination> = {};
+    if (data.name !== undefined) patch.name = data.name;
+    if (data.url !== undefined) patch.url = data.url;
+    if (data.auth_type !== undefined) patch.authType = data.auth_type;
+    if (data.auth_value !== undefined) patch.authValue = data.auth_value;
+    if (data.headers !== undefined) patch.headers = data.headers;
+    if (data.isActive !== undefined) patch.isActive = data.isActive;
     demoExportDestinations = demoExportDestinations.map((d) =>
-      d.id === id ? { ...d, ...data } as ExportDestination : d,
+      d.id === id ? { ...d, ...patch } : d,
     );
     return demoExportDestinations.find((d) => d.id === id) || demoExportDestinations[0];
   },
@@ -804,14 +811,14 @@ export const mockApi = {
   async exportReportToApi(reportId: string, destinationIds: number[]): Promise<ApiExportResponse> {
     await mockDelay(600);
     return {
-      report_id: parseInt(reportId) || 0,
+      reportId: parseInt(reportId) || 0,
       results: destinationIds.map((destId) => {
         const dest = demoExportDestinations.find((d) => d.id === destId);
         return {
-          destination_id: destId,
-          destination_name: dest?.name || 'Unknown',
+          destinationId: destId,
+          destinationName: dest?.name || 'Unknown',
           success: true,
-          status_code: 200,
+          statusCode: 200,
           error: null,
         };
       }),
@@ -1019,13 +1026,13 @@ export const mockApi = {
     return [...demoTemplates];
   },
 
-  async createTemplate(data: Omit<ReportTemplate, 'id' | 'created_by' | 'created_at' | 'updated_at'>): Promise<ReportTemplate> {
+  async createTemplate(data: Omit<ReportTemplate, 'id' | 'createdBy' | 'createdAt' | 'updatedAt'>): Promise<ReportTemplate> {
     await mockDelay();
     const template: ReportTemplate = {
       ...data,
       id: Date.now(),
-      created_by: 1,
-      created_at: new Date().toISOString(),
+      createdBy: 1,
+      createdAt: new Date().toISOString(),
     };
     demoTemplates.push(template);
     return template;
@@ -1034,7 +1041,7 @@ export const mockApi = {
   async updateTemplate(id: number, data: Partial<ReportTemplate>): Promise<ReportTemplate> {
     await mockDelay();
     demoTemplates = demoTemplates.map((t) =>
-      t.id === id ? { ...t, ...data, updated_at: new Date().toISOString() } as ReportTemplate : t,
+      t.id === id ? { ...t, ...data, updatedAt: new Date().toISOString() } as ReportTemplate : t,
     );
     return demoTemplates.find((t) => t.id === id) || demoTemplates[0];
   },
@@ -1052,17 +1059,17 @@ export const mockApi = {
     await mockDelay();
     let schedules = [...demoSchedules];
     if (_unitId) {
-      schedules = schedules.filter((s) => s.unit_id === _unitId);
+      schedules = schedules.filter((s) => s.unitId === _unitId);
     }
     return schedules;
   },
 
-  async createSchedule(data: Omit<ReportSchedule, 'id' | 'last_generated' | 'next_generation' | 'created_at' | 'updated_at'>): Promise<ReportSchedule> {
+  async createSchedule(data: Omit<ReportSchedule, 'id' | 'lastGenerated' | 'nextGeneration' | 'createdAt' | 'updatedAt'>): Promise<ReportSchedule> {
     await mockDelay();
     const schedule: ReportSchedule = {
       ...data,
       id: Date.now(),
-      created_at: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     };
     demoSchedules.push(schedule);
     return schedule;
@@ -1759,27 +1766,27 @@ function addPlainTextContent(doc: jsPDF, y: number, content: string): number {
 /** Render structured LOGSTAT content */
 function renderLogstat(doc: jsPDF, y: number, c: ReportContent): number {
   // Equipment Readiness
-  if (c.equipment_readiness) {
+  if (c.equipmentReadiness) {
     y = addSectionHeader(doc, y, 'EQUIPMENT READINESS');
-    y = addKeyValue(doc, y, 'Total Possessed', String(c.equipment_readiness.total_possessed));
-    y = addKeyValue(doc, y, 'Mission Capable', String(c.equipment_readiness.total_mission_capable));
-    y = addKeyValue(doc, y, 'Readiness', `${c.equipment_readiness.readiness_pct}%`, c.equipment_readiness.status);
-    y = addKeyValue(doc, y, 'Status', c.equipment_readiness.status, c.equipment_readiness.status);
+    y = addKeyValue(doc, y, 'Total Possessed', String(c.equipmentReadiness.totalPossessed));
+    y = addKeyValue(doc, y, 'Mission Capable', String(c.equipmentReadiness.totalMissionCapable));
+    y = addKeyValue(doc, y, 'Readiness', `${c.equipmentReadiness.readinessPct}%`, c.equipmentReadiness.status);
+    y = addKeyValue(doc, y, 'Status', c.equipmentReadiness.status, c.equipmentReadiness.status);
     y += 4;
   }
 
   // Supply Status
-  if (c.supply_status && c.supply_status.length > 0) {
+  if (c.supplyStatus && c.supplyStatus.length > 0) {
     y = addSectionHeader(doc, y, 'SUPPLY STATUS');
-    for (const ss of c.supply_status) {
+    for (const ss of c.supplyStatus) {
       y = checkPage(doc, y, 20);
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(9);
       setColor(doc, PDF_COLORS.navyBlue);
-      doc.text(`Class ${ss.class} — ${ss.class_name}`, 18, y);
-      if (ss.overall_status) {
-        setColor(doc, statusColor(ss.overall_status));
-        doc.text(`  [${ss.overall_status}]`, 18 + doc.getTextWidth(`Class ${ss.class} — ${ss.class_name}`), y);
+      doc.text(`Class ${ss.class} — ${ss.className}`, 18, y);
+      if (ss.overallStatus) {
+        setColor(doc, statusColor(ss.overallStatus));
+        doc.text(`  [${ss.overallStatus}]`, 18 + doc.getTextWidth(`Class ${ss.class} — ${ss.className}`), y);
       }
       setColor(doc, PDF_COLORS.darkText);
       y += 8;
@@ -1788,10 +1795,10 @@ function renderLogstat(doc: jsPDF, y: number, c: ReportContent): number {
         const headers = ['Item', 'On Hand', 'Required', 'DOS', 'Rate', 'Status'];
         const rows = ss.items.map(it => [
           it.item.length > 22 ? it.item.slice(0, 22) + '...' : it.item,
-          String(it.on_hand),
+          String(it.onHand),
           String(it.required),
           it.dos.toFixed(1),
-          it.consumption_rate.toFixed(2),
+          it.consumptionRate.toFixed(2),
           it.status,
         ]);
         y = addTable(doc, y, headers, rows, [50, 22, 22, 18, 18, 20]);
@@ -1800,12 +1807,12 @@ function renderLogstat(doc: jsPDF, y: number, c: ReportContent): number {
   }
 
   // Summary line items
-  if (c.open_work_orders !== undefined) {
+  if (c.openWorkOrders !== undefined) {
     y = addSectionHeader(doc, y, 'ADDITIONAL METRICS');
-    y = addKeyValue(doc, y, 'Open Work Orders', String(c.open_work_orders));
-    if (c.active_movements !== undefined) y = addKeyValue(doc, y, 'Active Movements', String(c.active_movements));
-    if (c.personnel_strength !== undefined) y = addKeyValue(doc, y, 'Personnel Strength', String(c.personnel_strength));
-    if (c.total_supply_items !== undefined) y = addKeyValue(doc, y, 'Total Supply Items', String(c.total_supply_items));
+    y = addKeyValue(doc, y, 'Open Work Orders', String(c.openWorkOrders));
+    if (c.activeMovements !== undefined) y = addKeyValue(doc, y, 'Active Movements', String(c.activeMovements));
+    if (c.personnelStrength !== undefined) y = addKeyValue(doc, y, 'Personnel Strength', String(c.personnelStrength));
+    if (c.totalSupplyItems !== undefined) y = addKeyValue(doc, y, 'Total Supply Items', String(c.totalSupplyItems));
   }
   return y;
 }
@@ -1813,43 +1820,43 @@ function renderLogstat(doc: jsPDF, y: number, c: ReportContent): number {
 /** Render structured READINESS content */
 function renderReadiness(doc: jsPDF, y: number, c: ReportContent): number {
   y = addSectionHeader(doc, y, 'OVERALL READINESS');
-  if (c.overall_readiness_pct !== undefined) {
-    y = addKeyValue(doc, y, 'Readiness', `${c.overall_readiness_pct}%`, c.overall_status);
+  if (c.overallReadinessPct !== undefined) {
+    y = addKeyValue(doc, y, 'Readiness', `${c.overallReadinessPct}%`, c.overallStatus);
   }
-  if (c.overall_status) y = addKeyValue(doc, y, 'Status', c.overall_status, c.overall_status);
-  if (c.total_possessed !== undefined) y = addKeyValue(doc, y, 'Total Possessed', String(c.total_possessed));
-  if (c.total_mission_capable !== undefined) y = addKeyValue(doc, y, 'Mission Capable', String(c.total_mission_capable));
-  if (c.total_nmc !== undefined) y = addKeyValue(doc, y, 'Not Mission Capable', String(c.total_nmc));
+  if (c.overallStatus) y = addKeyValue(doc, y, 'Status', c.overallStatus, c.overallStatus);
+  if (c.totalPossessed !== undefined) y = addKeyValue(doc, y, 'Total Possessed', String(c.totalPossessed));
+  if (c.totalMissionCapable !== undefined) y = addKeyValue(doc, y, 'Mission Capable', String(c.totalMissionCapable));
+  if (c.totalNmc !== undefined) y = addKeyValue(doc, y, 'Not Mission Capable', String(c.totalNmc));
   y += 4;
 
-  if (c.equipment_types && c.equipment_types.length > 0) {
+  if (c.equipmentTypes && c.equipmentTypes.length > 0) {
     y = addSectionHeader(doc, y, 'EQUIPMENT BY TYPE');
     const headers = ['TAMCN', 'Nomenclature', 'Poss', 'MC', 'NMC-M', 'NMC-S', 'Rdns %', 'Status'];
-    const rows = c.equipment_types.map(et => [
+    const rows = c.equipmentTypes.map(et => [
       et.tamcn,
       et.nomenclature.length > 18 ? et.nomenclature.slice(0, 18) + '..' : et.nomenclature,
-      String(et.total_possessed),
-      String(et.mission_capable),
-      String(et.nmc_maintenance ?? '-'),
-      String(et.nmc_supply ?? '-'),
-      `${et.readiness_pct.toFixed(1)}%`,
+      String(et.totalPossessed),
+      String(et.missionCapable),
+      String(et.nmcMaintenance ?? '-'),
+      String(et.nmcSupply ?? '-'),
+      `${et.readinessPct.toFixed(1)}%`,
       et.status,
     ]);
     y = addTable(doc, y, headers, rows, [22, 38, 16, 16, 18, 18, 20, 18]);
   }
 
-  if (c.individual_status_breakdown) {
-    y = addBreakdownTable(doc, y, 'INDIVIDUAL STATUS BREAKDOWN', c.individual_status_breakdown);
+  if (c.individualStatusBreakdown) {
+    y = addBreakdownTable(doc, y, 'INDIVIDUAL STATUS BREAKDOWN', c.individualStatusBreakdown);
   }
 
-  if (c.deadlined_items && c.deadlined_items.length > 0) {
+  if (c.deadlinedItems && c.deadlinedItems.length > 0) {
     y = addSectionHeader(doc, y, 'DEADLINED ITEMS');
     const headers = ['Bumper #', 'Nomenclature', 'TAMCN', 'Type'];
-    const rows = c.deadlined_items.map(d => [
-      d.bumper_number,
+    const rows = c.deadlinedItems.map(d => [
+      d.bumperNumber,
       d.nomenclature.length > 20 ? d.nomenclature.slice(0, 20) + '..' : d.nomenclature,
       d.tamcn,
-      d.equipment_type.length > 18 ? d.equipment_type.slice(0, 18) + '..' : d.equipment_type,
+      d.equipmentType.length > 18 ? d.equipmentType.slice(0, 18) + '..' : d.equipmentType,
     ]);
     y = addTable(doc, y, headers, rows, [30, 45, 25, 45]);
   }
@@ -1859,41 +1866,41 @@ function renderReadiness(doc: jsPDF, y: number, c: ReportContent): number {
 /** Render structured SUPPLY_STATUS content */
 function renderSupplyStatus(doc: jsPDF, y: number, c: ReportContent): number {
   y = addSectionHeader(doc, y, 'SUPPLY OVERVIEW');
-  if (c.overall_health) y = addKeyValue(doc, y, 'Overall Health', c.overall_health, c.overall_health);
-  if (c.total_classes_tracked !== undefined) y = addKeyValue(doc, y, 'Classes Tracked', String(c.total_classes_tracked));
-  if (c.red_classes !== undefined) y = addKeyValue(doc, y, 'Classes RED', String(c.red_classes), 'RED');
-  if (c.amber_classes !== undefined) y = addKeyValue(doc, y, 'Classes AMBER', String(c.amber_classes), 'AMBER');
+  if (c.overallHealth) y = addKeyValue(doc, y, 'Overall Health', c.overallHealth, c.overallHealth);
+  if (c.totalClassesTracked !== undefined) y = addKeyValue(doc, y, 'Classes Tracked', String(c.totalClassesTracked));
+  if (c.redClasses !== undefined) y = addKeyValue(doc, y, 'Classes RED', String(c.redClasses), 'RED');
+  if (c.amberClasses !== undefined) y = addKeyValue(doc, y, 'Classes AMBER', String(c.amberClasses), 'AMBER');
   y += 4;
 
-  if (c.class_summaries && c.class_summaries.length > 0) {
+  if (c.classSummaries && c.classSummaries.length > 0) {
     y = addSectionHeader(doc, y, 'CLASS SUMMARIES');
     const headers = ['Class', 'Name', 'Fill %', 'Avg DOS', 'Items', 'RED', 'AMBER', 'Status'];
-    const rows = c.class_summaries.map(cs => [
-      cs.supply_class,
-      cs.class_name.length > 16 ? cs.class_name.slice(0, 16) + '..' : cs.class_name,
-      `${cs.fill_rate_pct}%`,
-      cs.avg_dos.toFixed(1),
-      String(cs.item_count),
-      String(cs.red_items),
-      String(cs.amber_items),
+    const rows = c.classSummaries.map(cs => [
+      cs.supplyClass,
+      cs.className.length > 16 ? cs.className.slice(0, 16) + '..' : cs.className,
+      `${cs.fillRatePct}%`,
+      cs.avgDos.toFixed(1),
+      String(cs.itemCount),
+      String(cs.redItems),
+      String(cs.amberItems),
       cs.status,
     ]);
     y = addTable(doc, y, headers, rows, [16, 32, 18, 20, 18, 16, 18, 18]);
 
     // Critical items per class
-    for (const cs of c.class_summaries) {
-      if (cs.critical_items && cs.critical_items.length > 0) {
+    for (const cs of c.classSummaries) {
+      if (cs.criticalItems && cs.criticalItems.length > 0) {
         y = checkPage(doc, y, 30);
         doc.setFont('Helvetica', 'bold');
         doc.setFontSize(9);
         setColor(doc, PDF_COLORS.statusRed);
-        doc.text(`Critical Items — Class ${cs.supply_class}`, 18, y);
+        doc.text(`Critical Items — Class ${cs.supplyClass}`, 18, y);
         setColor(doc, PDF_COLORS.darkText);
         y += 8;
         const critHeaders = ['Item', 'On Hand', 'Required', 'DOS'];
-        const critRows = cs.critical_items.map(ci => [
+        const critRows = cs.criticalItems.map(ci => [
           ci.item.length > 30 ? ci.item.slice(0, 30) + '..' : ci.item,
-          String(ci.on_hand),
+          String(ci.onHand),
           String(ci.required),
           ci.dos.toFixed(1),
         ]);
@@ -1906,37 +1913,37 @@ function renderSupplyStatus(doc: jsPDF, y: number, c: ReportContent): number {
 
 /** Render structured EQUIPMENT_STATUS content */
 function renderEquipmentStatus(doc: jsPDF, y: number, c: ReportContent): number {
-  if (c.fleet_readiness) {
+  if (c.fleetReadiness) {
     y = addSectionHeader(doc, y, 'FLEET READINESS');
-    y = addKeyValue(doc, y, 'Total Possessed', String(c.fleet_readiness.total_possessed));
-    y = addKeyValue(doc, y, 'Mission Capable', String(c.fleet_readiness.total_mission_capable));
-    y = addKeyValue(doc, y, 'NMC (Maintenance)', String(c.fleet_readiness.total_nmc_maintenance));
-    y = addKeyValue(doc, y, 'NMC (Supply)', String(c.fleet_readiness.total_nmc_supply));
-    y = addKeyValue(doc, y, 'Readiness', `${c.fleet_readiness.readiness_pct}%`, c.fleet_readiness.status);
+    y = addKeyValue(doc, y, 'Total Possessed', String(c.fleetReadiness.totalPossessed));
+    y = addKeyValue(doc, y, 'Mission Capable', String(c.fleetReadiness.totalMissionCapable));
+    y = addKeyValue(doc, y, 'NMC (Maintenance)', String(c.fleetReadiness.totalNmcMaintenance));
+    y = addKeyValue(doc, y, 'NMC (Supply)', String(c.fleetReadiness.totalNmcSupply));
+    y = addKeyValue(doc, y, 'Readiness', `${c.fleetReadiness.readinessPct}%`, c.fleetReadiness.status);
     y += 4;
   }
 
-  if (c.fleet_by_type && c.fleet_by_type.length > 0) {
+  if (c.fleetByType && c.fleetByType.length > 0) {
     y = addSectionHeader(doc, y, 'FLEET BY TYPE');
     const headers = ['TAMCN', 'Nomenclature', 'Poss', 'MC', 'NMC-M', 'NMC-S', 'Rdns %', 'Status'];
-    const rows = c.fleet_by_type.map(ft => [
+    const rows = c.fleetByType.map(ft => [
       ft.tamcn,
       ft.nomenclature.length > 18 ? ft.nomenclature.slice(0, 18) + '..' : ft.nomenclature,
-      String(ft.total_possessed),
-      String(ft.mission_capable),
-      String(ft.nmc_maintenance ?? '-'),
-      String(ft.nmc_supply ?? '-'),
-      `${ft.readiness_pct.toFixed(1)}%`,
+      String(ft.totalPossessed),
+      String(ft.missionCapable),
+      String(ft.nmcMaintenance ?? '-'),
+      String(ft.nmcSupply ?? '-'),
+      `${ft.readinessPct.toFixed(1)}%`,
       ft.status,
     ]);
     y = addTable(doc, y, headers, rows, [22, 38, 16, 16, 18, 18, 20, 18]);
   }
 
-  if (c.top_deadlined_items && c.top_deadlined_items.length > 0) {
+  if (c.topDeadlinedItems && c.topDeadlinedItems.length > 0) {
     y = addSectionHeader(doc, y, 'TOP DEADLINED ITEMS');
     const headers = ['Bumper #', 'Nomenclature', 'TAMCN', 'Fault'];
-    const rows = c.top_deadlined_items.map(d => [
-      d.bumper_number,
+    const rows = c.topDeadlinedItems.map(d => [
+      d.bumperNumber,
       d.nomenclature.length > 20 ? d.nomenclature.slice(0, 20) + '..' : d.nomenclature,
       d.tamcn,
       (d.fault || 'N/A').length > 25 ? (d.fault || 'N/A').slice(0, 25) + '..' : (d.fault || 'N/A'),
@@ -1949,20 +1956,20 @@ function renderEquipmentStatus(doc: jsPDF, y: number, c: ReportContent): number 
 /** Render structured MAINTENANCE_SUMMARY content */
 function renderMaintenanceSummary(doc: jsPDF, y: number, c: ReportContent): number {
   y = addSectionHeader(doc, y, 'WORK ORDER SUMMARY');
-  if (c.total_work_orders !== undefined) y = addKeyValue(doc, y, 'Total Work Orders', String(c.total_work_orders));
-  if (c.avg_completion_time_hours !== undefined) y = addKeyValue(doc, y, 'Avg Completion Time', `${c.avg_completion_time_hours} hrs`);
-  if (c.total_labor_hours !== undefined) y = addKeyValue(doc, y, 'Total Labor Hours', String(c.total_labor_hours));
-  if (c.parts_on_order !== undefined) y = addKeyValue(doc, y, 'Parts On Order', String(c.parts_on_order));
+  if (c.totalWorkOrders !== undefined) y = addKeyValue(doc, y, 'Total Work Orders', String(c.totalWorkOrders));
+  if (c.avgCompletionTimeHours !== undefined) y = addKeyValue(doc, y, 'Avg Completion Time', `${c.avgCompletionTimeHours} hrs`);
+  if (c.totalLaborHours !== undefined) y = addKeyValue(doc, y, 'Total Labor Hours', String(c.totalLaborHours));
+  if (c.partsOnOrder !== undefined) y = addKeyValue(doc, y, 'Parts On Order', String(c.partsOnOrder));
   y += 4;
 
-  if (c.work_order_counts) {
-    y = addBreakdownTable(doc, y, 'WORK ORDERS BY STATUS', c.work_order_counts);
+  if (c.workOrderCounts) {
+    y = addBreakdownTable(doc, y, 'WORK ORDERS BY STATUS', c.workOrderCounts);
   }
 
-  if (c.top_issues && c.top_issues.length > 0) {
+  if (c.topIssues && c.topIssues.length > 0) {
     y = addSectionHeader(doc, y, 'TOP MAINTENANCE ISSUES');
     const headers = ['Equipment Type', 'Open Work Orders'];
-    const rows = c.top_issues.map(ti => [ti.equipment_type, String(ti.open_work_orders)]);
+    const rows = c.topIssues.map(ti => [ti.equipmentType, String(ti.openWorkOrders)]);
     y = addTable(doc, y, headers, rows, [80, 40]);
   }
   return y;
@@ -1971,23 +1978,23 @@ function renderMaintenanceSummary(doc: jsPDF, y: number, c: ReportContent): numb
 /** Render structured MOVEMENT_SUMMARY content */
 function renderMovementSummary(doc: jsPDF, y: number, c: ReportContent): number {
   y = addSectionHeader(doc, y, 'MOVEMENT OVERVIEW');
-  if (c.total_movements !== undefined) y = addKeyValue(doc, y, 'Total Movements', String(c.total_movements));
-  if (c.total_vehicles_in_transit !== undefined) y = addKeyValue(doc, y, 'Vehicles In Transit', String(c.total_vehicles_in_transit));
-  if (c.total_personnel_in_transit !== undefined) y = addKeyValue(doc, y, 'Personnel In Transit', String(c.total_personnel_in_transit));
+  if (c.totalMovements !== undefined) y = addKeyValue(doc, y, 'Total Movements', String(c.totalMovements));
+  if (c.totalVehiclesInTransit !== undefined) y = addKeyValue(doc, y, 'Vehicles In Transit', String(c.totalVehiclesInTransit));
+  if (c.totalPersonnelInTransit !== undefined) y = addKeyValue(doc, y, 'Personnel In Transit', String(c.totalPersonnelInTransit));
   y += 4;
 
-  if (c.status_counts) {
-    y = addBreakdownTable(doc, y, 'MOVEMENTS BY STATUS', c.status_counts);
+  if (c.statusCounts) {
+    y = addBreakdownTable(doc, y, 'MOVEMENTS BY STATUS', c.statusCounts);
   }
 
-  if (c.recent_completions && c.recent_completions.length > 0) {
+  if (c.recentCompletions && c.recentCompletions.length > 0) {
     y = addSectionHeader(doc, y, 'RECENT COMPLETIONS');
     const headers = ['Convoy ID', 'Origin', 'Destination', 'Vehicles', 'Arrival'];
-    const rows = c.recent_completions.map(rc => [
-      rc.convoy_id || '-',
+    const rows = c.recentCompletions.map(rc => [
+      rc.convoyId || '-',
       rc.origin.length > 18 ? rc.origin.slice(0, 18) + '..' : rc.origin,
       rc.destination.length > 18 ? rc.destination.slice(0, 18) + '..' : rc.destination,
-      String(rc.vehicle_count),
+      String(rc.vehicleCount),
       rc.arrival ? new Date(rc.arrival).toLocaleDateString() : '-',
     ]);
     y = addTable(doc, y, headers, rows, [28, 36, 36, 22, 28]);
@@ -1998,18 +2005,18 @@ function renderMovementSummary(doc: jsPDF, y: number, c: ReportContent): number 
 /** Render structured PERSONNEL_STRENGTH content */
 function renderPersonnelStrength(doc: jsPDF, y: number, c: ReportContent): number {
   y = addSectionHeader(doc, y, 'PERSONNEL OVERVIEW');
-  if (c.total_assigned !== undefined) y = addKeyValue(doc, y, 'Total Assigned', String(c.total_assigned));
-  if (c.total_active !== undefined) y = addKeyValue(doc, y, 'Total Active', String(c.total_active));
+  if (c.totalAssigned !== undefined) y = addKeyValue(doc, y, 'Total Assigned', String(c.totalAssigned));
+  if (c.totalActive !== undefined) y = addKeyValue(doc, y, 'Total Active', String(c.totalActive));
   y += 4;
 
-  if (c.status_breakdown) {
-    y = addBreakdownTable(doc, y, 'STATUS BREAKDOWN', c.status_breakdown);
+  if (c.statusBreakdown) {
+    y = addBreakdownTable(doc, y, 'STATUS BREAKDOWN', c.statusBreakdown);
   }
-  if (c.rank_breakdown) {
-    y = addBreakdownTable(doc, y, 'RANK BREAKDOWN', c.rank_breakdown);
+  if (c.rankBreakdown) {
+    y = addBreakdownTable(doc, y, 'RANK BREAKDOWN', c.rankBreakdown);
   }
-  if (c.mos_breakdown) {
-    y = addBreakdownTable(doc, y, 'MOS BREAKDOWN', c.mos_breakdown);
+  if (c.mosBreakdown) {
+    y = addBreakdownTable(doc, y, 'MOS BREAKDOWN', c.mosBreakdown);
   }
   return y;
 }
@@ -2065,7 +2072,7 @@ function buildReportPdf(report: Report): Blob {
   } else if (report.content) {
     try {
       const parsed = JSON.parse(report.content) as ReportContent;
-      if (parsed && typeof parsed === 'object' && parsed.report_type) {
+      if (parsed && typeof parsed === 'object' && parsed.reportType) {
         structured = parsed;
       }
     } catch {
@@ -2075,7 +2082,7 @@ function buildReportPdf(report: Report): Blob {
 
   if (structured) {
     // Route to the appropriate renderer based on report type
-    const rt = (structured.report_type || report.type || '').toUpperCase();
+    const rt = (structured.reportType || report.type || '').toUpperCase();
     if (rt === 'LOGSTAT') {
       y = renderLogstat(doc, y, structured);
     } else if (rt === 'READINESS') {
@@ -2094,7 +2101,7 @@ function buildReportPdf(report: Report): Blob {
       // Generic: render all key-value pairs we can
       y = addSectionHeader(doc, y, 'REPORT DATA');
       for (const [key, value] of Object.entries(structured)) {
-        if (key === 'report_type' || key === 'unit' || key === 'generated_at' || key === 'period_start' || key === 'period_end') continue;
+        if (key === 'reportType' || key === 'unit' || key === 'generatedAt' || key === 'periodStart' || key === 'periodEnd') continue;
         if (typeof value === 'string' || typeof value === 'number') {
           y = addKeyValue(doc, y, key.replace(/_/g, ' ').toUpperCase(), String(value));
         }
@@ -2133,11 +2140,11 @@ function generateMockReportContent(
 ): ReportContent {
   const now = new Date();
   const base: ReportContent = {
-    report_type: String(reportType),
+    reportType: String(reportType),
     unit: { id: Number(unitId) || 1, name: unitName, abbreviation: unitName },
-    generated_at: now.toISOString(),
-    period_start: new Date(now.getTime() - 7 * 86400000).toISOString(),
-    period_end: now.toISOString(),
+    generatedAt: now.toISOString(),
+    periodStart: new Date(now.getTime() - 7 * 86400000).toISOString(),
+    periodEnd: now.toISOString(),
   };
 
   switch (reportType) {
@@ -2146,88 +2153,88 @@ function generateMockReportContent(
       return {
         ...base,
         dtg: now.toISOString(),
-        as_of: now.toISOString(),
-        supply_status: [
+        asOf: now.toISOString(),
+        supplyStatus: [
           {
-            class: 'I', class_name: 'Subsistence',
+            class: 'I', className: 'Subsistence',
             items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'I').slice(0, 3).map(r => ({
-              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
-              consumption_rate: r.consumptionRate, status: r.status,
+              item: r.item, onHand: r.onHand, required: r.required, dos: r.dos,
+              consumptionRate: r.consumptionRate, status: r.status,
             })),
-            overall_status: 'AMBER',
+            overallStatus: 'AMBER',
           },
           {
-            class: 'III', class_name: 'POL (Petroleum, Oils, Lubricants)',
+            class: 'III', className: 'POL (Petroleum, Oils, Lubricants)',
             items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'III').slice(0, 3).map(r => ({
-              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
-              consumption_rate: r.consumptionRate, status: r.status,
+              item: r.item, onHand: r.onHand, required: r.required, dos: r.dos,
+              consumptionRate: r.consumptionRate, status: r.status,
             })),
-            overall_status: 'RED',
+            overallStatus: 'RED',
           },
           {
-            class: 'V', class_name: 'Ammunition',
+            class: 'V', className: 'Ammunition',
             items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'V').slice(0, 3).map(r => ({
-              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
-              consumption_rate: r.consumptionRate, status: r.status,
+              item: r.item, onHand: r.onHand, required: r.required, dos: r.dos,
+              consumptionRate: r.consumptionRate, status: r.status,
             })),
-            overall_status: 'GREEN',
+            overallStatus: 'GREEN',
           },
           {
-            class: 'IX', class_name: 'Repair Parts',
+            class: 'IX', className: 'Repair Parts',
             items: DEMO_SUPPLY_RECORDS.filter(r => r.supplyClass === 'IX').slice(0, 3).map(r => ({
-              item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
-              consumption_rate: r.consumptionRate, status: r.status,
+              item: r.item, onHand: r.onHand, required: r.required, dos: r.dos,
+              consumptionRate: r.consumptionRate, status: r.status,
             })),
-            overall_status: 'AMBER',
+            overallStatus: 'AMBER',
           },
         ],
-        equipment_readiness: {
-          total_possessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
-          total_mission_capable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
-          readiness_pct: 87.3,
+        equipmentReadiness: {
+          totalPossessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
+          totalMissionCapable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
+          readinessPct: 87.3,
           status: 'AMBER',
         },
-        open_work_orders: demoWorkOrders.filter(wo => wo.status !== WorkOrderStatus.COMPLETE).length,
-        active_movements: DEMO_MOVEMENTS.filter(m => m.status === 'EN_ROUTE' || m.status === 'PLANNED').length,
-        personnel_strength: demoPersonnel.filter(p => p.status !== 'INACTIVE').length,
-        total_supply_items: DEMO_SUPPLY_RECORDS.length,
+        openWorkOrders: demoWorkOrders.filter(wo => wo.status !== WorkOrderStatus.COMPLETE).length,
+        activeMovements: DEMO_MOVEMENTS.filter(m => m.status === 'EN_ROUTE' || m.status === 'PLANNED').length,
+        personnelStrength: demoPersonnel.filter(p => p.status !== 'INACTIVE').length,
+        totalSupplyItems: DEMO_SUPPLY_RECORDS.length,
       };
 
     case ReportType.READINESS:
     case 'READINESS':
       return {
         ...base,
-        overall_readiness_pct: 87.3,
-        overall_status: 'AMBER',
-        total_possessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
-        total_mission_capable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
-        total_nmc: DEMO_EQUIPMENT.reduce((s, e) => s + e.notMissionCapable, 0),
-        equipment_types: DEMO_EQUIPMENT.map(e => ({
+        overallReadinessPct: 87.3,
+        overallStatus: 'AMBER',
+        totalPossessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
+        totalMissionCapable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
+        totalNmc: DEMO_EQUIPMENT.reduce((s, e) => s + e.notMissionCapable, 0),
+        equipmentTypes: DEMO_EQUIPMENT.map(e => ({
           tamcn: e.tamcn,
           nomenclature: e.type,
-          total_possessed: e.onHand,
-          mission_capable: e.missionCapable,
-          nmc_maintenance: Math.floor(e.notMissionCapable * 0.6),
-          nmc_supply: Math.ceil(e.notMissionCapable * 0.4),
-          readiness_pct: e.readinessPercent,
+          totalPossessed: e.onHand,
+          missionCapable: e.missionCapable,
+          nmcMaintenance: Math.floor(e.notMissionCapable * 0.6),
+          nmcSupply: Math.ceil(e.notMissionCapable * 0.4),
+          readinessPct: e.readinessPercent,
           status: e.readinessPercent >= 90 ? 'GREEN' : e.readinessPercent >= 75 ? 'AMBER' : 'RED',
         })),
-        equipment_type_count: DEMO_EQUIPMENT.length,
-        individual_status_breakdown: {
+        equipmentTypeCount: DEMO_EQUIPMENT.length,
+        individualStatusBreakdown: {
           FMC: demoIndividualEquipment.filter(i => i.status === 'FMC').length,
           NMC_M: demoIndividualEquipment.filter(i => i.status === 'NMC_M').length,
           NMC_S: demoIndividualEquipment.filter(i => i.status === 'NMC_S').length,
           ADMIN: demoIndividualEquipment.filter(i => i.status === 'ADMIN').length,
           DEADLINED: demoIndividualEquipment.filter(i => i.status === 'DEADLINED').length,
         },
-        deadlined_items: demoIndividualEquipment
+        deadlinedItems: demoIndividualEquipment
           .filter(i => i.status === 'DEADLINED')
           .slice(0, 5)
           .map(i => ({
-            bumper_number: i.bumperNumber,
+            bumperNumber: i.bumperNumber,
             nomenclature: i.nomenclature,
             tamcn: i.tamcn,
-            equipment_type: i.equipmentType,
+            equipmentType: i.equipmentType,
           })),
       };
 
@@ -2245,29 +2252,29 @@ function generateMockReportContent(
           IV: 'Construction', V: 'Ammunition', VIII: 'Medical', IX: 'Repair Parts',
         };
         return {
-          supply_class: cls,
-          class_name: classNames[cls] || cls,
-          total_on_hand: Math.round(totalOnHand * 10) / 10,
-          total_required: Math.round(totalRequired * 10) / 10,
-          fill_rate_pct: totalRequired > 0 ? Math.round(totalOnHand / totalRequired * 1000) / 10 : 0,
-          avg_dos: Math.round(avgDos * 10) / 10,
-          avg_consumption_rate: records.length ? Math.round(records.reduce((s, r) => s + r.consumptionRate, 0) / records.length * 100) / 100 : 0,
-          item_count: records.length,
-          red_items: redItems.length,
-          amber_items: records.filter(r => r.status === 'AMBER').length,
+          supplyClass: cls,
+          className: classNames[cls] || cls,
+          totalOnHand: Math.round(totalOnHand * 10) / 10,
+          totalRequired: Math.round(totalRequired * 10) / 10,
+          fillRatePct: totalRequired > 0 ? Math.round(totalOnHand / totalRequired * 1000) / 10 : 0,
+          avgDos: Math.round(avgDos * 10) / 10,
+          avgConsumptionRate: records.length ? Math.round(records.reduce((s, r) => s + r.consumptionRate, 0) / records.length * 100) / 100 : 0,
+          itemCount: records.length,
+          redItems: redItems.length,
+          amberItems: records.filter(r => r.status === 'AMBER').length,
           status: avgDos > 5 ? 'GREEN' : avgDos > 3 ? 'AMBER' : 'RED',
-          critical_items: redItems.slice(0, 5).map(r => ({
-            item: r.item, on_hand: r.onHand, required: r.required, dos: r.dos,
+          criticalItems: redItems.slice(0, 5).map(r => ({
+            item: r.item, onHand: r.onHand, required: r.required, dos: r.dos,
           })),
         };
-      }).filter(c => c.item_count > 0);
+      }).filter(c => c.itemCount > 0);
       return {
         ...base,
-        overall_health: classSummaries.some(c => c.status === 'RED') ? 'RED' : classSummaries.some(c => c.status === 'AMBER') ? 'AMBER' : 'GREEN',
-        total_classes_tracked: classSummaries.length,
-        red_classes: classSummaries.filter(c => c.status === 'RED').length,
-        amber_classes: classSummaries.filter(c => c.status === 'AMBER').length,
-        class_summaries: classSummaries,
+        overallHealth: classSummaries.some(c => c.status === 'RED') ? 'RED' : classSummaries.some(c => c.status === 'AMBER') ? 'AMBER' : 'GREEN',
+        totalClassesTracked: classSummaries.length,
+        redClasses: classSummaries.filter(c => c.status === 'RED').length,
+        amberClasses: classSummaries.filter(c => c.status === 'AMBER').length,
+        classSummaries: classSummaries,
       };
     }
 
@@ -2275,42 +2282,42 @@ function generateMockReportContent(
     case 'EQUIPMENT_STATUS':
       return {
         ...base,
-        fleet_readiness: {
-          total_possessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
-          total_mission_capable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
-          total_nmc_maintenance: DEMO_EQUIPMENT.reduce((s, e) => s + Math.floor(e.notMissionCapable * 0.6), 0),
-          total_nmc_supply: DEMO_EQUIPMENT.reduce((s, e) => s + Math.ceil(e.notMissionCapable * 0.4), 0),
-          readiness_pct: 87.3,
+        fleetReadiness: {
+          totalPossessed: DEMO_EQUIPMENT.reduce((s, e) => s + e.onHand, 0),
+          totalMissionCapable: DEMO_EQUIPMENT.reduce((s, e) => s + e.missionCapable, 0),
+          totalNmcMaintenance: DEMO_EQUIPMENT.reduce((s, e) => s + Math.floor(e.notMissionCapable * 0.6), 0),
+          totalNmcSupply: DEMO_EQUIPMENT.reduce((s, e) => s + Math.ceil(e.notMissionCapable * 0.4), 0),
+          readinessPct: 87.3,
           status: 'AMBER',
         },
-        fleet_by_type: DEMO_EQUIPMENT.map(e => ({
+        fleetByType: DEMO_EQUIPMENT.map(e => ({
           tamcn: e.tamcn,
           nomenclature: e.type,
-          total_possessed: e.onHand,
-          mission_capable: e.missionCapable,
-          nmc_maintenance: Math.floor(e.notMissionCapable * 0.6),
-          nmc_supply: Math.ceil(e.notMissionCapable * 0.4),
-          readiness_pct: e.readinessPercent,
+          totalPossessed: e.onHand,
+          missionCapable: e.missionCapable,
+          nmcMaintenance: Math.floor(e.notMissionCapable * 0.6),
+          nmcSupply: Math.ceil(e.notMissionCapable * 0.4),
+          readinessPct: e.readinessPercent,
           status: e.readinessPercent >= 90 ? 'GREEN' : e.readinessPercent >= 75 ? 'AMBER' : 'RED',
         })),
-        individual_status_breakdown: {
+        individualStatusBreakdown: {
           FMC: demoIndividualEquipment.filter(i => i.status === 'FMC').length,
           NMC_M: demoIndividualEquipment.filter(i => i.status === 'NMC_M').length,
           NMC_S: demoIndividualEquipment.filter(i => i.status === 'NMC_S').length,
           ADMIN: demoIndividualEquipment.filter(i => i.status === 'ADMIN').length,
           DEADLINED: demoIndividualEquipment.filter(i => i.status === 'DEADLINED').length,
         },
-        individual_total: demoIndividualEquipment.length,
-        top_deadlined_items: demoIndividualEquipment
+        individualTotal: demoIndividualEquipment.length,
+        topDeadlinedItems: demoIndividualEquipment
           .filter(i => i.status === 'DEADLINED')
           .slice(0, 5)
           .map(i => ({
-            bumper_number: i.bumperNumber,
+            bumperNumber: i.bumperNumber,
             nomenclature: i.nomenclature,
             tamcn: i.tamcn,
-            equipment_type: i.equipmentType,
+            equipmentType: i.equipmentType,
             fault: demoFaults.find(f => f.equipmentId === i.id)?.faultDescription || 'No active fault',
-            fault_severity: demoFaults.find(f => f.equipmentId === i.id)?.severity,
+            faultSeverity: demoFaults.find(f => f.equipmentId === i.id)?.severity,
           })),
       };
 
@@ -2331,15 +2338,15 @@ function generateMockReportContent(
       });
       return {
         ...base,
-        work_order_counts: { OPEN: open, IN_PROGRESS: inProg, AWAITING_PARTS: awaitParts, COMPLETE: complete },
-        total_work_orders: demoWorkOrders.length,
-        avg_completion_time_hours: 36.4,
-        total_labor_hours: Math.round(totalLabor * 10) / 10,
-        parts_on_order: partsOnOrder,
-        top_issues: Object.entries(issueMap)
+        workOrderCounts: { OPEN: open, IN_PROGRESS: inProg, AWAITING_PARTS: awaitParts, COMPLETE: complete },
+        totalWorkOrders: demoWorkOrders.length,
+        avgCompletionTimeHours: 36.4,
+        totalLaborHours: Math.round(totalLabor * 10) / 10,
+        partsOnOrder: partsOnOrder,
+        topIssues: Object.entries(issueMap)
           .sort(([, a], [, b]) => b - a)
           .slice(0, 5)
-          .map(([et, cnt]) => ({ equipment_type: et, open_work_orders: cnt })),
+          .map(([et, cnt]) => ({ equipmentType: et, openWorkOrders: cnt })),
       };
     }
 
@@ -2347,28 +2354,28 @@ function generateMockReportContent(
     case 'MOVEMENT_SUMMARY':
       return {
         ...base,
-        status_counts: {
+        statusCounts: {
           PLANNED: DEMO_MOVEMENTS.filter(m => m.status === 'PLANNED').length,
           EN_ROUTE: DEMO_MOVEMENTS.filter(m => m.status === 'EN_ROUTE').length,
           DELAYED: DEMO_MOVEMENTS.filter(m => m.status === 'DELAYED').length,
           ARRIVED: DEMO_MOVEMENTS.filter(m => m.status === 'ARRIVED').length,
           CANCELLED: DEMO_MOVEMENTS.filter(m => m.status === 'CANCELLED').length,
         },
-        total_movements: DEMO_MOVEMENTS.length,
-        total_vehicles_in_transit: DEMO_MOVEMENTS
+        totalMovements: DEMO_MOVEMENTS.length,
+        totalVehiclesInTransit: DEMO_MOVEMENTS
           .filter(m => m.status === 'EN_ROUTE')
           .reduce((s, m) => s + m.vehicles, 0),
-        total_personnel_in_transit: DEMO_MOVEMENTS
+        totalPersonnelInTransit: DEMO_MOVEMENTS
           .filter(m => m.status === 'EN_ROUTE')
           .reduce((s, m) => s + m.personnel, 0),
-        recent_completions: DEMO_MOVEMENTS
+        recentCompletions: DEMO_MOVEMENTS
           .filter(m => m.status === 'ARRIVED')
           .slice(0, 5)
           .map(m => ({
-            convoy_id: m.id,
+            convoyId: m.id,
             origin: m.originUnit,
             destination: m.destinationUnit,
-            vehicle_count: m.vehicles,
+            vehicleCount: m.vehicles,
             arrival: m.arrivalTime || null,
           })),
       };
@@ -2385,11 +2392,11 @@ function generateMockReportContent(
       demoPersonnel.forEach(p => { const m = p.mos || 'Unknown'; mosBreakdown[m] = (mosBreakdown[m] || 0) + 1; });
       return {
         ...base,
-        total_assigned: demoPersonnel.length,
-        total_active: demoPersonnel.filter(p => p.status !== 'INACTIVE').length,
-        status_breakdown: statusBreakdown,
-        rank_breakdown: rankBreakdown,
-        mos_breakdown: mosBreakdown,
+        totalAssigned: demoPersonnel.length,
+        totalActive: demoPersonnel.filter(p => p.status !== 'INACTIVE').length,
+        statusBreakdown: statusBreakdown,
+        rankBreakdown: rankBreakdown,
+        mosBreakdown: mosBreakdown,
       };
     }
 

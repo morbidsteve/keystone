@@ -28,7 +28,7 @@ router = APIRouter()
 WRITE_ROLES = [Role.ADMIN, Role.COMMANDER, Role.S4, Role.S3, Role.OPERATOR]
 
 
-@router.get("/", response_model=List[InventoryRecordResponse])
+@router.get("", response_model=List[InventoryRecordResponse])
 async def list_inventory(
     unit_id: Optional[int] = Query(None),
     location: Optional[str] = Query(None),
@@ -69,7 +69,7 @@ async def low_stock_alerts(
 
 
 @router.post(
-    "/",
+    "",
     response_model=InventoryRecordResponse,
     status_code=201,
     dependencies=[Depends(require_role(WRITE_ROLES))],

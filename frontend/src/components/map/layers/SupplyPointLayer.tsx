@@ -75,8 +75,8 @@ function createSupplyPointIcon(pointType: string, status: string): L.DivIcon {
 function SupplyPointMarker({ sp }: { sp: MapSupplyPoint }) {
   const selectEntity = useMapStore((s) => s.selectEntity);
   const icon = useMemo(
-    () => createSupplyPointIcon(sp.point_type, sp.status),
-    [sp.point_type, sp.status],
+    () => createSupplyPointIcon(sp.pointType, sp.status),
+    [sp.pointType, sp.status],
   );
 
   return (
@@ -101,9 +101,10 @@ function SupplyPointMarker({ sp }: { sp: MapSupplyPoint }) {
 export default function SupplyPointLayer({ supplyPoints }: SupplyPointLayerProps) {
   return (
     <>
-      {supplyPoints.map((sp) => (
-        <SupplyPointMarker key={sp.id} sp={sp} />
-      ))}
+      {supplyPoints.map((sp) => {
+        if (sp.latitude == null || sp.longitude == null) return null;
+        return <SupplyPointMarker key={sp.id} sp={sp} />;
+      })}
     </>
   );
 }

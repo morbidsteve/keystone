@@ -32,9 +32,9 @@ function urgencyBg(days: number): string {
 
 export default function EASTimeline({ losses }: EASTimelineProps) {
   const buckets = useMemo(() => {
-    const b30 = losses.filter((l) => l.days_until_eas <= 30);
-    const b60 = losses.filter((l) => l.days_until_eas > 30 && l.days_until_eas <= 60);
-    const b90 = losses.filter((l) => l.days_until_eas > 60 && l.days_until_eas <= 90);
+    const b30 = losses.filter((l) => l.daysUntilEas <= 30);
+    const b60 = losses.filter((l) => l.daysUntilEas > 30 && l.daysUntilEas <= 60);
+    const b90 = losses.filter((l) => l.daysUntilEas > 60 && l.daysUntilEas <= 90);
     return { total: losses.length, within30: b30.length, within60: b60.length, within90: b90.length };
   }, [losses]);
 
@@ -83,8 +83,8 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
         className="grid gap-2.5 grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
       >
         {losses.map((person) => {
-          const color = urgencyColor(person.days_until_eas);
-          const bg = urgencyBg(person.days_until_eas);
+          const color = urgencyColor(person.daysUntilEas);
+          const bg = urgencyBg(person.daysUntilEas);
           return (
             <div
               key={person.id}
@@ -94,13 +94,13 @@ export default function EASTimeline({ losses }: EASTimelineProps) {
                 <span
                   className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-text-bright)]"
                 >
-                  {person.rank} {person.last_name}
+                  {person.rank} {person.lastName}
                 </span>
                 <span
                   className="inline-flex items-center gap-1 font-[var(--font-mono)] text-[10px] font-bold"
                 >
                   <Clock size={11} />
-                  {person.days_until_eas}D
+                  {person.daysUntilEas}D
                 </span>
               </div>
 

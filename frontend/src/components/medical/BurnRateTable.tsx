@@ -51,20 +51,20 @@ export default function BurnRateTable({ burnRates }: BurnRateTableProps) {
       let cmp = 0;
       switch (sortField) {
         case 'name':
-          cmp = a.supply_name.localeCompare(b.supply_name);
+          cmp = a.supplyName.localeCompare(b.supplyName);
           break;
         case 'onHand':
-          cmp = a.quantity_on_hand - b.quantity_on_hand;
+          cmp = a.quantityOnHand - b.quantityOnHand;
           break;
         case 'burnRate':
-          cmp = a.burn_rate_per_day - b.burn_rate_per_day;
+          cmp = a.burnRatePerDay - b.burnRatePerDay;
           break;
         case 'dos':
-          cmp = (a.days_of_supply ?? 9999) - (b.days_of_supply ?? 9999);
+          cmp = (a.daysOfSupply ?? 9999) - (b.daysOfSupply ?? 9999);
           break;
         case 'exhaustion': {
-          const aDate = a.projected_exhaustion_date ? new Date(a.projected_exhaustion_date).getTime() : Infinity;
-          const bDate = b.projected_exhaustion_date ? new Date(b.projected_exhaustion_date).getTime() : Infinity;
+          const aDate = a.projectedExhaustionDate ? new Date(a.projectedExhaustionDate).getTime() : Infinity;
+          const bDate = b.projectedExhaustionDate ? new Date(b.projectedExhaustionDate).getTime() : Infinity;
           cmp = aDate - bDate;
           break;
         }
@@ -145,8 +145,8 @@ export default function BurnRateTable({ burnRates }: BurnRateTableProps) {
         </thead>
         <tbody>
           {sorted.map((br) => {
-            const color = dosColor(br.days_of_supply);
-            const isCritical = br.days_of_supply !== null && br.days_of_supply < 3;
+            const color = dosColor(br.daysOfSupply);
+            const isCritical = br.daysOfSupply !== null && br.daysOfSupply < 3;
 
             return (
               <tr
@@ -162,32 +162,32 @@ export default function BurnRateTable({ burnRates }: BurnRateTableProps) {
                       className="align-middle mr-1.5 text-[#ef4444]"
                     />
                   )}
-                  {br.supply_name}
+                  {br.supplyName}
                 </td>
                 <td className="font-semibold">
-                  {br.quantity_on_hand}
+                  {br.quantityOnHand}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'right' }}>
-                  {br.burn_rate_per_day.toFixed(2)}
+                  {br.burnRatePerDay.toFixed(2)}
                 </td>
                 <td
                   className="font-bold"
                 >
-                  {br.days_of_supply !== null ? br.days_of_supply : '--'}
+                  {br.daysOfSupply !== null ? br.daysOfSupply : '--'}
                 </td>
                 <td className="text-[10px]">
-                  {formatDate(br.projected_exhaustion_date)}
+                  {formatDate(br.projectedExhaustionDate)}
                 </td>
                 <td style={{ ...cellStyle, textAlign: 'center' }}>
                   <span
                     className="inline-block py-0.5 px-2 rounded-[2px] font-[var(--font-mono)] text-[8px] font-bold tracking-[1px] uppercase" style={{ color,
                       backgroundColor: `${color}18`, border: `1px solid ${color}40` }}
                   >
-                    {br.days_of_supply === null
+                    {br.daysOfSupply === null
                       ? 'UNKNOWN'
-                      : br.days_of_supply < 3
+                      : br.daysOfSupply < 3
                         ? 'CRITICAL'
-                        : br.days_of_supply < 7
+                        : br.daysOfSupply < 7
                           ? 'LOW'
                           : 'ADEQUATE'}
                   </span>

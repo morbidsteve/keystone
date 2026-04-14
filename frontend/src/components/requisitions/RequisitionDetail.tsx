@@ -68,7 +68,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
   const queryClient = useQueryClient();
   const [denyReason, setDenyReason] = useState('');
   const [showDenyInput, setShowDenyInput] = useState(false);
-  const [approveQty, setApproveQty] = useState<number>(requisition.quantity_requested);
+  const [approveQty, setApproveQty] = useState<number>(requisition.quantityRequested);
   const [showApproveConfirm, setShowApproveConfirm] = useState(false);
 
   const invalidateAll = () => {
@@ -78,7 +78,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
 
   const submitMut = useMutation({ mutationFn: () => submitRequisition(requisition.id), onSuccess: invalidateAll });
   const approveMut = useMutation({
-    mutationFn: () => approveRequisition(requisition.id, { quantity_approved: approveQty }),
+    mutationFn: () => approveRequisition(requisition.id, { quantityApproved: approveQty }),
     onSuccess: () => { setShowApproveConfirm(false); invalidateAll(); },
   });
   const denyMut = useMutation({
@@ -140,7 +140,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         <span
           className="font-[var(--font-mono)] text-[13px] font-bold text-[var(--color-text-bright)] tracking-[1px]"
         >
-          {requisition.requisition_number}
+          {requisition.requisitionNumber}
         </span>
         <span
           className="inline-block py-0.5 px-2 rounded-[2px] text-[10px] font-bold tracking-[0.5px] font-[var(--font-mono)]" style={{ color: statusColor(requisition.status), border: `1px solid ${statusColor(requisition.status)}`, backgroundColor: `color-mix(in srgb, ${statusColor(requisition.status)} 10%, transparent)` }}
@@ -207,11 +207,11 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         )}
         <div>
           <div style={labelStyle}>UNIT</div>
-          <div style={valueStyle}>Unit {requisition.unit_id}</div>
+          <div style={valueStyle}>Unit {requisition.unitId}</div>
         </div>
         <div>
           <div style={labelStyle}>REQUESTED BY</div>
-          <div style={valueStyle}>{requisition.requested_by_name ?? `ID ${requisition.requested_by_id}`}</div>
+          <div style={valueStyle}>{requisition.requestedByName ?? `ID ${requisition.requestedById}`}</div>
         </div>
         <div>
           <div style={labelStyle}>PRIORITY</div>
@@ -219,12 +219,12 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         </div>
         <div>
           <div style={labelStyle}>UNIT OF ISSUE</div>
-          <div style={valueStyle}>{requisition.unit_of_issue}</div>
+          <div style={valueStyle}>{requisition.unitOfIssue}</div>
         </div>
-        {requisition.document_number && (
+        {requisition.documentNumber && (
           <div>
             <div style={labelStyle}>DOCUMENT NUMBER</div>
-            <div style={valueStyle}>{requisition.document_number}</div>
+            <div style={valueStyle}>{requisition.documentNumber}</div>
           </div>
         )}
       </div>
@@ -242,13 +242,13 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
       )}
 
       {/* Denial reason */}
-      {requisition.denial_reason && (
+      {requisition.denialReason && (
         <div>
           <div style={{ ...labelStyle, color: 'var(--color-danger)' }}>DENIAL REASON</div>
           <div
             className="bg-[rgba(255,107,107,0.05)] rounded-[var(--radius)] text-[var(--color-danger)] leading-normal border border-[rgba(255,107,107,0.2)]"
           >
-            {requisition.denial_reason}
+            {requisition.denialReason}
           </div>
         </div>
       )}
@@ -262,7 +262,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         >
           <div style={labelStyle}>REQUESTED</div>
           <div className="font-bold">
-            {requisition.quantity_requested.toLocaleString()}
+            {(requisition.quantityRequested ?? 0).toLocaleString()}
           </div>
         </div>
         <div
@@ -270,7 +270,7 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         >
           <div style={labelStyle}>APPROVED</div>
           <div className="font-bold">
-            {requisition.quantity_approved?.toLocaleString() ?? '--'}
+            {requisition.quantityApproved?.toLocaleString() ?? '--'}
           </div>
         </div>
         <div
@@ -278,49 +278,49 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
         >
           <div style={labelStyle}>ISSUED</div>
           <div className="font-bold">
-            {requisition.quantity_issued?.toLocaleString() ?? '--'}
+            {requisition.quantityIssued?.toLocaleString() ?? '--'}
           </div>
         </div>
       </div>
 
       {/* Timeline */}
-      {requisition.status_history && requisition.status_history.length > 0 && (
+      {requisition.statusHistory && requisition.statusHistory.length > 0 && (
         <div>
           <div style={{ ...labelStyle, marginBottom: 8 }}>STATUS HISTORY</div>
           <div className="flex flex-col gap-0">
-            {requisition.status_history.map((entry, idx) => (
+            {requisition.statusHistory.map((entry, idx) => (
               <div
                 key={entry.id}
-                className="flex items-start gap-2.5 relative pl-5" style={{ paddingBottom: idx < requisition.status_history!.length - 1 ? 12 : 0 }}
+                className="flex items-start gap-2.5 relative pl-5" style={{ paddingBottom: idx < requisition.statusHistory!.length - 1 ? 12 : 0 }}
               >
                 {/* Timeline connector */}
                 <div
-                  className="absolute left-1.5 top-0 bottom-0 w-[1px]" style={{ backgroundColor: idx < requisition.status_history!.length - 1
+                  className="absolute left-1.5 top-0 bottom-0 w-[1px]" style={{ backgroundColor: idx < requisition.statusHistory!.length - 1
                       ? 'var(--color-border-strong)'
                       : 'transparent' }}
                 />
                 {/* Dot */}
                 <div
-                  className="absolute left-px top-1 w-[9px] h-[9px] z-[1]" style={{ borderRadius: '50%', backgroundColor: statusColor(entry.new_status), border: '2px solid var(--color-bg)' }}
+                  className="absolute left-px top-1 w-[9px] h-[9px] z-[1]" style={{ borderRadius: '50%', backgroundColor: statusColor(entry.newStatus), border: '2px solid var(--color-bg)' }}
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span
-                      className="font-[var(--font-mono)] text-[10px] font-bold" style={{ color: statusColor(entry.new_status) }}
+                      className="font-[var(--font-mono)] text-[10px] font-bold" style={{ color: statusColor(entry.newStatus) }}
                     >
-                      {entry.new_status}
+                      {entry.newStatus}
                     </span>
                     <Clock size={10} className="text-[var(--color-text-muted)]" />
                     <span
                       className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]"
                     >
-                      {new Date(entry.changed_at).toLocaleString()}
+                      {new Date(entry.changedAt).toLocaleString()}
                     </span>
                   </div>
                   <div
                     className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)] mt-0.5"
                   >
-                    {entry.changed_by_name ?? `User ${entry.changed_by_id}`}
+                    {entry.changedByName ?? `User ${entry.changedById}`}
                     {entry.notes && (
                       <span className="text-[var(--color-text-muted)] ml-1.5">
                         — {entry.notes}
@@ -352,12 +352,12 @@ export default function RequisitionDetail({ requisition, onRefresh }: Requisitio
                 <span
                   className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]"
                 >
-                  by {a.approver_name ?? `User ${a.approver_id}`}
+                  by {a.approverName ?? `User ${a.approverId}`}
                 </span>
                 <span
                   className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] ml-auto"
                 >
-                  {new Date(a.action_date).toLocaleString()}
+                  {new Date(a.actionDate).toLocaleString()}
                 </span>
               </div>
               {a.comments && (

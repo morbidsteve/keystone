@@ -146,7 +146,7 @@ export default function OriginInventoryTable({ location, onItemClick }: OriginIn
             <tbody>
               {items.map((item) => (
                 <tr
-                  key={item.item_id}
+                  key={item.itemId}
                   onClick={() => onItemClick(item)}
                   className="cursor-pointer"
                   onMouseEnter={(e) => {
@@ -163,7 +163,7 @@ export default function OriginInventoryTable({ location, onItemClick }: OriginIn
                   <td style={cellStyle}>{item.tamcn ?? item.nsn ?? '--'}</td>
                   <td style={cellStyle}>{item.category}</td>
                   <td className="font-semibold">
-                    {item.available_qty}
+                    {item.availableQty}
                   </td>
                   <td style={cellStyle}>
                     <span

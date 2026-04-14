@@ -137,9 +137,9 @@ export default function RouteForm({
             onChange={e => {
               const val = e.target.value;
               if (!val || !mapData) return;
-              const unit = mapData.units.find(u => u.unit_id === val);
+              const unit = mapData.units.find(u => u.unitId === val);
               if (unit) {
-                onSelectOriginUnit(unit.unit_id, unit.abbreviation, unit.latitude, unit.longitude);
+                onSelectOriginUnit(unit.unitId, unit.abbreviation, unit.latitude, unit.longitude);
                 return;
               }
               const sp = mapData.supplyPoints.find(s => s.id === val);
@@ -152,7 +152,7 @@ export default function RouteForm({
             <option value="">-- Quick select origin --</option>
             <optgroup label="UNITS">
               {mapData?.units.map(u => (
-                <option key={u.unit_id} value={u.unit_id}>
+                <option key={u.unitId} value={u.unitId}>
                   {u.abbreviation}
                 </option>
               ))}
@@ -194,7 +194,7 @@ export default function RouteForm({
             onChange={e => {
               const val = e.target.value;
               if (!val || !mapData) return;
-              const unit = mapData.units.find(u => u.unit_id === val);
+              const unit = mapData.units.find(u => u.unitId === val);
               if (unit) {
                 onSelectDestinationUnit(unit.abbreviation, unit.latitude, unit.longitude);
                 return;
@@ -209,7 +209,7 @@ export default function RouteForm({
             <option value="">-- Quick select destination --</option>
             <optgroup label="UNITS">
               {mapData?.units.map(u => (
-                <option key={u.unit_id} value={u.unit_id}>
+                <option key={u.unitId} value={u.unitId}>
                   {u.abbreviation}
                 </option>
               ))}

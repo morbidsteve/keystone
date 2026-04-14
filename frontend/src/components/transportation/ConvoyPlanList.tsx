@@ -200,14 +200,14 @@ export default function ConvoyPlanList({
                     <td style={cellStyle}>
                       <StatusBadge status={plan.status} />
                     </td>
-                    <td style={cellStyle}>{plan.route_name ?? '--'}</td>
-                    <td style={cellStyle}>{plan.total_distance_km ?? '--'}</td>
+                    <td style={cellStyle}>{plan.routeName ?? '--'}</td>
+                    <td style={cellStyle}>{plan.totalDistanceKm ?? '--'}</td>
                     <td style={cellStyle}>
-                      {plan.estimated_duration_hours ? `${plan.estimated_duration_hours}h` : '--'}
+                      {plan.estimatedDurationHours ? `${plan.estimatedDurationHours}h` : '--'}
                     </td>
-                    <td style={cellStyle}>{formatDate(plan.departure_time_planned)}</td>
+                    <td style={cellStyle}>{formatDate(plan.departureTimePlanned)}</td>
                     <td style={cellStyle}>
-                      <RiskBadge level={plan.risk_assessment_level} />
+                      <RiskBadge level={plan.riskAssessmentLevel} />
                     </td>
                     <td style={cellStyle}>{plan.serials.length}</td>
                     <td style={cellStyle}>
@@ -259,7 +259,7 @@ export default function ConvoyPlanList({
                               ROUTE DESCRIPTION
                             </div>
                             <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
-                              {plan.route_description ?? 'No description'}
+                              {plan.routeDescription ?? 'No description'}
                             </div>
                           </div>
                           <div>
@@ -267,7 +267,7 @@ export default function ConvoyPlanList({
                               PRIMARY ROUTE
                             </div>
                             <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
-                              {plan.route_primary ?? '--'}
+                              {plan.routePrimary ?? '--'}
                             </div>
                           </div>
                           <div>
@@ -276,8 +276,8 @@ export default function ConvoyPlanList({
                             </div>
                             <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text)]">
                               {plan.serials.length} serials,{' '}
-                              {plan.serials.reduce((a, s) => a + s.vehicle_count, 0)} vehicles,{' '}
-                              {plan.serials.reduce((a, s) => a + s.pax_count, 0)} PAX
+                              {plan.serials.reduce((a, s) => a + s.vehicleCount, 0)} vehicles,{' '}
+                              {plan.serials.reduce((a, s) => a + s.paxCount, 0)} PAX
                             </div>
                           </div>
                         </div>

@@ -47,10 +47,10 @@ export default function StrengthPanel({ mosFill, snapshots }: StrengthPanelProps
   // Line chart data
   const trendData = useMemo(() => {
     return snapshots.map((s) => ({
-      date: s.snapshot_date,
-      fill_rate: s.fill_rate_pct,
-      assigned: s.assigned_total,
-      authorized: s.authorized_total,
+      date: s.snapshotDate,
+      fill_rate: s.fillRatePct,
+      assigned: s.assignedTotal,
+      authorized: s.authorizedTotal,
     }));
   }, [snapshots]);
 
